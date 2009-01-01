@@ -40,15 +40,19 @@ boolean isHelix = false;
 float helixOffset = 5.0;
 
  
-GPanel p;
+GPanel p , sp1, sp2;
 Toroid t1;
 
 void setup(){
   size(640, 360, P3D);
   t1 = new Toroid();
   
-  p = new GPanel(this, "Peter Kenneth Lager", 3, 1, 100,100,250,60);
-
+  p = new GPanel(this, "Main Panel", 100, 100, 250, 160, GConstants.RED, GConstants.FONT16);
+  sp1 = new GPanel(this, "Sub panel 1", 2, 22, 200, 100, GConstants.GREEN, GConstants.FONT16);
+  sp2 = new GPanel(this, "Sub panel 2", 52, 30, 80, 60, GConstants.BLUE, GConstants.FONT11);
+  p.addComponent(sp1);
+  sp1.addComponent(sp2);
+  sp2.display();
  }
 
 void draw(){
@@ -142,4 +146,3 @@ void keyPressed(){
     }
   }
 }
-
