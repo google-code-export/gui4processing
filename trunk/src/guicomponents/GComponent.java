@@ -1,43 +1,65 @@
 package guicomponents;
 
-import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
 
-public class GComponent {
+public class GComponent implements GConstants {
 
 	/**
-	 * If this is null then no GUI component has the focus, 
+	 * If this is null then no GUI component has the mouse focus, 
 	 * otherwise it references the object that has the focus.
 	 * It must be set to null on mouse released event.
 	 */
-	protected static GComponent gcWithFocus;
-	
-	/** The GUI scheme (color and font to be used) by the GUI */
-	protected static GScheme gscheme;
-	
+	public static GComponent mouseFocusOn;
+
+	/**
+	 * If this is null then no GUI component has the text focus, 
+	 * otherwise it references the object that has the focus.
+	 * It must be set to null on mouse released event.
+	 */
+	public static GComponent keyFocusOn;
+
+	/** 
+	 * The GUI scheme (color and font to be used globally) by the GUI 
+	 * unless overridden by a local value.
+	 */
+	protected static GScheme globalGScheme;
+
+	/** 
+	 * The GUI scheme (color and font to be used) by this
+	 * component. 
+	 */
+	protected GScheme localGScheme;
+
 	/** This must be set by the constructor */
 	protected PApplet app;
-	
+
 	/** Link to the parent panel (if null then it is topmost panel) */
 	protected GComponent parent = null;
 
 	/** Only GPanels can have children - set to true in GPanel ctors */
 	protected boolean childrenPremitted = false;
-	
+
 	/** Text value associated with component */
 	protected String text = "";
-	
+
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
 	protected int x, y;
-	
+
 	/** Width and height of component in pixels for drawing background */
 	protected int width, height;
-	
+
+	protected boolean visible;
 
 	/**
-	 * This method should be called by the ctor of any child class e.g.
+	 * Prevent uninitialised instantiation
+	 */
+	protected GComponent() { }
+
+	/**
+	 * This constructor should be called by the ctor of any child class e.g.
 	 * GPanel, GLabel etc.
 	 * 
 	 * Only create the GScheme the first time it is called.
@@ -48,29 +70,51 @@ public class GComponent {
 	 */
 	public GComponent(PApplet theApplet, int colorScheme, int fontScheme, int x, int y){
 		app = theApplet;
-		if(gscheme == null)
-			gscheme = GScheme.getScheme(app, colorScheme, fontScheme);
+		
+		if(globalGScheme == null)
+			globalGScheme = GScheme.getScheme(app, colorScheme, fontScheme);
+		localGScheme = globalGScheme;
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	/**
-	 * This method should be called when this component is added to 
-	 * a GPanel
+	 * Override in child classes
 	 */
-	private void drawWithParent(){
-		app.unregisterDraw(this);
-		app.unregisterMouseEvent(this);		
+	public void draw(){
 	}
-	
+
+	/**
+	 * Override in child classes.
+	 * Every object will execute this method when an event
+	 * is to be processed.
+	 */
+	public void mouseEvent(MouseEvent event){
+	}
+
+	/**
+	 * @return the component's visibility
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
+	/**
+	 * @param visible the visibility to set
+	 */
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
 	/**
 	 * Determines whether the position ax, ay is over this component
 	 * @return
 	 */
 	public boolean isOver(int ax, int ay){
+		System.out.println("GComponent isMouseOver " + this);
 		return false;
 	}
-	
+
 	/** 
 	 * calculate the absolute top left position of this component 
 	 * 
@@ -79,12 +123,10 @@ public class GComponent {
 	public void calcAbsPosition(Point d){
 		if(parent != null)
 			parent.calcAbsPosition(d);
-		else {
-			d.x += x;
-			d.y += y;
-		}
+		d.x += x;
+		d.y += y;
 	}
-	
+
 	/**
 	 * @return the text
 	 */
@@ -154,5 +196,5 @@ public class GComponent {
 	public void setHeight(int height) {
 		this.height = height;
 	}
-	
+
 } // end of class

@@ -2,7 +2,7 @@ package guicomponents;
 
 import processing.core.*;
 
-public class GScheme {
+public class GScheme implements GConstants {
 
 	protected static PApplet app;
 
@@ -10,7 +10,7 @@ public class GScheme {
 	public int panelBG;
 	public int panelTabBG;
 	public int panelTabFont;
-
+	public int panelTabHeight;
 
 	// Font details
 	public PFont gpFont;
@@ -20,33 +20,25 @@ public class GScheme {
 		app = theApplet;
 		GScheme scheme = new GScheme();
 		switch(colScheme){
-		case 1:
+		case RED:
 			scheme.redColorScheme();
 			break;
-		case 2:
+		case GREEN:
 			scheme.greenColorScheme();
 			break;
-		case 3:
+		case BLUE:
 			scheme.blueColorScheme();
 			break;
+		case GREY:
 		default:
-			scheme.defaultColorScheme();				
+			scheme.greyColorScheme();				
 		}
 		switch(fontScheme){
 		case 1:
-			scheme.makeFontScheme("Geneva-11.vlw",11);
-			break;
-		case 2:
-			scheme.makeFontScheme("FrutigerLight-12.vlw",14);
-			break;
-		case 3:
-			scheme.makeFontScheme("FrutigerLight-13.vlw",15);
-			break;
-		case 4:
 			scheme.makeFontScheme("Miriam-48.vlw",16);
 			break;
 		default:
-			scheme.makeFontScheme("Miriam-48.vlw",16);
+			scheme.makeFontScheme("Geneva-11.vlw",11);
 			break;
 		}
 		return scheme;
@@ -70,7 +62,7 @@ public class GScheme {
 		panelTabFont = app.color(255);
 	}
 
-	private void defaultColorScheme(){
+	private void greyColorScheme(){
 		panelBG = app.color(50,50,50,128);
 		panelTabBG = app.color(240,240,240,160);
 		panelTabFont = app.color(0);
