@@ -39,7 +39,7 @@ boolean isWireFrame = false;
 boolean isHelix = false;
 float helixOffset = 5.0;
 
- 
+GLabel lbl1, lbl2;
 GPanel p , sp1, sp2;
 Toroid t1;
 
@@ -52,6 +52,8 @@ void setup(){
   sp2 = new GPanel(this, "Sub panel 2", 52, 30, 80, 60, GConstants.BLUE, GConstants.FONT11);
   p.addComponent(sp1);
   sp1.addComponent(sp2);
+  lbl1 = new GLabel(this, "Peter", 25, 25, 100, GConstants.RED, GConstants.FONT16);
+  
   sp2.display();
  }
 
