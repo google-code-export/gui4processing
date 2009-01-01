@@ -40,6 +40,12 @@ public class GScheme implements GConstants {
 		case YELLOW:
 			scheme.yellowColorScheme();
 			break;
+		case CYAN:
+			scheme.cyanColorScheme();
+			break;
+		case PURPLE:
+			scheme.purpleColorScheme();
+			break;
 		case GREY:
 		default:
 			scheme.greyColorScheme();				
@@ -63,9 +69,21 @@ public class GScheme implements GConstants {
 		panelTabFont = app.color(255);
 	}
 
+	private void purpleColorScheme() {
+		panelBG = app.color(255,50,255,128);
+		panelTabBG = app.color(255,50,255,160);
+		panelTabFont = app.color(255);
+	}
+
 	private void greenColorScheme() {
 		panelBG = app.color(50,255,50,128);
-		panelTabBG = app.color(50,240,50,160);
+		panelTabBG = app.color(50,255,50,160);
+		panelTabFont = app.color(0);
+	}
+
+	private void cyanColorScheme() {
+		panelBG = app.color(50,255,255,128);
+		panelTabBG = app.color(50,255,255,160);
 		panelTabFont = app.color(0);
 	}
 
