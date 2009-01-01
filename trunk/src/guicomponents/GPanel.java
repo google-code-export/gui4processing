@@ -16,9 +16,6 @@ import processing.core.*;
  */
 public class GPanel extends GComponent {
 
-	/** The height of the tab calculated from font size */
-	protected int tabHeight;
-
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
 
@@ -45,22 +42,54 @@ public class GPanel extends GComponent {
 	 *  
 	 * @param theApplet the PApplet reference
 	 * @param text to appear on tab
-	 * @param colorScheme colors to be used
-	 * @param fontScheme font to be used
 	 * @param x horizontal position
 	 * @param y vertical position
 	 * @param minWidth minimum width of the panel
 	 * @param minHeight minimum height of the panel (excl. tab)
+	 * @param colorScheme color to be used
+	 * @param fontScheme font to be used
 	 */
-	public GPanel(PApplet theApplet, String text, int colorScheme, int fontScheme, 
-			int x, int y, int minWidth, int minHeight){
-		super(theApplet, colorScheme, fontScheme, x, y);
+	public GPanel(PApplet theApplet, String text, int x, int y, int minWidth, int minHeight,
+						int colorScheme, int fontScheme){
+		super(theApplet, x, y);
+		localGScheme = GScheme.getScheme(theApplet, colorScheme, fontScheme);
+		if(globalGScheme == null)
+			globalGScheme = localGScheme;
 		this.text = text;
 		this.minWidth = minWidth;
 		this.minHeight = minHeight;
 		this.width = minWidth;
 		this.height = minHeight;
-		tabHeight = globalGScheme.gpFontSize + 4;
+		childrenPremitted = true;
+		app.registerDraw(this);
+		app.registerMouseEvent(this);
+	}
+	
+	/**
+	 * Create a Panel that comprises of 2 parts the tab which is used to 
+	 * select and move the panel and the container window below the tab which 
+	 * is used to hold other components.
+	 * The size of the container window will grow to fit components added
+	 * provided that it does not exceed the width and height of the applet
+	 * window.
+	 *  
+	 * @param theApplet the PApplet reference
+	 * @param text to appear on tab
+	 * @param x horizontal position
+	 * @param y vertical position
+	 * @param minWidth minimum width of the panel
+	 * @param minHeight minimum height of the panel (excl. tab)
+	 */
+	public GPanel(PApplet theApplet, String text, int x, int y, int minWidth, int minHeight){
+		super(theApplet, x, y);
+		if(globalGScheme == null)
+			globalGScheme = GScheme.getScheme(theApplet, 0, 0);
+		localGScheme = globalGScheme;
+		this.text = text;
+		this.minWidth = minWidth;
+		this.minHeight = minHeight;
+		this.width = minWidth;
+		this.height = minHeight;
 		childrenPremitted = true;
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
@@ -81,12 +110,13 @@ public class GPanel extends GComponent {
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 		app.noStroke();
-		app.fill(globalGScheme.panelTabBG);
-		app.rect(pos.x, pos.y - tabHeight, width, tabHeight);
-		app.fill(globalGScheme.panelTabFont);
-		app.text(text, pos.x + 4, pos.y - globalGScheme.gpFontSize / 4);
+		app.fill(localGScheme.panelTabBG);
+		app.rect(pos.x, pos.y - localGScheme.panelTabHeight, width, localGScheme.panelTabHeight);
+		app.fill(localGScheme.panelTabFont);
+		app.textFont(localGScheme.gpFont, localGScheme.gpFontSize);
+		app.text(text, pos.x + 4, pos.y - localGScheme.gpFontSize / 4);
 		if(!tabOnly){
-			app.fill(globalGScheme.panelBG);
+			app.fill(localGScheme.panelBG);
 			app.rect(pos.x, pos.y, width, height);
 			Iterator<GComponent> iter = children.iterator();
 			while(iter.hasNext()){
@@ -125,8 +155,8 @@ public class GPanel extends GComponent {
 					x = 0;
 				else if(x + width > app.getWidth()) 
 					x = app.getWidth() - width;
-				if(y - tabHeight < 0) 
-					y = tabHeight;
+				if(y - localGScheme.panelTabHeight < 0) 
+					y = localGScheme.panelTabHeight;
 				else {
 					if(tabOnly)
 						if(y > app.getHeight())	y = app.getHeight();
@@ -146,7 +176,7 @@ public class GPanel extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + width && ay >= p.y - tabHeight && ay <= p.y){
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y - localGScheme.panelTabHeight && ay <= p.y){
 			System.out.println("Is Over "+this);
 			return true;
 		}

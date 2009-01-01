@@ -68,12 +68,8 @@ public class GComponent implements GConstants {
 	 * @param colorScheme
 	 * @param fontScheme
 	 */
-	public GComponent(PApplet theApplet, int colorScheme, int fontScheme, int x, int y){
+	public GComponent(PApplet theApplet, int x, int y){
 		app = theApplet;
-		
-		if(globalGScheme == null)
-			globalGScheme = GScheme.getScheme(app, colorScheme, fontScheme);
-		localGScheme = globalGScheme;
 		this.x = x;
 		this.y = y;
 	}
@@ -93,17 +89,12 @@ public class GComponent implements GConstants {
 	}
 
 	/**
-	 * @return the component's visibility
+	 * 
+	 * @param component
+	 * @return
 	 */
-	public boolean isVisible() {
-		return visible;
-	}
-
-	/**
-	 * @param visible the visibility to set
-	 */
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public boolean addComponent(GComponent component){
+		return false;
 	}
 
 	/**
@@ -195,6 +186,20 @@ public class GComponent implements GConstants {
 	 */
 	public void setHeight(int height) {
 		this.height = height;
+	}
+
+	/**
+	 * @return the component's visibility
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
+	/**
+	 * @param visible the visibility to set
+	 */
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 } // end of class
