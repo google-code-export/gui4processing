@@ -35,7 +35,7 @@
 	<property name="author" value="Peter Lager"/>
 	
 <!-- #### (6) which copyright?  edit value.  #### -->
-	<property name="copyright" value="(c) Peter Lager 2008"/>
+	<property name="copyright" value="(c) GNU LGPL 2008"/>
 
 <!-- #### (7) give your library a name. edit value.  #### -->
 	<property name="libraryName"  value="guicomponents"/>
@@ -44,24 +44,24 @@
 	<property name="versionNumber"  value="0.1.1"/>
 	
 <!-- #### (9) your contact url. edit value. #### -->
-	<property name="yourLink"  value="http://www.processing.org" />
+	<property name="yourLink"  value="http://gui4processing.lagers.org.uk" />
 	
 <!-- #### (10) a comma separated list of keywords describing your library. edit value. #### -->
-	<property name="keywords"  value="?" />
+	<property name="keywords"  value="gui, components, wimp, processing" />
 	
 <!-- #### (11) a comma separated list of platforms the library has been tested. edit value. #### -->
-	<property name="tested:platform"  value="?" />
+	<property name="tested:platform"  value="XP, Vista" />
 	
 <!-- #### (12) the processing version this library has been tested with. edit value. #### -->
-	<property name="tested:processingVersion"  value="?" />
+	<property name="tested:processingVersion"  value="1.0.1" />
 	
 <!-- #### (13) does the library depend on any other library, dll, jnilib, etc. edit value. #### -->
 	<property name="tested:dependencies"  value="?" />
 	
 <!-- #### (14) where can the source code be found? edit value. #### -->
 	<property name="source:host"  value="google code" />
-	<property name="source:url"  value="http://code.google.com/p/yourProject" />
-	<property name="source:repository"  value="http://code.google.com/p/yourProject/source/browse/" />
+	<property name="source:url"  value="http://code.google.com/p/gui4processing" />
+	<property name="source:repository"  value="http://code.google.com/p/gui4processing/source/browse/" />
 
 
 
