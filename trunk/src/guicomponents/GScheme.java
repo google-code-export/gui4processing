@@ -22,7 +22,7 @@ public class GScheme implements GConstants {
 	 * @param theApplet
 	 * @param colScheme see GConstants for appropriate values
 	 * @param fontScheme see GConstants for appropriate values
-	 * @return
+	 * @return a GScheme object for the color and font scheme
 	 */
 	public static GScheme getScheme(PApplet theApplet, int colScheme, int fontScheme){
 		app = theApplet;
@@ -107,7 +107,6 @@ public class GScheme implements GConstants {
 
 	private void makeFontScheme(String fontname, int fsize){
 		gpFont = app.loadFont(fontname);
-//		app.textFont(gpFont, fsize);
 		gpFontSize = fsize;
 		panelTabHeight = gpFontSize + 4;
 	}
@@ -115,7 +114,6 @@ public class GScheme implements GConstants {
 	public void setFont(String fontname, int fsize){
 		if(app != null){
 			gpFont = app.loadFont(fontname);
-//			app.textFont(gpFont, fsize);
 			gpFontSize = fsize;
 			panelTabHeight = gpFontSize + 4;
 		}

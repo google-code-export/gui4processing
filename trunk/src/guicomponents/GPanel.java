@@ -1,12 +1,11 @@
 package guicomponents;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import processing.core.*;
+import processing.core.PApplet;
 
 /**
  * Core component
@@ -19,11 +18,8 @@ public class GPanel extends GComponent {
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
 
-	/** Minimum width and height of component in pixels based on child components */
-	protected int minWidth = 20, minHeight = 20;
-
 	/** Surface area of this component */
-	protected Rectangle area = new Rectangle();
+	//protected Rectangle area = new Rectangle();
 
 
 	/**
@@ -50,11 +46,8 @@ public class GPanel extends GComponent {
 	 * @param fontScheme font to be used
 	 */
 	public GPanel(PApplet theApplet, String text, int x, int y, int minWidth, int minHeight,
-						int colorScheme, int fontScheme){
-		super(theApplet, x, y);
-		localGScheme = GScheme.getScheme(theApplet, colorScheme, fontScheme);
-		if(globalGScheme == null)
-			globalGScheme = localGScheme;
+			int colorScheme, int fontScheme){
+		super(theApplet, x, y, colorScheme, fontScheme);
 		this.text = text;
 		this.minWidth = minWidth;
 		this.minHeight = minHeight;
@@ -63,7 +56,7 @@ public class GPanel extends GComponent {
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}
-	
+
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
 	 * select and move the panel and the container window below the tab which 
@@ -76,55 +69,63 @@ public class GPanel extends GComponent {
 	 * @param text to appear on tab
 	 * @param x horizontal position
 	 * @param y vertical position
-	 * @param minWidth minimum width of the panel
-	 * @param minHeight minimum height of the panel (excl. tab)
+	 * @param width minimum width of the panel
+	 * @param height minimum height of the panel (excl. tab)
 	 */
-	public GPanel(PApplet theApplet, String text, int x, int y, int minWidth, int minHeight){
+	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		if(globalGScheme == null)
-			globalGScheme = GScheme.getScheme(theApplet, 0, 0);
-		localGScheme = globalGScheme;
 		this.text = text;
-		this.minWidth = minWidth;
-		this.minHeight = minHeight;
-		this.width = minWidth;
-		this.height = minHeight;
+		this.minWidth = width;
+		this.minHeight = height;
+		this.width = width;
+		this.height = height;
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}
 
+	/**
+	 * Add a GUI component to this Panel at the position specified by
+	 * component being added.
+	 * Unregister the component for drawing this is managed by the 
+	 * Panel draw method to preserve z-ordering
+	 * 
+	 * @return always true
+	 */
 	public boolean addComponent(GComponent component){
+		// TODO need to validate addition based on size
 		component.parent = this;
 		children.add(component);
 		app.unregisterDraw(component);
 		return true;
 	}
 
-	public boolean addComponent(GComponent component, int posX, int posY){
-		return true;
-	}
-
+	/**
+	 * Draw the panel tab.
+	 * If tabOnly == false then also draw all child (added) components
+	 */
 	public void draw(){
-		Point pos = new Point(0,0);
-		calcAbsPosition(pos);
-		app.noStroke();
-		app.fill(localGScheme.panelTabBG);
-		app.rect(pos.x, pos.y - localGScheme.panelTabHeight, width, localGScheme.panelTabHeight);
-		app.fill(localGScheme.panelTabFont);
-		app.textFont(localGScheme.gpFont, localGScheme.gpFontSize);
-		app.text(text, pos.x + 4, pos.y - localGScheme.gpFontSize / 4);
-		if(!tabOnly){
-			app.fill(localGScheme.panelBG);
-			app.rect(pos.x, pos.y, width, height);
-			Iterator<GComponent> iter = children.iterator();
-			while(iter.hasNext()){
-				iter.next().draw();
+		if(visible){
+			Point pos = new Point(0,0);
+			calcAbsPosition(pos);
+			app.noStroke();
+			app.fill(localGScheme.panelTabBG);
+			app.rect(pos.x, pos.y - localGScheme.panelTabHeight, width, localGScheme.panelTabHeight);
+			app.fill(localGScheme.panelTabFont);
+			app.textFont(localGScheme.gpFont, localGScheme.gpFontSize);
+			app.text(text, pos.x + 4, pos.y - localGScheme.gpFontSize / 4);
+			if(!tabOnly){
+				app.fill(localGScheme.panelBG);
+				app.rect(pos.x, pos.y, width, height);
+				Iterator<GComponent> iter = children.iterator();
+				while(iter.hasNext()){
+					iter.next().draw();
+				}
 			}
 		}
 	}
 
 	/**
-	 * No object has the mouse focus so seek one and remember it
+	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
 		switch(event.getID()){
@@ -149,22 +150,23 @@ public class GPanel extends GComponent {
 			if(mouseFocusOn == this && parent == null){
 				x += (app.mouseX - app.pmouseX);
 				y += (app.mouseY - app.pmouseY);
+				// Constrain horizontally
 				if(x < 0) 
 					x = 0;
 				else if(x + width > app.getWidth()) 
 					x = app.getWidth() - width;
+				// Constrain vertically
 				if(y - localGScheme.panelTabHeight < 0) 
 					y = localGScheme.panelTabHeight;
-				else {
-					if(tabOnly)
-						if(y > app.getHeight())	y = app.getHeight();
-					else
-						if(y + height > app.getHeight()) y = app.getHeight() - height;
-				}
+				else if(tabOnly && y > app.getHeight())
+					y = app.getHeight();
+				else if(!tabOnly && y + height > app.getHeight()) 
+					y = app.getHeight() - height;
 			}
 			break;
 		}
 	}
+
 
 	/**
 	 * Determines whether the position ax, ay is over the tab
@@ -174,13 +176,10 @@ public class GPanel extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + width && ay >= p.y - localGScheme.panelTabHeight && ay <= p.y){
-			System.out.println("Is Over "+this);
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y - localGScheme.panelTabHeight && ay <= p.y)
 			return true;
-		}
-		else {
+		else 
 			return false;
-		}
 	}
 
 
@@ -196,6 +195,9 @@ public class GPanel extends GComponent {
 		}
 	}
 
+	/**
+	 * Used for debugging only
+	 */
 	public void display(){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);

@@ -48,7 +48,13 @@ public class GComponent implements GConstants {
 	/** Width and height of component in pixels for drawing background */
 	protected int width, height;
 
-	protected boolean visible;
+	/** Minimum width and height of component in pixels based on child components */
+	protected int minWidth = 20, minHeight = 20;
+	
+	/** Maximum width and height of component in pixels based on child components */
+	protected int maxWidth = 200, maxHeight = 200;
+
+	protected boolean visible = true;
 
 	/**
 	 * Prevent uninitialised instantiation
@@ -56,17 +62,46 @@ public class GComponent implements GConstants {
 	protected GComponent() { }
 
 	/**
-	 * This constructor should be called by the ctor of any child class e.g.
-	 * GPanel, GLabel etc.
+	 * This constructor should be called by all constructors  
+	 * of any child class e.g. GPanel, GLabel etc.
 	 * 
 	 * Only create the GScheme the first time it is called.
 	 * 
 	 * @param theApplet
-	 * @param colorScheme
-	 * @param fontScheme
+	 * @param x
+	 * @param y
 	 */
 	public GComponent(PApplet theApplet, int x, int y){
 		app = theApplet;
+		if(globalGScheme == null)
+			globalGScheme = GScheme.getScheme(theApplet, 0, 0);
+		localGScheme = globalGScheme;
+		maxWidth = (int) 0.95f * app.getWidth();
+		maxHeight = (int) 0.95f * app.getHeight();
+		this.x = x;
+		this.y = y;
+	}
+
+	/**
+	 * This constructor should be called by all constructors  
+	 * of any child class e.g. GPanel, GLabel etc.
+	 * 
+	 * Create a local  color/font scheme and use for global if that 
+	 * has not been defined yet.
+	 * 
+	 * @param theApplet
+	 * @param x
+	 * @param y
+	 * @param colorScheme
+	 * @param fontScheme
+	 */
+	public GComponent(PApplet theApplet, int x, int y, int colorScheme, int fontScheme ){
+		app = theApplet;
+		localGScheme = GScheme.getScheme(theApplet, colorScheme, fontScheme);
+		if(globalGScheme == null)
+			globalGScheme = localGScheme;
+		maxWidth = (int) 0.95f * app.getWidth();
+		maxHeight = (int) 0.95f * app.getHeight();
 		this.x = x;
 		this.y = y;
 	}
@@ -86,25 +121,36 @@ public class GComponent implements GConstants {
 	}
 
 	/**
+	 * This is the default implementation for all GUI components except
+	 * GPanel since we can use panels to group data.
 	 * 
-	 * @param component
-	 * @return
+	 * @param component to be added (ignored)
+	 * @return false always
 	 */
 	public boolean addComponent(GComponent component){
 		return false;
 	}
 
 	/**
-	 * Determines whether the position ax, ay is over this component
-	 * @return
+	 * Determines whether the position ax, ay is over this component.
+	 * This is the default implementation and assumes the component
+	 * is a rectangle where x & y is the top-left corner and the size
+	 * is defined by width and height.
+	 * Override this method where necessary in child classes e.g. GPanel 
+	 * @return true if mouse is over the component else false
 	 */
 	public boolean isOver(int ax, int ay){
-		System.out.println("GComponent isMouseOver " + this);
-		return false;
+		Point p = new Point(0,0);
+		calcAbsPosition(p);
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y && ay <= p.y + height)
+			return true;
+		else 
+			return false;
 	}
 
 	/** 
-	 * calculate the absolute top left position of this component 
+	 * This method will calculate the absolute top left position of this 
+	 * component taking into account any ancestors. 
 	 * 
 	 * @param d
 	 */
