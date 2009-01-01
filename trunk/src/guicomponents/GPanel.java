@@ -60,7 +60,6 @@ public class GPanel extends GComponent {
 		this.minHeight = minHeight;
 		this.width = minWidth;
 		this.height = minHeight;
-		childrenPremitted = true;
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}
@@ -90,7 +89,6 @@ public class GPanel extends GComponent {
 		this.minHeight = minHeight;
 		this.width = minWidth;
 		this.height = minHeight;
-		childrenPremitted = true;
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}

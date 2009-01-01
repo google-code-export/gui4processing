@@ -39,9 +39,6 @@ public class GComponent implements GConstants {
 	/** Link to the parent panel (if null then it is topmost panel) */
 	protected GComponent parent = null;
 
-	/** Only GPanels can have children - set to true in GPanel ctors */
-	protected boolean childrenPremitted = false;
-
 	/** Text value associated with component */
 	protected String text = "";
 
