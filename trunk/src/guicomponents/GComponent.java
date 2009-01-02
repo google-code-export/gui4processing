@@ -107,6 +107,35 @@ public class GComponent implements GConstants {
 	}
 
 	/**
+	 * This constructor should be called by all constructors  
+	 * of any child class e.g. GPanel, GLabel etc.
+	 * 
+	 * Create a local color/font scheme and use for global if that 
+	 * has not been defined yet.
+	 * 
+	 * @param theApplet
+	 * @param x
+	 * @param y
+	 * @param colorScheme
+	 */
+	public GComponent(PApplet theApplet, int x, int y, int colorScheme){
+		app = theApplet;
+		localGScheme = GScheme.getScheme(theApplet, colorScheme, 0);
+		if(globalGScheme == null)
+			globalGScheme = localGScheme;
+		maxWidth = (int) 0.95f * app.getWidth();
+		maxHeight = (int) 0.95f * app.getHeight();
+		this.x = x;
+		this.y = y;
+	}
+
+	/**
+	 * Override in child classes
+	 */
+	public void pre(){
+	}
+
+	/**
 	 * Override in child classes
 	 */
 	public void draw(){
@@ -137,10 +166,37 @@ public class GComponent implements GConstants {
 	 * is a rectangle where x & y is the top-left corner and the size
 	 * is defined by width and height.
 	 * Override this method where necessary in child classes e.g. GPanel 
+	 * 
+	 * @param ax mouse x position
+	 * @param ay mouse y position
 	 * @return true if mouse is over the component else false
 	 */
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
+		calcAbsPosition(p);
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y && ay <= p.y + height)
+			return true;
+		else 
+			return false;
+	}
+
+	/**
+	 * Determines whether the position ax, ay is over this rectangle.
+	 * where x & y is the top-left corner and the size is defined by 
+	 * width and height.
+	 * The x,y values are adjusted for any parent component's position.
+	 * Override this method where necessary in child classes e.g. GPanel 
+	 * 
+	 * @param ax mouse x position
+	 * @param ay mouse y position
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return true if mouse is over the rectangle else false
+	 */
+	public boolean isOver(int ax, int ay, int x, int y, int width, int height){
+		Point p = new Point(x,y);
 		calcAbsPosition(p);
 		if(ax >= p.x && ax <= p.x + width && ay >= p.y && ay <= p.y + height)
 			return true;
@@ -159,6 +215,20 @@ public class GComponent implements GConstants {
 			parent.calcAbsPosition(d);
 		d.x += x;
 		d.y += y;
+	}
+
+	/**
+	 * Constrain a value to stay within a range.
+	 * 
+	 * @param v the value to constrain
+	 * @param min range minimum value
+	 * @param max range maximum value
+	 * @return the constrained value
+	 */
+	public int constrain(int v, int min, int max){
+		if(v < min) return min;
+		if(v > max) return max;
+		return v;
 	}
 
 	/**

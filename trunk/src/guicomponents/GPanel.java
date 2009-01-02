@@ -18,6 +18,9 @@ public class GPanel extends GComponent {
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
 
+	/** Is panel body opaque */
+	protected boolean opaque = false;
+	
 	/** Surface area of this component */
 	//protected Rectangle area = new Rectangle();
 
@@ -40,19 +43,19 @@ public class GPanel extends GComponent {
 	 * @param text to appear on tab
 	 * @param x horizontal position
 	 * @param y vertical position
-	 * @param minWidth minimum width of the panel
-	 * @param minHeight minimum height of the panel (excl. tab)
+	 * @param width minimum width of the panel
+	 * @param height minimum height of the panel (excl. tab)
 	 * @param colorScheme color to be used
 	 * @param fontScheme font to be used
 	 */
-	public GPanel(PApplet theApplet, String text, int x, int y, int minWidth, int minHeight,
+	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height,
 			int colorScheme, int fontScheme){
 		super(theApplet, x, y, colorScheme, fontScheme);
 		this.text = text;
-		this.minWidth = minWidth;
-		this.minHeight = minHeight;
-		this.width = minWidth;
-		this.height = minHeight;
+		this.minWidth = width;
+		this.minHeight = height;
+		this.width = width;
+		this.height = height;
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}
@@ -114,8 +117,10 @@ public class GPanel extends GComponent {
 			app.textFont(localGScheme.gpFont, localGScheme.gpFontSize);
 			app.text(text, pos.x + 4, pos.y - localGScheme.gpFontSize / 4);
 			if(!tabOnly){
-				app.fill(localGScheme.panelBG);
-				app.rect(pos.x, pos.y, width, height);
+				if(opaque){
+					app.fill(localGScheme.panelBG);
+					app.rect(pos.x, pos.y, width, height);
+				}
 				Iterator<GComponent> iter = children.iterator();
 				while(iter.hasNext()){
 					iter.next().draw();
@@ -189,12 +194,16 @@ public class GPanel extends GComponent {
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		Iterator<GComponent> iter = children.iterator();
-		while(iter.hasNext()){
-			iter.next().setVisible(visible);
-		}
+//		Iterator<GComponent> iter = children.iterator();
+//		while(iter.hasNext()){
+//			iter.next().setVisible(visible);
+//		}
 	}
 
+	public void setOpaque(boolean opaque){
+		this.opaque = opaque;
+	}
+	
 	/**
 	 * Used for debugging only
 	 */

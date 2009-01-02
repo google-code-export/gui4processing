@@ -6,12 +6,16 @@ public class GScheme implements GConstants {
 
 	protected static PApplet app;
 
-	// Colors
+	// Panels / Labels
 	public int panelBG;
 	public int panelTabBG;
 	public int panelTabFont;
 	public int panelTabHeight;
 
+	public int sliderBG;
+	public int sliderThumb;
+	public int sliderStroke;
+	
 	// Font details
 	public PFont gpFont;
 	public int gpFontSize;
@@ -67,42 +71,63 @@ public class GScheme implements GConstants {
 		panelBG = app.color(50,50,255,128);
 		panelTabBG = app.color(50,50,255,160);
 		panelTabFont = app.color(255);
+		sliderBG = app.color(255,192);
+		sliderThumb = app.color(0,0,255,255);
+		sliderStroke = app.color(128,128,255,255);
 	}
 
 	private void purpleColorScheme() {
 		panelBG = app.color(255,50,255,128);
 		panelTabBG = app.color(255,50,255,160);
 		panelTabFont = app.color(255);
+		sliderBG = app.color(255,192);
+		sliderThumb = app.color(128,0);
+		sliderStroke = app.color(255,128,255,255);
 	}
 
 	private void greenColorScheme() {
 		panelBG = app.color(50,255,50,128);
 		panelTabBG = app.color(50,255,50,160);
 		panelTabFont = app.color(0);
+		sliderBG = app.color(255,192);
+		sliderThumb = app.color(0,255,0,0);
+		sliderStroke = app.color(128,255,128,255);
 	}
 
 	private void cyanColorScheme() {
 		panelBG = app.color(50,255,255,128);
 		panelTabBG = app.color(50,255,255,160);
 		panelTabFont = app.color(0);
+		sliderBG = app.color(255,192);
+		sliderThumb = app.color(128,0);
+		sliderStroke = app.color(128,255,255,255);
 	}
 
 	private void yellowColorScheme() {
 		panelBG = app.color(255,255,50,128);
 		panelTabBG = app.color(255,255,50,192);
 		panelTabFont = app.color(0);
+		sliderBG = app.color(255,192);
+		sliderThumb = app.color(128,0);
+		sliderStroke = app.color(255,255,128,255);
 	}
 
 	private void redColorScheme() {
 		panelBG = app.color(255,50,50,128);
 		panelTabBG = app.color(255,50,50,160);
 		panelTabFont = app.color(255);
+		sliderBG = app.color(255,192);
+		sliderThumb = app.color(128,0);
+		sliderStroke = app.color(255,128,128,255);
 	}
 
 	private void greyColorScheme(){
 		panelBG = app.color(50,50,50,128);
 		panelTabBG = app.color(240,240,240,160);
 		panelTabFont = app.color(0);
+		sliderBG = app.color(255,192);
+		sliderThumb = app.color(128,0);
+		sliderStroke = app.color(192,255);
 	}
 
 	private void makeFontScheme(String fontname, int fsize){

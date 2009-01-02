@@ -53,7 +53,6 @@ public class GLabel extends GComponent {
 	}
 	
 	public void draw(){
-		//System.out.println("DRAW "+this + "  "+((3 * localGScheme.gpFontSize) / 4) );
 		if(visible){
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
