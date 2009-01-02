@@ -29,6 +29,8 @@ public class GLabel extends GComponent {
 			this.maxWidth = maxWidth;
 		if(text != null)
 			this.text = text;
+		width = maxWidth;
+		height = localGScheme.gpFontSize + 2;
 		app.registerDraw(this);
 	}
 	
@@ -49,6 +51,8 @@ public class GLabel extends GComponent {
 			this.maxWidth = maxWidth;
 		if(text != null)
 			this.text = text;
+		width = maxWidth;
+		height = localGScheme.gpFontSize + 2;
 		app.registerDraw(this);
 	}
 	
@@ -59,8 +63,15 @@ public class GLabel extends GComponent {
 			app.noStroke();
 			app.fill(localGScheme.panelTabFont);
 			app.textFont(localGScheme.gpFont, localGScheme.gpFontSize);
-			app.text(text, pos.x + 4, pos.y + (3 * localGScheme.gpFontSize) / 4);
+//			app.text(text, pos.x + 4, pos.y + localGScheme.gpFontSize);
+			app.text(text, pos.x + 4, pos.y + localGScheme.gpFontSize / 8, width, height);
+			if(border != 0){
+				app.strokeWeight(1);
+				app.stroke(255);
+				app.noFill();
+				app.rect(pos.x,pos.y, width, height);
+			}
 		}
 	}
-	
+
 }

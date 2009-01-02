@@ -2,6 +2,7 @@ package guicomponents;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 
@@ -39,6 +40,9 @@ public class GComponent implements GConstants {
 	/** Link to the parent panel (if null then it is topmost panel) */
 	protected GComponent parent = null;
 
+	protected Method eventHandler = null;
+	protected Object eventHandlerObject = null;
+	
 	/** Text value associated with component */
 	protected String text = "";
 
@@ -55,6 +59,8 @@ public class GComponent implements GConstants {
 	protected int maxWidth = 200, maxHeight = 200;
 
 	protected boolean visible = true;
+
+	protected int border = 0;
 
 	/**
 	 * Prevent uninitialised instantiation
@@ -147,6 +153,21 @@ public class GComponent implements GConstants {
 	 * is to be processed.
 	 */
 	public void mouseEvent(MouseEvent event){
+	}
+
+	/**
+	 * Attempt to fire an event for this component
+	 */
+	protected void fireEvent(){
+		if(eventHandler != null){
+			try {
+				eventHandler.invoke(eventHandlerObject, new Object[] { this });
+			} catch (Exception e) {
+				System.out.println("Disabling " + eventHandler.getName() + " due to an error");
+				eventHandler = null;
+				eventHandlerObject = null;
+			}
+		}		
 	}
 
 	/**
@@ -313,6 +334,15 @@ public class GComponent implements GConstants {
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	/**
+	 * The user can add a border by specifying it's thickness
+	 * a value of 0 means no border (this is the default)
+	 * @param border width in pixels
+	 */
+	public void setBorder(int border){
+		this.border = border;
 	}
 
 } // end of class

@@ -5,11 +5,16 @@ import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
 
-public class GHorzSlider extends GSlider {
-
+/**
+ * Vertical slider class
+ * 
+ * @author Peter Lager
+ *
+ */
+public class GVertSlider extends GSlider {
 	
 	/**
-	 * Create a horizontal slider.
+	 * Create a vertical slider.
 	 * Default values:
 	 * 		Range 0-100
 	 *      Initial value 50
@@ -22,14 +27,13 @@ public class GHorzSlider extends GSlider {
 	 * @param height
 	 * @param colorScheme
 	 */
-	public GHorzSlider(PApplet theApplet, int x, int y, int width, int height,
-			int colorScheme){
+	public GVertSlider(PApplet theApplet, int x, int y, int width, int height,int colorScheme){
 		super(theApplet, x, y, width, height, colorScheme);
 		initThumbDetails();
 	}
 
 	/**
-	 * Create a horizontal slider.
+	 * Create a vertical slider.
 	 * Default values:
 	 * 		Range 0-100
 	 *      Initial value 50
@@ -41,7 +45,7 @@ public class GHorzSlider extends GSlider {
 	 * @param width
 	 * @param height
 	 */
-	public GHorzSlider(PApplet theApplet, int x, int y, int width, int height){
+	public GVertSlider(PApplet theApplet, int x, int y, int width, int height){
 		super(theApplet, x, y, width, height);
 		initThumbDetails();
 	}
@@ -50,13 +54,13 @@ public class GHorzSlider extends GSlider {
 	 * Initialises the thumb details
 	 */
 	protected void initThumbDetails(){
-		thumbSize = Math.max(10, width / 20);
+		thumbSize = Math.max(10, height / 20);
 		thumbMin = thumbSize/2;
-		thumbMax = width - thumbSize/2;
+		thumbMax = height - thumbSize/2;
 		setValue(value);
 		aimThumbPos = thumbPos;
 	}
-
+	
 	/**
 	 * Draw the slider
 	 */
@@ -68,7 +72,7 @@ public class GHorzSlider extends GSlider {
 			app.fill(localGScheme.sliderBG);
 			app.rect(pos.x, pos.y, width, height);
 			app.fill(localGScheme.sliderThumb);
-			app.rect(pos.x + thumbPos - thumbSize/2, pos.y, thumbSize, height);
+			app.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);
 			if(border != 0){
 				app.strokeWeight(border);
 				app.noFill();
@@ -99,7 +103,7 @@ public class GHorzSlider extends GSlider {
 			if(mouseFocusOn == this){
 				Point p = new Point(0,0);
 				calcAbsPosition(p);
-				aimThumbPos = constrain(app.mouseX - offset - p.x, thumbMin, thumbMax);
+				aimThumbPos = constrain(app.mouseY - offset - p.y, thumbMin, thumbMax);
 			}
 			break;
 		}
@@ -107,19 +111,18 @@ public class GHorzSlider extends GSlider {
 
 	/**
 	 * Determines whether the position ax, ay is over the thumb
-	 * of this Slider.
+	 * of this GPanel.
 	 * 
 	 * @return true if mouse is over the panel tab else false
 	 */
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x + thumbPos - thumbSize/2 && ax <= p.x + thumbPos + thumbSize/2 && ay >= p.y && ay <= p.y + height){
-			offset = ax - (p.x + thumbPos);
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y + thumbPos - thumbSize/2 && ay <= p.y + thumbPos + thumbSize/2){
+			offset = ay - (p.y + thumbPos);
 			return true;
 		}
 		else 
 			return false;
 	}
-
 } // end of class
