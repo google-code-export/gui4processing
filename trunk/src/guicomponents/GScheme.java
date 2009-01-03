@@ -59,6 +59,9 @@ public class GScheme implements GConstants {
 		case FONT16:
 			scheme.makeFontScheme("Miriam-48.vlw",16);
 			break;
+//		case FONT12:
+//			scheme.makeFontScheme("serif.vlw",12);
+//			break;
 		case FONT11:
 		default:
 			scheme.makeFontScheme("Geneva-11.vlw",11);

@@ -25,8 +25,8 @@ public class GLabel extends GComponent {
 	public GLabel(PApplet theApplet, String text, int x, int y, int maxWidth) {
 		super(theApplet, x, y);
 		// TODO Auto-generated constructor stub
-		if(maxWidth < this.maxWidth)
-			this.maxWidth = maxWidth;
+//		if(maxWidth < this.maxWidth)
+//			this.maxWidth = maxWidth;
 		if(text != null)
 			this.text = text;
 		width = maxWidth;
@@ -47,8 +47,8 @@ public class GLabel extends GComponent {
 	public GLabel(PApplet theApplet, String text, int x, int y, int maxWidth, int colorScheme, int fontScheme) {
 		super(theApplet, x, y, colorScheme, fontScheme);
 		// TODO Auto-generated constructor stub
-		if(maxWidth < this.maxWidth)
-			this.maxWidth = maxWidth;
+//		if(maxWidth < this.maxWidth)
+//			this.maxWidth = maxWidth;
 		if(text != null)
 			this.text = text;
 		width = maxWidth;

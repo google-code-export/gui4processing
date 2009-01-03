@@ -2,7 +2,6 @@ package guicomponents;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.util.Iterator;
 
 import processing.core.PApplet;
 
@@ -14,6 +13,17 @@ public class GCheckbox extends GComponent {
 	
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int size, int colorScheme, int fontScheme){
 		super(theApplet, x, y, colorScheme, fontScheme);
+		this.size = constrain(size, 12, 20);
+		this.text = text;
+		this.width = width;
+		height = localGScheme.gpFontSize;
+		createEventHandler(theApplet);
+		app.registerDraw(this);
+		app.registerMouseEvent(this);
+	}
+
+	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int size){
+		super(theApplet, x, y);
 		this.size = constrain(size, 12, 20);
 		this.text = text;
 		this.width = width;

@@ -11,6 +11,7 @@ public interface GConstants {
 	public final int PURPLE	= 0x00010007;
 
 	public final int FONT11 = 0x00020001;
+	public final int FONT12 = 0x00020002;
 	public final int FONT16 = 0x00020003;
 	
 }

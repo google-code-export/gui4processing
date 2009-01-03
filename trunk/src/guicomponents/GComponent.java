@@ -26,7 +26,7 @@ public class GComponent implements GConstants {
 	 * The GUI scheme (color and font to be used globally) by the GUI 
 	 * unless overridden by a local value.
 	 */
-	protected static GScheme globalGScheme;
+	public static GScheme globalGScheme;
 
 	/** 
 	 * The GUI scheme (color and font to be used) by this
