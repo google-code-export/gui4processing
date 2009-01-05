@@ -5,17 +5,6 @@
  * Illustrates the geometric relationship between Toroid, Sphere, and Helix
  * 3D primitives, as well as lathing principal.
  * 
- * Instructions: <br />
- * UP arrow key pts++ <br />
- * DOWN arrow key pts-- <br />
- * LEFT arrow key segments-- <br />
- * RIGHT arrow key segments++ <br />
- * 'a' key toroid radius-- <br />
- * 's' key toroid radius++ <br />
- * 'z' key initial polygon radius-- <br />
- * 'x' key initial polygon radius++ <br />
- * 'w' key toggle wireframe/solid shading <br />
- * 'h' key toggle sphere/helix <br />
  */
 
 import guicomponents.*;
@@ -31,12 +20,13 @@ void setup(){
   size(640, 360, P3D);
   t1 = new Toroid();
 
-  GComponent.globalGScheme = GScheme.getScheme(this,  GConstants.RED, GConstants.FONT11);
+  GComponent.globalColor = GColor.getColor(this,  GUI.RED);
+  GComponent.globalFont = GFont.getFont(this);
   p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 80);
   lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
   lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
   lblERad = new GLabel(this, "Ellipse Radius", 2, 32, 120);
-  lblLRad = new GLabel(this, "Torroid Radius", 2, 46, 120);
+  lblLRad = new GLabel(this, "Toroid Radius", 2, 46, 120);
   sdrSegs = new GHorzSlider(this, 125, 4, 325, 11);
   sdrPts = new GHorzSlider(this, 125, 18, 325, 11);
   sdrERad = new GHorzSlider(this, 125, 32, 325, 11);
@@ -46,8 +36,8 @@ void setup(){
   sdrERad.setLimits(60,10,100);
   sdrLRad.setLimits(100,0,240);
 
-  cbxHelix = new GCheckbox(this, "Helix?", 2, 60, 80, 11);
-  cbxWire = new GCheckbox(this, "Wire frame?", 102, 60, 100, 11);
+  cbxHelix = new GCheckbox(this, "Helix?", 2, 60, 80);
+  cbxWire = new GCheckbox(this, "Wire frame?", 102, 60, 100);
 
   p.addComponent(lblSegs);
   p.addComponent(lblPts);
@@ -101,4 +91,3 @@ void draw(){
   t1.draw();
   popMatrix();
 }
-

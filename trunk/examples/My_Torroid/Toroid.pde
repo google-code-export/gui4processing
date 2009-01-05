@@ -35,12 +35,12 @@ class Toroid {
 
   public void setSegmentDetail(int segments){
     this.segments = segments; 
-    modelChange = true;
+    fillVertexArrays();
   }
 
   public void setEllipseDetail(int points){
     pts = points;
-    modelChange = true;
+    fillVertexArrays();
   }
 
   public void setEllipseRadius(int eradius){
