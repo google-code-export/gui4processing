@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 
-public class GComponent implements GConstants {
+public class GComponent implements GUI {
 
 	/**
 	 * If this is null then no GUI component has the mouse focus, 
@@ -26,13 +26,19 @@ public class GComponent implements GConstants {
 	 * The GUI scheme (color and font to be used globally) by the GUI 
 	 * unless overridden by a local value.
 	 */
-	public static GScheme globalGScheme;
+	//public static GScheme globalGScheme;
 
+	public static GColor globalColor;
+	public static GColor localColor;
+	
+	public static GFont globalFont;
+	public static GFont localFont;
+	
 	/** 
 	 * The GUI scheme (color and font to be used) by this
 	 * component. 
 	 */
-	protected GScheme localGScheme;
+	//protected GScheme localGScheme;
 
 	/** This must be set by the constructor */
 	protected PApplet app;
@@ -45,7 +51,9 @@ public class GComponent implements GConstants {
 	
 	/** Text value associated with component */
 	protected String text = "";
-
+	protected float textWidth;
+	protected int textAlign;
+	
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
 	protected int x, y;
 
@@ -79,11 +87,14 @@ public class GComponent implements GConstants {
 	 */
 	public GComponent(PApplet theApplet, int x, int y){
 		app = theApplet;
-		if(globalGScheme == null)
-			globalGScheme = GScheme.getScheme(theApplet, 0, 0);
-		localGScheme = globalGScheme;
-		maxWidth = (int) 0.95f * app.getWidth();
-		maxHeight = (int) 0.95f * app.getHeight();
+		if(globalColor == null)
+			globalColor = GColor.getColor(theApplet);
+		localColor = globalColor;
+		if(globalFont == null)
+			globalFont = GFont.getFont(theApplet);
+		localFont = globalFont;
+//		maxWidth = (int) 0.95f * app.getWidth();
+//		maxHeight = (int) 0.95f * app.getHeight();
 		this.x = x;
 		this.y = y;
 	}
@@ -98,16 +109,19 @@ public class GComponent implements GConstants {
 	 * @param theApplet
 	 * @param x
 	 * @param y
-	 * @param colorScheme
-	 * @param fontScheme
+	 * @param cScheme
+	 * @param fScheme
 	 */
-	public GComponent(PApplet theApplet, int x, int y, int colorScheme, int fontScheme ){
+	public GComponent(PApplet theApplet, int x, int y, GColor cScheme, GFont fScheme ){
 		app = theApplet;
-		localGScheme = GScheme.getScheme(theApplet, colorScheme, fontScheme);
-		if(globalGScheme == null)
-			globalGScheme = localGScheme;
-		maxWidth = (int) 0.95f * app.getWidth();
-		maxHeight = (int) 0.95f * app.getHeight();
+		localColor = cScheme;
+		localFont = fScheme;
+		if(globalColor == null)
+			globalColor = localColor;
+		if(globalFont == null)
+			globalFont = localFont;
+//		maxWidth = (int) 0.95f * app.getWidth();
+//		maxHeight = (int) 0.95f * app.getHeight();
 		this.x = x;
 		this.y = y;
 	}
@@ -122,15 +136,15 @@ public class GComponent implements GConstants {
 	 * @param theApplet
 	 * @param x
 	 * @param y
-	 * @param colorScheme
+	 * @param cScheme
 	 */
-	public GComponent(PApplet theApplet, int x, int y, int colorScheme){
+	public GComponent(PApplet theApplet, int x, int y, GColor cScheme){
 		app = theApplet;
-		localGScheme = GScheme.getScheme(theApplet, colorScheme, 0);
-		if(globalGScheme == null)
-			globalGScheme = localGScheme;
-		maxWidth = (int) 0.95f * app.getWidth();
-		maxHeight = (int) 0.95f * app.getHeight();
+		localColor = cScheme;
+		if(globalColor == null)
+			globalColor = localColor;
+//		maxWidth = (int) 0.95f * app.getWidth();
+//		maxHeight = (int) 0.95f * app.getHeight();
 		this.x = x;
 		this.y = y;
 	}
@@ -201,29 +215,29 @@ public class GComponent implements GConstants {
 			return false;
 	}
 
-	/**
-	 * Determines whether the position ax, ay is over this rectangle.
-	 * where x & y is the top-left corner and the size is defined by 
-	 * width and height.
-	 * The x,y values are adjusted for any parent component's position.
-	 * Override this method where necessary in child classes e.g. GPanel 
-	 * 
-	 * @param ax mouse x position
-	 * @param ay mouse y position
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @return true if mouse is over the rectangle else false
-	 */
-	public boolean isOver(int ax, int ay, int x, int y, int width, int height){
-		Point p = new Point(x,y);
-		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + width && ay >= p.y && ay <= p.y + height)
-			return true;
-		else 
-			return false;
-	}
+//	/**
+//	 * Determines whether the position ax, ay is over this rectangle.
+//	 * where x & y is the top-left corner and the size is defined by 
+//	 * width and height.
+//	 * The x,y values are adjusted for any parent component's position.
+//	 * Override this method where necessary in child classes e.g. GPanel 
+//	 * 
+//	 * @param ax mouse x position
+//	 * @param ay mouse y position
+//	 * @param x
+//	 * @param y
+//	 * @param width
+//	 * @param height
+//	 * @return true if mouse is over the rectangle else false
+//	 */
+//	public boolean isOver(int ax, int ay, int x, int y, int width, int height){
+//		Point p = new Point(x,y);
+//		calcAbsPosition(p);
+//		if(ax >= p.x && ax <= p.x + width && ay >= p.y && ay <= p.y + height)
+//			return true;
+//		else 
+//			return false;
+//	}
 
 	/** 
 	 * This method will calculate the absolute top left position of this 
@@ -264,6 +278,8 @@ public class GComponent implements GConstants {
 	 */
 	public void setText(String text) {
 		this.text = text;
+		app.textFont(localFont.gpFont, localFont.gpFontSize);
+		textWidth = app.textWidth(text); 
 	}
 
 	/**

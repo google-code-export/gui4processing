@@ -49,11 +49,11 @@ public class GPanel extends GComponent {
 	 * @param fontScheme font to be used
 	 */
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height,
-			int colorScheme, int fontScheme){
+			GColor colorScheme, GFont fontScheme){
 		super(theApplet, x, y, colorScheme, fontScheme);
 		this.text = text;
-		this.minWidth = width;
-		this.minHeight = height;
+//		this.minWidth = width;
+//		this.minHeight = height;
 		this.width = width;
 		this.height = height;
 		app.registerDraw(this);
@@ -78,8 +78,8 @@ public class GPanel extends GComponent {
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		this.text = text;
-		this.minWidth = width;
-		this.minHeight = height;
+//		this.minWidth = width;
+//		this.minHeight = height;
 		this.width = width;
 		this.height = height;
 		app.registerDraw(this);
@@ -111,14 +111,14 @@ public class GPanel extends GComponent {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
-			app.fill(localGScheme.panelTabBG);
-			app.rect(pos.x, pos.y - localGScheme.panelTabHeight, width, localGScheme.panelTabHeight);
-			app.fill(localGScheme.panelTabFont);
-			app.textFont(localGScheme.gpFont, localGScheme.gpFontSize);
-			app.text(text, pos.x + 4, pos.y - localGScheme.gpFontSize / 4);
+			app.fill(localColor.panelTabBG);
+			app.rect(pos.x, pos.y - (localFont.gpFontSize + 4), width, (localFont.gpFontSize + 4));
+			app.fill(localColor.panelTabFont);
+			app.textFont(localFont.gpFont, localFont.gpFontSize);
+			app.text(text, pos.x + 4, pos.y - localFont.gpFontSize / 4);
 			if(!tabOnly){
 				if(opaque){
-					app.fill(localGScheme.panelBG);
+					app.fill(localColor.panelBG);
 					app.rect(pos.x, pos.y, width, height);
 				}
 				Iterator<GComponent> iter = children.iterator();
@@ -161,8 +161,8 @@ public class GPanel extends GComponent {
 				else if(x + width > app.getWidth()) 
 					x = app.getWidth() - width;
 				// Constrain vertically
-				if(y - localGScheme.panelTabHeight < 0) 
-					y = localGScheme.panelTabHeight;
+				if(y - (localFont.gpFontSize + 4) < 0) 
+					y = (localFont.gpFontSize + 4);
 				else if(tabOnly && y > app.getHeight())
 					y = app.getHeight();
 				else if(!tabOnly && y + height > app.getHeight()) 
@@ -181,7 +181,7 @@ public class GPanel extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + width && ay >= p.y - localGScheme.panelTabHeight && ay <= p.y)
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y - (localFont.gpFontSize + 4) && ay <= p.y)
 			return true;
 		else 
 			return false;
@@ -194,10 +194,6 @@ public class GPanel extends GComponent {
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-//		Iterator<GComponent> iter = children.iterator();
-//		while(iter.hasNext()){
-//			iter.next().setVisible(visible);
-//		}
 	}
 
 	public void setOpaque(boolean opaque){

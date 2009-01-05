@@ -1,9 +1,8 @@
 package guicomponents;
 
-import processing.core.*;
+import processing.core.PApplet;
 
-public class GScheme implements GConstants {
-
+public class GColor implements GUI {
 	protected static PApplet app;
 
 	// Panels / Labels
@@ -15,22 +14,14 @@ public class GScheme implements GConstants {
 	public int sliderBG;
 	public int sliderThumb;
 	public int sliderStroke;
+
+	public static GColor getColor(PApplet theApplet){
+		return getColor(theApplet, -1);
+	}
 	
-	// Font details
-	public PFont gpFont;
-	public int gpFontSize;
-	public int gpHeightOffset; // for text(String,int,int,int,int)
-	/**
-	 * Get a colour and font scheme to be used by a component
-	 * 
-	 * @param theApplet
-	 * @param colScheme see GConstants for appropriate values
-	 * @param fontScheme see GConstants for appropriate values
-	 * @return a GScheme object for the color and font scheme
-	 */
-	public static GScheme getScheme(PApplet theApplet, int colScheme, int fontScheme){
+	public static GColor getColor(PApplet theApplet, int colScheme){
 		app = theApplet;
-		GScheme scheme = new GScheme();
+		GColor scheme = new GColor();
 		switch(colScheme){
 		case RED:
 			scheme.redColorScheme();
@@ -51,25 +42,42 @@ public class GScheme implements GConstants {
 			scheme.purpleColorScheme();
 			break;
 		case GREY:
-		default:
 			scheme.greyColorScheme();				
-		}
-		
-		switch(fontScheme){
-		case FONT16:
-			scheme.makeFontScheme("Miriam-48.vlw",16);
 			break;
-//		case FONT12:
-//			scheme.makeFontScheme("serif.vlw",12);
-//			break;
-		case FONT11:
 		default:
-			scheme.makeFontScheme("Geneva-11.vlw",11);
-			break;
-		}
+			scheme.blueColorScheme();				
+		}		
 		return scheme;
 	}
 
+	public void setColor(int colScheme){
+		switch(colScheme){
+		case RED:
+			redColorScheme();
+			break;
+		case GREEN:
+			greenColorScheme();
+			break;
+		case BLUE:
+			blueColorScheme();
+			break;
+		case YELLOW:
+			yellowColorScheme();
+			break;
+		case CYAN:
+			cyanColorScheme();
+			break;
+		case PURPLE:
+			purpleColorScheme();
+			break;
+		case GREY:
+			greyColorScheme();				
+			break;
+		default:
+			blueColorScheme();				
+		}		
+	}
+	
 	private void blueColorScheme() {
 		panelBG = app.color(50,50,255,96);
 		panelTabBG = app.color(50,50,255,160);
@@ -133,19 +141,5 @@ public class GScheme implements GConstants {
 		sliderStroke = app.color(64,255);
 	}
 
-	private void makeFontScheme(String fontname, int fsize){
-		gpFont = app.loadFont(fontname);
-		gpFontSize = fsize;
-		
-		panelTabHeight = gpFontSize + 4;
-	}
 
-	public void setFont(String fontname, int fsize){
-		if(app != null){
-			gpFont = app.loadFont(fontname);
-			gpFontSize = fsize;
-			panelTabHeight = gpFontSize + 4;
-		}
-	}
-
-} // end of class
+}

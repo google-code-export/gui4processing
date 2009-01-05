@@ -23,7 +23,7 @@ public class GHorzSlider extends GSlider {
 	 * @param colorScheme
 	 */
 	public GHorzSlider(PApplet theApplet, int x, int y, int width, int height,
-			int colorScheme){
+			GColor colorScheme){
 		super(theApplet, x, y, width, height, colorScheme);
 		initThumbDetails();
 	}
@@ -65,14 +65,14 @@ public class GHorzSlider extends GSlider {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
-			app.fill(localGScheme.sliderBG);
+			app.fill(localColor.sliderBG);
 			app.rect(pos.x, pos.y, width, height);
-			app.fill(localGScheme.sliderThumb);
+			app.fill(localColor.sliderThumb);
 			app.rect(pos.x + thumbPos - thumbSize/2, pos.y, thumbSize, height);
 			if(border != 0){
 				app.strokeWeight(border);
 				app.noFill();
-				app.stroke(localGScheme.sliderStroke);
+				app.stroke(localColor.sliderStroke);
 				app.rect(pos.x, pos.y, width, height);
 			}
 		}

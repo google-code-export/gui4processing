@@ -44,7 +44,7 @@ public abstract class GSlider extends GComponent {
 	 * @param colorScheme
 	 */
 	public GSlider(PApplet theApplet, int x, int y, int width, int height,
-			int colorScheme){
+			GColor colorScheme){
 		super(theApplet, x, y, colorScheme);
 //		this.minWidth = width;
 //		this.minHeight = height;

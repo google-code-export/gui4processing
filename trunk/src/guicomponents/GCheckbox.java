@@ -4,30 +4,39 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class GCheckbox extends GComponent {
 
 	protected boolean selected;
 	
-	protected int size;
+	protected static PImage imgSelected;
+	protected static PImage imgCleared;
 	
-	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int size, int colorScheme, int fontScheme){
+	public GCheckbox(PApplet theApplet, String text, int x, int y, int width,
+			GColor colorScheme, GFont fontScheme){
 		super(theApplet, x, y, colorScheme, fontScheme);
-		this.size = constrain(size, 12, 20);
-		this.text = text;
+		setText(text);
 		this.width = width;
-		height = localGScheme.gpFontSize;
+		height = localFont.gpFontSize + 2;
+		if(imgSelected == null)
+			imgSelected = app.loadImage("check1.png");
+		if(imgCleared == null)
+			imgCleared = app.loadImage("check0.png");
 		createEventHandler(theApplet);
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}
 
-	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int size){
+	public GCheckbox(PApplet theApplet, String text, int x, int y, int width){
 		super(theApplet, x, y);
-		this.size = constrain(size, 12, 20);
-		this.text = text;
+		setText(text);
 		this.width = width;
-		height = localGScheme.gpFontSize;
+		height = localFont.gpFontSize + 2;
+		if(imgSelected == null)
+			imgSelected = app.loadImage("check1.png");
+		if(imgCleared == null)
+			imgCleared = app.loadImage("check0.png");
 		createEventHandler(theApplet);
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
@@ -59,20 +68,16 @@ public class GCheckbox extends GComponent {
 		if(visible){
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
-			app.strokeWeight(1);
-			app.stroke(0);
-			app.fill(255);
-			app.rect(pos.x, pos.y, size, size);
-			if(selected){
-				app.strokeWeight(2);
-				app.line(pos.x + 2, pos.y + 2, pos.x + size - 2, pos.y + size - 2);
-				app.line(pos.x + size - 2, pos.y + 2, pos.x + 2, pos.y + size - 2);
-			}
 			if (!text.equals("")){
-				app.fill(localGScheme.panelTabFont);
-				app.textFont(localGScheme.gpFont, localGScheme.gpFontSize);
-				app.text(text, pos.x + size + 4, pos.y + localGScheme.gpFontSize);
+				app.fill(localColor.panelTabFont);
+				app.textFont(localFont.gpFont, localFont.gpFontSize);
+				app.text(text, pos.x + 16, pos.y + 1, width, height);
+				System.out.println(text);
 			}
+			if(selected)
+				app.image(imgSelected, pos.x, pos.y);
+			else
+				app.image(imgCleared, pos.x, pos.y);
 		}
 	}
 
