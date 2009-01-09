@@ -176,6 +176,7 @@ public class GPanel extends GComponent {
 				else {
 					dockX = x;
 					dockY = y;
+					// Open panel move on screen if needed
 					if(y + height > app.getHeight())
 						y = app.getHeight() - height;
 					if(x + width > app.getWidth())
@@ -227,17 +228,10 @@ public class GPanel extends GComponent {
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		int w = (tabOnly)? textWidth + PADH * 2 : width;
-		System.out.println("W " + w + "   tabHeight "+tabHeight);
-		System.out.println(" X " + p.x + "   Y "+p.y);
-		System.out.println("mX " + ax + "  mY "+ay);
-		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y){
-			System.out.println("HIT");
+		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y)
 			return true;
-		}
-		else { 
-			System.out.println(("MISSED"));
+		else
 			return false;
-		}
 	}
 
 	/**

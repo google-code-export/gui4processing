@@ -24,7 +24,6 @@
 package guicomponents;
 
 public interface GUI {
-
 	// Color scheme
 	public final int BLUE 	= 0x00010001;
 	public final int GREEN 	= 0x00010002;
@@ -44,4 +43,8 @@ public interface GUI {
 	public final int RIGHT	= 0x00040002;
 	public final int CENTER	= 0x00040003;
 	
+	// Button states
+	public final int OFF	= 0x00050001;
+	public final int OVER	= 0x00050002;
+	public final int DOWN	= 0x00050003;
 }

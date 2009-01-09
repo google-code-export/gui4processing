@@ -68,8 +68,6 @@ public abstract class GSlider extends GComponent {
 	public GSlider(PApplet theApplet, int x, int y, int width, int height,
 			GColor colorScheme){
 		super(theApplet, x, y, colorScheme);
-//		this.minWidth = width;
-//		this.minHeight = height;
 		this.width = width;
 		this.height = height;
 		app.registerPre(this);
@@ -89,8 +87,6 @@ public abstract class GSlider extends GComponent {
 	 */
 	public GSlider(PApplet theApplet, int x, int y, int width, int height){
 		super(theApplet, x, y);
-//		this.minWidth = width;
-//		this.minHeight = height;
 		this.width = width;
 		this.height = height;
 		app.registerPre(this);
@@ -142,7 +138,7 @@ public abstract class GSlider extends GComponent {
 			System.out.println("  not all values in the range "+min+" - "+max+" can be returned");
 			System.out.print("  either reduce the range or make the slider ");
 			if(this.getClass().getSimpleName().equals("GHorzSlider")) 
-					System.out.print("width");
+				System.out.print("width");
 			else
 				System.out.print("height");
 			System.out.println(" at least " + (max-min+thumbSize));
@@ -225,6 +221,5 @@ public abstract class GSlider extends GComponent {
 		thumbInertia = constrain(inertia, 1,50);
 		inertia = thumbInertia;
 	}
-	
 
 }

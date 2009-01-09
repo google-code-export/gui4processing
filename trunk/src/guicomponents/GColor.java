@@ -34,6 +34,9 @@ public class GColor implements GUI {
 	public int panelTabFont;
 	public int panelTabHeight;
 
+	public int buttonOff, buttonOver, buttonDown;
+	public int buttonFont;
+	
 	public int sliderBG;
 	public int sliderThumb;
 	public int sliderStroke;
@@ -108,6 +111,10 @@ public class GColor implements GUI {
 		sliderBG = app.color(255,128);
 		sliderThumb = app.color(0,0,255,255);
 		sliderStroke = app.color(128,128,255,255);
+		buttonOff = app.color(128, 128, 255);
+		buttonOver = app.color(192, 192, 255);
+		buttonDown = app.color(96, 96, 255);
+		buttonFont = app.color(0);
 	}
 
 	private void purpleColorScheme() {
