@@ -22,7 +22,7 @@ void setup(){
   size(640, 360, P3D);
   t1 = new Toroid();
 
-  GComponent.globalColor = GColor.getColor(this,  GUI.RED);
+  GComponent.globalColor = GColor.getColor(this,  GUI.BLUE);
   GComponent.globalFont = GFont.getFont(this);
   p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 90);
   lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
@@ -38,7 +38,7 @@ void setup(){
   sdrERad.setLimits(60,10,100);
   sdrLRad.setLimits(100,0,240);
 
-  optTorroid = new GOption(this, "Torroid?", 2, 60, 80);
+  optTorroid = new GOption(this, "Toroid?", 2, 60, 80);
   optHelix = new GOption(this, "Helix?", 2, 74, 80);
   cbxWire = new GCheckbox(this, "Wire frame?", 102, 60, 100);
 
