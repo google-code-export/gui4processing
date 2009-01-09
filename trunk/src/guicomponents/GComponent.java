@@ -1,3 +1,26 @@
+/*
+  Part of the GUI for Processing library 
+  	http://gui4processing.lagers.org.uk
+	http://code.google.com/p/gui4processing/
+	
+  Copyright (c) 2008-09 Peter Lager
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
+
 package guicomponents;
 
 import java.awt.Point;
@@ -28,6 +51,9 @@ public class GComponent implements GUI {
 	public static GFont globalFont;
 	public static GFont localFont;
 	
+	public final static int PADH = 4;
+	public final static int PADV = 1;
+	
 	/** 
 	 * The GUI scheme (color and font to be used) by this
 	 * component. 
@@ -48,7 +74,7 @@ public class GComponent implements GUI {
 	
 	/** Text value associated with component */
 	private String text = "";
-	protected float textWidth;
+	protected int textWidth;
 	protected int textAlign = GUI.LEFT;
 	
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
@@ -214,30 +240,6 @@ public class GComponent implements GUI {
 			return false;
 	}
 
-//	/**
-//	 * Determines whether the position ax, ay is over this rectangle.
-//	 * where x & y is the top-left corner and the size is defined by 
-//	 * width and height.
-//	 * The x,y values are adjusted for any parent component's position.
-//	 * Override this method where necessary in child classes e.g. GPanel 
-//	 * 
-//	 * @param ax mouse x position
-//	 * @param ay mouse y position
-//	 * @param x
-//	 * @param y
-//	 * @param width
-//	 * @param height
-//	 * @return true if mouse is over the rectangle else false
-//	 */
-//	public boolean isOver(int ax, int ay, int x, int y, int width, int height){
-//		Point p = new Point(x,y);
-//		calcAbsPosition(p);
-//		if(ax >= p.x && ax <= p.x + width && ay >= p.y && ay <= p.y + height)
-//			return true;
-//		else 
-//			return false;
-//	}
-
 	/** 
 	 * This method will calculate the absolute top left position of this 
 	 * component taking into account any ancestors. 
@@ -273,12 +275,13 @@ public class GComponent implements GUI {
 	}
 
 	/**
-	 * @param text the text to set
+	 * @param text use this function to set the text so that the
+	 * text length is calculated
 	 */
 	public void setText(String text) {
 		this.text = text;
 		app.textFont(localFont.gpFont, localFont.gpFontSize);
-		textWidth = app.textWidth(text); 
+		textWidth = (int) app.textWidth(text); 
 	}
 
 	/**
@@ -288,7 +291,7 @@ public class GComponent implements GUI {
 		this.text = text;
 		textAlign = align;
 		app.textFont(localFont.gpFont, localFont.gpFontSize);
-		textWidth = app.textWidth(text); 
+		textWidth = (int) app.textWidth(text); 
 	}
 
 	public void setXY(int x, int y) {

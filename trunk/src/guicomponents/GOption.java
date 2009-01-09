@@ -82,9 +82,7 @@ public class GOption extends GComponent implements Comparable {
 				app.noStroke();
 				app.fill(localColor.panelTabFont);
 				app.textFont(localFont.gpFont, localFont.gpFontSize);
-				app.text(getText(), pos.x + 16, pos.y + localFont.gpFontSize / 8, 
-						width - 16, height);
-
+				app.text(getText(), pos.x + 20, pos.y + PADV, textWidth, height);
 			}
 			app.fill(app.color(255,255));
 			if(group != null && group.getSelected() == this)

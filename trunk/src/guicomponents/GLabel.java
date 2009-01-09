@@ -1,3 +1,26 @@
+/*
+  Part of the GUI for Processing library 
+  	http://gui4processing.lagers.org.uk
+	http://code.google.com/p/gui4processing/
+	
+  Copyright (c) 2008-09 Peter Lager
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
+
 package guicomponents;
 
 import java.awt.Point;
@@ -6,13 +29,6 @@ import processing.core.PApplet;
 
 public class GLabel extends GComponent {
 
-	/**
-	 * 
-	 */
-//	public GLabel() {
-//		super();
-//	}
-	
 	/**
 	 * 
 	 * @param theApplet
@@ -83,13 +99,13 @@ public class GLabel extends GComponent {
 	
 	public void draw(){
 		if(visible){
-			float textX = 2 * border;
+			int textX = 2 * border;
 			switch(textAlign){
 			case GUI.RIGHT:
-				textX += width - textWidth - 4 * border;
+				textX += width - textWidth - PADH * border;
 				break;
 			case GUI.CENTER:
-				textX += (width - textWidth - 4 * border)/2;
+				textX += (width - textWidth - PADH * border)/2;
 				break;
 			}
 			Point pos = new Point(0,0);
@@ -97,9 +113,7 @@ public class GLabel extends GComponent {
 			app.noStroke();
 			app.fill(localColor.panelTabFont);
 			app.textFont(localFont.gpFont, localFont.gpFontSize);
-//			app.text(text, pos.x + 4, pos.y + localGScheme.gpFontSize);
-			app.text(getText(), pos.x + (int)textX, pos.y + localFont.gpFontSize / 8, 
-					width - 4 * border, height);
+			app.text(getText(), pos.x + textX, pos.y + PADV, width - PADH * border, height);
 			if(border != 0){
 				app.strokeWeight(1);
 				app.stroke(255);

@@ -1,3 +1,25 @@
+/*
+  Part of the GUI for Processing library 
+  	http://gui4processing.lagers.org.uk
+	http://code.google.com/p/gui4processing/
+	
+  Copyright (c) 2008-09 Peter Lager
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
 
 package guicomponents;
 
@@ -19,15 +41,18 @@ public class GPanel extends GComponent {
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
 
+	/** The height of the tab calculated from font height + padding */
+	protected int tabHeight;
+	
 	/** Is panel body opaque */
 	protected boolean opaque = false;
 	
-
+	/** Used to restore position when closing panel */
 	protected int dockX, dockY;
 
 	/**
-	 * A list of child panels
-	 * Only true for PPanel classes (change to true in ctors for this class)
+	 * A list of child GComponents added to this panel
+	 * Only applicable to GPanel class
 	 */
 	private ArrayList<GComponent> children = new ArrayList<GComponent>();
 
@@ -76,10 +101,8 @@ public class GPanel extends GComponent {
 
 	private void panelCtorCore(String text, int width, int height){
 		setText(text);
-		if(y < localFont.gpFontSize + 4)
-			y = localFont.gpFontSize + 4;
-		if(x + textWidth + 10 > app.getWidth())
-			x = (int) (app.getWidth() - textWidth - 10);
+		tabHeight = localFont.gpFontSize + 2 * PADV;
+		constrainPanelPosition();
 		dockX = x;
 		dockY = y;
 		this.width = width;
@@ -114,10 +137,13 @@ public class GPanel extends GComponent {
 			calcAbsPosition(pos);
 			app.noStroke();
 			app.fill(localColor.panelTabBG);
-			app.rect(pos.x, pos.y - (localFont.gpFontSize + 4), textWidth + 10, (localFont.gpFontSize + 4));
+			// Display tab (length depends on whether panel is open or closed
+			int w = (tabOnly)? textWidth + PADH * 2 : width;
+			app.rect(pos.x, pos.y - tabHeight, w, tabHeight);
+			// Display tab text
 			app.fill(localColor.panelTabFont);
 			app.textFont(localFont.gpFont, localFont.gpFontSize);
-			app.text(getText(), pos.x + 4, pos.y - localFont.gpFontSize / 4);
+			app.text(getText(), pos.x + PADH, pos.y - tabHeight + PADV, textWidth, tabHeight);
 			if(!tabOnly){
 				if(opaque){
 					app.fill(localColor.panelBG);
@@ -147,7 +173,7 @@ public class GPanel extends GComponent {
 					x = dockX;
 					y = dockY;					
 				}
-				if(!tabOnly){
+				else {
 					dockX = x;
 					dockY = y;
 					if(y + height > app.getHeight())
@@ -160,8 +186,6 @@ public class GPanel extends GComponent {
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(mouseFocusOn == this){
-//				dockX = x;
-//				dockY = y;
 				mouseFocusOn = null;
 			}
 			break;
@@ -169,26 +193,31 @@ public class GPanel extends GComponent {
 			if(mouseFocusOn == this && parent == null){
 				x += (app.mouseX - app.pmouseX);
 				y += (app.mouseY - app.pmouseY);
-				// Constrain horizontally
-				if(x < 0) 
-					x = 0;
-				else if(tabOnly && x + textWidth + 10 > app.getWidth()) 
-					x = (int) (app.getWidth() - textWidth - 10);
-				else if(!tabOnly && x + width > app.getWidth()) 
-					x = app.getWidth() - width;
-				// Constrain vertically
-				if(y - (localFont.gpFontSize + 4) < 0) 
-					y = (localFont.gpFontSize + 4);
-				else if(tabOnly && y > app.getHeight())
-					y = app.getHeight();
-				else if(!tabOnly && y + height > app.getHeight()) 
-					y = app.getHeight() - height;
+				constrainPanelPosition();
+				if(!tabOnly){
+					dockX = x;
+					dockY = y;
+				}
 			}
 			break;
 		}
 	}
 
-
+	private void constrainPanelPosition(){
+		int w = (tabOnly)? textWidth + PADH * 2 : width;
+		int h = (tabOnly)? 0 : height;
+		// Constrain horizontally
+		if(x < 0) 
+			x = 0;
+		else if(x + w > app.getWidth()) 
+			x = (int) (app.getWidth() - w);
+		// Constrain vertically
+		if(y - tabHeight - PADV * 2  < 0) 
+			y = tabHeight + PADV * 2;
+		else if(y + h > app.getHeight()) 
+			y = app.getHeight() - h;
+	}
+	
 	/**
 	 * Determines whether the position ax, ay is over the tab
 	 * of this GPanel.
@@ -197,10 +226,18 @@ public class GPanel extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + textWidth + 10 && ay >= p.y - (localFont.gpFontSize + 4) && ay <= p.y)
+		int w = (tabOnly)? textWidth + PADH * 2 : width;
+		System.out.println("W " + w + "   tabHeight "+tabHeight);
+		System.out.println(" X " + p.x + "   Y "+p.y);
+		System.out.println("mX " + ax + "  mY "+ay);
+		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y){
+			System.out.println("HIT");
 			return true;
-		else 
+		}
+		else { 
+			System.out.println(("MISSED"));
 			return false;
+		}
 	}
 
 	/**
