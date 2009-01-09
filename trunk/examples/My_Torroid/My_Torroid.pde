@@ -11,7 +11,9 @@ import guicomponents.*;
 
 GLabel lblSegs, lblERad, lblPts, lblLRad;
 GSlider sdrSegs, sdrERad, sdrPts, sdrLRad;
-GCheckbox cbxHelix, cbxWire;
+GCheckbox cbxWire;
+GOption optTorroid, optHelix;
+GOptionGroup optShape;
 GPanel p;
 
 Toroid t1;
@@ -22,7 +24,7 @@ void setup(){
 
   GComponent.globalColor = GColor.getColor(this,  GUI.RED);
   GComponent.globalFont = GFont.getFont(this);
-  p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 80);
+  p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 90);
   lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
   lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
   lblERad = new GLabel(this, "Ellipse Radius", 2, 32, 120);
@@ -36,19 +38,24 @@ void setup(){
   sdrERad.setLimits(60,10,100);
   sdrLRad.setLimits(100,0,240);
 
-  cbxHelix = new GCheckbox(this, "Helix?", 2, 60, 80);
+  optTorroid = new GOption(this, "Torroid?", 2, 60, 80);
+  optHelix = new GOption(this, "Helix?", 2, 74, 80);
   cbxWire = new GCheckbox(this, "Wire frame?", 102, 60, 100);
 
-  p.addComponent(lblSegs);
-  p.addComponent(lblPts);
-  p.addComponent(lblERad);
-  p.addComponent(lblLRad);
-  p.addComponent(sdrSegs);
-  p.addComponent(sdrPts);
-  p.addComponent(sdrERad);
-  p.addComponent(sdrLRad);
-  p.addComponent(cbxHelix);
-  p.addComponent(cbxWire);
+  p.add(lblSegs);
+  p.add(lblPts);
+  p.add(lblERad);
+  p.add(lblLRad);
+  p.add(sdrSegs);
+  p.add(sdrPts);
+  p.add(sdrERad);
+  p.add(sdrLRad);
+  optShape = new GOptionGroup(this);
+  p.add(optHelix);
+  p.add(optTorroid);
+  p.add(cbxWire);
+  optShape.addOption(optTorroid);
+  optShape.addOption(optHelix);
 
   p.setOpaque(true);
 
@@ -66,12 +73,18 @@ public void handleSliderEvents(GSlider slider){
 }
 
 public void handleCheckboxEvents(GCheckbox cbox){
-  if(cbox == cbxHelix)
-    t1.setIsHelix(cbxHelix.isSelected());
   if(cbox == cbxWire)
     t1.setIsWire(cbxWire.isSelected());
 }
 
+public void handleOptionEvents(GOption selected, GOption deselected){
+  println("Selected    : " + selected);
+  println("Deelected    : " + deselected);
+  if(selected == optHelix)
+    t1.setIsHelix(true);
+   else
+     t1.setIsHelix(false);     
+}
 
 void draw(){
   pushMatrix();
@@ -85,7 +98,6 @@ void draw(){
   rotateX(frameCount*PI/150);
   rotateY(frameCount*PI/170);
   rotateZ(frameCount*PI/90);
-
 
   // draw toroid
   t1.draw();
