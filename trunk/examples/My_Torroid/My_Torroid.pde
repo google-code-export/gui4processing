@@ -15,6 +15,7 @@ GCheckbox cbxWire;
 GOption optTorroid, optHelix;
 GOptionGroup optShape;
 GPanel p;
+GButton btn;
 
 Toroid t1;
 
@@ -42,6 +43,8 @@ void setup(){
   optHelix = new GOption(this, "Helix?", 2, 74, 80);
   cbxWire = new GCheckbox(this, "Wire frame?", 102, 60, 100);
 
+  btn = new GButton(this, "Start",300, 60,100,20);
+  
   p.add(lblSegs);
   p.add(lblPts);
   p.add(lblERad);
@@ -56,7 +59,7 @@ void setup(){
   p.add(cbxWire);
   optShape.addOption(optTorroid);
   optShape.addOption(optHelix);
-
+  p.add(btn);
   p.setOpaque(true);
 
 }
@@ -73,8 +76,12 @@ public void handleSliderEvents(GSlider slider){
 }
 
 public void handleCheckboxEvents(GCheckbox cbox){
-  if(cbox == cbxWire)
-    t1.setIsWire(cbxWire.isSelected());
+	  if(cbox == cbxWire)
+	    t1.setIsWire(cbxWire.isSelected());
+}
+
+public void handleButtonEvents(GButton button){
+	System.out.println("Button "+ button.getText());
 }
 
 public void handleOptionEvents(GOption selected, GOption deselected){
