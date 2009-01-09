@@ -1,3 +1,4 @@
+
 package guicomponents;
 
 import java.awt.Point;
@@ -21,9 +22,8 @@ public class GPanel extends GComponent {
 	/** Is panel body opaque */
 	protected boolean opaque = false;
 	
-	/** Surface area of this component */
-	//protected Rectangle area = new Rectangle();
 
+	protected int dockX, dockY;
 
 	/**
 	 * A list of child panels
@@ -51,13 +51,7 @@ public class GPanel extends GComponent {
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height,
 			GColor colorScheme, GFont fontScheme){
 		super(theApplet, x, y, colorScheme, fontScheme);
-		this.text = text;
-//		this.minWidth = width;
-//		this.minHeight = height;
-		this.width = width;
-		this.height = height;
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
+		panelCtorCore(text, width, height);
 	}
 
 	/**
@@ -77,15 +71,23 @@ public class GPanel extends GComponent {
 	 */
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		this.text = text;
-//		this.minWidth = width;
-//		this.minHeight = height;
+		panelCtorCore(text, width, height);
+	}
+
+	private void panelCtorCore(String text, int width, int height){
+		setText(text);
+		if(y < localFont.gpFontSize + 4)
+			y = localFont.gpFontSize + 4;
+		if(x + textWidth + 10 > app.getWidth())
+			x = (int) (app.getWidth() - textWidth - 10);
+		dockX = x;
+		dockY = y;
 		this.width = width;
 		this.height = height;
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}
-
+	
 	/**
 	 * Add a GUI component to this Panel at the position specified by
 	 * component being added.
@@ -94,7 +96,7 @@ public class GPanel extends GComponent {
 	 * 
 	 * @return always true
 	 */
-	public boolean addComponent(GComponent component){
+	public boolean add(GComponent component){
 		// TODO need to validate addition based on size
 		component.parent = this;
 		children.add(component);
@@ -112,10 +114,10 @@ public class GPanel extends GComponent {
 			calcAbsPosition(pos);
 			app.noStroke();
 			app.fill(localColor.panelTabBG);
-			app.rect(pos.x, pos.y - (localFont.gpFontSize + 4), width, (localFont.gpFontSize + 4));
+			app.rect(pos.x, pos.y - (localFont.gpFontSize + 4), textWidth + 10, (localFont.gpFontSize + 4));
 			app.fill(localColor.panelTabFont);
 			app.textFont(localFont.gpFont, localFont.gpFontSize);
-			app.text(text, pos.x + 4, pos.y - localFont.gpFontSize / 4);
+			app.text(getText(), pos.x + 4, pos.y - localFont.gpFontSize / 4);
 			if(!tabOnly){
 				if(opaque){
 					app.fill(localColor.panelBG);
@@ -141,13 +143,25 @@ public class GPanel extends GComponent {
 		case MouseEvent.MOUSE_CLICKED:
 			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY)){
 				tabOnly = !tabOnly;
-				if(!tabOnly && y + height > app.getHeight())
-					y = app.getHeight() - height;
+				if(tabOnly){
+					x = dockX;
+					y = dockY;					
+				}
+				if(!tabOnly){
+					dockX = x;
+					dockY = y;
+					if(y + height > app.getHeight())
+						y = app.getHeight() - height;
+					if(x + width > app.getWidth())
+						x = app.getWidth() - width;
+				}
 			}
 			mouseFocusOn = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(mouseFocusOn == this){
+//				dockX = x;
+//				dockY = y;
 				mouseFocusOn = null;
 			}
 			break;
@@ -158,7 +172,9 @@ public class GPanel extends GComponent {
 				// Constrain horizontally
 				if(x < 0) 
 					x = 0;
-				else if(x + width > app.getWidth()) 
+				else if(tabOnly && x + textWidth + 10 > app.getWidth()) 
+					x = (int) (app.getWidth() - textWidth - 10);
+				else if(!tabOnly && x + width > app.getWidth()) 
 					x = app.getWidth() - width;
 				// Constrain vertically
 				if(y - (localFont.gpFontSize + 4) < 0) 
@@ -181,12 +197,11 @@ public class GPanel extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + width && ay >= p.y - (localFont.gpFontSize + 4) && ay <= p.y)
+		if(ax >= p.x && ax <= p.x + textWidth + 10 && ay >= p.y - (localFont.gpFontSize + 4) && ay <= p.y)
 			return true;
 		else 
 			return false;
 	}
-
 
 	/**
 	 * For GPanel set children
@@ -198,20 +213,6 @@ public class GPanel extends GComponent {
 
 	public void setOpaque(boolean opaque){
 		this.opaque = opaque;
-	}
-	
-	/**
-	 * Used for debugging only
-	 */
-	public void display(){
-		Point p = new Point(0,0);
-		calcAbsPosition(p);
-		System.out.print(this + "    ABS ( "+p.x+" "+p.y+" )   ");
-		System.out.println(" FOCUS "+mouseFocusOn);
-	}
-
-	public String toString(){
-		return new String("GPanel "+text + "  ( "+x+" "+y+" ) ");
 	}
 
 } // end of class

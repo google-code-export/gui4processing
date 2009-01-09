@@ -13,35 +13,42 @@ public class GCheckbox extends GComponent {
 	protected static PImage imgSelected;
 	protected static PImage imgCleared;
 	
+	
+	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align,
+			GColor colorScheme, GFont fontScheme){
+		super(theApplet, x, y, colorScheme, fontScheme);
+		checkboxCtorCore(text, width, align);
+	}
+
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width,
 			GColor colorScheme, GFont fontScheme){
 		super(theApplet, x, y, colorScheme, fontScheme);
-		setText(text);
-		this.width = width;
-		height = localFont.gpFontSize + 2;
-		if(imgSelected == null)
-			imgSelected = app.loadImage("check1.png");
-		if(imgCleared == null)
-			imgCleared = app.loadImage("check0.png");
-		createEventHandler(theApplet);
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
+		checkboxCtorCore(text, width, GUI.LEFT);
 	}
 
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width){
 		super(theApplet, x, y);
-		setText(text);
+		checkboxCtorCore(text, width, GUI.LEFT);
+	}
+
+	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align){
+		super(theApplet, x, y);
+		checkboxCtorCore(text, width, align);
+	}
+
+	private void checkboxCtorCore(String text, int width, int align){
 		this.width = width;
 		height = localFont.gpFontSize + 2;
+		setText(text, align);
 		if(imgSelected == null)
 			imgSelected = app.loadImage("check1.png");
 		if(imgCleared == null)
 			imgCleared = app.loadImage("check0.png");
-		createEventHandler(theApplet);
+		createEventHandler(app);
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 	}
-
+	
 	public void addEventHandler(Object obj, String methodName){
 		try{
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GCheckbox.class } );
@@ -68,12 +75,15 @@ public class GCheckbox extends GComponent {
 		if(visible){
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
-			if (!text.equals("")){
+			if (!getText().equals("")){
+				app.noStroke();
 				app.fill(localColor.panelTabFont);
 				app.textFont(localFont.gpFont, localFont.gpFontSize);
-				app.text(text, pos.x + 16, pos.y + 1, width, height);
-				System.out.println(text);
+				app.text(getText(), pos.x + 16, pos.y + localFont.gpFontSize / 8, 
+						width - 16, height);
+
 			}
+			app.fill(app.color(255,255));
 			if(selected)
 				app.image(imgSelected, pos.x, pos.y);
 			else

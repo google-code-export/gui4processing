@@ -22,12 +22,6 @@ public class GComponent implements GUI {
 	 */
 	public static GComponent keyFocusOn;
 
-	/** 
-	 * The GUI scheme (color and font to be used globally) by the GUI 
-	 * unless overridden by a local value.
-	 */
-	//public static GScheme globalGScheme;
-
 	public static GColor globalColor;
 	public static GColor localColor;
 	
@@ -49,10 +43,13 @@ public class GComponent implements GUI {
 	protected Method eventHandler = null;
 	protected Object eventHandlerObject = null;
 	
+	/** Unique ID for every component */
+	protected String id;
+	
 	/** Text value associated with component */
-	protected String text = "";
+	private String text = "";
 	protected float textWidth;
-	protected int textAlign;
+	protected int textAlign = GUI.LEFT;
 	
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
 	protected int x, y;
@@ -93,8 +90,6 @@ public class GComponent implements GUI {
 		if(globalFont == null)
 			globalFont = GFont.getFont(theApplet);
 		localFont = globalFont;
-//		maxWidth = (int) 0.95f * app.getWidth();
-//		maxHeight = (int) 0.95f * app.getHeight();
 		this.x = x;
 		this.y = y;
 	}
@@ -120,8 +115,6 @@ public class GComponent implements GUI {
 			globalColor = localColor;
 		if(globalFont == null)
 			globalFont = localFont;
-//		maxWidth = (int) 0.95f * app.getWidth();
-//		maxHeight = (int) 0.95f * app.getHeight();
 		this.x = x;
 		this.y = y;
 	}
@@ -143,12 +136,18 @@ public class GComponent implements GUI {
 		localColor = cScheme;
 		if(globalColor == null)
 			globalColor = localColor;
-//		maxWidth = (int) 0.95f * app.getWidth();
-//		maxHeight = (int) 0.95f * app.getHeight();
 		this.x = x;
 		this.y = y;
 	}
 
+	/**
+	 * 
+	 * @return the unique ID for this component
+	 */
+	public String getID(){
+		return id;
+	}
+	
 	/**
 	 * Override in child classes
 	 */
@@ -191,7 +190,7 @@ public class GComponent implements GUI {
 	 * @param component to be added (ignored)
 	 * @return false always
 	 */
-	public boolean addComponent(GComponent component){
+	public boolean add(GComponent component){
 		return false;
 	}
 
@@ -283,6 +282,21 @@ public class GComponent implements GUI {
 	}
 
 	/**
+	 * @param text the text to set
+	 */
+	public void setText(String text, int align) {
+		this.text = text;
+		textAlign = align;
+		app.textFont(localFont.gpFont, localFont.gpFontSize);
+		textWidth = app.textWidth(text); 
+	}
+
+	public void setXY(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	/**
 	 * @return the x
 	 */
 	public int getX() {
@@ -290,24 +304,10 @@ public class GComponent implements GUI {
 	}
 
 	/**
-	 * @param x the x to set
-	 */
-	public void setX(int x) {
-		this.x = x;
-	}
-
-	/**
 	 * @return the y
 	 */
 	public int getY() {
 		return y;
-	}
-
-	/**
-	 * @param y the y to set
-	 */
-	public void setY(int y) {
-		this.y = y;
 	}
 
 	/**

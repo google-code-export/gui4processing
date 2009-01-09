@@ -9,10 +9,10 @@ public class GLabel extends GComponent {
 	/**
 	 * 
 	 */
-	public GLabel() {
-		super();
-	}
-
+//	public GLabel() {
+//		super();
+//	}
+	
 	/**
 	 * 
 	 * @param theApplet
@@ -22,7 +22,8 @@ public class GLabel extends GComponent {
 	 * @param width
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width) {
-		this(theApplet, text, x, y, width, GUI.LEFT);
+		super(theApplet, x, y);
+		label2(text, width, GUI.LEFT);
 	}
 
 	/**
@@ -36,14 +37,7 @@ public class GLabel extends GComponent {
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align) {
 		super(theApplet, x, y);
-//		if(maxWidth < this.maxWidth)
-//			this.maxWidth = maxWidth;
-		this.width = width;
-		this.height = localFont.gpFontSize + 2;
-		textAlign = align;
-		if(text != null)
-			setText(text);
-		app.registerDraw(this);
+		label2(text, width, align);
 	}
 
 	/**
@@ -60,14 +54,7 @@ public class GLabel extends GComponent {
 	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align,
 			GColor colorScheme, GFont fontScheme) {
 		super(theApplet, x, y, colorScheme, fontScheme);
-//		if(maxWidth < this.maxWidth)
-//			this.maxWidth = maxWidth;
-		this.width = width;
-		this.height = localFont.gpFontSize + 2;
-		textAlign = align;
-		if(text != null)
-			setText(text);
-		app.registerDraw(this);
+		label2(text, width, align);
 	}
 	
 	/**
@@ -82,7 +69,16 @@ public class GLabel extends GComponent {
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width,
 			GColor colorScheme, GFont fontScheme){
-		this(theApplet, text, x, y, width, GUI.LEFT, colorScheme, fontScheme);
+		super(theApplet, x, y, colorScheme, fontScheme);
+		label2(text, width, GUI.LEFT);
+	}
+	
+	private void label2(String text, int width, int align){
+		this.width = width;
+		this.height = localFont.gpFontSize + 2;
+		if(text != null)
+			setText(text);
+		app.registerDraw(this);		
 	}
 	
 	public void draw(){
@@ -102,7 +98,7 @@ public class GLabel extends GComponent {
 			app.fill(localColor.panelTabFont);
 			app.textFont(localFont.gpFont, localFont.gpFontSize);
 //			app.text(text, pos.x + 4, pos.y + localGScheme.gpFontSize);
-			app.text(text, pos.x + (int)textX, pos.y + localFont.gpFontSize / 8, 
+			app.text(getText(), pos.x + (int)textX, pos.y + localFont.gpFontSize / 8, 
 					width - 4 * border, height);
 			if(border != 0){
 				app.strokeWeight(1);
