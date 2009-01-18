@@ -24,13 +24,14 @@
 package guicomponents;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 public class GColor implements GUI {
 	protected static PApplet app;
 
 	// Panels / Labels
-	public int panelBG;
-	public int panelTabBG;
+	public int panel;
+	public int panelTab;
 	public int panelTabFont;
 	public int panelTabHeight;
 
@@ -56,7 +57,7 @@ public class GColor implements GUI {
 			scheme.greenColorScheme();
 			break;
 		case BLUE:
-			scheme.blueColorScheme();
+			scheme.makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);
 			break;
 		case YELLOW:
 			scheme.yellowColorScheme();
@@ -71,7 +72,7 @@ public class GColor implements GUI {
 			scheme.greyColorScheme();				
 			break;
 		default:
-			scheme.blueColorScheme();				
+			scheme.makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);				
 		}		
 		return scheme;
 	}
@@ -85,7 +86,7 @@ public class GColor implements GUI {
 			greenColorScheme();
 			break;
 		case BLUE:
-			blueColorScheme();
+			makeColorScheme(0x6060ff, 0xc0c0ff, 96, 255, 0x0000ff, 0x000000);
 			break;
 		case YELLOW:
 			yellowColorScheme();
@@ -100,13 +101,53 @@ public class GColor implements GUI {
 			greyColorScheme();				
 			break;
 		default:
-			blueColorScheme();				
+			makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);				
 		}		
 	}
 	
+	/**
+	 * Create a color scheme
+	 * @param pdark the darkest color
+	 * @param plight the lightest color
+	 * @param alphaLow 0-255 low value i.e. most transparency
+	 * @param alphaHigh 0-255 high value i.e. most opaque
+	 * @param pfont panel font color
+	 * @param font font color for rest
+	 */
+	private void makeColorScheme(int pdark, int plight, int alphaLow, int alphaHigh, int pfont, int font)
+	{
+		int colMask = 0x00ffffff;
+		int alphaMask = 0xff000000;
+		
+//		int pdarkAlpha = (pdark & alphaMask) >> 24;
+//		int pLightAlpha =(plight & alphaMask) >> 24;
+		
+		// Make opaque
+		pdark |= alphaMask;
+		plight |= alphaMask;
+		
+		alphaLow <<= 24;
+		alphaHigh <<= 24;
+		
+		// Panel colours
+		panel = (plight & colMask) | alphaLow;
+		panelTab = (pdark & colMask) | alphaLow;
+		panelTabFont = (pfont & colMask) | alphaMask;
+		sliderBG = alphaHigh | 0x00ffffff;
+		sliderThumb = plight;
+		sliderStroke = pdark;
+		buttonOff = PApplet.lerpColor(pdark, plight, 50, PConstants.HSB);
+		buttonOff = (buttonOff & colMask) | alphaHigh;
+		buttonOver = PApplet.lerpColor(pdark, plight, 80, PConstants.HSB);
+		buttonOver = (buttonOver & colMask) | alphaHigh;
+		buttonDown = PApplet.lerpColor(pdark, plight, 20, PConstants.HSB);
+		buttonDown = (buttonDown & colMask) | alphaHigh;
+		buttonFont = (font & colMask) | alphaMask;
+	}
+	
 	private void blueColorScheme() {
-		panelBG = app.color(50,50,255,96);
-		panelTabBG = app.color(50,50,255,160);
+		panel = app.color(50,50,255,96);
+		panelTab = app.color(50,50,255,160);
 		panelTabFont = app.color(255);
 		sliderBG = app.color(255,128);
 		sliderThumb = app.color(0,0,255,255);
@@ -118,8 +159,8 @@ public class GColor implements GUI {
 	}
 
 	private void purpleColorScheme() {
-		panelBG = app.color(255,50,255,96);
-		panelTabBG = app.color(255,50,255,160);
+		panel = app.color(255,50,255,96);
+		panelTab = app.color(255,50,255,160);
 		panelTabFont = app.color(255);
 		sliderBG = app.color(255,192);
 		sliderThumb = app.color(255,0,255,255);
@@ -127,8 +168,8 @@ public class GColor implements GUI {
 	}
 
 	private void greenColorScheme() {
-		panelBG = app.color(50,255,50,96);
-		panelTabBG = app.color(50,255,50,160);
+		panel = app.color(50,255,50,96);
+		panelTab = app.color(50,255,50,160);
 		panelTabFont = app.color(0);
 		sliderBG = app.color(255,128);
 		sliderThumb = app.color(0,255,0,255);
@@ -136,8 +177,8 @@ public class GColor implements GUI {
 	}
 
 	private void cyanColorScheme() {
-		panelBG = app.color(50,255,255,96);
-		panelTabBG = app.color(50,255,255,160);
+		panel = app.color(50,255,255,96);
+		panelTab = app.color(50,255,255,160);
 		panelTabFont = app.color(0);
 		sliderBG = app.color(255,128);
 		sliderThumb = app.color(0,255,255,255);
@@ -145,8 +186,8 @@ public class GColor implements GUI {
 	}
 
 	private void yellowColorScheme() {
-		panelBG = app.color(255,255,50,96);
-		panelTabBG = app.color(255,255,50,192);
+		panel = app.color(255,255,50,96);
+		panelTab = app.color(255,255,50,192);
 		panelTabFont = app.color(0);
 		sliderBG = app.color(255,128);
 		sliderThumb = app.color(255,255,0,255);
@@ -154,8 +195,8 @@ public class GColor implements GUI {
 	}
 
 	private void redColorScheme() {
-		panelBG = app.color(255,50,50,96);
-		panelTabBG = app.color(255,50,50,160);
+		panel = app.color(255,50,50,96);
+		panelTab = app.color(255,50,50,160);
 		panelTabFont = app.color(255);
 		sliderBG = app.color(255,192);
 		sliderThumb = app.color(255,0,0,255);
@@ -163,8 +204,8 @@ public class GColor implements GUI {
 	}
 
 	private void greyColorScheme(){
-		panelBG = app.color(50,50,50,96);
-		panelTabBG = app.color(240,240,240,160);
+		panel = app.color(50,50,50,96);
+		panelTab = app.color(240,240,240,160);
 		panelTabFont = app.color(0);
 		sliderBG = app.color(255,192);
 		sliderThumb = app.color(32,255);

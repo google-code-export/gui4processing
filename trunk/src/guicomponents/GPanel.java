@@ -136,7 +136,7 @@ public class GPanel extends GComponent {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
-			app.fill(localColor.panelTabBG);
+			app.fill(localColor.panelTab);
 			// Display tab (length depends on whether panel is open or closed
 			int w = (tabOnly)? textWidth + PADH * 2 : width;
 			app.rect(pos.x, pos.y - tabHeight, w, tabHeight);
@@ -146,7 +146,7 @@ public class GPanel extends GComponent {
 			app.text(getText(), pos.x + PADH, pos.y - tabHeight + PADV, textWidth, tabHeight);
 			if(!tabOnly){
 				if(opaque){
-					app.fill(localColor.panelBG);
+					app.fill(localColor.panel);
 					app.rect(pos.x, pos.y, width, height);
 				}
 				Iterator<GComponent> iter = children.iterator();

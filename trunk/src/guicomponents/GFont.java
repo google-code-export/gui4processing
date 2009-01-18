@@ -46,7 +46,7 @@ public class GFont {
 	}
 	
 	public static GFont getFont(PApplet theApplet){
-		return getFont(theApplet, "Geneva-11.vlw", 11);
+		return getFont(theApplet, "Arial-BoldMT-12.vlw", 12);
 	}
 
 	public void setFont(String fontname, int fsize){
