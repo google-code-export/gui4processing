@@ -7,6 +7,7 @@
  * 
  */
 
+import processing.opengl.*;
 import guicomponents.*;
 
 GLabel lblSegs, lblERad, lblPts, lblLRad;
@@ -20,7 +21,7 @@ GButton btn;
 Toroid t1;
 
 void setup(){
-  size(640, 360, P3D);
+  size(640, 360, OPENGL);
   t1 = new Toroid();
 
   GComponent.globalColor = GColor.getColor(this,  GUI.BLUE);
@@ -95,7 +96,7 @@ public void handleOptionEvents(GOption selected, GOption deselected){
 
 void draw(){
   pushMatrix();
-  background(50, 64, 42);
+  background(75, 96, 63);
   // basic lighting setup
   lights();
   // 2 rendering styles
