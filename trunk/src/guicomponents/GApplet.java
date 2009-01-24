@@ -28,6 +28,7 @@ import java.util.HashMap;
 import processing.core.PApplet;
 
 
+@SuppressWarnings("serial")
 public class GApplet extends PApplet {
 
 	protected HashMap<String, GComponent> widgets = new HashMap<String, GComponent>();

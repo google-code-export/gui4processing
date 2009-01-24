@@ -27,32 +27,49 @@ import processing.core.PApplet;
 import processing.core.PFont;
 
 public class GFont {
-	protected static PApplet app;
+	protected PApplet app;
 
 	// Font details
 	public PFont gpFont;
 	public int gpFontSize;
 	public int gpHeightOffset; // for text(String,int,int,int,int)
 
+	/**
+	 * Create a font
+	 * 
+	 * @param theApplet
+	 * @param fontname .vlw name for font
+	 * @param fsize
+	 * @return
+	 */
 	public static GFont getFont(PApplet theApplet, String fontname, int fsize){
-		app = theApplet;
-		GFont gfont = new GFont();
-		gfont.app = theApplet;
-		gfont.gpFont = app.loadFont(fontname);
-		gfont.gpFontSize = fsize;
-
-		//panelTabHeight = gpFontSize + 4;
-		return gfont;
+		return new GFont(theApplet, fontname, fsize);
 	}
 	
-	public static GFont getFont(PApplet theApplet){
+	/**
+	 * Get the default font
+	 * @param theApplet
+	 * @return
+	 */
+	public static GFont getDefaultFont(PApplet theApplet){
 		return getFont(theApplet, "Arial-BoldMT-12.vlw", 12);
+	}
+
+	/**
+	 * Create a GFont object with the given filename and size
+	 * @param theApplet
+	 * @param fontname
+	 * @param fsize
+	 */
+	public GFont(PApplet theApplet, String fontname, int fsize) {
+		app = theApplet;
+		setFont(fontname, fsize);
 	}
 
 	public void setFont(String fontname, int fsize){
 		gpFont = app.loadFont(fontname);
 		gpFontSize = fsize;
-		//panelTabHeight = gpFontSize + 4;
 	}
 
+	
 }

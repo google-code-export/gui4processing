@@ -24,12 +24,13 @@
 package guicomponents;
 
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 
-public class GComponent implements GUI {
+public class GComponent implements GUI{
 
 	/**
 	 * If this is null then no GUI component has the mouse focus, 
@@ -54,12 +55,6 @@ public class GComponent implements GUI {
 	public final static int PADH = 4;
 	public final static int PADV = 1;
 	
-	/** 
-	 * The GUI scheme (color and font to be used) by this
-	 * component. 
-	 */
-	//protected GScheme localGScheme;
-
 	/** This must be set by the constructor */
 	protected PApplet app;
 
@@ -114,7 +109,7 @@ public class GComponent implements GUI {
 			globalColor = GColor.getColor(theApplet);
 		localColor = globalColor;
 		if(globalFont == null)
-			globalFont = GFont.getFont(theApplet);
+			globalFont = GFont.getDefaultFont(theApplet);
 		localFont = globalFont;
 		this.x = x;
 		this.y = y;
@@ -195,6 +190,14 @@ public class GComponent implements GUI {
 	}
 
 	/**
+	 * Override in child classes
+	 * @param event
+	 */
+	public void keyPressed(KeyEvent event){
+		
+	}
+	
+	/**
 	 * Attempt to fire an event for this component
 	 */
 	protected void fireEvent(){
@@ -211,7 +214,7 @@ public class GComponent implements GUI {
 
 	/**
 	 * This is the default implementation for all GUI components except
-	 * GPanel since we can use panels to group data.
+	 * GPanel since we can use panels to group components.
 	 * 
 	 * @param component to be added (ignored)
 	 * @return false always

@@ -109,7 +109,7 @@ public class GButton extends GComponent implements GUI{
 				status = GUI.OVER;
 			else
 				status = GUI.OFF;
-			System.out.println("Button status = " + status);
+//			System.out.println("Button status = " + status);
 		}
 	}
 

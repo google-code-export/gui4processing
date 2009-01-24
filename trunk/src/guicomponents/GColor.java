@@ -42,69 +42,63 @@ public class GColor implements GUI {
 	public int sliderThumb;
 	public int sliderStroke;
 
+	/**
+	 * Set the default color scheme
+	 * 
+	 * @param theApplet
+	 * @return
+	 */
 	public static GColor getColor(PApplet theApplet){
 		return getColor(theApplet, -1);
 	}
 	
+	/**
+	 * Set the color scheme to one of the preset schemes
+	 * BLUE / GREEN / RED / YELLOW / CYAN / PURPLE / GREY
+	 * 
+	 * @param theApplet
+	 * @param colScheme
+	 * @return
+	 */
 	public static GColor getColor(PApplet theApplet, int colScheme){
 		app = theApplet;
 		GColor scheme = new GColor();
+		calcColors(scheme, colScheme);
+		return scheme;
+	}
+
+	private static void calcColors(GColor scheme, int colScheme){
 		switch(colScheme){
 		case RED:
-			scheme.redColorScheme();
+			scheme.makeColorScheme(0xff6060, 0xffc0c0, 96, 255, 0x700000, 0x000000);
 			break;
 		case GREEN:
-			scheme.greenColorScheme();
+			scheme.makeColorScheme(0x60ff60, 0xc0ffc0, 96, 255, 0x00ff00, 0x000000);
 			break;
 		case BLUE:
 			scheme.makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);
 			break;
 		case YELLOW:
-			scheme.yellowColorScheme();
+			scheme.makeColorScheme(0xffff60, 0xffffc0, 96, 240, 0x000000, 0x000000);				
 			break;
 		case CYAN:
-			scheme.cyanColorScheme();
+			scheme.makeColorScheme(0x60ffff, 0xc0ffff, 96, 240, 0x000000, 0x000000);				
 			break;
 		case PURPLE:
-			scheme.purpleColorScheme();
+			scheme.makeColorScheme(0xff60ff, 0xffc0ff, 96, 240, 0x000000, 0x000000);	
 			break;
 		case GREY:
-			scheme.greyColorScheme();				
+			scheme.makeColorScheme(0x606060, 0xc0c0c0, 96, 240, 0xffffff, 0x000000);				
 			break;
 		default:
 			scheme.makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);				
 		}		
-		return scheme;
 	}
 
 	public void setColor(int colScheme){
-		switch(colScheme){
-		case RED:
-			redColorScheme();
-			break;
-		case GREEN:
-			greenColorScheme();
-			break;
-		case BLUE:
-			makeColorScheme(0x6060ff, 0xc0c0ff, 96, 255, 0x0000ff, 0x000000);
-			break;
-		case YELLOW:
-			yellowColorScheme();
-			break;
-		case CYAN:
-			cyanColorScheme();
-			break;
-		case PURPLE:
-			purpleColorScheme();
-			break;
-		case GREY:
-			greyColorScheme();				
-			break;
-		default:
-			makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);				
-		}		
+		calcColors(this, colScheme);
 	}
-	
+
 	/**
 	 * Create a color scheme
 	 * @param pdark the darkest color
@@ -118,9 +112,6 @@ public class GColor implements GUI {
 	{
 		int colMask = 0x00ffffff;
 		int alphaMask = 0xff000000;
-		
-//		int pdarkAlpha = (pdark & alphaMask) >> 24;
-//		int pLightAlpha =(plight & alphaMask) >> 24;
 		
 		// Make opaque
 		pdark |= alphaMask;
@@ -144,73 +135,5 @@ public class GColor implements GUI {
 		buttonDown = (buttonDown & colMask) | alphaHigh;
 		buttonFont = (font & colMask) | alphaMask;
 	}
-	
-	private void blueColorScheme() {
-		panel = app.color(50,50,255,96);
-		panelTab = app.color(50,50,255,160);
-		panelTabFont = app.color(255);
-		sliderBG = app.color(255,128);
-		sliderThumb = app.color(0,0,255,255);
-		sliderStroke = app.color(128,128,255,255);
-		buttonOff = app.color(128, 128, 255);
-		buttonOver = app.color(192, 192, 255);
-		buttonDown = app.color(96, 96, 255);
-		buttonFont = app.color(0);
-	}
 
-	private void purpleColorScheme() {
-		panel = app.color(255,50,255,96);
-		panelTab = app.color(255,50,255,160);
-		panelTabFont = app.color(255);
-		sliderBG = app.color(255,192);
-		sliderThumb = app.color(255,0,255,255);
-		sliderStroke = app.color(255,128,255,255);
-	}
-
-	private void greenColorScheme() {
-		panel = app.color(50,255,50,96);
-		panelTab = app.color(50,255,50,160);
-		panelTabFont = app.color(0);
-		sliderBG = app.color(255,128);
-		sliderThumb = app.color(0,255,0,255);
-		sliderStroke = app.color(128,255,128,255);
-	}
-
-	private void cyanColorScheme() {
-		panel = app.color(50,255,255,96);
-		panelTab = app.color(50,255,255,160);
-		panelTabFont = app.color(0);
-		sliderBG = app.color(255,128);
-		sliderThumb = app.color(0,255,255,255);
-		sliderStroke = app.color(128,255,255,255);
-	}
-
-	private void yellowColorScheme() {
-		panel = app.color(255,255,50,96);
-		panelTab = app.color(255,255,50,192);
-		panelTabFont = app.color(0);
-		sliderBG = app.color(255,128);
-		sliderThumb = app.color(255,255,0,255);
-		sliderStroke = app.color(255,255,128,255);
-	}
-
-	private void redColorScheme() {
-		panel = app.color(255,50,50,96);
-		panelTab = app.color(255,50,50,160);
-		panelTabFont = app.color(255);
-		sliderBG = app.color(255,192);
-		sliderThumb = app.color(255,0,0,255);
-		sliderStroke = app.color(255,128,128,255);
-	}
-
-	private void greyColorScheme(){
-		panel = app.color(50,50,50,96);
-		panelTab = app.color(240,240,240,160);
-		panelTabFont = app.color(0);
-		sliderBG = app.color(255,192);
-		sliderThumb = app.color(32,255);
-		sliderStroke = app.color(64,255);
-	}
-
-
-}
+} // end of class
