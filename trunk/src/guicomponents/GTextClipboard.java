@@ -2,7 +2,6 @@ package guicomponents;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -28,7 +27,7 @@ public class GTextClipboard extends GComponent {
 	}
 
 	private void textClipboardCtorCore() {
-		if(clipboard != null){
+		if(clipboard == null){
 			SecurityManager security = System.getSecurityManager();
 			if (security != null) {
 				try {
@@ -48,15 +47,16 @@ public class GTextClipboard extends GComponent {
 	}
 
 	public void copy(String v){
+		
 		StringSelection fieldContent = new StringSelection (v);
 		clipboard.setContents (fieldContent, this);
 	}
 	
 	public String paste(){
-		Transferable clipboardContent = clipboard.getContents (this);
+		Transferable clipboardContent = clipboard.getContents(this);
 		
 		if ((clipboardContent != null) &&
-			(clipboardContent.isDataFlavorSupported (DataFlavor.stringFlavor))) {
+			(clipboardContent.isDataFlavorSupported(DataFlavor.stringFlavor))) {
 			try {
 				String tempString;
 				tempString = (String) clipboardContent.getTransferData(DataFlavor.stringFlavor);

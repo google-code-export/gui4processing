@@ -86,21 +86,22 @@ public class GButton extends GComponent implements GUI{
 	public void mouseEvent(MouseEvent event){
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
 				status = GUI.DOWN;
-				mouseFocusOn = this;
+				
+				focusIsWith = this;
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
 				status = GUI.OFF;
 				fireEvent();
 			}
-			mouseFocusOn = null;
+			focusIsWith = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(mouseFocusOn == this){
-				mouseFocusOn = null;
+			if(focusIsWith == this){
+				releaseFocus();
 				status = GUI.OFF;
 			}
 			break;

@@ -118,19 +118,19 @@ public class GCheckbox extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY))
-				mouseFocusOn = this;
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY))
+				focusIsWith = this;
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
 				selected = !selected;
 				fireEvent();
 			}
-			mouseFocusOn = null;
+			focusIsWith = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(mouseFocusOn == this){
-				mouseFocusOn = null;
+			if(focusIsWith == this){
+				focusIsWith = null;
 			}
 			break;
 		}

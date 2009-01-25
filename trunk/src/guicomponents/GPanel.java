@@ -163,11 +163,11 @@ public class GPanel extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY))
-				mouseFocusOn = this;
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY))
+				focusIsWith = this;
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
 				tabOnly = !tabOnly;
 				if(tabOnly){
 					x = dockX;
@@ -183,15 +183,15 @@ public class GPanel extends GComponent {
 						x = app.getWidth() - width;
 				}
 			}
-			mouseFocusOn = null;
+			focusIsWith = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(mouseFocusOn == this){
-				mouseFocusOn = null;
+			if(focusIsWith == this){
+				focusIsWith = null;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(mouseFocusOn == this && parent == null){
+			if(focusIsWith == this && parent == null){
 				x += (app.mouseX - app.pmouseX);
 				y += (app.mouseY - app.pmouseY);
 				constrainPanelPosition();

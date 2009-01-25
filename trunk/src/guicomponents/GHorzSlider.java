@@ -107,19 +107,19 @@ public class GHorzSlider extends GSlider {
 	public void mouseEvent(MouseEvent event){
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(mouseFocusOn == null && isOver(app.mouseX, app.mouseY))
-				mouseFocusOn = this;
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY))
+				focusIsWith = this;
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			mouseFocusOn = null;
+			focusIsWith = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(mouseFocusOn == this){
-				mouseFocusOn = null;
+			if(focusIsWith == this){
+				focusIsWith = null;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(mouseFocusOn == this){
+			if(focusIsWith == this){
 				Point p = new Point(0,0);
 				calcAbsPosition(p);
 				aimThumbPos = constrain(app.mouseX - offset - p.x, thumbMin, thumbMax);

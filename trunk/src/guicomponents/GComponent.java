@@ -40,14 +40,7 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * otherwise it references the object that has the focus.
 	 * It must be set to null on mouse released event.
 	 */
-	public static GComponent mouseFocusOn;
-
-	/**
-	 * If this is null then no GUI component has the text focus, 
-	 * otherwise it references the object that has the focus.
-	 * It must be set to null on mouse released event.
-	 */
-	public static GComponent keyFocusOn;
+	protected static GComponent focusIsWith;
 
 	public static GColor globalColor;
 	public static GColor localColor;
@@ -55,8 +48,8 @@ public class GComponent implements GUI, ClipboardOwner{
 	public static GFont globalFont;
 	public static GFont localFont;
 	
-	public final static int PADH = 4;
-	public final static int PADV = 1;
+	protected final static int PADH = 4;
+	protected final static int PADV = 1;
 	
 	/** This must be set by the constructor */
 	protected PApplet app;
@@ -122,7 +115,7 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * This constructor should be called by all constructors  
 	 * of any child class e.g. GPanel, GLabel etc.
 	 * 
-	 * Create a local  color/font scheme and use for global if that 
+	 * Create a local color/font scheme and use for global if that 
 	 * has not been defined yet.
 	 * 
 	 * @param theApplet
@@ -170,6 +163,51 @@ public class GComponent implements GUI, ClipboardOwner{
 	 */
 	public String getID(){
 		return id;
+	}
+	
+	/**
+	 * See if this oject has focus
+	 * @return
+	 */
+	public boolean hasFocus(){
+		return focusIsWith == this;
+	}
+
+	/**
+	 * See if a component has focus
+	 * @param gc
+	 * @return
+	 */
+	public boolean hasFocus(GComponent gc){
+		return focusIsWith == gc;
+	}
+
+	/**
+	 * @return true if no component has focus
+	 */
+	public boolean isNullFocus(){
+		return focusIsWith == null;
+	}
+	
+	/**
+	 * Move the focus to another component releasing existing focus
+	 * if necessary
+	 * @param gcomp
+	 */
+	public void moveFocusTo(GComponent gcomp){
+		if(focusIsWith != null && focusIsWith != gcomp)
+			focusIsWith.releaseFocus();
+		focusIsWith = gcomp;
+	}
+	
+	/**
+	 * Release the focus.
+	 * 
+	 * Override this method in child classes if something has
+	 * to happen when the focu is lost
+	 */
+	public void releaseFocus(){
+		focusIsWith = null;
 	}
 	
 	/**
