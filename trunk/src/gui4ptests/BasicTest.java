@@ -11,6 +11,7 @@ import guicomponents.GOption;
 import guicomponents.GOptionGroup;
 import guicomponents.GPanel;
 import guicomponents.GSlider;
+import guicomponents.GTextField;
 import guicomponents.GUI;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -27,7 +28,8 @@ public class BasicTest extends PApplet implements PConstants{
 	GOptionGroup optShape;
 	GPanel p;
 	GButton btn;
-
+	GTextField txf1;
+	
 	public void setup(){
 		size(800,600);
 
@@ -53,6 +55,8 @@ public class BasicTest extends PApplet implements PConstants{
 
 		btn = new GButton(this, "Start",300, 60,100,20);
 
+		txf1 = new GTextField(this, "Statrt text",  10,10,100,25);
+		
 		p.add(lblSegs);
 		p.add(lblPts);
 		p.add(lblERad);
@@ -78,5 +82,19 @@ public class BasicTest extends PApplet implements PConstants{
 		stroke(255);
 		line(mouseX, mouseY, width/2.0f, height/2.0f);
 		this.popMatrix();
+	}
+	
+	public void handleTextFieldEvents(GTextField tfield){
+		switch(tfield.getEventType()){
+		case GTextField.CHANGED:
+			System.out.print("CHANGED         ");
+			break;
+		case GTextField.ENTERED:
+			System.out.print("ENTER PRESSED   ");
+			break;
+		case GTextField.SET:
+			System.out.print("SET             ");
+			break;
+		}
 	}
 }
