@@ -24,13 +24,16 @@
 package guicomponents;
 
 import java.awt.Point;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 
-public class GComponent implements GUI{
+public class GComponent implements GUI, ClipboardOwner{
 
 	/**
 	 * If this is null then no GUI component has the mouse focus, 
@@ -68,7 +71,7 @@ public class GComponent implements GUI{
 	protected String id;
 	
 	/** Text value associated with component */
-	private String text = "";
+	protected String text = "";
 	protected int textWidth;
 	protected int textAlign = GUI.LEFT;
 	
@@ -365,6 +368,12 @@ public class GComponent implements GUI{
 	 */
 	public void setBorder(int border){
 		this.border = border;
+	}
+
+	@Override
+	public void lostOwnership(Clipboard clipboard, Transferable contents) {
+		// TODO Auto-generated method stub
+		
 	}
 
 } // end of class
