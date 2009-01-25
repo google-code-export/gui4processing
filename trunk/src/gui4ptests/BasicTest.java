@@ -16,8 +16,8 @@ import guicomponents.GUI;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+@SuppressWarnings("serial")
 public class BasicTest extends PApplet implements PConstants{
-	
 
 	private int bg = 0x888888;
 
@@ -28,14 +28,14 @@ public class BasicTest extends PApplet implements PConstants{
 	GOptionGroup optShape;
 	GPanel p;
 	GButton btn;
-	GTextField txf1;
+	GTextField txf1, txf2;
 	
 	public void setup(){
-		size(800,600);
+		size(600,300);
 
 		GComponent.globalColor = GColor.getColor(this,  GUI.YELLOW);
 		GComponent.globalFont = GFont.getDefaultFont(this);
-		p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 90);
+		p = new GPanel(this, "Toroid Control Panel", 300, 30, 460, 90);
 		lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
 		lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
 		lblERad = new GLabel(this, "Ellipse Radius", 2, 32, 120);
@@ -53,9 +53,11 @@ public class BasicTest extends PApplet implements PConstants{
 		optHelix = new GOption(this, "Helix?", 2, 74, 80);
 		cbxWire = new GCheckbox(this, "Wire frame?", 102, 60, 100);
 
-		btn = new GButton(this, "Start",300, 60,100,20);
+		btn = new GButton(this, "Start",360, 60,100,20);
 
-		txf1 = new GTextField(this, "Statrt text",  10,10,100,25);
+		txf2 = new GTextField(this, "This is text field 2", 20,20,100,0);
+		txf1 = new GTextField(this, "Start text",  200,60,100,0);
+		p.add(txf1);
 		
 		p.add(lblSegs);
 		p.add(lblPts);
@@ -96,5 +98,6 @@ public class BasicTest extends PApplet implements PConstants{
 			System.out.print("SET             ");
 			break;
 		}
+		System.out.println(tfield.getText());
 	}
 }

@@ -2,7 +2,6 @@ package gui4ptests;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.opengl.*;
 import guicomponents.*;
 
 public class TorroidApplet extends PApplet implements PConstants {
@@ -18,7 +17,7 @@ public class TorroidApplet extends PApplet implements PConstants {
 	Toroid t1;
 	
 	public void setup(){
-		size(640, 360, OPENGL);
+		size(640, 360, P2D);
 		t1 = new Toroid(this);
 
 		GComponent.globalColor = GColor.getColor(this,  GUI.BLUE);
