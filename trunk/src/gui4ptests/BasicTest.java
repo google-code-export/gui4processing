@@ -86,18 +86,18 @@ public class BasicTest extends PApplet implements PConstants{
 		this.popMatrix();
 	}
 	
-//	public void handleTextFieldEvents(GTextField tfield){
-//		switch(tfield.getEventType()){
-//		case GTextField.CHANGED:
-//			System.out.print("CHANGED         ");
-//			break;
-//		case GTextField.ENTERED:
-//			System.out.print("ENTER PRESSED   ");
-//			break;
-//		case GTextField.SET:
-//			System.out.print("SET             ");
-//			break;
-//		}
-//		System.out.println(tfield.getText());
-//	}
+	public void handleTextFieldEvents(GTextField tfield){
+		switch(tfield.getEventType()){
+		case GTextField.CHANGED:
+			System.out.print("CHANGED         ");
+			break;
+		case GTextField.ENTERED:
+			System.out.print("ENTER PRESSED   ");
+			break;
+		case GTextField.SET:
+			System.out.print("SET             ");
+			break;
+		}
+		System.out.println(tfield.getText());
+	}
 }
