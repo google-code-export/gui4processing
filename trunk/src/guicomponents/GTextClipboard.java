@@ -15,14 +15,12 @@ public class GTextClipboard extends GComponent {
 	public GTextClipboard(PApplet theApplet, int x, int y, GColor colorScheme,
 			GFont fontScheme) {
 		super(theApplet, x, y, colorScheme, fontScheme);
-		System.out.println("GTextClipboard ctor 1");
 		textClipboardCtorCore();
 	}
 
 
 	public GTextClipboard(PApplet theApplet, int x, int y) {
 		super(theApplet, x, y);
-		System.out.println("GTextClipboard ctor 2");
 		textClipboardCtorCore();
 	}
 

@@ -36,11 +36,15 @@ import processing.core.PApplet;
 public class GComponent implements GUI, ClipboardOwner{
 
 	/**
-	 * If this is null then no GUI component has the mouse focus, 
-	 * otherwise it references the object that has the focus.
-	 * It must be set to null on mouse released event.
+	 * This holds a reference to the GComponent that currently has the
+	 * focus.
+	 * It is made protected for performance reasons but should be treated
+	 * as a READ ONLY attribute.
+	 * A component looses focus when another component takes focus with the
+	 * takeFocus() method. The takeFocus method should use focusIsWith.looseFocus()
+	 * before setting its value to the new component 
 	 */
-	protected static GComponent focusIsWith;
+	protected static GComponent focusIsWith; // READ ONLY
 
 	public static GColor globalColor;
 	public static GColor localColor;
@@ -164,52 +168,34 @@ public class GComponent implements GUI, ClipboardOwner{
 	public String getID(){
 		return id;
 	}
+	/*
+	 * The following methods are related to handling focus.
+	 * Most components can loose focus without affecting their state
+	 * but TextComponents that support mouse text selection need to 
+	 * clear this selection when they loose focus.
+	 */
 	
 	/**
-	 * See if this oject has focus
-	 * @return
+	 * Give the focus to this component but only after allowing existing
+	 * focused component to release focus gracefully.
 	 */
-	public boolean hasFocus(){
-		return focusIsWith == this;
-	}
-
-	/**
-	 * See if a component has focus
-	 * @param gc
-	 * @return
-	 */
-	public boolean hasFocus(GComponent gc){
-		return focusIsWith == gc;
-	}
-
-	/**
-	 * @return true if no component has focus
-	 */
-	public boolean isNullFocus(){
-		return focusIsWith == null;
+	protected void takeFocus(){
+		System.out.println("GC   Focus taken by "+this);
+		if(focusIsWith != null)
+			focusIsWith.looseFocus();
+		focusIsWith = this;
 	}
 	
 	/**
-	 * Move the focus to another component releasing existing focus
-	 * if necessary
-	 * @param gcomp
+	 * For most components there is nothing to do when they loose focus.
+	 * Override this method in classes that need to do something when
+	 * they loose focus e.g. TextField
 	 */
-	public void moveFocusTo(GComponent gcomp){
-		if(focusIsWith != null && focusIsWith != gcomp)
-			focusIsWith.releaseFocus();
-		focusIsWith = gcomp;
-	}
-	
-	/**
-	 * Release the focus.
-	 * 
-	 * Override this method in child classes if something has
-	 * to happen when the focu is lost
-	 */
-	public void releaseFocus(){
+	protected void looseFocus(){
+		System.out.println("GC   Focus released by "+this);
 		focusIsWith = null;
 	}
-	
+
 	/**
 	 * Override in child classes
 	 */

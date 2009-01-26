@@ -164,7 +164,8 @@ public class GPanel extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith == null && isOver(app.mouseX, app.mouseY))
-				focusIsWith = this;
+				this.takeFocus();
+//				focusIsWith = this;
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
@@ -183,11 +184,13 @@ public class GPanel extends GComponent {
 						x = app.getWidth() - width;
 				}
 			}
-			focusIsWith = null;
+			this.looseFocus();
+//			focusIsWith = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this){
-				focusIsWith = null;
+				this.looseFocus();
+//				focusIsWith = null;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:

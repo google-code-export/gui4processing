@@ -72,7 +72,14 @@ public class GTextField extends GTextClipboard {
 		}
 	}	
 
-
+	/**
+	 * 
+	 */
+	public void looseFocus(){
+		System.out.println("TF   Focus released by "+this);
+		startSelect = endSelect = -1;
+		focusIsWith = null;
+	}
 
 	// FROM IFTEXTFIELD
 
@@ -252,9 +259,6 @@ public class GTextField extends GTextClipboard {
 	private void adjustVisiblePortionEnd() {
 		// Temporarily correcting for an erroneus precondition. Looking for the real issue
 		visiblePortionEnd = Math.min(visiblePortionEnd, text.length()); 
-		String tempStr;
-		float tempFlt;
-
 		if (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 			while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 				if (visiblePortionEnd == text.length())
@@ -404,7 +408,8 @@ public class GTextField extends GTextClipboard {
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
-				focusIsWith = this;
+				this.takeFocus();
+//				focusIsWith = this;
 				endSelect = -1;
 				startSelect = cursorPos = findClosestGap(e.getX() - p.x);
 			}
@@ -413,14 +418,15 @@ public class GTextField extends GTextClipboard {
 			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
 				endSelect = -1;
 				startSelect = cursorPos = findClosestGap(e.getX() - p.x);
-				focusIsWith = this;
+				this.takeFocus();
+//				focusIsWith = this;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if (focusIsWith == this && endSelect == startSelect) {
 				startSelect = -1;
 				endSelect = -1;
-				focusIsWith = null;
+//				focusIsWith = null;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
@@ -593,7 +599,6 @@ public class GTextField extends GTextClipboard {
 			app.fill(0);
 			app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + offset, pos.y + 5, width - 8, height - 6);
 			// Draw the insertion point (it blinks!)
-			System.out.println("<> "+cursorPos+" "+visiblePortionStart+" "+visiblePortionEnd);
 			if (focusIsWith == this && (startSelect == -1 || endSelect == -1) 
 					&& ((app.millis() % 1000) > 500)
 					&& (cursorPos >= visiblePortionStart)

@@ -103,18 +103,21 @@ public class GOption extends GComponent implements Comparable {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith == null && isOver(app.mouseX, app.mouseY))
-				focusIsWith = this;
+				this.takeFocus();
+//				focusIsWith = this;
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
 				group.setSelected(this);
 				fireEvent();
 			}
-			focusIsWith = null;
+			this.looseFocus();
+//			focusIsWith = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this){
-				focusIsWith = null;
+				this.looseFocus();
+//				focusIsWith = null;
 			}
 			break;
 		}
