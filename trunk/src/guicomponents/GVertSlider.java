@@ -111,18 +111,22 @@ public class GVertSlider extends GSlider {
 	public void mouseEvent(MouseEvent event){
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith == null && isOver(app.mouseX, app.mouseY))
+			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
 				this.takeFocus();
-//				focusIsWith = this;
+				mdx = app.mouseX;
+				mdy = app.mouseY;
+			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			this.looseFocus();
-//			focusIsWith = null;
-			break;
-		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this){
 				this.looseFocus();
-//				focusIsWith = null;
+				mdx = mdy = Integer.MAX_VALUE;
+			}
+			break;
+		case MouseEvent.MOUSE_RELEASED:
+			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
+				this.looseFocus();
+				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:

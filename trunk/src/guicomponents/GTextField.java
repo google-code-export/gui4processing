@@ -1,3 +1,32 @@
+/*
+  Part of the GUI for Processing library 
+  	http://gui4processing.lagers.org.uk
+	http://code.google.com/p/gui4processing/
+	
+  Copyright (c) 2008-09 Peter Lager
+
+  All the string handling and clipboard logic has been taken from a similar
+  GUI library Interfascia ALPHA 002 -- http://superstable.net/interfascia/ 
+  produced by Brenden Berg 
+  Modifications have been made in the way it handles events, draws itself 
+  and focus handling to fit in with my library which supports floating panels.
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
+
 package guicomponents;
 
 import java.awt.Point;
@@ -212,11 +241,6 @@ public class GTextField extends GTextClipboard {
 		copy(text.substring(s, e));
 	}
 
-
-	// ***** UNTIL GRAPHICS SETTINGS ARE STORED IN A QUEUE, MAKE SURE	   *****
-	// ***** TO ALWAYS CALL THESE FUNCTIONS INSIDE THE INTERFASCIA DEFAULT *****
-	// ***** GRAPHICS STATE. I'M NOT TOUCHING THE GRAPHICS STATE HERE.     *****
-
 	private void updateXPos() {
 		cursorXPos = app.textWidth(text.substring(visiblePortionStart, cursorPos));
 		if (startSelect != -1 && endSelect != -1) {
@@ -394,11 +418,10 @@ public class GTextField extends GTextClipboard {
 	}
 
 	/**
-	 * implemented to conform to Processing's mouse event handler
-	 * requirements. You shouldn't call this method directly, as
-	 * Processing will forward mouse events to this object directly.
-	 * mouseEvent() handles mouse clicks, drags, and releases sent
-	 * from the parent PApplet. 
+	 * Mouse event handler - the focus cannot be lost by anything
+	 * we do here - it has to be taken away when the mouse is pressed
+	 * somewhere else.
+	 * 
 	 * @param e the MouseEvent to handle
 	 */
 	public void mouseEvent(MouseEvent e) {
@@ -407,26 +430,22 @@ public class GTextField extends GTextClipboard {
 
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
 				this.takeFocus();
-//				focusIsWith = this;
 				endSelect = -1;
 				startSelect = cursorPos = findClosestGap(e.getX() - p.x);
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith == this){
 				endSelect = -1;
 				startSelect = cursorPos = findClosestGap(e.getX() - p.x);
-				this.takeFocus();
-//				focusIsWith = this;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if (focusIsWith == this && endSelect == startSelect) {
 				startSelect = -1;
 				endSelect = -1;
-//				focusIsWith = null;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:

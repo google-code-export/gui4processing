@@ -46,6 +46,11 @@ public class GComponent implements GUI, ClipboardOwner{
 	 */
 	protected static GComponent focusIsWith; // READ ONLY
 
+	protected static GComponent mouseLastReleased = null;
+	protected static int lastEventID = Integer.MAX_VALUE;
+	
+	protected int mdx = Integer.MAX_VALUE, mdy= Integer.MAX_VALUE;
+
 	public static GColor globalColor;
 	public static GColor localColor;
 	
@@ -180,7 +185,7 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * focused component to release focus gracefully.
 	 */
 	protected void takeFocus(){
-		System.out.println("GC   Focus taken by "+this);
+		System.out.println("GC   Focus taken by "+this + " from " + focusIsWith);
 		if(focusIsWith != null)
 			focusIsWith.looseFocus();
 		focusIsWith = this;
@@ -192,10 +197,14 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * they loose focus e.g. TextField
 	 */
 	protected void looseFocus(){
-		System.out.println("GC   Focus released by "+this);
+		System.out.println("GC   Focus lost by "+this);
 		focusIsWith = null;
 	}
 
+	public boolean mouseHasMoved(int x, int y){
+		return (mdx != x || mdy != y);
+	}
+	
 	/**
 	 * Override in child classes
 	 */

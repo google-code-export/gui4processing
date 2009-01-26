@@ -163,12 +163,14 @@ public class GPanel extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith == null && isOver(app.mouseX, app.mouseY))
+			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
+				mdx = app.mouseX;
+				mdy = app.mouseY;
 				this.takeFocus();
-//				focusIsWith = this;
+			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == null && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith == this){
 				tabOnly = !tabOnly;
 				if(tabOnly){
 					x = dockX;
@@ -183,14 +185,14 @@ public class GPanel extends GComponent {
 					if(x + width > app.getWidth())
 						x = app.getWidth() - width;
 				}
+				this.looseFocus();
+				mdx = mdy = Integer.MAX_VALUE;
 			}
-			this.looseFocus();
-//			focusIsWith = null;
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(focusIsWith == this){
+			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
 				this.looseFocus();
-//				focusIsWith = null;
+				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
@@ -207,6 +209,10 @@ public class GPanel extends GComponent {
 		}
 	}
 
+	/**
+	 * Ensures that the panel tab and panel body if open doesnot
+	 * extend off the screen.
+	 */
 	private void constrainPanelPosition(){
 		int w = (tabOnly)? textWidth + PADH * 2 : width;
 		int h = (tabOnly)? 0 : height;
