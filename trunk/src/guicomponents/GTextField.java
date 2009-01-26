@@ -102,10 +102,9 @@ public class GTextField extends GClipboard {
 	}	
 
 	/**
-	 * 
+	 * When the textfield looses focus it also looses any text selection.
 	 */
 	public void looseFocus(){
-		System.out.println("TF   Focus released by "+this);
 		startSelect = endSelect = -1;
 		focusIsWith = null;
 	}
@@ -335,7 +334,6 @@ public class GTextField extends GClipboard {
 			}
 			prev = cur;
 		}
-
 		// Don't know what else to return
 		return text.length();
 	}

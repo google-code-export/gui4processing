@@ -185,7 +185,6 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * focused component to release focus gracefully.
 	 */
 	protected void takeFocus(){
-		System.out.println("GC   Focus taken by "+this + " from " + focusIsWith);
 		if(focusIsWith != null)
 			focusIsWith.looseFocus();
 		focusIsWith = this;
@@ -197,7 +196,6 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * they loose focus e.g. TextField
 	 */
 	protected void looseFocus(){
-		System.out.println("GC   Focus lost by "+this);
 		focusIsWith = null;
 	}
 
