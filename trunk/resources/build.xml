@@ -98,7 +98,8 @@
 	
 	
 	
-	<target name="init">
+<target name="init">
+	<echo>TARGET START   init</echo>
 	<echo>Properties initialized.
 	src path			${src}
 	bin path 			${bin}
@@ -112,19 +113,25 @@
 		<format property="date" pattern="MM/dd/yyyy" offset="0" unit="hour"/>
 	</tstamp>
 	<mkdir dir="${dist}"/>
-  </target>
+	<echo>TARGET END     init</echo>
+ </target>
   
 	<!-- compile the library -->
-  <target name="compile" depends="init" description="compile the source" >  	
+  <target name="compile" depends="init" description="compile the source" > 
+	<echo>TARGET START   compile</echo>
+
 		<javac srcdir="${src}" destdir="${bin}" source="${javaVersion}">
 			<classpath>
 				<path refid="library-classpath"/>
 			</classpath>
 		</javac>
+	<echo>TARGET END   compile</echo>
   </target>
 
 	<!-- build the distribution of the library -->
   <target name="build" depends="compile" description="generate the distribution" >
+	<echo>TARGET START   build</echo>
+
   	<!-- delete the previous content of the ${dist} folder -->
   	<delete dir="${dist}" />
   	
@@ -155,7 +162,9 @@
  		<taglet name="ExampleTaglet" path="resources/code" />
  		<fileset dir="${src}" defaultexcludes="yes">
  			<!-- #### (9) add packages to be added to reference. #### -->
-			<include name="**/*"/>
+			<!-- <include name="**/*"/> -->
+			<include name="guicomponents/*"/>
+			<include name="gui4ptests*"/>
 		</fileset>
  	</javadoc>
  	
@@ -278,23 +287,30 @@
   	
   	<!-- done, finished. -->
   	<echo>done, finished.</echo>
+	<echo>TARGET END     build</echo>
+
  </target>
  
  
  	
 	<!-- parsing the examples folder -->
 	<target name="processExamples">
+		<echo>TARGET START   processExamples</echo>
+
 		<dirset id="examples.contents" dir="examples" excludes="*/*"/>
 		<property name="examples.list" refid="examples.contents"/>
 		<foreach list="${examples.list}" target="addExamples" param="exampleDir" delimiter=";">
 		</foreach>
+		<echo>TARGET END   processExamples</echo>
 	</target>
 		
 	<target name="addExamples">
+		<echo>TARGET START   addExamples</echo>
 		<replaceregexp file="${dist}/web/index.html"
 	  					match="(##examples##)"
 	  	  				replace="&lt;li&gt;&lt;a href=&quot;examples/${exampleDir}/${exampleDir}.pde&quot;&gt;${exampleDir}&lt;/a&gt;&lt;/li&gt; \1"
 	  	  				flags="g" />
+		<echo>TARGET END   addExamples</echo>
 		</target>
 </project>
 
