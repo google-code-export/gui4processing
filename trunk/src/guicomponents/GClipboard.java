@@ -32,18 +32,18 @@ import java.awt.datatransfer.Transferable;
 
 import processing.core.PApplet;
 
-public class GTextClipboard extends GComponent {
+public class GClipboard extends GComponent {
 	
 	private static Clipboard clipboard = null;
 
-	public GTextClipboard(PApplet theApplet, int x, int y, GColor colorScheme,
+	public GClipboard(PApplet theApplet, int x, int y, GColor colorScheme,
 			GFont fontScheme) {
 		super(theApplet, x, y, colorScheme, fontScheme);
 		textClipboardCtorCore();
 	}
 
 
-	public GTextClipboard(PApplet theApplet, int x, int y) {
+	public GClipboard(PApplet theApplet, int x, int y) {
 		super(theApplet, x, y);
 		textClipboardCtorCore();
 	}

@@ -35,7 +35,7 @@ import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
 
-public class GTextField extends GTextClipboard {
+public class GTextField extends GClipboard {
 	public final static int CHANGED = 0x00ff0001;
 	public final static int ENTERED = 0x00ff0002;
 	public final static int SET = 0x00ff0003;
