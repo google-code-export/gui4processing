@@ -35,7 +35,7 @@ public class BasicTest extends PApplet implements PConstants{
 
 		GComponent.globalColor = GColor.getColor(this,  GUI.YELLOW);
 		GComponent.globalFont = GFont.getDefaultFont(this);
-		p = new GPanel(this, "Toroid Control Panel", 300, 30, 460, 90);
+		p = new GPanel(this, "Toroid Control Panel", 300, 60, 460, 90);
 		lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
 		lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
 		lblERad = new GLabel(this, "Ellipse Radius", 2, 32, 120);
@@ -55,7 +55,7 @@ public class BasicTest extends PApplet implements PConstants{
 
 		btn = new GButton(this, "Start",360, 60,100,20);
 
-		txf2 = new GTextField(this, "This is text field 2", 20,20,100,0);
+		txf2 = new GTextField(this, "Peter Lager works at the University of Bolton", 60,20,100,0);
 		txf1 = new GTextField(this, "Start text",  200,60,100,0);
 		p.add(txf1);
 		
