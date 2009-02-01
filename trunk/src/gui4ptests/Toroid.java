@@ -7,10 +7,10 @@ package gui4ptests;
  * Illustrates the geometric relationship between Toroid, Sphere, and Helix
  * 3D primitives, as well as lathing principal.
  */
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PVector;
-import guicomponents.*;
 
 class Toroid implements PConstants {
 

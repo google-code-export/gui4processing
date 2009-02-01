@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import guicomponents.*;
 
+@SuppressWarnings("serial")
 public class TorroidApplet extends PApplet implements PConstants {
 
 	GLabel lblSegs, lblERad, lblPts, lblLRad;

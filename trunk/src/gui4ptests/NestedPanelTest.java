@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import guicomponents.GPanel;
 import guicomponents.GTextField;
 
+@SuppressWarnings("serial")
 public class NestedPanelTest extends PApplet {
 	private GPanel p1, p2;
 	private GTextField tf1, tf2;
