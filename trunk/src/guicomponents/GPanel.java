@@ -25,7 +25,7 @@ package guicomponents;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import processing.core.PApplet;
@@ -54,7 +54,8 @@ public class GPanel extends GComponent {
 	 * A list of child GComponents added to this panel
 	 * Only applicable to GPanel class
 	 */
-	private ArrayList<GComponent> children = new ArrayList<GComponent>();
+	//private ArrayList<GComponent> children = new ArrayList<GComponent>();
+	private HashSet<GComponent> children = new HashSet<GComponent>();
 
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
@@ -120,11 +121,15 @@ public class GPanel extends GComponent {
 	 * @return always true
 	 */
 	public boolean add(GComponent component){
-		// TODO need to validate addition based on size
-		component.parent = this;
-		children.add(component);
-		app.unregisterDraw(component);
-		return true;
+		if(children.contains(component)){
+			System.out.println("The component has already been added to this panel");
+			return false;
+		} else {
+			component.parent = this;
+			children.add(component);
+			app.unregisterDraw(component);
+			return true;
+		}
 	}
 
 	/**

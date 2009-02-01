@@ -32,8 +32,15 @@ import java.awt.datatransfer.Transferable;
 
 import processing.core.PApplet;
 
+/**
+ * If your component needs a text clipboard then extend from this class
+ * 
+ */
 public class GClipboard extends GComponent {
 	
+	/**
+	 * Static clipboard so shared by all components
+	 */
 	private static Clipboard clipboard = null;
 
 	public GClipboard(PApplet theApplet, int x, int y, GColor colorScheme,
@@ -48,6 +55,9 @@ public class GClipboard extends GComponent {
 		textClipboardCtorCore();
 	}
 
+	/**
+	 * If the clipboard has not been created then attempt to do so.
+	 */
 	private void textClipboardCtorCore() {
 		if(clipboard == null){
 			SecurityManager security = System.getSecurityManager();
@@ -56,7 +66,7 @@ public class GClipboard extends GComponent {
 					security.checkSystemClipboardAccess();
 					clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 				} catch (SecurityException e) {
-					clipboard = new Clipboard("Interfascia Clipboard");
+					clipboard = new Clipboard("Application Clipboard");
 				}
 			} else {
 				try {
@@ -102,7 +112,7 @@ public class GClipboard extends GComponent {
 
 	@Override
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
-		System.out.println ("Lost ownership");		
+		System.out.println ("Lost ownership " + this);		
 	}
 
 }

@@ -49,7 +49,11 @@ public class GComponent implements GUI, ClipboardOwner{
 	protected static GComponent mouseLastReleased = null;
 	protected static int lastEventID = Integer.MAX_VALUE;
 	
-	protected int mdx = Integer.MAX_VALUE, mdy= Integer.MAX_VALUE;
+	/*
+	 * Used to track mouse required by GButton, GCheckbox,GHorzSlider
+	 * GVertSlider GPanel classes
+	 */
+	protected int mdx = Integer.MAX_VALUE, mdy = Integer.MAX_VALUE;
 
 	public static GColor globalColor;
 	public static GColor localColor;
@@ -70,7 +74,7 @@ public class GComponent implements GUI, ClipboardOwner{
 	protected Object eventHandlerObject = null;
 	
 	/** Unique ID for every component */
-	protected String id;
+//	protected String id;
 	
 	/** Text value associated with component */
 	protected String text = "";
@@ -170,9 +174,10 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * 
 	 * @return the unique ID for this component
 	 */
-	public String getID(){
-		return id;
-	}
+//	public String getID(){
+//		return id;
+//	}
+	
 	/*
 	 * The following methods are related to handling focus.
 	 * Most components can loose focus without affecting their state

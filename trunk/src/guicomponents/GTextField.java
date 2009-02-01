@@ -2,13 +2,20 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui4processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
-  All the string handling and clipboard logic has been taken from a similar
+  The string handling and clipboard logic has been taken from a similar
   GUI library Interfascia ALPHA 002 -- http://superstable.net/interfascia/ 
   produced by Brenden Berg 
-  Modifications have been made in the way it handles events, draws itself 
+  This code had to be modified to correct some logic errors in selecting text
+  using the mouse and the shift+cursor keys. The biggest change is in the
+  usage of startSelect and endSelect variables. In the original code if either
+  had the value -1 then no text was selected. In this class if they have the same
+  value i.e. startSelect == endSelect then no text is selected. Also both will
+  equal the cursorPos UNLESS we are selecting text. This has simplified the code.
+   
+  Other modifications have been made in the way it handles events, draws itself 
   and focus handling to fit in with my library which supports floating panels.
 
   This library is free software; you can redistribute it and/or
@@ -36,10 +43,14 @@ import java.awt.event.MouseEvent;
 import processing.core.PApplet;
 
 public class GTextField extends GClipboard {
+	// Text has changed
 	public final static int CHANGED = 0x00ff0001;
+	// The enter key has been pressed
 	public final static int ENTERED = 0x00ff0002;
+	// The text has changed using the setText() method
 	public final static int SET = 0x00ff0003;
 
+	// The event type
 	private int eventType = 0;
 
 	// Measured in characters
@@ -51,27 +62,47 @@ public class GTextField extends GClipboard {
 
 
 	/**
-	 * creates an empty IFTextField with the specified label, with specified position, and a default width of 100 pixels.
-	 * @param argLabel the text field's label
-	 * @param argX the text field's X location on the screen, relative to the PApplet.
-	 * @param argY the text filed's Y location on the screen, relative 
-	 * to the PApplet.
+	 * Creates a GTextField object
+	 * @param theApplet
+	 * @param text initial text to display
+	 * @param x horizontal position relative to PApplet or PPanel
+	 * @param y vertical position relative to PApplet or PPanel
+	 * @param width width of text field
+	 * @param height height of text field
+	 * @param colorScheme colour scheme to use
+	 * @param fontScheme font to use
 	 */
-
 	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, GColor colorScheme, GFont fontScheme){
 		super(theApplet, x, y, colorScheme, fontScheme);
 		textFieldCtorCore(text, width, height);
 	}
+	
 
+	/**
+	 * Creates a GTextField object
+	 * @param theApplet
+	 * @param text initial text to display
+	 * @param x horizontal position relative to PApplet or PPanel
+	 * @param y vertical position relative to PApplet or PPanel
+	 * @param width width of text field
+	 * @param height height of text field
+	 */
 	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		textFieldCtorCore(text, width, height);
 	}
+	
+	/**
+	 * Common code required by ctors
+	 * @param text initial text to display
+	 * @param width width of text field
+	 * @param height height of text field
+	 */
 
 	private void textFieldCtorCore(String text, int width, int height) {
 		this.width = Math.max(width, textWidth + PADH * 2);
 		this.height = Math.max(height, localFont.gpFontSize + 8);
-		// Set text after the width of the textfield has been set
+		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(app);
 		app.registerDraw(this);
@@ -79,6 +110,11 @@ public class GTextField extends GClipboard {
 		app.registerKeyEvent(this);
 	}
 
+	/**
+	 * Override the default event handler created with createEventHandler(Object obj)
+	 * @param obj
+	 * @param methodName
+	 */
 	public void addEventHandler(Object obj, String methodName){
 		try{
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GTextField.class } );
@@ -90,6 +126,11 @@ public class GTextField extends GClipboard {
 		}
 	}
 
+	/**
+	 * Create an event handler that will call a method handleTextFieldEvents(GTextField tfield)
+	 * when text is changed or entered
+	 * @param obj
+	 */
 	protected void createEventHandler(Object obj){
 		try{
 			this.eventHandler = obj.getClass().getMethod("handleTextFieldEvents", new Class[] { GTextField.class } );
@@ -109,9 +150,8 @@ public class GTextField extends GClipboard {
 		focusIsWith = null;
 	}
 
-	// FROM IFTEXTFIELD
-
 	/**
+	 * This can be used to detect the type of event
 	 * @return the eventType
 	 */
 	public int getEventType() {
@@ -130,23 +170,18 @@ public class GTextField extends GClipboard {
 
 
 	/**
-	 * adds a string to the immediate right of the insertion point or replaces the selected group of characters.
+	 * adds a string to the immediate right of the insertion point or replaces the selected group
+	 * of characters.
 	 * @param s the string to be added
 	 */
 	protected void appendToRightOfCursor(String s) {
 		String t1, t2;
-		if (startSelect != -1 && endSelect != -1) {
+		if(startSelect != endSelect) {
 			int start = Math.min(startSelect, endSelect);
 			int end = Math.max(startSelect, endSelect);
-			if (start >= end || start < 0 || end > text.length()) {
-				System.out.println("Brendan needs to check array bounds.");
-				return;
-			}
-
 			t1 = text.substring(0, start);
 			t2 = text.substring(end);
-			cursorPos = start;
-			startSelect = endSelect = -1;
+			startSelect = endSelect = cursorPos = start;
 		} else {
 			t1 = text.substring(0, cursorPos);
 			t2 = text.substring(cursorPos);
@@ -156,22 +191,19 @@ public class GTextField extends GClipboard {
 		cursorPos += s.length();
 
 		// Adjust the start and end positions of the visible portion of the string
-		if (app.textWidth(text) < width - 12) {
+		if(app.textWidth(text) < width - 12) {
 			visiblePortionStart = 0;
 			visiblePortionEnd = text.length();
 		} else {
-			if (cursorPos == text.length()) {
+			if(cursorPos == text.length()) {
 				visiblePortionEnd = cursorPos;
 				adjustVisiblePortionStart();
 			} else {
-				if (cursorPos >= visiblePortionEnd)
+				if(cursorPos >= visiblePortionEnd)
 					centerCursor();
 				else {
-					//visiblePortionEnd = visiblePortionStart;
 					adjustVisiblePortionEnd();
 				}
-				//while (app.textWidth(contents.substring(visiblePortionStart, visiblePortionEnd)) < getWidth() - 12)
-				//	visiblePortionEnd++;
 			}
 		}
 		eventType = CHANGED;
@@ -186,17 +218,17 @@ public class GTextField extends GClipboard {
 	 * <pre>public void keyEvent</pre> when the delete key is pressed.
 	 */
 	protected void backspaceChar() {
-		if (startSelect != -1 && endSelect != -1) {
+		if(startSelect != endSelect) {
 			deleteSubstring(startSelect, endSelect);
-		} else if (cursorPos > 0){
+		} else if(cursorPos > 0){
 			deleteSubstring(cursorPos - 1, cursorPos);
 		}
 	}
 
 	protected void deleteChar() {
-		if (startSelect != -1 && endSelect != -1) {
+		if(startSelect != endSelect) {
 			deleteSubstring(startSelect, endSelect);
-		} else if (cursorPos < text.length()){
+		} else if(cursorPos < text.length()){
 			deleteSubstring(cursorPos, cursorPos + 1);
 		}
 	}
@@ -204,70 +236,75 @@ public class GTextField extends GClipboard {
 	protected void deleteSubstring(int startString, int endString) {
 		int start = Math.min(startString, endString);
 		int end = Math.max(startString, endString);
-		if (start >= end || start < 0 || end > text.length()) {
-			System.out.println("Brendan needs to check array bounds.");
-			return;
-		}
-
 		text = text.substring(0, start) + text.substring(end);
 		cursorPos = start;
 
-		if (app.textWidth(text) < width - 12) {
+		if(app.textWidth(text) < width - 12) {
 			visiblePortionStart = 0;
 			visiblePortionEnd = text.length();
 		} else {
-			if (cursorPos == text.length()) {
+			if(cursorPos == text.length()) {
 				visiblePortionEnd = cursorPos;
 				adjustVisiblePortionStart();
 			} else {
-				if (cursorPos <= visiblePortionStart) {
+				if(cursorPos <= visiblePortionStart) {
 					centerCursor();
 				} else {
 					adjustVisiblePortionEnd();
 				}
 			}
 		}
-
-		startSelect = endSelect = -1;
+		startSelect = endSelect = cursorPos;
 
 		eventType = CHANGED;
 		fireEvent();
 	}
 
+	/**
+	 * Copy string to clipboard
+	 * @param start
+	 * @param end
+	 */
 	protected void copySubstring(int start, int end) {
 		int s = Math.min(start, end);
 		int e = Math.max(start, end);
 		copy(text.substring(s, e));
 	}
 
+	/**
+	 * 	calculate the pixel positions for the start and end
+	 * of selected text.
+	 */
 	private void updateXPos() {
+		int tempStart = startSelect;
+		int tempEnd = endSelect;
 		cursorXPos = app.textWidth(text.substring(visiblePortionStart, cursorPos));
-		if (startSelect != -1 && endSelect != -1) {
-			int tempStart, tempEnd;
-			if (endSelect < startSelect) {
+		if(startSelect != endSelect){
+			if(endSelect < startSelect) {
 				tempStart = endSelect;
 				tempEnd = startSelect;
-			} else {
-				tempStart = startSelect;
-				tempEnd = endSelect;
 			}
-
-			if (tempStart < visiblePortionStart)
+			if(tempStart < visiblePortionStart)
 				startSelectXPos = 0;
 			else
 				startSelectXPos = app.textWidth(text.substring(visiblePortionStart, tempStart));
 
-			if (tempEnd > visiblePortionEnd)
-				endSelectXPos = width - 4;
+			if(tempEnd > visiblePortionEnd)
+				endSelectXPos = width - 12;
 			else
 				endSelectXPos = app.textWidth(text.substring(visiblePortionStart, tempEnd));
+			// Uncomment the next 4 lines to output current text selection
+//			if(tempStart != tempEnd && tempStart >= 0){
+//				System.out.print(text.substring(tempStart, tempEnd)+ "  (");
+//				System.out.println(tempStart +", "+ tempEnd + ")");
+//			}
 		}
 	}
 
 	private void adjustVisiblePortionStart() {
-		if (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
+		if(app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 			while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-				if (visiblePortionStart == 0)
+				if(visiblePortionStart == 0)
 					break;
 				else
 					visiblePortionStart--;
@@ -280,11 +317,9 @@ public class GTextField extends GClipboard {
 	}
 
 	private void adjustVisiblePortionEnd() {
-		// Temporarily correcting for an erroneus precondition. Looking for the real issue
-		visiblePortionEnd = Math.min(visiblePortionEnd, text.length()); 
-		if (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
+		if(app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 			while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-				if (visiblePortionEnd == text.length())
+				if(visiblePortionEnd == text.length())
 					break;
 				else
 					visiblePortionEnd++;
@@ -300,13 +335,13 @@ public class GTextField extends GClipboard {
 		visiblePortionStart = visiblePortionEnd = cursorPos;
 
 		while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-			if (visiblePortionStart != 0)
+			if(visiblePortionStart != 0)
 				visiblePortionStart--;
 
-			if (visiblePortionEnd != text.length())
+			if(visiblePortionEnd != text.length())
 				visiblePortionEnd++;
 
-			if (visiblePortionEnd == text.length() && visiblePortionStart == 0)
+			if(visiblePortionEnd == text.length() && visiblePortionStart == 0)
 				break;
 		}
 	}
@@ -316,80 +351,34 @@ public class GTextField extends GClipboard {
 	 * position of the text field, findClosestGap(int x) will
 	 * return the index of the closest letter boundary in the 
 	 * letterWidths array.
+	 * If the second parameter is true then the visible portion
+	 * of the string is constrained to the to the text field size.
+	 * Set to false to allow scrolling of the string when selecting text. 
+	 * @param x
+	 * @param constrain 
+	 * @return
 	 */
-	private int findClosestGap(int x) {
+	private int findClosestGap(int x, boolean constrain) {
 		float prev = 0, cur;
-		if (x < 0) {
-			return visiblePortionStart;
-		} else if (x > width) {
-			return visiblePortionEnd;
+		if(constrain){
+			if(x < 0) {
+				return visiblePortionStart;
+			} else if(x > width) {
+				return visiblePortionEnd;
+			}
 		}
-		for (int i = visiblePortionStart; i < visiblePortionEnd; i++) {
+		for (int i = visiblePortionStart; i < text.length(); i++) {
 			cur = app.textWidth(text.substring(visiblePortionStart, i));
-			if (cur > x) {
-				if (cur - x < x - prev)
+			if(cur > x) {
+				if(cur - x < x - prev)
 					return i;
 				else
-					return i - 1;
+					return Math.max(0, i - 1);
 			}
 			prev = cur;
 		}
 		// Don't know what else to return
 		return text.length();
-	}
-
-
-	public int getVisiblePortionStart()
-	{
-		return visiblePortionStart;
-	}
-	public void setVisiblePortionStart(int VisiblePortionStart)
-	{
-		visiblePortionStart = VisiblePortionStart;
-	}
-
-	public int getVisiblePortionEnd()
-	{
-		return visiblePortionEnd;
-	}
-	public void setVisiblePortionEnd(int VisiblePortionEnd)
-	{
-		visiblePortionEnd = VisiblePortionEnd;
-	}
-
-	public int getStartSelect()
-	{
-		return startSelect;
-	}
-	public void setStartSelect(int StartSelect)
-	{
-		startSelect = StartSelect;
-	}
-
-	public int getEndSelect()
-	{
-		return endSelect;
-	}
-	public void setEndSelect(int EndSelect)
-	{
-		endSelect = EndSelect;
-	}
-
-	public int getCursorPosition()
-	{
-		return cursorPos;
-	}	
-	public void setCursorPosition(int CursorPos)
-	{
-		cursorPos = CursorPos;
-	}
-
-
-	/**
-	 * @param text the text to set
-	 */
-	public void setText(String text, int align) {
-		setText(text);
 	}
 
 	/**
@@ -406,11 +395,9 @@ public class GTextField extends GClipboard {
 		visiblePortionStart = 0;
 		visiblePortionEnd = text.length();
 
-		if (app.textWidth(text) > width - 12) {
+		if(app.textWidth(text) > width - 12) {
 			adjustVisiblePortionEnd();
-
 		}
-
 		eventType = SET;
 		fireEvent();
 	}
@@ -428,32 +415,40 @@ public class GTextField extends GClipboard {
 
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
-				this.takeFocus();
-				endSelect = -1;
-				startSelect = cursorPos = findClosestGap(e.getX() - p.x);
+			if(isOver(app.mouseX, app.mouseY)){
+				if(focusIsWith != this)
+					this.takeFocus();
+				startSelect = endSelect = cursorPos = findClosestGap(e.getX() - p.x, true);
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
-				endSelect = -1;
-				startSelect = cursorPos = findClosestGap(e.getX() - p.x);
+				startSelect = endSelect = cursorPos = findClosestGap(e.getX() - p.x, true);
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if (focusIsWith == this && endSelect == startSelect) {
-				startSelect = -1;
-				endSelect = -1;
-			}
+			// Nothing to do
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this)
-				endSelect = cursorPos = findClosestGap(e.getX() - p.x);
-		}
+			if(focusIsWith == this /*&& app.millis() % 200 > 100*/){
+				int oldEndSelect = endSelect;
+				endSelect = cursorPos = findClosestGap(e.getX() - p.x, false);
+				if(endSelect < oldEndSelect) {  // dragging left
+					while(endSelect < visiblePortionStart && visiblePortionStart > 0){
+						visiblePortionStart--;
+					}
+					adjustVisiblePortionEnd();
+				}
+				else if(endSelect > oldEndSelect) {  // dragging right
+					while(endSelect > visiblePortionEnd && visiblePortionEnd < text.length()) {
+						visiblePortionEnd++;
+					}
+					adjustVisiblePortionStart();
+				}
+			}
+		} // end of switch
 		updateXPos();
 	}
-
-
 
 	/**
 	 * receives KeyEvents forwarded to it by the GUIController
@@ -465,89 +460,70 @@ public class GTextField extends GClipboard {
 			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 
-			if (e.getID() == KeyEvent.KEY_PRESSED) {
-				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-					if (shiftDown) {
-						if (startSelect == -1)
-							startSelect = cursorPos;
-						endSelect = cursorPos = visiblePortionEnd = text.length();
-					} else {
-						// Shift isn't down
-						startSelect = endSelect = -1;
-						cursorPos = visiblePortionEnd = text.length();
+			if(e.getID() == KeyEvent.KEY_PRESSED) {
+				if(e.getKeyCode() == KeyEvent.VK_END) {
+					if(shiftDown) { // Select to end of text
+						endSelect = text.length();
+						cursorPos = endSelect;
+					} else { // Move cursor to end of text
+						startSelect = endSelect = cursorPos = text.length();
 					}
-					//visiblePortionStart = visiblePortionEnd;
+					visiblePortionEnd = cursorPos;
+					if(cursorPos > visiblePortionEnd)
+						visiblePortionEnd = cursorPos;
 					adjustVisiblePortionStart();
 				} 
-				else if (e.getKeyCode() == KeyEvent.VK_UP) {
-					if (shiftDown) {
-						if (endSelect == -1)
-							endSelect = cursorPos;
-						startSelect = cursorPos = visiblePortionStart = 0;
-					} else {
-						// Shift isn't down
-						startSelect = endSelect = -1;
-						cursorPos = visiblePortionStart = 0;
+				else if(e.getKeyCode() == KeyEvent.VK_HOME) {
+					if(shiftDown) { // select to start of text
+						startSelect = 0;
+						cursorPos = startSelect;
+					} else { //Move cursor to start of text
+						startSelect = endSelect = cursorPos = visiblePortionStart = 0;
 					}
-					//visiblePortionEnd = visiblePortionStart;
+					if(cursorPos < visiblePortionStart)
+						visiblePortionStart = cursorPos;
 					adjustVisiblePortionEnd();
 				} 
-				else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-					if (shiftDown) {
-						if (cursorPos > 0) {
-							if (startSelect != -1 && endSelect != -1) {
-								startSelect--;
-								cursorPos--;
-							} else {
-								endSelect = cursorPos;
-								cursorPos--;
-								startSelect = cursorPos;
-							}
-						}
-					} else {
-						if (startSelect != -1 && endSelect != -1) {
-							cursorPos = Math.min(startSelect, endSelect);
-							startSelect = endSelect = -1;
-						} else if (cursorPos > 0) {
+				else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+					if(shiftDown) {	// selecting text to left
+						if(cursorPos > 0) {
 							cursorPos--;
+							endSelect = cursorPos;
+						}
+					} else { // moving cursor left
+						if(cursorPos > 0){
+							cursorPos--;
+							startSelect = endSelect = cursorPos;
 						}
 					}
 					centerCursor();
 				} 
-				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					if (shiftDown) {
-						if (cursorPos < text.length()) {
-							if (startSelect != -1 && endSelect != -1) {
-								endSelect++;
-								cursorPos++;
-							} else {
-								startSelect = cursorPos;
-								cursorPos++;
-								endSelect = cursorPos;
-							}
-						}
-					} else {
-						if (startSelect != -1 && endSelect != -1) {
-							cursorPos = Math.max(startSelect, endSelect);
-							startSelect = endSelect = -1;
-						} else if (cursorPos < text.length()) {
+				else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					if(shiftDown) { // selecting text to right
+						if(cursorPos < text.length()) {
 							cursorPos++;
+							endSelect = cursorPos;
+						}
+					} else { // moving cursor right
+						if(cursorPos < text.length()){
+							cursorPos++;
+							startSelect = endSelect = cursorPos;
 						}
 					}
 					centerCursor();
 				} 
-				else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+				else if(e.getKeyCode() == KeyEvent.VK_DELETE) {
 					deleteChar();
 				}
-				else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					eventType = ENTERED;
 					fireEvent();
 				}
 				else{
-					if ((e.getModifiers() & shortcutMask) == shortcutMask) {
+					if((e.getModifiers() & shortcutMask) == shortcutMask) {
 						switch (e.getKeyCode()) {
 						case KeyEvent.VK_C:
-							if (startSelect != -1 && endSelect != -1) {
+							if(startSelect != endSelect) {
 								copySubstring(startSelect, endSelect);
 							}
 							break;
@@ -555,7 +531,7 @@ public class GTextField extends GClipboard {
 							appendToRightOfCursor(paste());
 							break;
 						case KeyEvent.VK_X:
-							if (startSelect != -1 && endSelect != -1) {
+							if(startSelect != endSelect) {
 								copySubstring(startSelect, endSelect);
 								deleteSubstring(startSelect, endSelect);
 							}
@@ -567,14 +543,15 @@ public class GTextField extends GClipboard {
 						}
 					} 
 				}
-			} 
-			else if (e.getID() == KeyEvent.KEY_TYPED) {
-				if ((e.getModifiers() & shortcutMask) == shortcutMask) {
+			}
+		
+			else if(e.getID() == KeyEvent.KEY_TYPED) {
+				if((e.getModifiers() & shortcutMask) == shortcutMask) {
 				}
-				else if (e.getKeyChar() == '\b') {
+				else if(e.getKeyChar() == '\b') {
 					backspaceChar();
 				} 
-				else if (e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
+				else if(e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
 					if(validUnicode(e.getKeyChar()))
 						appendToRightOfCursor(e.getKeyChar());
 				}
@@ -598,35 +575,32 @@ public class GTextField extends GClipboard {
 			app.rect(pos.x, pos.y, width, height);
 			app.noStroke();
 
-			// Compute the left offset for the start of text
-			// ***** MOVE THIS TO SOMEWHERE THAT DOESN'T GET CALLED 50 MILLION TIMES PER SECOND ******
-			float offset;
-			if (cursorPos == text.length() && app.textWidth(text) > width - 8)
-				offset = (width - 4) - app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd));
-			else
-				offset = 4;
-
 			// Draw the selection rectangle
-			if (startSelect != -1 && endSelect != -1) {
+			if(startSelect != endSelect) {
 				app.fill(0xffa0a0ff);
-				app.rect(pos.x + startSelectXPos + offset, pos.y + 3, endSelectXPos - startSelectXPos + 1, 15);
+				app.rect(pos.x + startSelectXPos + 4, pos.y + 3, endSelectXPos - startSelectXPos + 1, 15);
 			}
 
-			// Draw the string
+			// Draw the string (using fixed offset = 4)
 			app.fill(0);
-			app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + offset, pos.y + 5, width - 8, height - 6);
+			app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, pos.y + 5, width - 8, height - 6);
+
 			// Draw the insertion point (it blinks!)
-			if (focusIsWith == this && (startSelect == -1 || endSelect == -1) 
-					&& ((app.millis() % 1000) > 500)
+			if(focusIsWith == this	&& ((app.millis() % 1000) > 500)
 					&& (cursorPos >= visiblePortionStart)
 					&& cursorPos <= visiblePortionEnd) {
 				app.stroke(64);
-				app.line(pos.x + (int) cursorXPos + offset, pos.y + 3, pos.x + (int) cursorXPos + offset, pos.y + height - 3);
+				app.line(pos.x + (int) cursorXPos + 4, pos.y + 3, pos.x + (int) cursorXPos + 4, pos.y + height - 3);
 			}
 		}
 	}
 
-
+	/**
+	 * Returns true if b has a valid unicode value
+	 * 
+	 * @param b
+	 * @return
+	 */
 	public static boolean validUnicode(char b)
 	{
 		int c = (int)b;
@@ -760,6 +734,53 @@ public class GTextField extends GClipboard {
 				(c == 0xF833));
 	}
 
+	public int getVisiblePortionStart()
+	{
+		return visiblePortionStart;
+	}
 
+	public void setVisiblePortionStart(int VisiblePortionStart)
+	{
+		visiblePortionStart = VisiblePortionStart;
+	}
 
+	public int getVisiblePortionEnd()
+	{
+		return visiblePortionEnd;
+	}
+
+	public void setVisiblePortionEnd(int VisiblePortionEnd)
+	{
+		visiblePortionEnd = VisiblePortionEnd;
+	}
+
+	public int getStartSelect()
+	{
+		return startSelect;
+	}
+
+	public void setStartSelect(int StartSelect)
+	{
+		startSelect = StartSelect;
+	}
+
+	public int getEndSelect()
+	{
+		return endSelect;
+	}
+
+	public void setEndSelect(int EndSelect)
+	{
+		endSelect = EndSelect;
+	}
+
+	public int getCursorPosition()
+	{
+		return cursorPos;
+	}
+
+	public void setCursorPosition(int CursorPos)
+	{
+		cursorPos = CursorPos;
+	}
 }

@@ -32,7 +32,6 @@ public class GFont {
 	// Font details
 	public PFont gpFont;
 	public int gpFontSize;
-	public int gpHeightOffset; // for text(String,int,int,int,int)
 
 	/**
 	 * Create a font

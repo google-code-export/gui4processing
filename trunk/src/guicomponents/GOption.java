@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+@SuppressWarnings("unchecked")
 public class GOption extends GComponent implements Comparable {
 	/**
 	 * All GOption objects should belong to a group

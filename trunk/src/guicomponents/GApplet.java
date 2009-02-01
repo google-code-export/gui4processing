@@ -23,7 +23,7 @@
 
 package guicomponents;
 
-import java.util.HashMap;
+import java.util.HashSet;
 
 import processing.core.PApplet;
 
@@ -31,28 +31,20 @@ import processing.core.PApplet;
 @SuppressWarnings("serial")
 public class GApplet extends PApplet {
 
-	protected HashMap<String, GComponent> widgets = new HashMap<String, GComponent>();
+	protected HashSet<GComponent> widgets = new HashSet<GComponent>();
 	
 	public GApplet(){
 		super();
 	}
 	
 	protected boolean addComponent(GComponent widget){
-		String id = widget.getID();
-		if(widget.getID() == null){
-			System.out.println("Must specify an ID for this component");
+		if(widgets.contains(widget)){
+			System.out.println("This component has already been added to this panel");
 			return false;
+		} else {
+			widgets.add(widget);
+			return true;
 		}
-		else if(widgets.containsKey(id)){
-			System.out.println("Duplicate ID found: "+id+" has been used already");
-			return false;
-		}
-		widgets.put(id, widget);
-		return true;
-	}
-	
-	protected GComponent getWidget(String id){
-		return widgets.get(id);
 	}
 	
 	public void panel(String id, String text, int x, int y, int width, int height){
@@ -67,8 +59,4 @@ public class GApplet extends PApplet {
 		addComponent(widget);
 	}
 
-	public GPanel panel(String id){
-		return (GPanel)getWidget(id);
-	}
-
-}
+} // end of class
