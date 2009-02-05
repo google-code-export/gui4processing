@@ -2,11 +2,16 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui4processing/
-	
-  Will not claim authorship for this as the code in this class has been 
-  taken from a similar GUI library Interfascia ALPHA 002 -- 
+
+	 Copyright (c) 2008-09 Peter Lager
+
+  The actual code to create the clipbaord, copy and paste were 
+  taken taken from a similar GUI library Interfascia ALPHA 002 -- 
   http://superstable.net/interfascia/  produced by Brenden Berg 
-  
+  The main change is to provide static copy and paste methods to 
+  separate the clipboard logic from the component logic and provide
+  global access.
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
@@ -37,7 +42,7 @@ import java.awt.datatransfer.Transferable;
  * methods to simplify the sharing of a single clipboard over all classes.
  * The need to implement the ClipboardOwner interface requires an object so
  * this class creates an object the first time an attempt to copy or paste
- * action is implemented.
+ * is used.
  * 
  * All methods are private except copy() and paste() - lostOwnership()
  * has to be public because of the Clipboard owner interface.
@@ -51,23 +56,27 @@ public class GClip implements ClipboardOwner {
 	 * Static reference to enforce singleton pattern
 	 */
 	private static GClip gclipboard = null;
-	
+
 	/**
 	 * Class attribute to reference the programs clipboard
 	 */
 	private Clipboard clipboard = null;
-	
+
 
 	/**
-	 * Copy string to clipboard
-	 * @param v
+	 * Copy a string to the clipboard
+	 * @param chars
 	 */
-	public static void copy(String v){
+	public static void copy(String chars){
 		if(gclipboard == null)
 			gclipboard = new GClip();
-		gclipboard.copyString(v);
+		gclipboard.copyString(chars);
 	}
-	
+
+	/**
+	 * Get a string from the clipboard
+	 * @return
+	 */
 	public static String paste(){
 		if(gclipboard == null)
 			gclipboard = new GClip();
@@ -93,34 +102,39 @@ public class GClip implements ClipboardOwner {
 			try {
 				clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			} catch (Exception e) {
-				// THIS IS DUMB
+				// THIS IS DUMB - true but is there another way - I think not
 			}
 		}
 	}
 
-	private void copyString(String v){
+	/**
+	 * Copy a string to the clipboard. If the Clipboard has not been created
+	 * then create it.
+	 * @return
+	 */
+	private void copyString(String chars){
 		if(clipboard == null)
 			makeClipboardObject();
-		StringSelection fieldContent = new StringSelection (v);
+		StringSelection fieldContent = new StringSelection (chars);
 		clipboard.setContents (fieldContent, this);
 	}
-	
+
 	/**
-	 * Retrieve string data from clipboard. If the clipboard does not
-	 * have a string then returns null
+	 * Gets a string from the clipboard. If there is no Clipboard
+	 * then create it.
 	 * @return
 	 */
 	private String pasteString(){
-		// If there is no clipboard then there was nothing to paste
+		// If there is no clipboard then there is nothing to paste
 		if(clipboard == null){
 			makeClipboardObject();
 			return "";
 		}
-
+		// We have a clipboard so get the string if we can
 		Transferable clipboardContent = clipboard.getContents(this);
-		
+
 		if ((clipboardContent != null) &&
-			(clipboardContent.isDataFlavorSupported(DataFlavor.stringFlavor))) {
+				(clipboardContent.isDataFlavorSupported(DataFlavor.stringFlavor))) {
 			try {
 				String tempString;
 				tempString = (String) clipboardContent.getTransferData(DataFlavor.stringFlavor);
@@ -133,11 +147,11 @@ public class GClip implements ClipboardOwner {
 		return "";
 	}
 
-	
+
 	@Override
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
