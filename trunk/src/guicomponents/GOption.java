@@ -82,7 +82,7 @@ public class GOption extends GComponent implements Comparable {
 			calcAbsPosition(pos);
 			if (!text.equals("")){
 				app.noStroke();
-				app.fill(localColor.panelTabFont);
+				app.fill(localColor.pnlForeground);
 				app.textFont(localFont, localFont.size);
 				app.text(text, pos.x + 20, pos.y - 1, textWidth, height);
 			}

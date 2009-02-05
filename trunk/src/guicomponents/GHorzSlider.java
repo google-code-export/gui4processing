@@ -88,14 +88,14 @@ public class GHorzSlider extends GSlider {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
-			app.fill(localColor.sliderBG);
+			app.fill(localColor.sdrBackground);
 			app.rect(pos.x, pos.y, width, height);
-			app.fill(localColor.sliderThumb);
+			app.fill(localColor.sdrThumb);
 			app.rect(pos.x + thumbPos - thumbSize/2, pos.y, thumbSize, height);
 			if(border != 0){
 				app.strokeWeight(border);
 				app.noFill();
-				app.stroke(localColor.sliderStroke);
+				app.stroke(localColor.sdrBorder);
 				app.rect(pos.x, pos.y, width, height);
 			}
 		}

@@ -30,19 +30,23 @@ public class GColor implements GUI {
 	protected static PApplet app;
 
 	// Panels / Labels
-	public int panel;
-	public int panelTab;
-	public int panelTabFont;
+	public int pnlBackground;
+	public int pnlTabBackground;
+	public int pnlForeground;
 	public int panelTabHeight;
 
 	public int buttonOff, buttonOver, buttonDown;
 	public int buttonFont;
 	
-	public int sliderBG;
-	public int sliderThumb;
-	public int sliderStroke;
+	public int sdrBackground;
+	public int sdrThumb;
+	public int sdrBorder;
 	
-
+	public int txfBackground;
+	public int txfForeground;
+	public int txfSelection;
+	public int txfBorder;
+	
 	/**
 	 * Set the default color scheme
 	 * 
@@ -111,10 +115,12 @@ public class GColor implements GUI {
 	 */
 	private void makeColorScheme(int pdark, int plight, int alphaLow, int alphaHigh, int pfont, int font)
 	{
+		// Mask to get RGB
 		int colMask = 0x00ffffff;
+		// Mask to get A (alpha)
 		int alphaMask = 0xff000000;
 		
-		// Make opaque
+		// Make opaque then we can adjust alpha as and when
 		pdark |= alphaMask;
 		plight |= alphaMask;
 		
@@ -122,12 +128,14 @@ public class GColor implements GUI {
 		alphaHigh <<= 24;
 		
 		// Panel colours
-		panel = (plight & colMask) | alphaLow;
-		panelTab = (pdark & colMask) | alphaLow;
-		panelTabFont = (pfont & colMask) | alphaMask;
-		sliderBG = alphaHigh | 0x00ffffff;
-		sliderThumb = plight;
-		sliderStroke = pdark;
+		pnlBackground = (plight & colMask) | alphaLow;
+		pnlTabBackground = (pdark & colMask) | alphaLow;
+		pnlForeground = (pfont & colMask) | alphaMask;
+		// Slider colours
+		sdrBackground = alphaHigh | 0x00ffffff;
+		sdrThumb = plight;
+		sdrBorder = pdark;
+		// button colours
 		buttonOff = PApplet.lerpColor(pdark, plight, 50, PConstants.HSB);
 		buttonOff = (buttonOff & colMask) | alphaHigh;
 		buttonOver = PApplet.lerpColor(pdark, plight, 80, PConstants.HSB);
@@ -135,6 +143,12 @@ public class GColor implements GUI {
 		buttonDown = PApplet.lerpColor(pdark, plight, 20, PConstants.HSB);
 		buttonDown = (buttonDown & colMask) | alphaHigh;
 		buttonFont = (font & colMask) | alphaMask;
+		// text field colours
+		txfBackground = app.color(255);
+		txfForeground = app.color(pnlForeground);
+		txfSelection = (plight & colMask) | alphaMask;
+		txfBorder = app.color(pnlForeground);
+	
 	}
 
 } // end of class

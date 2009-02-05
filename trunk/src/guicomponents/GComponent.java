@@ -24,9 +24,6 @@
 package guicomponents;
 
 import java.awt.Point;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
@@ -46,11 +43,6 @@ public class GComponent implements GUI {
 	 * before setting its value to the new component 
 	 */
 	protected static GComponent focusIsWith; // READ ONLY
-
-	
-	
-//	protected static GComponent mouseLastReleased = null;
-//	protected static int lastEventID = Integer.MAX_VALUE;
 	
 	/*
 	 * Used to track mouse required by GButton, GCheckbox, GHorzSlider
