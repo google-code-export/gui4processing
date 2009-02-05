@@ -32,7 +32,7 @@ public class GFont {
 	protected PApplet app;
 
 	// Keep track of all fonts made and prevent duplicates
-	private static final HashMap<GFontID, PFont> fontmap = new HashMap<GFontID, PFont>();
+	private static final HashMap<GFontKey, PFont> fontmap = new HashMap<GFontKey, PFont>();
 
 //	public static final String SERIF = "Arial Bold";
 //	public static final String SANS_SERIF = "Arial Bold";
@@ -49,7 +49,7 @@ public class GFont {
 	public static PFont getFont(PApplet theApplet, String fontname, int fsize){
 		// Keep size to something manageable
 		fsize = PApplet.constrain(fsize, 8, 72);
-		GFontID fkey = new GFontID(fontname, fsize);
+		GFontKey fkey = new GFontKey(fontname, fsize);
 		PFont pfont = null;
 		// See if the font has already been created
 		// if so return it else make it
@@ -65,7 +65,7 @@ public class GFont {
 				System.out.println("Unable to find font " + fontname + 
 						" using default Sans Serif font of same size");
 				// make sans-serif font at this size if not already done
-				fkey = new GFontID("SansSerif", fsize);
+				fkey = new GFontKey("SansSerif", fsize);
 				if(fontmap.containsKey(fkey))
 					pfont = fontmap.get(fkey);
 				else {
@@ -80,7 +80,7 @@ public class GFont {
 	
 	public static PFont getSerifFont(PApplet theApplet, int fsize){
 		fsize = PApplet.constrain(fsize, 8, 72);
-		GFontID fkey = new GFontID("Serif", fsize);
+		GFontKey fkey = new GFontKey("Serif", fsize);
 		PFont pfont;
 		if(fontmap.containsKey(fkey))
 			return fontmap.get(fkey);
@@ -93,7 +93,7 @@ public class GFont {
 
 	public static PFont getSansSerifFont(PApplet theApplet, int fsize){
 		fsize = PApplet.constrain(fsize, 8, 72);
-		GFontID fkey = new GFontID("SansSerif", fsize);
+		GFontKey fkey = new GFontKey("SansSerif", fsize);
 		PFont pfont;
 		if(fontmap.containsKey(fkey))
 			pfont = fontmap.get(fkey);
@@ -106,7 +106,7 @@ public class GFont {
 
 	public static PFont getMonospacedFont(PApplet theApplet, int fsize){
 		fsize = PApplet.constrain(fsize, 8, 72);
-		GFontID fkey = new GFontID("Monospaced", fsize);
+		GFontKey fkey = new GFontKey("Monospaced", fsize);
 		PFont pfont;
 		if(fontmap.containsKey(fkey))
 			pfont = fontmap.get(fkey);
@@ -118,25 +118,25 @@ public class GFont {
 	}
 
 	public static PFont getDefaultFont(PApplet theApplet){
-		PFont pfont = GFont.getFont(theApplet, "Arial Bold", 10);
+		PFont pfont = GFont.getFont(theApplet, "Arial Bold", 11);
 		return pfont;
 	}
 
 	
 	// Defines a key to uniquely identify fonts created
-	private static class GFontID implements Comparable<GFontID>{
+	private static class GFontKey implements Comparable<GFontKey>{
 
 		private final String fontKey;
 
-		public GFontID(String fontname, int fontsize){
+		public GFontKey(String fontname, int fontsize){
 			fontKey = fontname + "-" + fontsize;
 		}
 
 		public boolean equals(Object o){
-			GFontID gfid = (GFontID) o;
-			if(gfid == null)
+			GFontKey fkey = (GFontKey) o;
+			if(fkey == null)
 				return false;
-			return fontKey.equals(gfid.fontKey);
+			return fontKey.equals(fkey.fontKey);
 		}
 	
 		public int hashCode(){
@@ -144,10 +144,10 @@ public class GFont {
 		}
 		
 		@Override
-		public int compareTo(GFontID gfid) {
-			if(gfid == null)
+		public int compareTo(GFontKey fkey) {
+			if(fkey == null)
 				return 1;
-			return fontKey.compareTo(gfid.fontKey );
+			return fontKey.compareTo(fkey.fontKey );
 		}
 
 		public String toString(){
