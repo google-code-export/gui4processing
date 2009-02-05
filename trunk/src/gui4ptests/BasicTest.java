@@ -41,10 +41,6 @@ public class BasicTest extends PApplet implements PConstants{
 		
 		GComponent.globalColor = GColor.getColor(this,  GUI.BLUE);
 		GComponent.globalFont = GFont.getDefaultFont(this);
-		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 12);
-		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 11);
-		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 12);
-		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 11);
 
 		p = new GPanel(this, "Toroid Control Panel", 300, 60, 460, 90);
 		lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
