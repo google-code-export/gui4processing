@@ -92,7 +92,7 @@ public class GLabel extends GComponent {
 	
 	private void labelCoreCtor(String text, int width, int align){
 		this.width = width;
-		this.height = localFont.size + 2;
+		this.height = localFont.size + 2 * PADV;
 		if(text != null)
 			setText(text);
 		app.registerDraw(this);		
