@@ -1,5 +1,10 @@
 package gui4ptests;
 
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Map.Entry;
+
+
 import guicomponents.GButton;
 import guicomponents.GCheckbox;
 import guicomponents.GColor;
@@ -15,6 +20,7 @@ import guicomponents.GTextField;
 import guicomponents.GUI;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PFont;
 
 @SuppressWarnings("serial")
 public class BasicTest extends PApplet implements PConstants{
@@ -29,12 +35,17 @@ public class BasicTest extends PApplet implements PConstants{
 	GPanel p;
 	GButton btn;
 	GTextField txf1, txf2;
-	
+
 	public void setup(){
 		size(600,300);
-
-		GComponent.globalColor = GColor.getColor(this,  GUI.YELLOW);
+		
+		GComponent.globalColor = GColor.getColor(this,  GUI.BLUE);
 		GComponent.globalFont = GFont.getDefaultFont(this);
+		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 12);
+		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 11);
+		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 12);
+		GComponent.globalFont = GFont.getFont(this, "Georgia Bold", 11);
+
 		p = new GPanel(this, "Toroid Control Panel", 300, 60, 460, 90);
 		lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
 		lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
@@ -58,7 +69,7 @@ public class BasicTest extends PApplet implements PConstants{
 		txf2 = new GTextField(this, "Peter Lager works at the University of Bolton", 60,20,100,0);
 		txf1 = new GTextField(this, "Start text",  200,60,100,0);
 		p.add(txf1);
-		
+
 		p.add(lblSegs);
 		p.add(lblPts);
 		p.add(lblERad);
@@ -70,13 +81,14 @@ public class BasicTest extends PApplet implements PConstants{
 		optShape = new GOptionGroup(this);
 		p.add(optHelix);
 		p.add(optTorroid);
+		p.add(btn);
 		p.add(cbxWire);
 		optShape.addOption(optTorroid);
 		optShape.addOption(optHelix);
-		p.add(btn);
 		p.setOpaque(true);
+
 	}
-	
+
 	public void draw(){
 		background(bg);
 		this.pushMatrix();
@@ -85,7 +97,7 @@ public class BasicTest extends PApplet implements PConstants{
 		line(mouseX, mouseY, width/2.0f, height/2.0f);
 		this.popMatrix();
 	}
-	
+
 	public void handleTextFieldEvents(GTextField tfield){
 		switch(tfield.getEventType()){
 		case GTextField.CHANGED:
@@ -99,5 +111,20 @@ public class BasicTest extends PApplet implements PConstants{
 			break;
 		}
 		System.out.println(tfield.getText());
+	}
+
+	public void handleSliderEvents(GSlider slider){
+	}
+
+	public void handleOptionEvents(GOption selected, GOption deselected){
+	}
+
+
+	public void handleCheckboxEvents(GCheckbox cbox){
+	}
+
+
+	public void handleButtonEvents(GButton button){
+
 	}
 }

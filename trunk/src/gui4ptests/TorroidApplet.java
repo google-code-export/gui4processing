@@ -22,7 +22,7 @@ public class TorroidApplet extends PApplet implements PConstants {
 		t1 = new Toroid(this);
 
 		GComponent.globalColor = GColor.getColor(this,  GUI.BLUE);
-		GComponent.globalFont = GFont.getDefaultFont(this);
+		GComponent.globalFont = GFont.getSerifFont(this,12);
 		p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 90);
 		lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
 		lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
