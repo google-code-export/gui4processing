@@ -1,10 +1,5 @@
 package gui4ptests;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map.Entry;
-
-
 import guicomponents.GButton;
 import guicomponents.GCheckbox;
 import guicomponents.GColor;
@@ -20,7 +15,6 @@ import guicomponents.GTextField;
 import guicomponents.GUI;
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PFont;
 
 @SuppressWarnings("serial")
 public class BasicTest extends PApplet implements PConstants{
