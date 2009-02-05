@@ -27,14 +27,15 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 public class GButton extends GComponent implements GUI{
 	
 	private int status;
 	
 	public GButton(PApplet theApplet, String text, int x, int y, int width, int height,
-			GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
+			GColor color, PFont font){
+		super(theApplet, x, y, color, font);
 		buttonCtorCore(text, width, height);
 	}
 
@@ -46,7 +47,7 @@ public class GButton extends GComponent implements GUI{
 	private void buttonCtorCore(String text, int width, int height) {
 		setText(text);
 		this.width = Math.max(width, textWidth + PADH * 2);
-		this.height = Math.max(height, localFont.gpFontSize);
+		this.height = Math.max(height, localFont.size + 2 * PADV);
 		createEventHandler(app);
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
@@ -98,8 +99,8 @@ public class GButton extends GComponent implements GUI{
 			app.rect(pos.x,pos.y,width,height);
 			app.noStroke();
 			app.fill(localColor.buttonFont);
-			app.textFont(localFont.gpFont, localFont.gpFontSize);
-			app.text(getText(), pos.x + (width - textWidth)/2, pos.y + (height - localFont.gpFontSize)/2, width, height);
+			app.textFont(localFont, localFont.size);
+			app.text(text, pos.x + (width - textWidth)/2, pos.y -1 + (height - localFont.size)/2, width, height);
 		}
 	}
 

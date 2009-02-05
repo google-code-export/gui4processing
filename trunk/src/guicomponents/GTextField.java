@@ -41,6 +41,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 public class GTextField extends GClipboard {
 	// Text has changed
@@ -69,11 +70,12 @@ public class GTextField extends GClipboard {
 	 * @param y vertical position relative to PApplet or PPanel
 	 * @param width width of text field
 	 * @param height height of text field
-	 * @param colorScheme colour scheme to use
-	 * @param fontScheme font to use
+	 * @param colors colour scheme to use
+	 * @param font font to use
 	 */
-	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
+	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, 
+			GColor colors, PFont font){
+		super(theApplet, x, y, colors, font);
 		textFieldCtorCore(text, width, height);
 	}
 	
@@ -101,7 +103,8 @@ public class GTextField extends GClipboard {
 
 	private void textFieldCtorCore(String text, int width, int height) {
 		this.width = Math.max(width, textWidth + PADH * 2);
-		this.height = Math.max(height, localFont.gpFontSize + 8);
+		this.height = Math.max(height, localFont.size + PADV * 2);
+		System.out.println(this.height);
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(app);
@@ -578,19 +581,20 @@ public class GTextField extends GClipboard {
 			// Draw the selection rectangle
 			if(startSelect != endSelect) {
 				app.fill(0xffa0a0ff);
-				app.rect(pos.x + startSelectXPos + 4, pos.y + 3, endSelectXPos - startSelectXPos + 1, 15);
+				app.rect(pos.x + startSelectXPos + 4, pos.y + PADV, endSelectXPos - startSelectXPos + 1, height - 2 * PADV + 1);
 			}
 
 			// Draw the string (using fixed offset = 4)
 			app.fill(0);
-			app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, pos.y + 5, width - 8, height - 6);
+			app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
+					pos.y - 1 + (height - localFont.size)/2 , width - 8, height);
 
 			// Draw the insertion point (it blinks!)
 			if(focusIsWith == this	&& ((app.millis() % 1000) > 500)
 					&& (cursorPos >= visiblePortionStart)
 					&& cursorPos <= visiblePortionEnd) {
 				app.stroke(64);
-				app.line(pos.x + (int) cursorXPos + 4, pos.y + 3, pos.x + (int) cursorXPos + 4, pos.y + height - 3);
+				app.line(pos.x + (int) cursorXPos + 4, pos.y + PADV, pos.x + (int) cursorXPos + 4, pos.y + height - 2 * PADV);
 			}
 		}
 	}

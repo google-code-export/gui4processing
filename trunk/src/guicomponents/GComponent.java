@@ -32,6 +32,7 @@ import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 public class GComponent implements GUI, ClipboardOwner{
 
@@ -58,11 +59,11 @@ public class GComponent implements GUI, ClipboardOwner{
 	public static GColor globalColor;
 	public static GColor localColor;
 	
-	public static GFont globalFont;
-	public static GFont localFont;
+	public static PFont globalFont;
+	public static PFont localFont;
 	
 	protected final static int PADH = 4;
-	protected final static int PADV = 1;
+	protected final static int PADV = 2;
 	
 	/** This must be set by the constructor */
 	protected PApplet app;
@@ -95,6 +96,7 @@ public class GComponent implements GUI, ClipboardOwner{
 
 	protected boolean visible = true;
 
+	// border width for components
 	protected int border = 0;
 
 	/**
@@ -134,13 +136,13 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * @param theApplet
 	 * @param x
 	 * @param y
-	 * @param cScheme
-	 * @param fScheme
+	 * @param colors
+	 * @param font
 	 */
-	public GComponent(PApplet theApplet, int x, int y, GColor cScheme, GFont fScheme ){
+	public GComponent(PApplet theApplet, int x, int y, GColor colors, PFont font ){
 		app = theApplet;
-		localColor = cScheme;
-		localFont = fScheme;
+		localColor = colors;
+		localFont = font;
 		if(globalColor == null)
 			globalColor = localColor;
 		if(globalFont == null)
@@ -159,25 +161,18 @@ public class GComponent implements GUI, ClipboardOwner{
 	 * @param theApplet
 	 * @param x
 	 * @param y
-	 * @param cScheme
+	 * @param colors
 	 */
-	public GComponent(PApplet theApplet, int x, int y, GColor cScheme){
+	public GComponent(PApplet theApplet, int x, int y, GColor colors){
 		app = theApplet;
-		localColor = cScheme;
+		localColor = colors;
 		if(globalColor == null)
 			globalColor = localColor;
 		this.x = x;
 		this.y = y;
 	}
 
-	/**
-	 * 
-	 * @return the unique ID for this component
-	 */
-//	public String getID(){
-//		return id;
-//	}
-	
+
 	/*
 	 * The following methods are related to handling focus.
 	 * Most components can loose focus without affecting their state
@@ -322,7 +317,7 @@ public class GComponent implements GUI, ClipboardOwner{
 	 */
 	public void setText(String text) {
 		this.text = text;
-		app.textFont(localFont.gpFont, localFont.gpFontSize);
+		app.textFont(localFont, localFont.size);
 		textWidth = (int) app.textWidth(text); 
 	}
 
@@ -332,7 +327,7 @@ public class GComponent implements GUI, ClipboardOwner{
 	public void setText(String text, int align) {
 		this.text = text;
 		textAlign = align;
-		app.textFont(localFont.gpFont, localFont.gpFontSize);
+		app.textFont(localFont, localFont.size);
 		textWidth = (int) app.textWidth(text); 
 	}
 

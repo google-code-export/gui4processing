@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PImage;
 
 @SuppressWarnings("unchecked")
@@ -19,14 +20,14 @@ public class GOption extends GComponent implements Comparable {
 	
 	
 	public GOption(PApplet theApplet, String text, int x, int y, int width, int align,
-			GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
+			GColor colors, PFont font){
+		super(theApplet, x, y, colors, font);
 		optionCtorCore(text, width, align);
 	}
 
 	public GOption(PApplet theApplet, String text, int x, int y, int width,
-			GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
+			GColor colorScheme, PFont font){
+		super(theApplet, x, y, colorScheme, font);
 		optionCtorCore(text, width, GUI.LEFT);
 	}
 
@@ -42,7 +43,7 @@ public class GOption extends GComponent implements Comparable {
 
 	private void optionCtorCore(String text, int width, int align){
 		this.width = width;
-		height = localFont.gpFontSize + 2;
+		height = localFont.size + 2 * PADV;
 		setText(text, align);
 		if(imgSelected == null)
 			imgSelected = app.loadImage("radio1.png");
@@ -79,11 +80,11 @@ public class GOption extends GComponent implements Comparable {
 		if(visible){
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
-			if (!getText().equals("")){
+			if (!text.equals("")){
 				app.noStroke();
 				app.fill(localColor.panelTabFont);
-				app.textFont(localFont.gpFont, localFont.gpFontSize);
-				app.text(getText(), pos.x + 20, pos.y + PADV, textWidth, height);
+				app.textFont(localFont, localFont.size);
+				app.text(text, pos.x + 20, pos.y - 1, textWidth, height);
 			}
 			app.fill(app.color(255,255));
 			if(group != null && group.getSelected() == this)

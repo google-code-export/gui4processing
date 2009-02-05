@@ -41,6 +41,7 @@ public class GColor implements GUI {
 	public int sliderBG;
 	public int sliderThumb;
 	public int sliderStroke;
+	
 
 	/**
 	 * Set the default color scheme

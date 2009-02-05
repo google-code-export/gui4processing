@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PImage;
 
 public class GCheckbox extends GComponent {
@@ -38,14 +39,14 @@ public class GCheckbox extends GComponent {
 	
 	
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align,
-			GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
+			GColor colors, PFont font){
+		super(theApplet, x, y, colors, font);
 		checkboxCtorCore(text, width, align);
 	}
 
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width,
-			GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
+			GColor colors, PFont font){
+		super(theApplet, x, y, colors, font);
 		checkboxCtorCore(text, width, GUI.LEFT);
 	}
 
@@ -61,7 +62,7 @@ public class GCheckbox extends GComponent {
 
 	private void checkboxCtorCore(String text, int width, int align){
 		this.width = width;
-		height = localFont.gpFontSize + 2 * PADV;
+		height = localFont.size + 2 * PADV;
 		setText(text, align);
 		if(imgSelected == null)
 			imgSelected = app.loadImage("check1.png");
@@ -98,11 +99,11 @@ public class GCheckbox extends GComponent {
 		if(visible){
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
-			if (!getText().equals("")){
+			if (!text.equals("")){
 				app.noStroke();
 				app.fill(localColor.panelTabFont);
-				app.textFont(localFont.gpFont, localFont.gpFontSize);
-				app.text(getText(), pos.x + 20, pos.y + PADV, textWidth, height);
+				app.textFont(localFont, localFont.size);
+				app.text(text, pos.x + 20, pos.y - 1, textWidth, height);
 			}
 			app.fill(app.color(255,255));
 			if(selected)

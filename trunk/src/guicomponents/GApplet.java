@@ -26,6 +26,7 @@ package guicomponents;
 import java.util.HashSet;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 
 @SuppressWarnings("serial")
@@ -54,8 +55,8 @@ public class GApplet extends PApplet {
 	}
 	
 	public void panel(String id, String text, int x, int y, int width, int height,
-			GColor colorScheme, GFont fontScheme){
-		GPanel widget = new GPanel(this, text, x, y, width, height, colorScheme, fontScheme);
+			GColor colors, PFont font){
+		GPanel widget = new GPanel(this, text, x, y, width, height, colors, font);
 		addComponent(widget);
 	}
 

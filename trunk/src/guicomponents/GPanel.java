@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 /**
  * Core component
@@ -71,12 +72,12 @@ public class GPanel extends GComponent {
 	 * @param y vertical position
 	 * @param width minimum width of the panel
 	 * @param height minimum height of the panel (excl. tab)
-	 * @param colorScheme color to be used
-	 * @param fontScheme font to be used
+	 * @param colors color to be used
+	 * @param font font to be used
 	 */
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height,
-			GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
+			GColor colors, PFont font){
+		super(theApplet, x, y, colors, font);
 		panelCtorCore(text, width, height);
 	}
 
@@ -102,7 +103,7 @@ public class GPanel extends GComponent {
 
 	private void panelCtorCore(String text, int width, int height){
 		setText(text);
-		tabHeight = localFont.gpFontSize + 2 * PADV;
+		tabHeight = localFont.size + 2 * PADV;
 		constrainPanelPosition();
 		dockX = x;
 		dockY = y;
@@ -147,8 +148,8 @@ public class GPanel extends GComponent {
 			app.rect(pos.x, pos.y - tabHeight, w, tabHeight);
 			// Display tab text
 			app.fill(localColor.panelTabFont);
-			app.textFont(localFont.gpFont, localFont.gpFontSize);
-			app.text(getText(), pos.x + PADH, pos.y - tabHeight + PADV, textWidth, tabHeight);
+			app.textFont(localFont, localFont.size);
+			app.text(text, pos.x + PADH, pos.y - tabHeight + PADV, textWidth, tabHeight);
 			if(!tabOnly){
 				if(opaque){
 					app.fill(localColor.panel);

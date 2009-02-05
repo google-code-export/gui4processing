@@ -31,6 +31,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 /**
  * If your component needs a text clipboard then extend from this class
@@ -43,9 +44,9 @@ public class GClipboard extends GComponent {
 	 */
 	private static Clipboard clipboard = null;
 
-	public GClipboard(PApplet theApplet, int x, int y, GColor colorScheme,
-			GFont fontScheme) {
-		super(theApplet, x, y, colorScheme, fontScheme);
+	public GClipboard(PApplet theApplet, int x, int y, GColor colors,
+			PFont fonts) {
+		super(theApplet, x, y, colors, fonts);
 		textClipboardCtorCore();
 	}
 

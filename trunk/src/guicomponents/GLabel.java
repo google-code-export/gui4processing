@@ -26,6 +26,7 @@ package guicomponents;
 import java.awt.Point;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 public class GLabel extends GComponent {
 
@@ -39,7 +40,7 @@ public class GLabel extends GComponent {
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width) {
 		super(theApplet, x, y);
-		label2(text, width, GUI.LEFT);
+		labelCoreCtor(text, width, GUI.LEFT);
 	}
 
 	/**
@@ -53,7 +54,7 @@ public class GLabel extends GComponent {
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align) {
 		super(theApplet, x, y);
-		label2(text, width, align);
+		labelCoreCtor(text, width, align);
 	}
 
 	/**
@@ -64,13 +65,13 @@ public class GLabel extends GComponent {
 	 * @param y
 	 * @param width
 	 * @param align
-	 * @param colorScheme
+	 * @param colors
 	 * @param fontScheme
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align,
-			GColor colorScheme, GFont fontScheme) {
-		super(theApplet, x, y, colorScheme, fontScheme);
-		label2(text, width, align);
+			GColor colors, PFont fontScheme) {
+		super(theApplet, x, y, colors, fontScheme);
+		labelCoreCtor(text, width, align);
 	}
 	
 	/**
@@ -80,18 +81,18 @@ public class GLabel extends GComponent {
 	 * @param x
 	 * @param y
 	 * @param width
-	 * @param colorScheme
-	 * @param fontScheme
+	 * @param colors
+	 * @param font
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width,
-			GColor colorScheme, GFont fontScheme){
-		super(theApplet, x, y, colorScheme, fontScheme);
-		label2(text, width, GUI.LEFT);
+			GColor colors, PFont font){
+		super(theApplet, x, y, colors, font);
+		labelCoreCtor(text, width, GUI.LEFT);
 	}
 	
-	private void label2(String text, int width, int align){
+	private void labelCoreCtor(String text, int width, int align){
 		this.width = width;
-		this.height = localFont.gpFontSize + 2;
+		this.height = localFont.size + 2;
 		if(text != null)
 			setText(text);
 		app.registerDraw(this);		
@@ -112,8 +113,8 @@ public class GLabel extends GComponent {
 			calcAbsPosition(pos);
 			app.noStroke();
 			app.fill(localColor.panelTabFont);
-			app.textFont(localFont.gpFont, localFont.gpFontSize);
-			app.text(getText(), pos.x + textX, pos.y + PADV, width - PADH * border, height);
+			app.textFont(localFont, localFont.size);
+			app.text(text, pos.x + textX, pos.y + PADV, width - PADH - 2* border, height);
 			if(border != 0){
 				app.strokeWeight(1);
 				app.stroke(255);
