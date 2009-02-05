@@ -43,7 +43,7 @@ import java.awt.event.MouseEvent;
 import processing.core.PApplet;
 import processing.core.PFont;
 
-public class GTextField extends GClipboard {
+public class GTextField extends GComponent {
 	// Text has changed
 	public final static int CHANGED = 0x00ff0001;
 	// The enter key has been pressed
@@ -271,7 +271,7 @@ public class GTextField extends GClipboard {
 	protected void copySubstring(int start, int end) {
 		int s = Math.min(start, end);
 		int e = Math.max(start, end);
-		copy(text.substring(s, e));
+		GClip.copy(text.substring(s, e));
 	}
 
 	/**
@@ -531,7 +531,7 @@ public class GTextField extends GClipboard {
 							}
 							break;
 						case KeyEvent.VK_V:
-							appendToRightOfCursor(paste());
+							appendToRightOfCursor(GClip.paste());
 							break;
 						case KeyEvent.VK_X:
 							if(startSelect != endSelect) {

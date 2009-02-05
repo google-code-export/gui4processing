@@ -22,68 +22,85 @@
   Free Software Foundation, Inc., 59 Temple Place, Suite 330,
   Boston, MA  02111-1307  USA
  */
+
 package guicomponents;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 
-import processing.core.PApplet;
-import processing.core.PFont;
-
 /**
- * If your component needs a text clipboard then extend from this class
+ * I wanted to implement copying and pasting to the clipboard using static
+ * methods to simplify the sharing of a single clipboard over all classes.
+ * The need to implement the ClipboardOwner interface requires an object so
+ * this class creates an object the first time an attempt to copy or paste
+ * action is implemented.
  * 
+ * All methods are private except copy() and paste() - lostOwnership()
+ * has to be public because of the Clipboard owner interface.
+ * 
+ * @author Peter Lager
+ *
  */
-public class GClipboard extends GComponent {
+public class GClip implements ClipboardOwner {
+
+	/**
+	 * Static reference to enforce singleton pattern
+	 */
+	private static GClip gclipboard = null;
 	
 	/**
-	 * Static clipboard so shared by all components
+	 * Class attribute to reference the programs clipboard
 	 */
-	private static Clipboard clipboard = null;
-
-	public GClipboard(PApplet theApplet, int x, int y, GColor colors,
-			PFont fonts) {
-		super(theApplet, x, y, colors, fonts);
-		textClipboardCtorCore();
-	}
-
-
-	public GClipboard(PApplet theApplet, int x, int y) {
-		super(theApplet, x, y);
-		textClipboardCtorCore();
-	}
-
-	/**
-	 * If the clipboard has not been created then attempt to do so.
-	 */
-	private void textClipboardCtorCore() {
-		if(clipboard == null){
-			SecurityManager security = System.getSecurityManager();
-			if (security != null) {
-				try {
-					security.checkSystemClipboardAccess();
-					clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				} catch (SecurityException e) {
-					clipboard = new Clipboard("Application Clipboard");
-				}
-			} else {
-				try {
-					clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				} catch (Exception e) {
-					// THIS IS DUMB
-				}
-			}
-		}
-	}
+	private Clipboard clipboard = null;
+	
 
 	/**
 	 * Copy string to clipboard
 	 * @param v
 	 */
-	public void copy(String v){
+	public static void copy(String v){
+		if(gclipboard == null)
+			gclipboard = new GClip();
+		gclipboard.copyString(v);
+	}
+	
+	public static String paste(){
+		if(gclipboard == null)
+			gclipboard = new GClip();
+		return gclipboard.pasteString();
+	}
+
+	private GClip(){
+		if(clipboard == null){
+			makeClipboardObject();
+		}
+	}
+
+	private void makeClipboardObject(){
+		SecurityManager security = System.getSecurityManager();
+		if (security != null) {
+			try {
+				security.checkSystemClipboardAccess();
+				clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			} catch (SecurityException e) {
+				clipboard = new Clipboard("Application Clipboard");
+			}
+		} else {
+			try {
+				clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			} catch (Exception e) {
+				// THIS IS DUMB
+			}
+		}
+	}
+
+	private void copyString(String v){
+		if(clipboard == null)
+			makeClipboardObject();
 		StringSelection fieldContent = new StringSelection (v);
 		clipboard.setContents (fieldContent, this);
 	}
@@ -93,7 +110,13 @@ public class GClipboard extends GComponent {
 	 * have a string then returns null
 	 * @return
 	 */
-	public String paste(){
+	private String pasteString(){
+		// If there is no clipboard then there was nothing to paste
+		if(clipboard == null){
+			makeClipboardObject();
+			return "";
+		}
+
 		Transferable clipboardContent = clipboard.getContents(this);
 		
 		if ((clipboardContent != null) &&
@@ -110,10 +133,11 @@ public class GClipboard extends GComponent {
 		return "";
 	}
 
-
+	
 	@Override
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
-		System.out.println ("Lost ownership " + this);		
+		// TODO Auto-generated method stub
+		
 	}
 
 }

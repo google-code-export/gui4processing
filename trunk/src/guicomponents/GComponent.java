@@ -34,7 +34,7 @@ import java.lang.reflect.Method;
 import processing.core.PApplet;
 import processing.core.PFont;
 
-public class GComponent implements GUI, ClipboardOwner{
+public class GComponent implements GUI {
 
 	/**
 	 * This holds a reference to the GComponent that currently has the
@@ -47,12 +47,14 @@ public class GComponent implements GUI, ClipboardOwner{
 	 */
 	protected static GComponent focusIsWith; // READ ONLY
 
-	protected static GComponent mouseLastReleased = null;
-	protected static int lastEventID = Integer.MAX_VALUE;
+	
+	
+//	protected static GComponent mouseLastReleased = null;
+//	protected static int lastEventID = Integer.MAX_VALUE;
 	
 	/*
-	 * Used to track mouse required by GButton, GCheckbox,GHorzSlider
-	 * GVertSlider GPanel classes
+	 * Used to track mouse required by GButton, GCheckbox, GHorzSlider
+	 * GVertSlider, GPanel classes
 	 */
 	protected int mdx = Integer.MAX_VALUE, mdy = Integer.MAX_VALUE;
 
@@ -399,12 +401,6 @@ public class GComponent implements GUI, ClipboardOwner{
 	 */
 	public void setBorder(int border){
 		this.border = border;
-	}
-
-	@Override
-	public void lostOwnership(Clipboard clipboard, Transferable contents) {
-		// TODO Auto-generated method stub
-		
 	}
 
 } // end of class
