@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<style type="text/css">
+<!--
+body,td,th {
+	font-family: Georgia, Times New Roman, Times, serif;
+	font-size: 12px;
+	color: #000000;
+}
+body {
+	background-color: #FFFF99;
+}
+.style1 {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: medium;
+}
+-->
+</style></head>
+
+<body>
+<h1 align="center">GUI for Processing (G4P)</h1>
+<p class="style1">I first came accross Processing in December 2008 and was immediately impressed with the ease of producing simple 2D and 3D animations. I particularly like the Toroid example but the inability to change the various parameters that controlled the drawing at runtime was disappointing. I decided what was needed was a set of 'simple to use' 2D GUI components.</p>
+<p class="style1">I downloaded the library template, fired up Eclipse, created a code repository at GoogleCode and started programming not realising that the Processing site featured 2 such libraries already. I tried these  libraries but they didn't do everything I wanted so I decided to continue with G4P.</p>
+<p class="style1">I produced a working version and there the project would  have stagnated as other matters took my attention. Then  out of the blue I get an email from Jeff, he was looking for a GUI library to work with PeasyCam, another Processing library. The main problem appeared to be combining 2D/3D graphics and since I had my GUI working fine with Toroid I was confident it would work. I made the library available and after a few problems with Java versions (my fault) Jeff was able to try it out. Unfortunately either the GUI transformed with the camera or the position of the mouse and buttons were not aligned (PeasyCam works with the origin in the screen centre). After more delving into the Processing source code and more programming the problems were resolved and you can see the reults by clicking on the PeasyCam and other examples below.</p>
+<p class="style1"><a href="distribution/web/index.html">Library main page</a></p>
+<p class="style1"><a href="distribution/download/guicomponents.zip">Download library</a></p>
+<p class="style1"><a href="distribution/reference/index.html">Library Reference</a></p>
+<table width="100%" border="0" cellpadding="4" cellspacing="2" id="123">
+<caption class="style1">
+<b>Applets created using Processing and G4P</b>
+</caption>
+  
+
+<tr>
+    <td width="198" class="style1"><a href="toroid/index.html">Toroid</a></td>
+    <td width="1179" class="style1"> Uses an existing example of a rotating toroid/helix and demonstrates how G4P can be used to provide user input to modify options normally done in the edit window.</td>
+  </tr>
+  <tr>
+    <td width="198" class="style1"><a href="textfields/index.html">Text Boxes</a></td>
+    <td class="style1">Text fields are useful to enter text from the user at runtime - a simple demo of using G4P text fields. Supports clipboard copying and pasting and mouse selection of text.</td>
+  </tr>
+  <tr>
+    <td width="198" class="style1"><a href="scaleshape/index.html">Slider</a></td>
+    <td class="style1">A G4P vertical slider is used to control the size of a  SVG image</td>
+  </tr>
+  <tr>
+    <td class="style1"><a href="peasycamhud/index.html">PeasyCam with HUD</a></td>
+    <td class="style1">Demonstrates how G4P might be used with PeasyCam to provide a head-up display typecapability</td>
+  </tr>
+  <tr>
+    <td class="style1"><a href="peasycamcontrol/index.html">PeasyCam with GUI control</a></td>
+    <td class="style1">Demonstrates how G4P might be used to control the rotation of the PeasyCam using G4P slider domponets on a moveable and colla[sible panel.PeasyCam to provide a head-up display typecapability</td>
+  </tr>
+</table>
+<p class="style1">&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
