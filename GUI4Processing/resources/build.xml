@@ -60,7 +60,7 @@
 	
 <!-- #### (14) where can the source code be found? edit value. #### -->
 	<property name="source:host"  value="google code" />
-	<property name="source:url"  value="http://gui-for-processing.googlecode.com/svn/trunk/" />
+	<property name="source:url"  value="http://gui4processing.googlecode.com/svn/trunk/" />
 	<property name="source:repository"  value="http://code.google.com/p/gui-for-processing/source/browse/" />
 
 
