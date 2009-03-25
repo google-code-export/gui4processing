@@ -135,7 +135,8 @@ public abstract class GSlider extends GComponent {
 	/**
 	 * The user can change the range and initial value of the 
 	 * slider from the default values of range 0-100 and 
-	 * initial value of 50
+	 * initial value of 50.
+	 * This method ignores inertia so the effect is immediate.
 	 * 
 	 * @param init
 	 * @param min
@@ -157,7 +158,8 @@ public abstract class GSlider extends GComponent {
 			System.out.println(" at least " + (max-min+thumbSize));
 		}
 		thumbTargetPos = thumbPos;
-		setValue(init);
+		// Set the value immediately ignoring inertia
+		setValue(init, true);
 	}
 	
 	/**
