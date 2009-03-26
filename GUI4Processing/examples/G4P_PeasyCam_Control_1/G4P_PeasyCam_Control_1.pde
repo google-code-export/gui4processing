@@ -62,7 +62,7 @@ void setup() {
   // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
   // YELLOW_SCHEME, CYAN_SCHEME, PURPLE_SCHEME
   // Defaults to BLUE_SCHEME 
-    GComponent.globalColor = GCScheme.getColor(this,  GCScheme.RED_SCHEME);
+  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.RED_SCHEME);
 
   /* GFont.getFont() - parameters
    * 1) this (always)
@@ -139,12 +139,29 @@ This function displays how we can create a HUD with PeasyCam.
  */
 void Gui2D(){
   // Get the current PeasyCam details to restore later
-  offsets = cam.getLookAt();
+  //  offsets = cam.getLookAt();
   rotations = cam.getRotations();
-  distance = cam.getDistance();
+  //  distance = cam.getDistance();
 
   // Get a handle on the current PGraphics?D transformation matrix
-  PMatrix3D currCameraMatrix = g3.camera;
+  PMatrix3D currCameraMatrix = new PMatrix3D(g3.camera);
+
+  // This statement resets the camera in PGraphics3D, this effectively 
+  // sets the display to behave as 2D with the origin 0,0 at the top-left
+  // of the display
+  camera();
+
+  // Draw the HUD using PApplet graphics commands and GUI for Processing
+  // 2D gui components
+  G4P.draw();
+
+  // Reset the PGraphics3D transformation matrix
+  g3.camera = currCameraMatrix;
+
+
+  // Since this code will modify the PeasyCam object it must be
+  // done after we have set the g3.camera back to its original
+  // 3D state.
 
   // If neccessary update slider positions
   if(pnl.isCollapsed() == true){
@@ -177,22 +194,6 @@ void Gui2D(){
       lastSz = currSz;
     }
   }
-
-  // This statement resets the camera in PGraphics3D, this effectively 
-  // sets the display to behave as 2D with the origin 0,0 at the top-left
-  // of the display
-  camera();
-
-
-  // Draw the HUD using PApplet graphics commands and GUI for Processing
-  // 2D gui components
-  G4P.draw();
-
-  // Reset the PGraphics3D transformation matrix
-  g3.camera = currCameraMatrix;
-  // Reset the PeasyCam position (do not add rotation commands here)
-  cam.lookAt(offsets[0],offsets[1],offsets[2]);
-  cam.setDistance(distance);
 }
 
 // Handle panels events i.e. when a panel is opened or
@@ -204,7 +205,7 @@ void handlePanelEvents(GPanel panel){
     println("Panel has collapsed");
   else
     println("Panel has opened");
-	
+
 }
 
 // Handles slider events for both horizontal and
