@@ -111,12 +111,8 @@ void handleTextFieldEvents(GTextField tfield){
 This function displays how we can create a HUD with PeasyCam.
  */
 void hud(){
-  // Get the current PeasyCam details to restore later
-  offsets = cam.getLookAt();
-  distance = cam.getDistance();
-
   // Get a handle on the current PGraphics£D transformation matrix
-  PMatrix3D currCameraMatrix = g3.camera;
+  PMatrix3D currCameraMatrix = new PMatrix3D(g3.camera);
 
   // This statement resets the camera in PGraphics3D, this effectively 
   // sets the display to behave as 2D with the origin 0,0 at the top-left
@@ -132,8 +128,5 @@ void hud(){
 
   // Reset the PGraphics3D transformation matrix
   g3.camera = currCameraMatrix;
-  // Reset the PeasyCam position (do not add rotation commands here)
-  cam.lookAt(offsets[0],offsets[1],offsets[2]);
-  cam.setDistance(distance);
 }
 
