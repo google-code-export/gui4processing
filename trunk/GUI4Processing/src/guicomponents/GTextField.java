@@ -118,9 +118,10 @@ public class GTextField extends GComponent {
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(app);
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
-		app.registerKeyEvent(this);
+		registerAutos_DMPK(true, true, false, true);
+//		app.registerDraw(this);
+//		app.registerMouseEvent(this);
+//		app.registerKeyEvent(this);
 	}
 
 	/**

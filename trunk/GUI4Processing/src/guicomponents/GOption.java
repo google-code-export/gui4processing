@@ -79,8 +79,7 @@ public class GOption extends GComponent { //implements Comparable {
 		if(imgCleared == null)
 			imgCleared = app.loadImage("radio0.png");
 		createEventHandler(app);
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
+		registerAutos_DMPK(true, true, false, false);
 	}
 	
 	public void addEventHandler(Object obj, String methodName){

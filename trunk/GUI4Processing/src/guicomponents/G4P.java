@@ -41,14 +41,14 @@ public class G4P {
 	 */
 	private static HashSet<GComponent> all = new HashSet<GComponent>();
 	
-	private static boolean unused = true;
+	private static boolean autoDrawOn = true;
 	
 	/**
 	 * This should by all ctors in GComponent and since all GUI components
 	 * inherit from GComponent and are required to call a GComponent ctor
 	 * then all GUI components will automatically be registered in the set.
 	 * 
-	 * @param c
+	 * @param c the component that has been created.
 	 */
 	public static void addComponent(GComponent c){
 		if(all.contains(c))
@@ -56,12 +56,24 @@ public class G4P {
 		else
 			all.add(c);
 	}
+
+	public static void disableAutoDraw(){
+		unregisterFromPAppletDraw();
+		System.out.println("You have disabled autoDraw so you have to use");
+		System.out.println("G4P.draw() when you want to display the GUI" );
+		System.out.println("this is not reversible" );
+	}
+
+	public static boolean isAutoDrawOn(){
+		return autoDrawOn;
+	}
 	
 	/**
 	 * Use G4P.draw() if you want to control when you the GUI is to be drawn
 	 */
 	public static void draw(){
-		if(unused)
+		// Time to take over the responsibility for drawing
+		if(autoDrawOn)
 			unregisterFromPAppletDraw();
 		// Draw the components note that GPanels will call the appropriate
 		// draw methods for the components on them
@@ -91,7 +103,7 @@ public class G4P {
 				c.getPApplet().unregisterDraw(c);
 			}
 		}
-		unused = false;
+		autoDrawOn = false;
 	}
 	
 }

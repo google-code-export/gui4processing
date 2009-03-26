@@ -101,7 +101,7 @@ public class GLabel extends GComponent {
 		this.height = localFont.size + 2 * PADV;
 		if(text != null)
 			setText(text);
-		app.registerDraw(this);		
+		registerAutos_DMPK(true, false, false, false);
 	}
 	
 	public void draw(){

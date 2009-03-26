@@ -60,8 +60,7 @@ public class GButton extends GComponent {
 		this.width = Math.max(width, textWidth + PADH * 2);
 		this.height = Math.max(height, localFont.size + 2 * PADV);
 		createEventHandler(app);
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
+		registerAutos_DMPK(true, true, false, false);
 	}
 	
 	public void addEventHandler(Object obj, String methodName){

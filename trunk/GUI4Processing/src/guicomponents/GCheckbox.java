@@ -75,8 +75,7 @@ public class GCheckbox extends GComponent {
 		if(imgCleared == null)
 			imgCleared = app.loadImage("check0.png");
 		createEventHandler(app);
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
+		registerAutos_DMPK(true, true, false, false);
 	}
 	
 	public void addEventHandler(Object obj, String methodName){

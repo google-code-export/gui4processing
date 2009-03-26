@@ -123,8 +123,7 @@ public class GPanel extends GComponent {
 		dockY = y;
 		this.width = width;
 		this.height = height;
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
+		registerAutos_DMPK(true, true, false, false);
 	}
 	
 	/**

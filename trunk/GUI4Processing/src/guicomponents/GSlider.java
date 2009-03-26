@@ -94,9 +94,7 @@ public abstract class GSlider extends GComponent {
 		super(theApplet, x, y);
 		this.width = width;
 		this.height = height;
-		app.registerPre(this);
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
+		registerAutos_DMPK(true, true, true, false);
 		createEventHandler(theApplet);
 	}
 
