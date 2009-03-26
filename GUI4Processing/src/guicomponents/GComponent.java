@@ -23,6 +23,7 @@
 
 package guicomponents;
 
+
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -288,6 +289,28 @@ public class GComponent implements Comparable  {
 	 */
 	public boolean add(GComponent component){
 		return false;
+	}
+
+	/**
+	 * This method is used to register this object with PApplet so it can process
+	 * events appropriate for that class.
+	 * It should be called from all child class ctors.
+	 * 
+	 * @param draw
+	 * @param mouse
+	 * @param pre
+	 * @param key
+	 */
+	protected void registerAutos_DMPK(boolean draw, boolean mouse, boolean pre, boolean key){
+		// if auto draw has been disabled then do not register for draw()
+		if(draw && G4P.isAutoDrawOn())
+			app.registerDraw(this);
+		if(mouse)
+			app.registerMouseEvent(this);
+		if(pre)
+			app.registerPre(this);
+		if(key)
+			app.registerKeyEvent(this);
 	}
 
 	/**
