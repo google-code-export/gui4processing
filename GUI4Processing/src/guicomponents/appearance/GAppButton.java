@@ -5,7 +5,7 @@ public class GAppButton {
 	public int colOver;
 	public int colDown;
 	public int colBorder;
-	public int colText;
+	public int colFont;
 	
 	public int alpha = 0xff000000;
 
@@ -16,8 +16,9 @@ public class GAppButton {
 		this.colOver = colOver;
 		this.colDown = colDown;
 		this.colBorder = colBorder;
-		this.colText = colText;
+		this.colFont = colText;
 		this.alpha = alpha;
+		setAlpha(alpha);
 	}
 	
 	public void setAlpha(int alpha){
@@ -25,7 +26,7 @@ public class GAppButton {
 		colOver = GCSchemes.setAlpha(colOver, alpha);
 		colDown = GCSchemes.setAlpha(colDown, alpha);
 		colBorder = GCSchemes.setAlpha(colBorder, alpha);
-		colText = GCSchemes.setAlpha(colText, alpha);
+		colFont = GCSchemes.setAlpha(colFont, alpha);
 	}
 	
 	
