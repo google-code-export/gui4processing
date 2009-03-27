@@ -43,29 +43,85 @@ public class GCheckbox extends GComponent {
 	protected static PImage imgSelected;
 	protected static PImage imgCleared;
 	
-	
+	/**
+	 * Create a check box.
+	 * 
+	 * The height will be calculated using the font height
+	 * 
+	 * @param theApplet
+	 * @param text text to appear alongside checkbox
+	 * @param x horz position
+	 * @param y vert position
+	 * @param width width of component
+	 * @param align text alignment (ignored at present)
+	 * @param colors local color scheme
+	 * @param font font to be used
+	 */
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align,
 			GCScheme colors, PFont font){
 		super(theApplet, x, y, colors, font);
 		checkboxCtorCore(text, width, align);
 	}
 
+	/**
+	 * Create a check box.
+	 * 
+	 * The height will be calculated using the font height
+	 * 
+	 * @param theApplet
+	 * @param text text to appear alongside checkbox
+	 * @param x horz position
+	 * @param y vert position
+	 * @param width width of component
+	 * @param colors local color scheme
+	 * @param font font to be used
+	 */
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width,
 			GCScheme colors, PFont font){
 		super(theApplet, x, y, colors, font);
 		checkboxCtorCore(text, width, GTAlign.LEFT);
 	}
 
+	/**
+	 * Create a check box.
+	 * 
+	 * The height will be calculated using the font height.
+	 * Will use the default global font
+	 * 
+	 * @param theApplet
+	 * @param text text to appear alongside checkbox
+	 * @param x horz position
+	 * @param y vert position
+	 * @param width width of component
+	 */
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width){
 		super(theApplet, x, y);
 		checkboxCtorCore(text, width, GTAlign.LEFT);
 	}
 
+	/**
+	 * Create a check box.
+	 * 
+	 * The height will be calculated using the font height
+	 * 
+	 * @param theApplet
+	 * @param text text to appear alongside checkbox
+	 * @param x horz position
+	 * @param y vert position
+	 * @param width width of component
+	 * @param align text alignment (ignored at present)
+	 */
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align){
 		super(theApplet, x, y);
 		checkboxCtorCore(text, width, align);
 	}
 
+	/**
+	 * Core stuff to be done by all ctors
+	 * @param text
+	 * @param width
+	 * @param align
+	 */
 	private void checkboxCtorCore(String text, int width, int align){
 		this.width = width;
 		height = localFont.size + 2 * PADV;
@@ -78,6 +134,11 @@ public class GCheckbox extends GComponent {
 		registerAutos_DMPK(true, true, false, false);
 	}
 	
+	/**
+	 * Override the default event handler created with createEventHandler(Object obj)
+	 * @param obj
+	 * @param methodName
+	 */
 	public void addEventHandler(Object obj, String methodName){
 		try{
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GCheckbox.class } );
@@ -89,6 +150,11 @@ public class GCheckbox extends GComponent {
 		}
 	}
 	
+	/**
+	 * Create an event handler that will call a method handleCheckboxEvents(GCheckbox cbox)
+	 * when text is changed or entered
+	 * @param obj
+	 */
 	protected void createEventHandler(Object obj){
 		try{
 			this.eventHandler = obj.getClass().getMethod("handleCheckboxEvents", new Class[] { GCheckbox.class } );
@@ -100,6 +166,9 @@ public class GCheckbox extends GComponent {
 		}
 	}
 	
+	/**
+	 * Draw the checkbox
+	 */
 	public void draw(){
 		if(visible){
 			Point pos = new Point(0,0);
