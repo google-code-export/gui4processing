@@ -335,12 +335,12 @@ public class GPanel extends GComponent {
 	 * Sets the panel background transparency
 	 * @param opaque
 	 */
-	public void setOpaque(boolean opaque){
-		this.opaque = opaque;
-	}
+//	public void setOpaque(boolean opaque){
+//		this.opaque = opaque;
+//	}
 
 	/**
-	 * Collpase or open the panel
+	 * Collapse or open the panel
 	 * @param collapse
 	 */
 	public void setCollapsed(boolean collapse){
