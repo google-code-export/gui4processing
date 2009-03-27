@@ -63,6 +63,11 @@ public class GButton extends GComponent {
 		registerAutos_DMPK(true, true, false, false);
 	}
 	
+	/**
+	 * Override the default event handler created with createEventHandler(Object obj)
+	 * @param obj
+	 * @param methodName
+	 */
 	public void addEventHandler(Object obj, String methodName){
 		try{
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GButton.class } );
@@ -74,6 +79,11 @@ public class GButton extends GComponent {
 		}
 	}
 	
+	/**
+	 * Create an event handler that will call a method handleButtonEvents(GButton cbox)
+	 * when text is changed or entered
+	 * @param obj
+	 */
 	protected void createEventHandler(Object obj){
 		try{
 			this.eventHandler = obj.getClass().getMethod("handleButtonEvents", new Class[] { GButton.class } );
@@ -85,6 +95,9 @@ public class GButton extends GComponent {
 		}
 	}
 	
+	/**
+	 * Draw the button
+	 */
 	public void draw(){
 		if(visible){
 			Point pos = new Point(0,0);

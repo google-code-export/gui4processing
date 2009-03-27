@@ -91,12 +91,20 @@ public class GClip implements ClipboardOwner {
 		return gclipboard.pasteString();
 	}
 
+	/**
+	 * Ctor is private so clipboard is only created when a copy or paste is 
+	 * attempted and one does not exist already.
+	 */
 	private GClip(){
 		if(clipboard == null){
 			makeClipboardObject();
 		}
 	}
 
+	/**
+	 * If security permits use the system clipboard otherwise create 
+	 * our own application clipboard.
+	 */
 	private void makeClipboardObject(){
 		SecurityManager security = System.getSecurityManager();
 		if (security != null) {
@@ -155,6 +163,9 @@ public class GClip implements ClipboardOwner {
 		return "";
 	}
 
+	/**
+	 * Reqd by ClipboardOwner interface
+	 */
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
 	}
 
