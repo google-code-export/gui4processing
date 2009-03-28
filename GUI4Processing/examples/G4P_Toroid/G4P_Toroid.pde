@@ -82,8 +82,7 @@ void setup(){
   p.add(cbxWire);
   optShape.addOption(optTorroid);
   optShape.addOption(optHelix);
-  p.setOpaque(true);
-
+ 
 }
 
 public void handleSliderEvents(GSlider slider){
