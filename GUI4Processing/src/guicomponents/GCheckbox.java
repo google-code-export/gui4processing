@@ -175,7 +175,7 @@ public class GCheckbox extends GComponent {
 			calcAbsPosition(pos);
 			if (!text.equals("")){
 				app.noStroke();
-				app.fill(localColor.pnlForeground);
+				app.fill(localColor.pnlFont);
 				app.textFont(localFont, localFont.size);
 				app.text(text, pos.x + 20, pos.y - 1, textWidth, height);
 			}

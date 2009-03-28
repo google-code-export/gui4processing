@@ -25,6 +25,7 @@ package guicomponents;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PImage;
 
 /**
  * Stores all the colour information for the GUI components into a scheme.
@@ -38,34 +39,49 @@ import processing.core.PConstants;
 public class GCScheme  {
 
 	// Color scheme constants
-	public static final int BLUE_SCHEME 	= 0x00010001;
-	public static final int GREEN_SCHEME 	= 0x00010002;
-	public static final int RED_SCHEME 		= 0x00010003;
-	public static final int GREY_SCHEME 	= 0x00010004;
-	public static final int YELLOW_SCHEME	= 0x00010005;
-	public static final int CYAN_SCHEME 	= 0x00010006;
-	public static final int PURPLE_SCHEME	= 0x00010007;
-
+	public static final int BLUE_SCHEME 	= 1;
+	public static final int GREEN_SCHEME 	= 2;
+	public static final int RED_SCHEME 		= 3;
+	public static final int PURPLE_SCHEME	= 4;
+	public static final int YELLOW_SCHEME	= 5;
+	public static final int CYAN_SCHEME 	= 6;
+	public static final int GREY_SCHEME 	= 7;
+	public static final int USER_SCHEME_01	= 8;
+	public static final int USER_SCHEME_02	= 9;
+	public static final int USER_SCHEME_03	= 10;
+	public static final int USER_SCHEME_04	= 11;
+	public static final int USER_SCHEME_05	= 12;
+	public static final int USER_SCHEME_06	= 13;
+	public static final int USER_SCHEME_07	= 14;
+	public static final int USER_SCHEME_08	= 15;
+	public static final int USER_SCHEME_09	= 16;
+	public static final int USER_SCHEME_10	= 17;
+	public static final int USER_SCHEME_11	= 18;
+	public static final int USER_SCHEME_12	= 19;
+	
 	protected static PApplet app;
 
-	// Panels / Labels
-	public int pnlBackground;
-	public int pnlTabBackground;
-	public int pnlForeground;
-	public int panelTabHeight;
+	protected static PImage image = null;
+	
+	
+//	public int panelTabHeight;
 
-	public int buttonOff, buttonOver, buttonDown;
-	public int buttonFont;
 	
-	public int sdrBackground;
-	public int sdrThumb;
-	public int sdrBorder;
-	
-	public int txfBackground;
-	public int txfForeground;
-	public int txfSelection;
-	public int txfBorder;
-	
+	// Mask to get RGB
+	public static final int COL_MASK 		= 0x00ffffff;
+	// Mask to get alpha
+	public static final int ALPHA_MASK 		= 0xff000000;
+
+	private void getSchemeImage(){
+		app.loadImage("schemes.png");		
+	}
+
+	public static int setAlpha(int col, int alpha){
+		alpha = (alpha & 0xff) << 24;
+		col = (col & COL_MASK) | alpha;
+		return col;
+	}
+
 	/**
 	 * Set the default color scheme
 	 * 
@@ -73,7 +89,7 @@ public class GCScheme  {
 	 * @return
 	 */
 	public static GCScheme getColor(PApplet theApplet){
-		return getColor(theApplet, -1);
+		return getColor(theApplet, 1);
 	}
 	
 	/**
@@ -86,11 +102,48 @@ public class GCScheme  {
 	 */
 	public static GCScheme getColor(PApplet theApplet, int colScheme){
 		app = theApplet;
+		if(image == null)
+			app.loadImage("schemes.png");
 		GCScheme scheme = new GCScheme();
-		calcColors(scheme, colScheme);
+		scheme.pnlFont = findColor(colScheme, 0, 0);
+		scheme.pnlTabBack = findColor(colScheme, 0, 1);
+		scheme.pnlBack = findColor(colScheme, 0, 2);
+		scheme.pnlBorder = findColor(colScheme, 0, 3);
+		
+		scheme.btnFont = findColor(colScheme, 1, 0);
+		scheme.btnOff = findColor(colScheme, 1, 1);
+		scheme.btnOver = findColor(colScheme, 1, 2);
+		scheme.btnDown = findColor(colScheme, 1, 3);
+		scheme.btnBorder = findColor(colScheme, 1, 4);
+		
+		
 		return scheme;
 	}
 
+	private static int findColor(int scheme, int component, int type){
+		return image.get( ((component * 5) + type)* 10 + 5, scheme * 10 + 5);
+	}
+
+	// Panels
+	public int pnlFont, pnlTabBack, pnlBack, pnlBorder;
+	// Buttons
+	public int btnFont, btnOff, btnOver, btnDown, btnBorder;
+	// Sliders
+	public int sdrBackground, sdrThumb, sdrBorder;
+	// TextFields
+	public int txfFont, txfBack, txfSelFont, txfSelBack, txfBorder;
+	// Label
+	public int lblFont, lblBack, lblBorder;
+	// Option
+	public int optFont, optBack, optBorder;
+	// Checkbox
+	public int cbxFont, cbxBack, cbxBorder;
+	
+	
+	
+	
+	
+	
 	private static void calcColors(GCScheme scheme, int colScheme){
 		switch(colScheme){
 		case RED_SCHEME:
@@ -123,6 +176,7 @@ public class GCScheme  {
 		calcColors(this, colScheme);
 	}
 
+
 	/**
 	 * Create a color scheme
 	 * @param pdark the darkest color
@@ -147,26 +201,26 @@ public class GCScheme  {
 		alphaHigh <<= 24;
 		
 		// Panel colours
-		pnlBackground = (plight & colMask) | alphaLow;
-		pnlTabBackground = (pdark & colMask) | alphaLow;
-		pnlForeground = (pfont & colMask) | alphaMask;
+		pnlBack = (plight & colMask) | alphaLow;
+		pnlTabBack = (pdark & colMask) | alphaLow;
+		pnlFont = (pfont & colMask) | alphaMask;
 		// Slider colours
 		sdrBackground = alphaHigh | 0x00ffffff;
 		sdrThumb = plight;
 		sdrBorder = pdark;
 		// button colours
-		buttonOff = PApplet.lerpColor(pdark, plight, 50, PConstants.HSB);
-		buttonOff = (buttonOff & colMask) | alphaHigh;
-		buttonOver = PApplet.lerpColor(pdark, plight, 80, PConstants.HSB);
-		buttonOver = (buttonOver & colMask) | alphaHigh;
-		buttonDown = PApplet.lerpColor(pdark, plight, 20, PConstants.HSB);
-		buttonDown = (buttonDown & colMask) | alphaHigh;
-		buttonFont = (font & colMask) | alphaMask;
+		btnOff = PApplet.lerpColor(pdark, plight, 50, PConstants.HSB);
+		btnOff = (btnOff & colMask) | alphaHigh;
+		btnOver = PApplet.lerpColor(pdark, plight, 80, PConstants.HSB);
+		btnOver = (btnOver & colMask) | alphaHigh;
+		btnDown = PApplet.lerpColor(pdark, plight, 20, PConstants.HSB);
+		btnDown = (btnDown & colMask) | alphaHigh;
+		btnFont = (font & colMask) | alphaMask;
 		// text field colours
-		txfBackground = app.color(255);
-		txfForeground = app.color(pnlForeground);
-		txfSelection = (plight & colMask) | alphaMask;
-		txfBorder = app.color(pnlForeground);
+		txfBack = app.color(255);
+		txfFont = app.color(pnlFont);
+		txfSelBack = (plight & colMask) | alphaMask;
+		txfBorder = app.color(pnlFont);
 	
 	}
 
