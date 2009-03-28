@@ -118,7 +118,7 @@ public class GLabel extends GComponent {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
-			app.fill(localColor.pnlForeground);
+			app.fill(localColor.pnlFont);
 			app.textFont(localFont, localFont.size);
 			app.text(text, pos.x + textX, pos.y + PADV, width - PADH - 2* border, height);
 			if(border != 0){

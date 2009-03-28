@@ -106,22 +106,22 @@ public class GButton extends GComponent {
 			int col;
 			switch(status){
 			case OVER:
-				col = localColor.buttonOver;
+				col = localColor.btnOver;
 				break;
 			case DOWN:
-				col = localColor.buttonDown;
+				col = localColor.btnDown;
 				break;
 			case OFF:
 			default:
-				col = localColor.buttonOff;
+				col = localColor.btnOff;
 			}
 			
 			app.strokeWeight(1);
-			app.stroke(localColor.buttonFont);			
+			app.stroke(localColor.btnFont);			
 			app.fill(col);
 			app.rect(pos.x,pos.y,width,height);
 			app.noStroke();
-			app.fill(localColor.buttonFont);
+			app.fill(localColor.btnFont);
 			app.textFont(localFont, localFont.size);
 			app.text(text, pos.x + (width - textWidth)/2, pos.y -1 + (height - localFont.size)/2, width, height);
 		}
