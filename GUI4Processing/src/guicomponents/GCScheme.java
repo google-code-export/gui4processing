@@ -72,10 +72,6 @@ public class GCScheme  {
 	// Mask to get alpha
 	public static final int ALPHA_MASK 		= 0xff000000;
 
-	private void getSchemeImage(){
-		app.loadImage("schemes.png");		
-	}
-
 	public static int setAlpha(int col, int alpha){
 		alpha = (alpha & 0xff) << 24;
 		col = (col & COL_MASK) | alpha;
@@ -111,47 +107,45 @@ public class GCScheme  {
 			else
 				System.out.println("Using default colour schema");				
 		}
-			
-		GCScheme scheme = new GCScheme();
-		
+		System.out.println("Scheme no " + csn);
+		GCScheme scheme = new GCScheme(csn);
+		populateScheme(scheme, csn);
 		
 		return scheme;
 	}
 
-	
-
 	public static void populateScheme(GCScheme s, int schemeNo){
-		s.pnlFont = image.get(0, schemeNo);
-		s.pnlTabBack = image.get(1, schemeNo);
-		s.pnlBack = image.get(2, schemeNo);
-		s.pnlBorder = image.get(3, schemeNo);
+		s.pnlFont = image.get(0, schemeNo) | 0xff000000;
+		s.pnlTabBack = image.get(1, schemeNo) | 0xff000000;
+		s.pnlBack = image.get(2, schemeNo) | 0xff000000;
+		s.pnlBorder = image.get(3, schemeNo) | 0xff000000;
 		
-		s.btnFont = image.get(5, schemeNo);
-		s.btnOff = image.get(6, schemeNo);
-		s.btnOver = image.get(7, schemeNo);
-		s.btnDown = image.get(8, schemeNo);
+		s.btnFont = image.get(5, schemeNo) | 0xff000000;
+		s.btnOff = image.get(6, schemeNo) | 0xff000000;
+		s.btnOver = image.get(7, schemeNo) | 0xff000000;
+		s.btnDown = image.get(8, schemeNo) | 0xff000000;
 		
-		s.sdrTrack = image.get(10, schemeNo);
-		s.sdrThumb = image.get(11, schemeNo);
-		s.sdrBorder = image.get(12, schemeNo);
+		s.sdrTrack = image.get(10, schemeNo) | 0xff000000;
+		s.sdrThumb = image.get(11, schemeNo) | 0xff000000;
+		s.sdrBorder = image.get(12, schemeNo) | 0xff000000;
 		
-		s.txfFont = image.get(15, schemeNo);
-		s.txfBack = image.get(16, schemeNo);
-		s.txfSelFont = image.get(17, schemeNo);
-		s.txfSelBack = image.get(18, schemeNo);
-		s.txfBorder = image.get(19, schemeNo);
+		s.txfFont = image.get(15, schemeNo) | 0xff000000;
+		s.txfBack = image.get(16, schemeNo) | 0xff000000;
+		//s.txfSelFont = image.get(17, schemeNo);
+		s.txfSelBack = image.get(18, schemeNo)  | 0xff000000;
+		s.txfBorder = image.get(19, schemeNo)  | 0xff000000;
 		
-		s.lblFont = image.get(20, schemeNo);
-		s.lblBack = image.get(21, schemeNo);
-		s.lblBorder = image.get(22, schemeNo);
+		s.lblFont = image.get(20, schemeNo) | 0xff000000;
+		s.lblBack = image.get(21, schemeNo) | 0xff000000;
+		s.lblBorder = image.get(22, schemeNo) | 0xff000000;
 		
-		s.optFont = image.get(25, schemeNo);
-		s.optBack = image.get(26, schemeNo);
-		s.optBorder = image.get(27, schemeNo);
+		s.optFont = image.get(25, schemeNo) | 0xff000000;
+		s.optBack = image.get(26, schemeNo) | 0xff000000;
+		s.optBorder = image.get(27, schemeNo) | 0xff000000;
 		
-		s.cbxFont = image.get(30, schemeNo);
-		s.cbxBack = image.get(31, schemeNo);
-		s.cbxBorder = image.get(32, schemeNo);
+		s.cbxFont = image.get(30, schemeNo) | 0xff000000;
+		s.cbxBack = image.get(31, schemeNo) | 0xff000000;
+		s.cbxBorder = image.get(32, schemeNo) | 0xff000000;
 	}
 	
 	
@@ -173,8 +167,8 @@ public class GCScheme  {
 	public int cbxFont, cbxBack, cbxBorder;
 	
 	
-	public GCScheme (){
-		schemeNo = 0;
+	public GCScheme (int csn){
+		schemeNo = csn;
 		populateScheme(this, schemeNo);
 	}
 

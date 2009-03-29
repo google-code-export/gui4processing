@@ -115,6 +115,7 @@ public class GTextField extends GComponent {
 	private void textFieldCtorCore(String text, int width, int height) {
 		this.width = Math.max(width, textWidth + PADH * 2);
 		this.height = Math.max(height, localFont.size + PADV * 2);
+		border = 1;
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(app);
@@ -576,6 +577,7 @@ public class GTextField extends GComponent {
 			calcAbsPosition(pos);
 
 			// Draw the surrounding box
+			app.strokeWeight(border);
 			app.stroke(localColor.txfBorder);
 			app.fill(localColor.txfBack);
 			app.rect(pos.x, pos.y, width, height);
@@ -589,7 +591,7 @@ public class GTextField extends GComponent {
 			}
 
 			// Draw the string (using fixed offset = 4)
-			app.fill(0);
+			app.fill(localColor.txfFont);
 			app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
 					pos.y - 1 + (height - localFont.size)/2 , width - 8, height);
 
