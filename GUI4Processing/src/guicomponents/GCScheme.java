@@ -148,6 +148,7 @@ public class GCScheme  {
 		s.cbxBorder = image.get(32, schemeNo) | 0xff000000;
 	}
 	
+	// Class attributes and methods start here
 	
 	// Scheme number
 	public int schemeNo = 0;
@@ -166,16 +167,65 @@ public class GCScheme  {
 	// Checkbox
 	public int cbxFont, cbxBack, cbxBorder;
 	
+	/**
+	 * Create a default (blue) scheme
+	 */
+	public GCScheme(){
+		schemeNo = 0;
+		populateScheme(this, schemeNo);		
+	}
 	
+	/**
+	 * Create a scheme for a given scheme number
+	 * @param csn
+	 */
 	public GCScheme (int csn){
 		schemeNo = csn;
 		populateScheme(this, schemeNo);
 	}
 
+	/**
+	 *  Copy ctor
+	 * @param gcScheme scheme to copy
+	 */
 	public GCScheme(GCScheme gcScheme){
 		schemeNo = gcScheme.schemeNo;
 		populateScheme(this, schemeNo);		
 	}
 
 
+	/**
+	 * 
+	 * @param alpha in the range 0 (fully transparent) to 255 (fully opaque)
+	 */
+	public void setAlpha(int alpha){
+		alpha = (alpha & 0xff) << 24;
+	
+		pnlFont = (pnlFont & 0x00ffffff) | alpha;
+		pnlTabBack = (pnlTabBack & 0x00ffffff) | alpha;
+		pnlBack = (pnlBack & 0x00ffffff) | alpha;
+		pnlBorder = (pnlBorder & 0x00ffffff) | alpha;
+		btnFont = (btnFont & 0x00ffffff) | alpha;
+		btnOff = (btnOff & 0x00ffffff) | alpha;
+		btnOver = (btnOver & 0x00ffffff) | alpha;
+		btnDown = (btnDown & 0x00ffffff) | alpha;
+		btnBorder = (btnBorder & 0x00ffffff) | alpha;
+		sdrTrack = (sdrTrack & 0x00ffffff) | alpha;
+		sdrThumb = (sdrThumb & 0x00ffffff) | alpha;
+		sdrBorder = (sdrBorder & 0x00ffffff) | alpha;
+		txfFont = (txfFont & 0x00ffffff) | alpha;
+		txfBack = (txfBack & 0x00ffffff) | alpha;
+		txfSelBack = (txfSelBack & 0x00ffffff) | alpha;
+		txfBorder = (txfBorder & 0x00ffffff) | alpha;
+		lblFont = (lblFont & 0x00ffffff) | alpha;
+		lblBack = (lblBack & 0x00ffffff) | alpha;
+		lblBorder = (lblBorder & 0x00ffffff) | alpha;
+		optFont = (optFont & 0x00ffffff) | alpha;
+		optBack = (optBack & 0x00ffffff) | alpha;
+		optBorder = (optBorder & 0x00ffffff) | alpha;
+		cbxFont = (cbxFont & 0x00ffffff) | alpha;
+		cbxBack = (cbxBack & 0x00ffffff) | alpha;
+		cbxBorder = (cbxBorder & 0x00ffffff) | alpha;
+	}
+	
 } // end of class
