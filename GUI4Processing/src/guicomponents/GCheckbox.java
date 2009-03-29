@@ -125,6 +125,7 @@ public class GCheckbox extends GComponent {
 	private void checkboxCtorCore(String text, int width, int align){
 		this.width = width;
 		height = localFont.size + 2 * PADV;
+		opaque = false;
 		setText(text, align);
 		if(imgSelected == null)
 			imgSelected = app.loadImage("check1.png");
@@ -174,10 +175,18 @@ public class GCheckbox extends GComponent {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			if (!text.equals("")){
+				app.strokeWeight(border);
+				app.stroke(localColor.cbxBorder);	
+				if(opaque)
+					app.fill(localColor.cbxBack);	// depends on button state
+				else 
+					app.noFill();
+				app.rect(pos.x, pos.y, width, height);
+				// Draw text
 				app.noStroke();
-				app.fill(localColor.pnlFont);
+				app.fill(localColor.cbxFont);
 				app.textFont(localFont, localFont.size);
-				app.text(text, pos.x + 20, pos.y - 1, textWidth, height);
+				app.text(text, pos.x + 20, pos.y + 1, textWidth, height);
 			}
 			app.fill(app.color(255,255));
 			if(selected)

@@ -39,25 +39,25 @@ import processing.core.PImage;
 public class GCScheme  {
 
 	// Color scheme constants
-	public static final int BLUE_SCHEME 	= 1;
-	public static final int GREEN_SCHEME 	= 2;
-	public static final int RED_SCHEME 		= 3;
-	public static final int PURPLE_SCHEME	= 4;
-	public static final int YELLOW_SCHEME	= 5;
-	public static final int CYAN_SCHEME 	= 6;
-	public static final int GREY_SCHEME 	= 7;
-	public static final int USER_SCHEME_01	= 8;
-	public static final int USER_SCHEME_02	= 9;
-	public static final int USER_SCHEME_03	= 10;
-	public static final int USER_SCHEME_04	= 11;
-	public static final int USER_SCHEME_05	= 12;
-	public static final int USER_SCHEME_06	= 13;
-	public static final int USER_SCHEME_07	= 14;
-	public static final int USER_SCHEME_08	= 15;
-	public static final int USER_SCHEME_09	= 16;
-	public static final int USER_SCHEME_10	= 17;
-	public static final int USER_SCHEME_11	= 18;
-	public static final int USER_SCHEME_12	= 19;
+	public static final int BLUE_SCHEME 	= 0;
+	public static final int GREEN_SCHEME 	= 1;
+	public static final int RED_SCHEME 		= 2;
+	public static final int PURPLE_SCHEME	= 3;
+	public static final int YELLOW_SCHEME	= 4;
+	public static final int CYAN_SCHEME 	= 5;
+	public static final int GREY_SCHEME 	= 6;
+	public static final int USER_SCHEME_01	= 7;
+	public static final int USER_SCHEME_02	= 8;
+	public static final int USER_SCHEME_03	= 9;
+	public static final int USER_SCHEME_04	= 10;
+	public static final int USER_SCHEME_05	= 11;
+	public static final int USER_SCHEME_06	= 12;
+	public static final int USER_SCHEME_07	= 13;
+	public static final int USER_SCHEME_08	= 14;
+	public static final int USER_SCHEME_09	= 15;
+	public static final int USER_SCHEME_10	= 16;
+	public static final int USER_SCHEME_11	= 17;
+	public static final int USER_SCHEME_12	= 18;
 	
 	protected static PApplet app;
 
@@ -89,7 +89,7 @@ public class GCScheme  {
 	 * @return
 	 */
 	public static GCScheme getColor(PApplet theApplet){
-		return getColor(theApplet, 1);
+		return getColor(theApplet, 0);
 	}
 	
 	/**
@@ -97,39 +97,72 @@ public class GCScheme  {
 	 * BLUE / GREEN / RED / YELLOW / CYAN / PURPLE / GREY
 	 * 
 	 * @param theApplet
-	 * @param colScheme
+	 * @param csn
 	 * @return
 	 */
-	public static GCScheme getColor(PApplet theApplet, int colScheme){
+	public static GCScheme getColor(PApplet theApplet, int csn){
 		app = theApplet;
-		if(image == null)
-			app.loadImage("schemes.png");
+		if(image == null){
+			image = app.loadImage("user_col_schema.png");
+			if(image == null){
+				image = app.loadImage("default_col_schema.png");
+				System.out.println("Using default colour schema");
+			}
+			else
+				System.out.println("Using default colour schema");				
+		}
+			
 		GCScheme scheme = new GCScheme();
-		scheme.pnlFont = findColor(colScheme, 0, 0);
-		scheme.pnlTabBack = findColor(colScheme, 0, 1);
-		scheme.pnlBack = findColor(colScheme, 0, 2);
-		scheme.pnlBorder = findColor(colScheme, 0, 3);
-		
-		scheme.btnFont = findColor(colScheme, 1, 0);
-		scheme.btnOff = findColor(colScheme, 1, 1);
-		scheme.btnOver = findColor(colScheme, 1, 2);
-		scheme.btnDown = findColor(colScheme, 1, 3);
-		scheme.btnBorder = findColor(colScheme, 1, 4);
 		
 		
 		return scheme;
 	}
 
-	private static int findColor(int scheme, int component, int type){
-		return image.get( ((component * 5) + type)* 10 + 5, scheme * 10 + 5);
-	}
+	
 
+	public static void populateScheme(GCScheme s, int schemeNo){
+		s.pnlFont = image.get(0, schemeNo);
+		s.pnlTabBack = image.get(1, schemeNo);
+		s.pnlBack = image.get(2, schemeNo);
+		s.pnlBorder = image.get(3, schemeNo);
+		
+		s.btnFont = image.get(5, schemeNo);
+		s.btnOff = image.get(6, schemeNo);
+		s.btnOver = image.get(7, schemeNo);
+		s.btnDown = image.get(8, schemeNo);
+		
+		s.sdrTrack = image.get(10, schemeNo);
+		s.sdrThumb = image.get(11, schemeNo);
+		s.sdrBorder = image.get(12, schemeNo);
+		
+		s.txfFont = image.get(15, schemeNo);
+		s.txfBack = image.get(16, schemeNo);
+		s.txfSelFont = image.get(17, schemeNo);
+		s.txfSelBack = image.get(18, schemeNo);
+		s.txfBorder = image.get(19, schemeNo);
+		
+		s.lblFont = image.get(20, schemeNo);
+		s.lblBack = image.get(21, schemeNo);
+		s.lblBorder = image.get(22, schemeNo);
+		
+		s.optFont = image.get(25, schemeNo);
+		s.optBack = image.get(26, schemeNo);
+		s.optBorder = image.get(27, schemeNo);
+		
+		s.cbxFont = image.get(30, schemeNo);
+		s.cbxBack = image.get(31, schemeNo);
+		s.cbxBorder = image.get(32, schemeNo);
+	}
+	
+	
+	// Scheme number
+	public int schemeNo = 0;
 	// Panels
 	public int pnlFont, pnlTabBack, pnlBack, pnlBorder;
 	// Buttons
 	public int btnFont, btnOff, btnOver, btnDown, btnBorder;
 	// Sliders
-	public int sdrBackground, sdrThumb, sdrBorder;
+	public int sdrTrack, sdrThumb, sdrBorder;
 	// TextFields
 	public int txfFont, txfBack, txfSelFont, txfSelBack, txfBorder;
 	// Label
@@ -140,88 +173,15 @@ public class GCScheme  {
 	public int cbxFont, cbxBack, cbxBorder;
 	
 	
-	
-	
-	
-	
-	private static void calcColors(GCScheme scheme, int colScheme){
-		switch(colScheme){
-		case RED_SCHEME:
-			scheme.makeColorScheme(0xff6060, 0xffc0c0, 96, 255, 0x700000, 0x000000);
-			break;
-		case GREEN_SCHEME:
-			scheme.makeColorScheme(0x60ff60, 0xc0ffc0, 96, 255, 0x00ff00, 0x000000);
-			break;
-		case BLUE_SCHEME:
-			scheme.makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);
-			break;
-		case YELLOW_SCHEME:
-			scheme.makeColorScheme(0xffff60, 0xffffc0, 96, 240, 0x000000, 0x000000);				
-			break;
-		case CYAN_SCHEME:
-			scheme.makeColorScheme(0x60ffff, 0xc0ffff, 96, 240, 0x000000, 0x000000);				
-			break;
-		case PURPLE_SCHEME:
-			scheme.makeColorScheme(0xff60ff, 0xffc0ff, 96, 240, 0x000000, 0x000000);	
-			break;
-		case GREY_SCHEME:
-			scheme.makeColorScheme(0x606060, 0xc0c0c0, 96, 240, 0xffffff, 0x000000);				
-			break;
-		default:
-			scheme.makeColorScheme(0x6060ff, 0xc0c0ff, 96, 240, 0x0000ff, 0x000000);				
-		}		
+	public GCScheme (){
+		schemeNo = 0;
+		populateScheme(this, schemeNo);
 	}
 
-	public void setColor(int colScheme){
-		calcColors(this, colScheme);
+	public GCScheme(GCScheme gcScheme){
+		schemeNo = gcScheme.schemeNo;
+		populateScheme(this, schemeNo);		
 	}
 
-
-	/**
-	 * Create a color scheme
-	 * @param pdark the darkest color
-	 * @param plight the lightest color
-	 * @param alphaLow 0-255 low value i.e. most transparency
-	 * @param alphaHigh 0-255 high value i.e. most opaque
-	 * @param pfont panel font color
-	 * @param font font color for rest
-	 */
-	private void makeColorScheme(int pdark, int plight, int alphaLow, int alphaHigh, int pfont, int font)
-	{
-		// Mask to get RGB
-		int colMask = 0x00ffffff;
-		// Mask to get A (alpha)
-		int alphaMask = 0xff000000;
-		
-		// Make opaque then we can adjust alpha as and when
-		pdark |= alphaMask;
-		plight |= alphaMask;
-		
-		alphaLow <<= 24;
-		alphaHigh <<= 24;
-		
-		// Panel colours
-		pnlBack = (plight & colMask) | alphaLow;
-		pnlTabBack = (pdark & colMask) | alphaLow;
-		pnlFont = (pfont & colMask) | alphaMask;
-		// Slider colours
-		sdrBackground = alphaHigh | 0x00ffffff;
-		sdrThumb = plight;
-		sdrBorder = pdark;
-		// button colours
-		btnOff = PApplet.lerpColor(pdark, plight, 50, PConstants.HSB);
-		btnOff = (btnOff & colMask) | alphaHigh;
-		btnOver = PApplet.lerpColor(pdark, plight, 80, PConstants.HSB);
-		btnOver = (btnOver & colMask) | alphaHigh;
-		btnDown = PApplet.lerpColor(pdark, plight, 20, PConstants.HSB);
-		btnDown = (btnDown & colMask) | alphaHigh;
-		btnFont = (font & colMask) | alphaMask;
-		// text field colours
-		txfBack = app.color(255);
-		txfFont = app.color(pnlFont);
-		txfSelBack = (plight & colMask) | alphaMask;
-		txfBorder = app.color(pnlFont);
-	
-	}
 
 } // end of class

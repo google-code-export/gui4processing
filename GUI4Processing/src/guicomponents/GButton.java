@@ -117,8 +117,8 @@ public class GButton extends GComponent {
 			}
 			
 			app.strokeWeight(1);
-			app.stroke(localColor.btnFont);			
-			app.fill(col);
+			app.stroke(localColor.btnBorder);			
+			app.fill(col);	// depends on button state
 			app.rect(pos.x,pos.y,width,height);
 			app.noStroke();
 			app.fill(localColor.btnFont);
