@@ -206,7 +206,7 @@ public class GPanel extends GComponent {
 			if(!tabOnly){
 				if(opaque){
 					app.strokeWeight(border);
-					app.stroke(localColor.btnBorder);
+					app.stroke(localColor.pnlBorder);
 					app.fill(localColor.pnlBack);
 					app.rect(pos.x, pos.y, width - border, height - border);
 				}
