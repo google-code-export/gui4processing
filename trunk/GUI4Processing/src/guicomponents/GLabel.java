@@ -99,6 +99,7 @@ public class GLabel extends GComponent {
 	private void labelCoreCtor(String text, int width, int align){
 		this.width = width;
 		this.height = localFont.size + 2 * PADV;
+		opaque = false;
 		if(text != null)
 			setText(text);
 		registerAutos_DMPK(true, false, false, false);
@@ -117,16 +118,19 @@ public class GLabel extends GComponent {
 			}
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
+			app.strokeWeight(border);
+			app.stroke(localColor.lblBorder);
+			if(opaque)
+				app.fill(localColor.lblBack);
+			else
+				app.noFill();
+			app.rect(pos.x,pos.y, width, height);
+
+			// Draw text
 			app.noStroke();
-			app.fill(localColor.pnlFont);
+			app.fill(localColor.lblFont);
 			app.textFont(localFont, localFont.size);
 			app.text(text, pos.x + textX, pos.y + PADV, width - PADH - 2* border, height);
-			if(border != 0){
-				app.strokeWeight(1);
-				app.stroke(255);
-				app.noFill();
-				app.rect(pos.x,pos.y, width, height);
-			}
 		}
 	}
 

@@ -79,9 +79,6 @@ public class GComponent implements Comparable  {
 	protected Method eventHandler = null;
 	protected Object eventHandlerObject = null;
 	
-	/** Unique ID for every component */
-//	protected String id;
-	
 	/** Text value associated with component */
 	protected String text = "";
 	protected int textWidth;
@@ -101,9 +98,12 @@ public class GComponent implements Comparable  {
 
 	protected boolean visible = true;
 
-	// border width for components
+	/** The border width for this component : default value is 0 */
 	protected int border = 0;
 
+	// Whether to show background or not 
+	protected boolean opaque = true;
+	
 	/**
 	 * Prevent uninitialised instantiation
 	 */
@@ -123,7 +123,7 @@ public class GComponent implements Comparable  {
 		app = theApplet;
 		if(globalColor == null)
 			globalColor = GCScheme.getColor(theApplet);
-		localColor = globalColor;
+		localColor = new GCScheme(globalColor);
 		if(globalFont == null)
 			globalFont = GFont.getDefaultFont(theApplet);
 		localFont = globalFont;
@@ -142,7 +142,7 @@ public class GComponent implements Comparable  {
 	 * @param theApplet
 	 * @param x
 	 * @param y
-	 * @param colors
+	 * @param colors to be used for this component (local)
 	 * @param font
 	 */
 	public GComponent(PApplet theApplet, int x, int y, GCScheme colors, PFont font ){
@@ -150,7 +150,7 @@ public class GComponent implements Comparable  {
 		localColor = colors;
 		localFont = font;
 		if(globalColor == null)
-			globalColor = localColor;
+			globalColor = new GCScheme(localColor);
 		if(globalFont == null)
 			globalFont = localFont;
 		this.x = x;
@@ -174,7 +174,7 @@ public class GComponent implements Comparable  {
 		app = theApplet;
 		localColor = colors;
 		if(globalColor == null)
-			globalColor = localColor;
+			globalColor = new GCScheme(localColor);
 		if(globalFont == null)
 			globalFont = GFont.getDefaultFont(theApplet);
 		localFont = globalFont;
@@ -456,6 +456,15 @@ public class GComponent implements Comparable  {
 	 */
 	public void setBorder(int border){
 		this.border = border;
+	}
+
+	/**
+	 * Determines wheher to show tha back color or not.
+	 * Only applies to some components
+	 * @param opaque
+	 */
+	public void setOpaque(boolean opaque){
+		this.opaque = opaque;
 	}
 
 	public int compareTo(Object o) {

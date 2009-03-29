@@ -92,7 +92,7 @@ public class GVertSlider extends GSlider {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
-			app.fill(localColor.sdrBackground);
+			app.fill(localColor.sdrTrack);
 			app.rect(pos.x, pos.y, width, height);
 			app.fill(localColor.sdrThumb);
 			app.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);

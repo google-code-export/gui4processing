@@ -49,9 +49,6 @@ public class GPanel extends GComponent {
 	/** The height of the tab calculated from font height + padding */
 	protected int tabHeight;
 	
-	/** Is panel body opaque */
-	protected boolean opaque = false;
-	
 	/** Used to restore position when closing panel */
 	protected int dockX, dockY;
 
@@ -208,8 +205,10 @@ public class GPanel extends GComponent {
 			app.text(text, pos.x + PADH, pos.y - tabHeight + PADV, textWidth, tabHeight);
 			if(!tabOnly){
 				if(opaque){
+					app.strokeWeight(border);
+					app.stroke(localColor.btnBorder);
 					app.fill(localColor.pnlBack);
-					app.rect(pos.x, pos.y, width, height);
+					app.rect(pos.x, pos.y, width - border, height - border);
 				}
 				Iterator<GComponent> iter = children.iterator();
 				while(iter.hasNext()){
@@ -330,14 +329,6 @@ public class GPanel extends GComponent {
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
-
-	/**
-	 * Sets the panel background transparency
-	 * @param opaque
-	 */
-//	public void setOpaque(boolean opaque){
-//		this.opaque = opaque;
-//	}
 
 	/**
 	 * Collapse or open the panel

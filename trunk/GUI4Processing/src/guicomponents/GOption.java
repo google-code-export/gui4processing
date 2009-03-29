@@ -73,6 +73,7 @@ public class GOption extends GComponent { //implements Comparable {
 	private void optionCtorCore(String text, int width, int align){
 		this.width = width;
 		height = localFont.size + 2 * PADV;
+		opaque = false;
 		setText(text, align);
 		if(imgSelected == null)
 			imgSelected = app.loadImage("radio1.png");
@@ -109,10 +110,18 @@ public class GOption extends GComponent { //implements Comparable {
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			if (!text.equals("")){
+				app.strokeWeight(border);
+				app.stroke(localColor.btnBorder);
+				if(opaque)
+					app.fill(localColor.optBack);
+				else
+					app.noFill();
+				app.rect(pos.x, pos.y, width, height);
+				// Draw text
 				app.noStroke();
-				app.fill(localColor.pnlFont);
+				app.fill(localColor.optFont);
 				app.textFont(localFont, localFont.size);
-				app.text(text, pos.x + 20, pos.y - 1, textWidth, height);
+				app.text(text, pos.x + 20, pos.y + 1, textWidth, height);
 			}
 			app.fill(app.color(255,255));
 			if(group != null && group.getSelected() == this)

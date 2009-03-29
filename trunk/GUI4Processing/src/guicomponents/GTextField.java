@@ -119,9 +119,6 @@ public class GTextField extends GComponent {
 		setText(text);
 		createEventHandler(app);
 		registerAutos_DMPK(true, true, false, true);
-//		app.registerDraw(this);
-//		app.registerMouseEvent(this);
-//		app.registerKeyEvent(this);
 	}
 
 	/**
@@ -579,14 +576,15 @@ public class GTextField extends GComponent {
 			calcAbsPosition(pos);
 
 			// Draw the surrounding box
-			app.stroke(0);
-			app.fill(255);
+			app.stroke(localColor.txfBorder);
+			app.fill(localColor.txfBack);
 			app.rect(pos.x, pos.y, width, height);
 			app.noStroke();
 
 			// Draw the selection rectangle
 			if(startSelect != endSelect) {
-				app.fill(0xffa0a0ff);
+				//app.fill(0xffa0a0ff);
+				app.fill(localColor.txfSelBack);
 				app.rect(pos.x + startSelectXPos + 4, pos.y + PADV, endSelectXPos - startSelectXPos + 1, height - 2 * PADV + 1);
 			}
 
