@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Component appearance </title>
+<style type="text/css">
+<!--
+body,td,th {
+	font-family: Georgia, Times New Roman, Times, serif;
+	font-size: 12px;
+	color: #000000;
+}
+body {
+	background-color: #FFFF99;
+}
+.style3 {font-family: "Courier New", Courier, monospace}
+.style4 {font-family: Arial, Helvetica, sans-serif}
+-->
+</style></head>
+
+<body>
+<h1>Component Appearance</h1>
+<p>G4P has a number of methods to control the appearance of a component, the main ones are</p>
+<p>&nbsp;</p>
+<table width="*" border="2" cellspacing="2" cellpadding="4">
+  <tr>
+    <td width="162"><strong>Method: name(parameter type)</strong></td>
+    <td width="207"><strong>Acceptable range of values for parameter</strong></td>
+    <td width="960"><strong>Comments</strong></td>
+  </tr>
+  <tr>
+    <td><span class="style3">setBorder(int)</span></td>
+    <td><span class="style3">width &gt;= 0</span></td>
+    <td><span class="style4"> If 0 then the border will not be shown. At present I suggest that you only use values 0 and 1 larger values can have unwanted side effects on the appearance.</span></td>
+  </tr>
+  <tr>
+    <td><span class="style3">setOpaque(boolean)</span></td>
+    <td><span class="style3">true or false</span></td>
+    <td><span class="style4">Determines whether the background colour is used or not.</span></td>
+  </tr>
+  <tr>
+    <td><span class="style3">setAlpha(int)</span></td>
+    <td><span class="style3">0 to 255 incl</span></td>
+    <td><span class="style4">Controls the level of transparency of the component (0 - fully transparent : 255 - fully opaque)</span></td>
+  </tr>
+</table>
+
+</body>
+
+</html>
