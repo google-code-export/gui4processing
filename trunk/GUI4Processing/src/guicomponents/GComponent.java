@@ -459,6 +459,14 @@ public class GComponent implements Comparable  {
 	}
 
 	/**
+	 * Get the border width
+	 * @return
+	 */
+	public int getBorder(){
+		return border;
+	}
+	
+	/**
 	 * Determines wheher to show tha back color or not.
 	 * Only applies to some components
 	 * @param opaque
@@ -467,6 +475,13 @@ public class GComponent implements Comparable  {
 		this.opaque = opaque;
 	}
 
+	/**
+	 * Find out if the component is opaque
+	 * @return
+	 */
+	public boolean getOpaque(){
+		return opaque;
+	}
 
 	/**
 	 * Controls the transparency of this component
