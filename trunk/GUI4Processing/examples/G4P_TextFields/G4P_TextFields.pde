@@ -24,7 +24,7 @@ void setup(){
   // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
   // YELLOW_SCHEME, CYAN_SCHEME, PURPLE_SCHEME
   // Defaults to BLUE_SCHEME 
-  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.GREY_SCHEME);
+  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.GREEN_SCHEME);
   
   /* GFont.getFont() - parameters
    * 1) this (always)
