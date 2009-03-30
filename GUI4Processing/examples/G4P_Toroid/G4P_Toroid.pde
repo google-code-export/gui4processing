@@ -35,7 +35,7 @@ void setup(){
   // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
   // YELLOW_SCHEME, CYAN_SCHEME, PURPLE_SCHEME
   // Defaults to BLUE_SCHEME 
-  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.PURPLE_SCHEME);
+  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.BLUE_SCHEME);
   /* GFont.getFont() - parameters
    * 1) this (always)
    * 2) font name (see below)
@@ -50,7 +50,7 @@ void setup(){
   
   // Create the various GUI components
   p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 90);
-  p.setAlpha(92);
+  p.setAlpha(192);
   lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
   lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
   lblERad = new GLabel(this, "Ellipse Radius", 2, 32, 120);
@@ -108,7 +108,7 @@ public void handleButtonEvents(GButton button){
 
 public void handleOptionEvents(GOption selected, GOption deselected){
   println("Selected    : " + selected);
-  println("Deelected    : " + deselected);
+  println("Deselected    : " + deselected);
   if(selected == optHelix)
     t1.setIsHelix(true);
   else
@@ -117,7 +117,7 @@ public void handleOptionEvents(GOption selected, GOption deselected){
 
 void draw(){
   pushMatrix();
-  background(160, 192, 128);
+  background(192, 220, 192);
   // basic lighting setup
   lights();
   // 2 rendering styles
