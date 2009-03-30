@@ -19,6 +19,13 @@ GButton btnCopy;
 void setup(){
   size(400,140);
   
+  // Sets the colour scheme for the GUI components 
+  // Schemes available are 
+  // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
+  // YELLOW_SCHEME, CYAN_SCHEME, PURPLE_SCHEME
+  // Defaults to BLUE_SCHEME 
+  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.GREY_SCHEME);
+  
   /* GFont.getFont() - parameters
    * 1) this (always)
    * 2) font name (see below)
@@ -91,5 +98,5 @@ void handleButtonEvents(GButton button){
 }
 
 void draw(){
-  background(200,255,200);
+  background(200);
 }

@@ -50,6 +50,7 @@ void setup(){
   
   // Create the various GUI components
   p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 90);
+  p.setAlpha(92);
   lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
   lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
   lblERad = new GLabel(this, "Ellipse Radius", 2, 32, 120);
