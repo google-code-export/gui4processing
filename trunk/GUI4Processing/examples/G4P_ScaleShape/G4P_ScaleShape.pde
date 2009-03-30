@@ -52,16 +52,18 @@ void setup() {
   // default value limits 0-100 and initial value 50
   sdrScale = new GVertSlider(this, 0, 0, 20, height);
   // set slider value limits (initial value, min, max)
-  sdrScale.setLimits(10, 10, height);
+  sdrScale.setLimits(60, 10, height);
   // Set thumb inertia for nice visual effect - acceptable
   // values 1 to 100 (default = 1  i.e. no inertia)
   sdrScale.setInertia(15);
   
-  zoom = 0.1 * sdrScale.getValue();
   
   // This is to make finer changes between zoom values
   // less jerky zooming at lower values.
   sliderScaleFactor = 45.0f / height;
+  // Match the slider
+  zoom = 0.1 * sliderScaleFactor * sdrScale.getValue();
+  
 } 
 
 void draw() {
