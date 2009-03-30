@@ -16,7 +16,6 @@ Slider
 TextField
 	font
 	back
-	sel text font
 	sel text back
 	border
 Label
