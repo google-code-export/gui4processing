@@ -27,7 +27,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
-import processing.core.PFont;
 import processing.core.PImage;
 
 /**
@@ -57,11 +56,11 @@ public class GCheckbox extends GComponent {
 	 * @param colors local color scheme
 	 * @param font font to be used
 	 */
-	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align,
-			GCScheme colors, PFont font){
-		super(theApplet, x, y, colors, font);
-		checkboxCtorCore(text, width, align);
-	}
+//	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align,
+//			GCScheme colors, PFont font){
+//		super(theApplet, x, y, colors, font);
+//		checkboxCtorCore(text, width, align);
+//	}
 
 	/**
 	 * Create a check box.
@@ -76,11 +75,11 @@ public class GCheckbox extends GComponent {
 	 * @param colors local color scheme
 	 * @param font font to be used
 	 */
-	public GCheckbox(PApplet theApplet, String text, int x, int y, int width,
-			GCScheme colors, PFont font){
-		super(theApplet, x, y, colors, font);
-		checkboxCtorCore(text, width, GTAlign.LEFT);
-	}
+//	public GCheckbox(PApplet theApplet, String text, int x, int y, int width,
+//			GCScheme colors, PFont font){
+//		super(theApplet, x, y, colors, font);
+//		checkboxCtorCore(text, width, GTAlign.LEFT);
+//	}
 
 	/**
 	 * Create a check box.

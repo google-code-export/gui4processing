@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import processing.core.PApplet;
-import processing.core.PFont;
 
 /**
  * A component that can be used to group GUI components that can be
@@ -78,11 +77,11 @@ public class GPanel extends GComponent {
 	 * @param colors color to be used
 	 * @param font font to be used
 	 */
-	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height,
-			GCScheme colors, PFont font){
-		super(theApplet, x, y, colors, font);
-		panelCtorCore(text, width, height);
-	}
+//	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height,
+//			GCScheme colors, PFont font){
+//		super(theApplet, x, y, colors, font);
+//		panelCtorCore(text, width, height);
+//	}
 
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
@@ -165,7 +164,8 @@ public class GPanel extends GComponent {
 	
 	/**
 	 * Add a GUI component to this Panel at the position specified by
-	 * component being added.
+	 * component being added. If transparency has been applied to the panel
+	 * then the same level will be applied to the component.
 	 * Unregister the component for drawing this is managed by the 
 	 * Panel draw method to preserve z-ordering
 	 * 
@@ -179,6 +179,8 @@ public class GPanel extends GComponent {
 			component.parent = this;
 			children.add(component);
 			app.unregisterDraw(component);
+			if(localColor.getAlpha() < 255)
+				component.setAlpha(localColor.getAlpha());
 			return true;
 		}
 	}
@@ -328,6 +330,23 @@ public class GPanel extends GComponent {
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	/**
+	 * Controls the transparency of this panel and all the
+	 * components on it.
+	 * 0 = fully transparent
+	 * 255 = fully opaque
+	 * 
+	 * @param alpha
+	 */
+	public void setAlpha(int alpha){
+		localColor.setAlpha(alpha);
+		if(!children.isEmpty()){
+			Iterator<GComponent> iter = children.iterator();
+			while(iter.hasNext())
+				iter.next().setAlpha(alpha);
+		}
 	}
 
 	/**

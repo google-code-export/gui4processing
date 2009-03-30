@@ -27,7 +27,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
-import processing.core.PFont;
 import processing.core.PImage;
 
 /**
@@ -48,28 +47,44 @@ public class GOption extends GComponent { //implements Comparable {
 	protected static PImage imgCleared;
 	
 	
-	public GOption(PApplet theApplet, String text, int x, int y, int width, int align,
-			GCScheme colors, PFont font){
-		super(theApplet, x, y, colors, font);
-		optionCtorCore(text, width, align);
-	}
+//	public GOption(PApplet theApplet, String text, int x, int y, int width, int align,
+//			GCScheme colors, PFont font){
+//		super(theApplet, x, y, colors, font);
+//		optionCtorCore(text, width, align);
+//	}
+//
+//	public GOption(PApplet theApplet, String text, int x, int y, int width,
+//			GCScheme colorScheme, PFont font){
+//		super(theApplet, x, y, colorScheme, font);
+//		optionCtorCore(text, width, GTAlign.LEFT);
+//	}
 
-	public GOption(PApplet theApplet, String text, int x, int y, int width,
-			GCScheme colorScheme, PFont font){
-		super(theApplet, x, y, colorScheme, font);
-		optionCtorCore(text, width, GTAlign.LEFT);
-	}
-
+	
+	/**
+	 * Create an option button
+	 * 
+	 * @param theApplet
+	 * @param text
+	 * @param x
+	 * @param y
+	 * @param width
+	 */
 	public GOption(PApplet theApplet, String text, int x, int y, int width){
 		super(theApplet, x, y);
 		optionCtorCore(text, width, GTAlign.LEFT);
 	}
 
-	public GOption(PApplet theApplet, String text, int x, int y, int width, int align){
-		super(theApplet, x, y);
-		optionCtorCore(text, width, align);
-	}
+//	public GOption(PApplet theApplet, String text, int x, int y, int width, int align){
+//		super(theApplet, x, y);
+//		optionCtorCore(text, width, align);
+//	}
 
+	/**
+	 * Code common to all ctors
+	 * @param text
+	 * @param width
+	 * @param align
+	 */
 	private void optionCtorCore(String text, int width, int align){
 		this.width = width;
 		height = localFont.size + 2 * PADV;
@@ -164,7 +179,8 @@ public class GOption extends GComponent { //implements Comparable {
 	}
 
 	/**
-	 * Attempt to fire an event for this component
+	 * Fire an event for this component which has references to option
+	 * being deselected as well as option being selected.
 	 * 
 	 */
 	protected void fireEvent(){
@@ -180,20 +196,39 @@ public class GOption extends GComponent { //implements Comparable {
 		}		
 	}
 
+	/**
+	 * Find out if this option is selected
+	 * @return
+	 */
 	public boolean isSelected(){
 		return (group != null && group.getSelected() == this);
 	}
 	
+	/**
+	 * Find out if this object is deselected
+	 * @return
+	 */
 	public boolean isNotSelected(){
 		return !(group != null && group.getSelected() == this);		
 	}
 	
+	/**
+	 * User can make this option selected - this does not cause
+	 * events being fired
+	 * 
+	 * @param selected
+	 */
 	public void setSelected(boolean selected){
 		if(group != null){
 			group.setSelected(this);
 		}
 	}
 	
+	/**
+	 * Get the option group that owns this option
+	 * 
+	 * @return
+	 */
 	public GOptionGroup getGroup(){
 		return group;
 	}

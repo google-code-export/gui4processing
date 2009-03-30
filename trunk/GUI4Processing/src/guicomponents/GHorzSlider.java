@@ -51,11 +51,11 @@ public class GHorzSlider extends GSlider {
 	 * @param height
 	 * @param colorScheme
 	 */
-	public GHorzSlider(PApplet theApplet, int x, int y, int width, int height,
-			GCScheme colorScheme){
-		super(theApplet, x, y, width, height, colorScheme);
-		initThumbDetails();
-	}
+//	public GHorzSlider(PApplet theApplet, int x, int y, int width, int height,
+//			GCScheme colorScheme){
+//		super(theApplet, x, y, width, height, colorScheme);
+//		initThumbDetails();
+//	}
 
 	/**
 	 * Create a horizontal slider.

@@ -155,6 +155,7 @@ public class GFont {
 	 * @author Peter Lager
 	 *
 	 */
+	@SuppressWarnings("unchecked")
 	private static class GFontKey implements Comparable{
 
 		private final String fontKey;

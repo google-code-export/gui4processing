@@ -145,18 +145,18 @@ public class GComponent implements Comparable  {
 	 * @param colors to be used for this component (local)
 	 * @param font
 	 */
-	public GComponent(PApplet theApplet, int x, int y, GCScheme colors, PFont font ){
-		app = theApplet;
-		localColor = colors;
-		localFont = font;
-		if(globalColor == null)
-			globalColor = new GCScheme(localColor);
-		if(globalFont == null)
-			globalFont = localFont;
-		this.x = x;
-		this.y = y;
-		G4P.addComponent(this);
-	}
+//	public GComponent(PApplet theApplet, int x, int y, GCScheme colors, PFont font ){
+//		app = theApplet;
+//		localColor = new GCScheme(colors);
+//		localFont = font;
+//		if(globalColor == null)
+//			globalColor = new GCScheme(localColor);
+//		if(globalFont == null)
+//			globalFont = localFont;
+//		this.x = x;
+//		this.y = y;
+//		G4P.addComponent(this);
+//	}
 
 	/**
 	 * This constructor should be called by all constructors  
@@ -170,18 +170,18 @@ public class GComponent implements Comparable  {
 	 * @param y
 	 * @param colors
 	 */
-	public GComponent(PApplet theApplet, int x, int y, GCScheme colors){
-		app = theApplet;
-		localColor = colors;
-		if(globalColor == null)
-			globalColor = new GCScheme(localColor);
-		if(globalFont == null)
-			globalFont = GFont.getDefaultFont(theApplet);
-		localFont = globalFont;
-		this.x = x;
-		this.y = y;
-		G4P.addComponent(this);
-	}
+//	public GComponent(PApplet theApplet, int x, int y, GCScheme colors){
+//		app = theApplet;
+//		localColor = colors;
+//		if(globalColor == null)
+//			globalColor = new GCScheme(localColor);
+//		if(globalFont == null)
+//			globalFont = GFont.getDefaultFont(theApplet);
+//		localFont = globalFont;
+//		this.x = x;
+//		this.y = y;
+//		G4P.addComponent(this);
+//	}
 
 	/**
 	 * Get the PApplet object
@@ -287,9 +287,9 @@ public class GComponent implements Comparable  {
 	 * @param component to be added (ignored)
 	 * @return false always
 	 */
-	public boolean add(GComponent component){
-		return false;
-	}
+//	public boolean add(GComponent component){
+//		return false;
+//	}
 
 	/**
 	 * This method is used to register this object with PApplet so it can process
@@ -467,8 +467,30 @@ public class GComponent implements Comparable  {
 		this.opaque = opaque;
 	}
 
+
+	/**
+	 * Controls the transparency of this component
+	 * 0 = fully transparent
+	 * 255 = fully opaque
+	 * 
+	 * @param alpha
+	 */
+	public void setAlpha(int alpha){
+		localColor.setAlpha(alpha);
+	}
+	
+	/**
+	 * How transparent / opaque is this component
+	 * @return 0 (transparent) 255 (opaque)
+	 */
+	public int getAlpha(){
+		return localColor.getAlpha();
+	}
+	
+	
 	public int compareTo(Object o) {
 		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
 	}
 
+	
 } // end of class
