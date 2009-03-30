@@ -41,7 +41,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
-import processing.core.PFont;
 
 /**
  * The text field component.
@@ -84,11 +83,11 @@ public class GTextField extends GComponent {
 	 * @param colors colour scheme to use
 	 * @param font font to use
 	 */
-	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, 
-			GCScheme colors, PFont font){
-		super(theApplet, x, y, colors, font);
-		textFieldCtorCore(text, width, height);
-	}
+//	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, 
+//			GCScheme colors, PFont font){
+//		super(theApplet, x, y, colors, font);
+//		textFieldCtorCore(text, width, height);
+//	}
 	
 
 	/**

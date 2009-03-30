@@ -70,16 +70,16 @@ public abstract class GSlider extends GComponent {
 	 * @param height
 	 * @param colorScheme
 	 */
-	public GSlider(PApplet theApplet, int x, int y, int width, int height,
-			GCScheme colorScheme){
-		super(theApplet, x, y, colorScheme);
-		this.width = width;
-		this.height = height;
-		app.registerPre(this);
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
-		createEventHandler(theApplet);
-	}
+//	public GSlider(PApplet theApplet, int x, int y, int width, int height,
+//			GCScheme colorScheme){
+//		super(theApplet, x, y, colorScheme);
+//		this.width = width;
+//		this.height = height;
+//		app.registerPre(this);
+//		app.registerDraw(this);
+//		app.registerMouseEvent(this);
+//		createEventHandler(theApplet);
+//	}
 
 	/**
 	 * Called by GHorzSlider and GVertSlider.

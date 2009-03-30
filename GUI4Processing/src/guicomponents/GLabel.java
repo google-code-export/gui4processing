@@ -74,11 +74,11 @@ public class GLabel extends GComponent {
 	 * @param colors
 	 * @param fontScheme
 	 */
-	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align,
-			GCScheme colors, PFont fontScheme) {
-		super(theApplet, x, y, colors, fontScheme);
-		labelCoreCtor(text, width, align);
-	}
+//	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align,
+//			GCScheme colors, PFont fontScheme) {
+//		super(theApplet, x, y, colors, fontScheme);
+//		labelCoreCtor(text, width, align);
+//	}
 	
 	/**
 	 * 
@@ -90,11 +90,11 @@ public class GLabel extends GComponent {
 	 * @param colors
 	 * @param font
 	 */
-	public GLabel(PApplet theApplet, String text, int x, int y, int width,
-			GCScheme colors, PFont font){
-		super(theApplet, x, y, colors, font);
-		labelCoreCtor(text, width, GTAlign.LEFT);
-	}
+//	public GLabel(PApplet theApplet, String text, int x, int y, int width,
+//			GCScheme colors, PFont font){
+//		super(theApplet, x, y, colors, font);
+//		labelCoreCtor(text, width, GTAlign.LEFT);
+//	}
 	
 	private void labelCoreCtor(String text, int width, int align){
 		this.width = width;

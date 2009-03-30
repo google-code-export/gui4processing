@@ -27,7 +27,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
-import processing.core.PFont;
 
 /**
  * The button component.
@@ -44,12 +43,22 @@ public class GButton extends GComponent {
 
 	private int status;
 	
-	public GButton(PApplet theApplet, String text, int x, int y, int width, int height,
-			GCScheme color, PFont font){
-		super(theApplet, x, y, color, font);
-		buttonCtorCore(text, width, height);
-	}
+//	public GButton(PApplet theApplet, String text, int x, int y, int width, int height,
+//			GCScheme color, PFont font){
+//		super(theApplet, x, y, color, font);
+//		buttonCtorCore(text, width, height);
+//	}
+public int ccc;
 
+	/**
+	 * Creat a button.
+	 * @param theApplet
+	 * @param text
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
 	public GButton(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		buttonCtorCore(text, width, height);

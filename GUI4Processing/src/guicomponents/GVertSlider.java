@@ -50,10 +50,10 @@ public class GVertSlider extends GSlider {
 	 * @param height
 	 * @param colorScheme
 	 */
-	public GVertSlider(PApplet theApplet, int x, int y, int width, int height,GCScheme colorScheme){
-		super(theApplet, x, y, width, height, colorScheme);
-		initThumbDetails();
-	}
+//	public GVertSlider(PApplet theApplet, int x, int y, int width, int height,GCScheme colorScheme){
+//		super(theApplet, x, y, width, height, colorScheme);
+//		initThumbDetails();
+//	}
 
 	/**
 	 * Create a vertical slider.
