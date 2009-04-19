@@ -68,27 +68,6 @@ public abstract class GSlider extends GComponent {
 	 * @param y
 	 * @param width
 	 * @param height
-	 * @param colorScheme
-	 */
-//	public GSlider(PApplet theApplet, int x, int y, int width, int height,
-//			GCScheme colorScheme){
-//		super(theApplet, x, y, colorScheme);
-//		this.width = width;
-//		this.height = height;
-//		app.registerPre(this);
-//		app.registerDraw(this);
-//		app.registerMouseEvent(this);
-//		createEventHandler(theApplet);
-//	}
-
-	/**
-	 * Called by GHorzSlider and GVertSlider.
-	 * 
-	 * @param theApplet
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
 	 */
 	public GSlider(PApplet theApplet, int x, int y, int width, int height){
 		super(theApplet, x, y);
@@ -165,7 +144,10 @@ public abstract class GSlider extends GComponent {
 	 */
 	public void pre(){
 		int change, inertia = thumbInertia;
-		if(thumbPos != thumbTargetPos){
+		if(thumbPos == thumbTargetPos){
+			isValueChanging = false;
+		}
+		else {
 			// Make sure we get a change value by repeatedly decreasing the inertia value
 			do {
 				change = (thumbTargetPos - thumbPos)/inertia;
@@ -179,7 +161,7 @@ public abstract class GSlider extends GComponent {
 			}
 			else
 				isValueChanging = false;
-		}
+		}			
 	}
 		
 	/**
@@ -203,6 +185,22 @@ public abstract class GSlider extends GComponent {
 		return false;
 	}
 
+	
+	/**
+	 * Get the minimum slider value
+	 * @return min value
+	 */
+	public int getMinValue() {
+		return minValue;
+	}
+
+	/**
+	 * Get the maximum slider value
+	 * @return max value
+	 */
+	public int getMaxValue() {
+		return maxValue;
+	}
 
 	/**
 	 * Get the current value represented by the slider
@@ -212,7 +210,16 @@ public abstract class GSlider extends GComponent {
 	public int getValue(){
 		return value;
 	}
-	
+	/**
+	 * Is the value changing as a results of the slider thumb being 
+	 * dragged with the mouse.
+	 * 
+	 * @return true if value being changed at GUI
+	 */
+	public boolean isValueChanging() {
+		return isValueChanging;
+	}
+
 	/**
 	 * Sets the target value of the slider, if setInertia(x) has been 
 	 * to implement inertia then the actual slider value will gradually

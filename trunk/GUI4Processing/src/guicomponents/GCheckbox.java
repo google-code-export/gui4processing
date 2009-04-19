@@ -45,45 +45,6 @@ public class GCheckbox extends GComponent {
 	/**
 	 * Create a check box.
 	 * 
-	 * The height will be calculated using the font height
-	 * 
-	 * @param theApplet
-	 * @param text text to appear alongside checkbox
-	 * @param x horz position
-	 * @param y vert position
-	 * @param width width of component
-	 * @param align text alignment (ignored at present)
-	 * @param colors local color scheme
-	 * @param font font to be used
-	 */
-//	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align,
-//			GCScheme colors, PFont font){
-//		super(theApplet, x, y, colors, font);
-//		checkboxCtorCore(text, width, align);
-//	}
-
-	/**
-	 * Create a check box.
-	 * 
-	 * The height will be calculated using the font height
-	 * 
-	 * @param theApplet
-	 * @param text text to appear alongside checkbox
-	 * @param x horz position
-	 * @param y vert position
-	 * @param width width of component
-	 * @param colors local color scheme
-	 * @param font font to be used
-	 */
-//	public GCheckbox(PApplet theApplet, String text, int x, int y, int width,
-//			GCScheme colors, PFont font){
-//		super(theApplet, x, y, colors, font);
-//		checkboxCtorCore(text, width, GTAlign.LEFT);
-//	}
-
-	/**
-	 * Create a check box.
-	 * 
 	 * The height will be calculated using the font height.
 	 * Will use the default global font
 	 * 
@@ -95,7 +56,7 @@ public class GCheckbox extends GComponent {
 	 */
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width){
 		super(theApplet, x, y);
-		checkboxCtorCore(text, width, GTAlign.LEFT);
+		checkboxCtorCore(text, width, 0);
 	}
 
 	/**
@@ -108,28 +69,30 @@ public class GCheckbox extends GComponent {
 	 * @param x horz position
 	 * @param y vert position
 	 * @param width width of component
-	 * @param align text alignment (ignored at present)
+	 * @param height height of component
 	 */
-	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int align){
+	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		checkboxCtorCore(text, width, align);
+		checkboxCtorCore(text, width, height);
 	}
 
 	/**
 	 * Core stuff to be done by all ctors
 	 * @param text
 	 * @param width
-	 * @param align
+	 * @param height
 	 */
-	private void checkboxCtorCore(String text, int width, int align){
-		this.width = width;
-		height = localFont.size + 2 * PADV;
-		opaque = false;
-		setText(text, align);
+	private void checkboxCtorCore(String text, int width, int height){
 		if(imgSelected == null)
 			imgSelected = app.loadImage("check1.png");
 		if(imgCleared == null)
 			imgCleared = app.loadImage("check0.png");
+		this.width = width;
+		this.height = localFont.size + 2 * PADV;
+		if(height > this.height)
+			this.height = height;
+		opaque = false;
+		setText(text);
 		createEventHandler(app);
 		registerAutos_DMPK(true, true, false, false);
 	}
@@ -165,7 +128,24 @@ public class GCheckbox extends GComponent {
 			System.out.println("void handleCheckboxEvents(GCheckbox cbox){\n   ...\n}\n\n");
 		}
 	}
-	
+
+	/**
+	 * Calculate text X position based on text alignment
+	 */
+	protected void calcAlignX(){
+		switch(textAlign){
+		case GAlign.LEFT:
+			alignX = imgSelected.width + 2 * border;
+			break;
+		case GAlign.RIGHT:
+			alignX = width - textWidth - 2 * border;
+			break;
+		case GAlign.CENTER:
+			alignX = imgSelected.width + (width - imgSelected.width - textWidth)/2;
+			break;
+		}
+	}
+
 	/**
 	 * Draw the checkbox
 	 */
@@ -185,13 +165,13 @@ public class GCheckbox extends GComponent {
 				app.noStroke();
 				app.fill(localColor.cbxFont);
 				app.textFont(localFont, localFont.size);
-				app.text(text, pos.x + 20, pos.y + 1, textWidth, height);
+				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
 			}
 			app.fill(app.color(255,255));
 			if(selected)
-				app.image(imgSelected, pos.x, pos.y);
+				app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
 			else
-				app.image(imgCleared, pos.x, pos.y);
+				app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
 		}
 	}
 

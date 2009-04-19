@@ -26,7 +26,6 @@ package guicomponents;
 import java.awt.Point;
 
 import processing.core.PApplet;
-import processing.core.PFont;
 
 /**
  * The label component.
@@ -46,7 +45,7 @@ public class GLabel extends GComponent {
 	 */
 	public GLabel(PApplet theApplet, String text, int x, int y, int width) {
 		super(theApplet, x, y);
-		labelCoreCtor(text, width, GTAlign.LEFT);
+		labelCoreCtor(text, width, 0);
 	}
 
 	/**
@@ -56,66 +55,35 @@ public class GLabel extends GComponent {
 	 * @param x
 	 * @param y
 	 * @param width
-	 * @param align
+	 * @param height
 	 */
-	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align) {
+	public GLabel(PApplet theApplet, String text, int x, int y, int width, int height) {
 		super(theApplet, x, y);
-		labelCoreCtor(text, width, align);
+		labelCoreCtor(text, width, height);
 	}
-
-	/**
-	 * 
-	 * @param theApplet
-	 * @param text
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param align
-	 * @param colors
-	 * @param fontScheme
-	 */
-//	public GLabel(PApplet theApplet, String text, int x, int y, int width, int align,
-//			GCScheme colors, PFont fontScheme) {
-//		super(theApplet, x, y, colors, fontScheme);
-//		labelCoreCtor(text, width, align);
-//	}
 	
 	/**
 	 * 
-	 * @param theApplet
 	 * @param text
-	 * @param x
-	 * @param y
 	 * @param width
-	 * @param colors
-	 * @param font
+	 * @param height
 	 */
-//	public GLabel(PApplet theApplet, String text, int x, int y, int width,
-//			GCScheme colors, PFont font){
-//		super(theApplet, x, y, colors, font);
-//		labelCoreCtor(text, width, GTAlign.LEFT);
-//	}
-	
-	private void labelCoreCtor(String text, int width, int align){
+	private void labelCoreCtor(String text, int width, int height){
 		this.width = width;
 		this.height = localFont.size + 2 * PADV;
+		if(height > this.height)
+			this.height = height;
 		opaque = false;
 		if(text != null)
 			setText(text);
 		registerAutos_DMPK(true, false, false, false);
 	}
 	
+	/**
+	 * Draw the label
+	 */
 	public void draw(){
 		if(visible){
-			int textX = 2 * border;
-			switch(textAlign){
-			case GTAlign.RIGHT:
-				textX += width - textWidth - PADH * border;
-				break;
-			case GTAlign.CENTER:
-				textX += (width - textWidth - PADH * border)/2;
-				break;
-			}
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.strokeWeight(border);
@@ -125,12 +93,11 @@ public class GLabel extends GComponent {
 			else
 				app.noFill();
 			app.rect(pos.x,pos.y, width, height);
-
 			// Draw text
 			app.noStroke();
 			app.fill(localColor.lblFont);
 			app.textFont(localFont, localFont.size);
-			app.text(text, pos.x + textX, pos.y + PADV, width - PADH - 2* border, height);
+			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width - PADH - 2* border, height);
 		}
 	}
 
