@@ -22,7 +22,7 @@ float zoom;
 float sliderScaleFactor;
 
 void setup() {
-  size(640, 360);
+  size(480, 360);
   smooth();
 
   // Sets the colour scheme for the GUI components 
