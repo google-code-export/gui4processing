@@ -88,7 +88,7 @@ class Toroid {
       fillVertexArrays();
     pushMatrix();
     if (isWireFrame){
-      stroke(255, 255, 150);
+      stroke(64, 64, 128);
       strokeWeight(1);
       noFill();
     } 
