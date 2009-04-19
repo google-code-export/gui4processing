@@ -124,6 +124,8 @@ void draw() {
   rotateX(-.5);
   rotateY(-.5);
   background(192);
+  strokeWeight(2);
+  stroke(0);
   fill(255,0,0);
   box(30);
   translate(0,0,20);
