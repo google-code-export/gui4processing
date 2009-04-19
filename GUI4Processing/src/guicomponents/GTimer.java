@@ -63,10 +63,10 @@ public class GTimer {
 	 * For most users 'methodName' will be in their main sketch so this
 	 * parameter has the same value as 'theApplet'
 	 * 
-	 * @param theApplet
-	 * @param obj
-	 * @param methodName
-	 * @param interval
+	 * @param theApplet a reference to the PApplet class (invariably <b>this</b>
+	 * @param obj the object that has the method to be executed
+	 * @param methodName the name of the method to be called by the timer
+	 * @param interval the time (in millisecs) between function calls
 	 */
 	public GTimer(PApplet theApplet, Object obj, String methodName, int interval){
 		app = theApplet;
@@ -122,7 +122,7 @@ public class GTimer {
 	}
 
 	/**
-	 * Start the timer
+	 * Start the timer (call the method forever)
 	 */
 	public void start(){
 		this.nrepeats = -1;
@@ -131,8 +131,8 @@ public class GTimer {
 	}
 	
 	/**
-	 * Start the timer and repeat for the number of
-	 * times indicated by nrepeats.
+	 * Start the timer and call the method for the number of
+	 * times indicated by nrepeats
 	 * If nrepeats is <=0 then repeat forever
 	 * 
 	 * @param nrepeats
@@ -144,7 +144,7 @@ public class GTimer {
 	}
 
 	/**
-	 * Stop the timer
+	 * Stop the timer (can be restarted with start() method)
 	 */
 	public void stop(){
 		if(timer != null)
@@ -174,7 +174,7 @@ public class GTimer {
 	/**
 	 * Get the interval time (milliseconds)between 
 	 * events.
-	 * @return
+	 * @return interval in millsecs
 	 */
 	public int getInterval(){
 		if(timer != null)
@@ -184,8 +184,8 @@ public class GTimer {
 	}
 	
 	/**
-	 * See if the GTimer object is capable of generating events i.e. usable
-	 * @return true usable
+	 * See if the GTimer object has been created successfully
+	 * @return true success
 	 */
 	public boolean isValid(){
 		return (eventHandlerObject != null && timer != null);
