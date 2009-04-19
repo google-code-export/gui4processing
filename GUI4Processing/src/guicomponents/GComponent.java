@@ -30,6 +30,7 @@ import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PFont;
 
 /**
@@ -39,7 +40,7 @@ import processing.core.PFont;
  *
  */
 @SuppressWarnings("unchecked")
-public class GComponent implements Comparable  {
+public class GComponent implements PConstants, Comparable  {
 
 	/**
 	 * This holds a reference to the GComponent that currently has the
@@ -76,13 +77,16 @@ public class GComponent implements Comparable  {
 	/** Link to the parent panel (if null then it is topmost panel) */
 	protected GComponent parent = null;
 
-	protected Method eventHandler = null;
+	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
+	/** The method in eventHandlerObject to execute */
+	protected Method eventHandler = null;
 	
 	/** Text value associated with component */
 	protected String text = "";
 	protected int textWidth;
-	protected int textAlign = GTAlign.LEFT;
+	protected int textAlign = GAlign.LEFT;
+	protected int alignX = 0;
 	
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
 	protected int x, y;
@@ -133,57 +137,6 @@ public class GComponent implements Comparable  {
 	}
 
 	/**
-	 * This constructor should be called by all constructors  
-	 * of any child class e.g. GPanel, GLabel etc.
-	 * 
-	 * Create a local color/font scheme and use for global if that 
-	 * has not been defined yet.
-	 * 
-	 * @param theApplet
-	 * @param x
-	 * @param y
-	 * @param colors to be used for this component (local)
-	 * @param font
-	 */
-//	public GComponent(PApplet theApplet, int x, int y, GCScheme colors, PFont font ){
-//		app = theApplet;
-//		localColor = new GCScheme(colors);
-//		localFont = font;
-//		if(globalColor == null)
-//			globalColor = new GCScheme(localColor);
-//		if(globalFont == null)
-//			globalFont = localFont;
-//		this.x = x;
-//		this.y = y;
-//		G4P.addComponent(this);
-//	}
-
-	/**
-	 * This constructor should be called by all constructors  
-	 * of any child class e.g. GPanel, GLabel etc.
-	 * 
-	 * Create a local color/font scheme and use for global if that 
-	 * has not been defined yet.
-	 * 
-	 * @param theApplet
-	 * @param x
-	 * @param y
-	 * @param colors
-	 */
-//	public GComponent(PApplet theApplet, int x, int y, GCScheme colors){
-//		app = theApplet;
-//		localColor = colors;
-//		if(globalColor == null)
-//			globalColor = new GCScheme(localColor);
-//		if(globalFont == null)
-//			globalFont = GFont.getDefaultFont(theApplet);
-//		localFont = globalFont;
-//		this.x = x;
-//		this.y = y;
-//		G4P.addComponent(this);
-//	}
-
-	/**
 	 * Get the PApplet object
 	 * @return
 	 */
@@ -226,6 +179,15 @@ public class GComponent implements Comparable  {
 			takeFocus();
 		else
 			looseFocus();
+	}
+	
+	/**
+	 * Does this component have focus
+	 * 
+	 * @return
+	 */
+	public boolean hasFocus(){
+		return (this == focusIsWith);
 	}
 	
 	/**
@@ -279,17 +241,6 @@ public class GComponent implements Comparable  {
 			}
 		}		
 	}
-
-	/**
-	 * This is the default implementation for all GUI components except
-	 * GPanel since we can use panels to group components.
-	 * 
-	 * @param component to be added (ignored)
-	 * @return false always
-	 */
-//	public boolean add(GComponent component){
-//		return false;
-//	}
 
 	/**
 	 * This method is used to register this object with PApplet so it can process
@@ -368,6 +319,7 @@ public class GComponent implements Comparable  {
 		this.text = text;
 		app.textFont(localFont, localFont.size);
 		textWidth = (int) app.textWidth(text); 
+		calcAlignX();
 	}
 
 	/**
@@ -377,9 +329,36 @@ public class GComponent implements Comparable  {
 		this.text = text;
 		textAlign = align;
 		app.textFont(localFont, localFont.size);
-		textWidth = (int) app.textWidth(text); 
+		textWidth = (int) app.textWidth(text);
+		calcAlignX();
 	}
 
+	/**
+	 * Set the text alignment inside the box
+	 * @param align
+	 */
+	public void setTextAlign(int align){
+		textAlign = align;
+		calcAlignX();
+	}
+	
+	/**
+	 * Calculate text X position based on text alignment
+	 */
+	protected void calcAlignX(){
+		switch(textAlign){
+		case GAlign.LEFT:
+			alignX = 2 * border;
+			break;
+		case GAlign.RIGHT:
+			alignX = width - textWidth - 2 * border;
+			break;
+		case GAlign.CENTER:
+			alignX = (width - textWidth)/2;
+			break;
+		}
+	}
+	
 	/**
 	 * Sets the position of a component
 	 * @param x
@@ -456,6 +435,7 @@ public class GComponent implements Comparable  {
 	 */
 	public void setBorder(int border){
 		this.border = border;
+		calcAlignX();
 	}
 
 	/**

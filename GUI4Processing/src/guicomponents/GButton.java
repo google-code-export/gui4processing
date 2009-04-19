@@ -27,9 +27,19 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 
 /**
- * The button component.
+ * This class is the Button component.
+ * 
+ * The button face can have either text or an image or both just
+ * pick the right constructor.
+ * 
+ * The image file can either be a single image which is used for 
+ * all button states, or be a composite of 3 images (tiled horizontally)
+ * which are used for the different button states OFF, OVER and DOWN 
+ * in which case the image width should be divisible by 3
+ * 
  * 
  * @author Peter Lager
  *
@@ -37,37 +47,127 @@ import processing.core.PApplet;
 public class GButton extends GComponent {
 	
 	// Button states
-	public static final int OFF		= 0x00050001;
-	public static final int OVER	= 0x00050002;
-	public static final int DOWN	= 0x00050003;
+	public static final int OFF		= 0;
+	public static final int OVER	= 1;
+	public static final int DOWN	= 2;
 
-	private int status;
+	protected int status;
 	
-//	public GButton(PApplet theApplet, String text, int x, int y, int width, int height,
-//			GCScheme color, PFont font){
-//		super(theApplet, x, y, color, font);
-//		buttonCtorCore(text, width, height);
-//	}
-public int ccc;
-
+	protected int[] col = new int[3];
+	
+	protected PImage img = null;
+	protected PImage[] bimage = new PImage[3];
+	protected int btnImgWidth = 0;
+	protected int imageAlign = GAlign.CENTER;
+	protected boolean x3 = false; // filmstrip of 3 images in state order?
+	
+	protected int imgAlignX;
 	/**
-	 * Creat a button.
+	 * Create a button with text only.
+	 * 
+	 * Height and width may increase depending on initial text a
+	 * 
 	 * @param theApplet
-	 * @param text
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
+	 * @param text text appearing on the button
+	 * @param x horz position of button
+	 * @param y vert position
+	 * @param width minimum width of button
+	 * @param height minimum height of button
 	 */
 	public GButton(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		buttonCtorCore(text, width, height);
+		setText(text);
+		buttonCtorCore(width, height);
 	}
 
-	private void buttonCtorCore(String text, int width, int height) {
+	/**
+	 * Create a button with image only.
+	 * 
+	 * Height and width may increase depending on image size.
+	 * 
+	 * @param theApplet
+	 * @param imgFile filename of image to use on the button
+	 * @param x3 if true then image is a filmstrip of 3 images for different button states (OFF OVER DOWN)
+	 * @param x horz position of button
+	 * @param y vert position
+	 * @param width minimum width of button
+	 * @param height minimum height of button
+	 */
+	public GButton(PApplet theApplet, String imgFile, boolean x3, int x, int y, int width, int height){
+		super(theApplet, x, y);
+		this.x3 = x3;
+		img = app.loadImage(imgFile);
+		btnImgWidth = (x3)? img.width /3 : img.width;
+		if(img == null)
+			System.out.println("Can't file image file for GButton");
+		else
+			btnImgWidth = (x3)? img.width /3 : img.width;
+		buttonCtorCore(width, height);
+	}
+
+	/**
+	 * Create a button with both text and image.
+	 * 
+	 * Height and width may increase depending on initial text length
+	 * and image size.
+	 * 
+	 * @param theApplet
+	 * @param text text appearing on the button
+	 * @param imgFile filename of image to use on the button
+	 * @param x3 if true then image is a filmstrip of 3 images for different button states (OFF OVER DOWN)
+	 * @param x horz position of button
+	 * @param y vert position
+	 * @param width minimum width of button
+	 * @param height minimum height of button
+	 */
+	public GButton(PApplet theApplet, String text, String imgFile, boolean x3, int x, int y, int width, int height){
+		super(theApplet, x, y);
 		setText(text);
-		this.width = Math.max(width, textWidth + PADH * 2);
+		this.x3 = x3;
+		img = app.loadImage(imgFile);
+		if(img == null)
+			System.out.println("Can't file image file for GButton");
+		else
+			btnImgWidth = (x3)? img.width /3 : img.width;
+		buttonCtorCore(width, height);
+	}
+
+	/**
+	 * 
+	 * @param text
+	 * @param width
+	 * @param height
+	 */
+	private void buttonCtorCore(int width, int height) {
+		col[0] = localColor.btnOff;
+		col[1] = localColor.btnOver;
+		col[2] = localColor.btnDown;
+		
+		// Check button is wide and tall enough for both text
+		this.width = Math.max(width, textWidth + 2 * PADH);
 		this.height = Math.max(height, localFont.size + 2 * PADV);
+		// and now update for image/text combined
+		if(img != null){
+			this.width = Math.max(this.width, textWidth + btnImgWidth + 2 * PADH);
+			this.height = Math.max(this.height, btnImgWidth + 2 * PADV);
+		}
+		// See if we have multiple images
+		if(img != null){
+			for(int i = 0; i < 3;  i++){
+				if(!x3){
+					bimage[i] = img;
+				}
+				else {
+					bimage[i] = new PImage(btnImgWidth, img.height, ARGB);
+					bimage[i].copy(img, 
+							i * btnImgWidth, 0, btnImgWidth, img.height,
+							0, 0, btnImgWidth, img.height);
+				}
+			}
+			img = bimage[0];
+		}
+		
+		calcAlignX();
 		createEventHandler(app);
 		registerAutos_DMPK(true, true, false, false);
 	}
@@ -99,11 +199,70 @@ public int ccc;
 			eventHandlerObject = obj;
 		} catch (Exception e) {
 			eventHandlerObject = null;
-			System.out.println("You might want to add a method to handle \noption events the syntax is");
+			System.out.println("You might want to add a method to handle \nbutton events the syntax is");
 			System.out.println("void handleButtonEvents(GButton button){\n   ...\n}\n\n");
 		}
 	}
 	
+	/**
+	 * @param text the text to set with alignment
+	 */
+	public void setText(String text) {
+		this.text = text;
+		app.textFont(localFont, localFont.size);
+		textWidth = (int) app.textWidth(text);
+		calcAlignX();
+	}
+
+	
+	/**
+	 * Set the text alignment inside the box
+	 * @param align
+	 */
+	public void setTextAlign(int align){
+		// Ignore text alignment
+	}
+
+	/**
+	 * Sets the position of the image in relation to the button text
+	 * @param align either GAlign.LEFT or GAlign.RIGHT
+	 */
+	public void setImageAlign(int align){
+		if(align == GAlign.LEFT || align == GAlign.RIGHT){			
+			imageAlign = align;
+			calcAlignX();
+		}
+	}
+	/**
+	 * Calculate text and image X alignment position
+	 */
+	protected void calcAlignX(){
+		if(img == null){
+			// text only, centre it
+			alignX = (width - textWidth)/2;
+		}
+		else if(img != null && text.length() == 0){
+			// Image only, centre it
+			imageAlign = GAlign.CENTER;
+			imgAlignX = (width - btnImgWidth)/2;
+		}
+		else {
+			// text and image
+			alignX = (width - btnImgWidth - textWidth)/2;
+			switch(imageAlign){
+			case GAlign.CENTER:
+				imageAlign = GAlign.LEFT;
+			case GAlign.LEFT:
+				imgAlignX = PADH;
+				alignX += btnImgWidth + PADH;
+				break;
+			case GAlign.RIGHT:
+				imgAlignX = width - btnImgWidth - PADH;
+				alignX += PADH;				
+			}
+		}
+	}
+
 	/**
 	 * Draw the button
 	 */
@@ -111,28 +270,20 @@ public int ccc;
 		if(visible){
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
-			// Select draw color
-			int col;
-			switch(status){
-			case OVER:
-				col = localColor.btnOver;
-				break;
-			case DOWN:
-				col = localColor.btnDown;
-				break;
-			case OFF:
-			default:
-				col = localColor.btnOff;
-			}
-			
+			// Draw button rectangle
 			app.strokeWeight(1);
 			app.stroke(localColor.btnBorder);			
-			app.fill(col);	// depends on button state
+			app.fill(col[status]);	// depends on button state
 			app.rect(pos.x,pos.y,width,height);
+			// Draw image
+			if(bimage[status] != null){
+				app.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
+			}
+			// Draw text
 			app.noStroke();
 			app.fill(localColor.btnFont);
 			app.textFont(localFont, localFont.size);
-			app.text(text, pos.x + (width - textWidth)/2, pos.y -1 + (height - localFont.size)/2, width, height);
+			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width, height);
 		}
 	}
 
@@ -176,6 +327,5 @@ public int ccc;
 				status = OFF;
 		}
 	}
-
 	
 }

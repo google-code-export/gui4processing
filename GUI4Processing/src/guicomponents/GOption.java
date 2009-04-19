@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -41,25 +41,12 @@ public class GOption extends GComponent { //implements Comparable {
 	 * All GOption objects should belong to a group
 	 */
 	protected GOptionGroup group;
-	
+
 	// Images used for selected/deselected option
 	protected static PImage imgSelected;
 	protected static PImage imgCleared;
-	
-	
-//	public GOption(PApplet theApplet, String text, int x, int y, int width, int align,
-//			GCScheme colors, PFont font){
-//		super(theApplet, x, y, colors, font);
-//		optionCtorCore(text, width, align);
-//	}
-//
-//	public GOption(PApplet theApplet, String text, int x, int y, int width,
-//			GCScheme colorScheme, PFont font){
-//		super(theApplet, x, y, colorScheme, font);
-//		optionCtorCore(text, width, GTAlign.LEFT);
-//	}
 
-	
+
 	/**
 	 * Create an option button
 	 * 
@@ -71,33 +58,30 @@ public class GOption extends GComponent { //implements Comparable {
 	 */
 	public GOption(PApplet theApplet, String text, int x, int y, int width){
 		super(theApplet, x, y);
-		optionCtorCore(text, width, GTAlign.LEFT);
+		optionCtorCore(text, width, 0);
 	}
-
-//	public GOption(PApplet theApplet, String text, int x, int y, int width, int align){
-//		super(theApplet, x, y);
-//		optionCtorCore(text, width, align);
-//	}
 
 	/**
 	 * Code common to all ctors
 	 * @param text
 	 * @param width
-	 * @param align
+	 * @param height
 	 */
-	private void optionCtorCore(String text, int width, int align){
-		this.width = width;
-		height = localFont.size + 2 * PADV;
-		opaque = false;
-		setText(text, align);
+	private void optionCtorCore(String text, int width, int height){
 		if(imgSelected == null)
 			imgSelected = app.loadImage("radio1.png");
 		if(imgCleared == null)
 			imgCleared = app.loadImage("radio0.png");
+		this.width = width;
+		this.height = localFont.size + 2 * PADV;
+		if(height > this.height)
+			this.height = height;
+		opaque = false;
+		setText(text);
 		createEventHandler(app);
 		registerAutos_DMPK(true, true, false, false);
 	}
-	
+
 	public void addEventHandler(Object obj, String methodName){
 		try{
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
@@ -108,7 +92,7 @@ public class GOption extends GComponent { //implements Comparable {
 			eventHandlerObject = null;
 		}
 	}
-	
+
 	protected void createEventHandler(Object obj){
 		try{
 			this.eventHandler = obj.getClass().getMethod("handleOptionEvents", new Class[] { GOption.class, GOption.class } );
@@ -119,7 +103,27 @@ public class GOption extends GComponent { //implements Comparable {
 			System.out.println("void handleOptionEvents(GOption selected, GOption deselected){\n   ...\n}\n\n");
 		}
 	}
-	
+
+	/**
+	 * Calculate text X position based on text alignment
+	 */
+	protected void calcAlignX(){
+		switch(textAlign){
+		case GAlign.LEFT:
+			alignX = imgSelected.width + 2 * border;
+			break;
+		case GAlign.RIGHT:
+			alignX = width - textWidth - 2 * border;
+			break;
+		case GAlign.CENTER:
+			alignX = imgSelected.width + (width - imgSelected.width - textWidth)/2;
+			break;
+		}
+	}
+
+	/**
+	 * draw the option
+	 */
 	public void draw(){
 		if(visible){
 			Point pos = new Point(0,0);
@@ -136,15 +140,16 @@ public class GOption extends GComponent { //implements Comparable {
 				app.noStroke();
 				app.fill(localColor.optFont);
 				app.textFont(localFont, localFont.size);
-				app.text(text, pos.x + 20, pos.y + 1, textWidth, height);
+				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
 			}
 			app.fill(app.color(255,255));
 			if(group != null && group.getSelected() == this)
-				app.image(imgSelected, pos.x, pos.y);
+				app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
 			else
-				app.image(imgCleared, pos.x, pos.y);
+				app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
 		}
 	}
+
 
 	/**
 	 * All GUI components are registered for mouseEvents
@@ -152,7 +157,7 @@ public class GOption extends GComponent { //implements Comparable {
 	public void mouseEvent(MouseEvent event){
 		// If this option does not belong to a group then ignore mouseEvents
 		if(group == null) return;
-		
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
@@ -203,7 +208,7 @@ public class GOption extends GComponent { //implements Comparable {
 	public boolean isSelected(){
 		return (group != null && group.getSelected() == this);
 	}
-	
+
 	/**
 	 * Find out if this object is deselected
 	 * @return
@@ -211,7 +216,7 @@ public class GOption extends GComponent { //implements Comparable {
 	public boolean isNotSelected(){
 		return !(group != null && group.getSelected() == this);		
 	}
-	
+
 	/**
 	 * User can make this option selected - this does not cause
 	 * events being fired
@@ -223,7 +228,7 @@ public class GOption extends GComponent { //implements Comparable {
 			group.setSelected(this);
 		}
 	}
-	
+
 	/**
 	 * Get the option group that owns this option
 	 * 
@@ -232,7 +237,7 @@ public class GOption extends GComponent { //implements Comparable {
 	public GOptionGroup getGroup(){
 		return group;
 	}
-	
+
 	/**
 	 * Set the option group - at the present this method does not allow the option
 	 * to be moved from one group to another.
@@ -243,11 +248,11 @@ public class GOption extends GComponent { //implements Comparable {
 		//group.addOption(this);
 	}
 
-//	@Override
-//	public int compareTo(Object o) {
-//		// TODO Auto-generated method stub
-//		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
-//	}
+	//	@Override
+	//	public int compareTo(Object o) {
+	//		// TODO Auto-generated method stub
+	//		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
+	//	}
 
-	
+
 }

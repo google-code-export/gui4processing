@@ -74,29 +74,6 @@ public class GPanel extends GComponent {
 	 * @param y vertical position
 	 * @param width width of the panel
 	 * @param height height of the panel (excl. tab)
-	 * @param colors color to be used
-	 * @param font font to be used
-	 */
-//	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height,
-//			GCScheme colors, PFont font){
-//		super(theApplet, x, y, colors, font);
-//		panelCtorCore(text, width, height);
-//	}
-
-	/**
-	 * Create a Panel that comprises of 2 parts the tab which is used to 
-	 * select and move the panel and the container window below the tab which 
-	 * is used to hold other components.
-	 * The size of the container window will grow to fit components added
-	 * provided that it does not exceed the width and height of the applet
-	 * window.
-	 *  
-	 * @param theApplet the PApplet reference
-	 * @param text to appear on tab
-	 * @param x horizontal position
-	 * @param y vertical position
-	 * @param width width of the panel
-	 * @param height height of the panel (excl. tab)
 	 */
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
@@ -355,7 +332,7 @@ public class GPanel extends GComponent {
 	 */
 	public void setCollapsed(boolean collapse){
 		tabOnly = collapse;
-		// If we opn the panel make sure it fits on the screen
+		// If we open the panel make sure it fits on the screen
 		if(!tabOnly)
 			constrainPanelPosition();
 	}

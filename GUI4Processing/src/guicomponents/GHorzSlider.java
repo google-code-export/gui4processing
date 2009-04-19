@@ -37,25 +37,6 @@ import processing.core.PApplet;
 public class GHorzSlider extends GSlider {
 
 	
-	/**
-	 * Create a horizontal slider.
-	 * Default values:
-	 * 		Range 0-100
-	 *      Initial value 50
-	 * Use the setLimits method to customise these values.
-	 * 
-	 * @param theApplet
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param colorScheme
-	 */
-//	public GHorzSlider(PApplet theApplet, int x, int y, int width, int height,
-//			GCScheme colorScheme){
-//		super(theApplet, x, y, width, height, colorScheme);
-//		initThumbDetails();
-//	}
 
 	/**
 	 * Create a horizontal slider.
