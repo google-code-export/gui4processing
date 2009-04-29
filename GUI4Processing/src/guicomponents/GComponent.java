@@ -125,6 +125,7 @@ public class GComponent implements PConstants, Comparable  {
 	 */
 	public GComponent(PApplet theApplet, int x, int y){
 		app = theApplet;
+		G4P.app = theApplet;
 		if(globalColor == null)
 			globalColor = GCScheme.getColor(theApplet);
 		localColor = new GCScheme(globalColor);

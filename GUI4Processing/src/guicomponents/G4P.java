@@ -26,6 +26,9 @@ package guicomponents;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import processing.core.PApplet;
+import processing.core.PConstants;
+
 /**
  * This class has only static methods. It keeps track of all GComponents created.
  * Its primary role is encapsulated in the draw() method which can override
@@ -34,7 +37,7 @@ import java.util.Iterator;
  * @author Peter Lager
  *
  */
-public class G4P {
+public class G4P implements PConstants {
 
 	/**
 	 * Set of all the GUI components created
@@ -42,6 +45,8 @@ public class G4P {
 	private static HashSet<GComponent> all = new HashSet<GComponent>();
 	
 	private static boolean autoDrawOn = true;
+	
+	public static PApplet app = null;
 	
 	/**
 	 * This should by all ctors in GComponent and since all GUI components
@@ -61,7 +66,7 @@ public class G4P {
 		unregisterFromPAppletDraw();
 		System.out.println("You have disabled autoDraw so you have to use");
 		System.out.println("G4P.draw() when you want to display the GUI" );
-		System.out.println("this is not reversible" );
+		System.out.println("this is not action is not reversible." );
 	}
 
 	public static boolean isAutoDrawOn(){
@@ -72,17 +77,21 @@ public class G4P {
 	 * Use G4P.draw() if you want to control when you the GUI is to be drawn
 	 */
 	public static void draw(){
-		// Time to take over the responsibility for drawing
-		if(autoDrawOn)
-			unregisterFromPAppletDraw();
-		// Draw the components note that GPanels will call the appropriate
-		// draw methods for the components on them
-		Iterator<GComponent> iter = all.iterator();
-		GComponent c;
-		while(iter.hasNext()){
-			c = iter.next();
-			if(c.getParent() == null)
-				c.draw();
+		if(all.size() > 0){
+			// Time to take over the responsibility for drawing
+			if(autoDrawOn)
+				unregisterFromPAppletDraw();
+			// Draw the components note that GPanels will call the appropriate
+			// draw methods for the components on them
+			app.hint(DISABLE_DEPTH_TEST);
+			Iterator<GComponent> iter = all.iterator();
+			GComponent c;
+			while(iter.hasNext()){
+				c = iter.next();
+				if(c.getParent() == null)
+					c.draw();
+			}
+			app.hint(ENABLE_DEPTH_TEST);
 		}
 	}
 

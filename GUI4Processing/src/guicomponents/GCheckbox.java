@@ -151,6 +151,7 @@ public class GCheckbox extends GComponent {
 	 */
 	public void draw(){
 		if(visible){
+			app.pushStyle();
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			if (!text.equals("")){
@@ -172,6 +173,7 @@ public class GCheckbox extends GComponent {
 				app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
 			else
 				app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
+			app.popStyle();
 		}
 	}
 

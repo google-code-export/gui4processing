@@ -126,6 +126,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 */
 	public void draw(){
 		if(visible){
+			app.pushStyle();
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			if (!text.equals("")){
@@ -147,6 +148,7 @@ public class GOption extends GComponent { //implements Comparable {
 				app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
 			else
 				app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
+			app.popStyle();
 		}
 	}
 

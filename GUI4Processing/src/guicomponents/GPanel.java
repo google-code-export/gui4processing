@@ -171,6 +171,7 @@ public class GPanel extends GComponent {
 	 */
 	public void draw(){
 		if(visible){
+			app.pushStyle();
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
@@ -194,6 +195,7 @@ public class GPanel extends GComponent {
 					iter.next().draw();
 				}
 			}
+			app.popStyle();
 		}
 	}
 

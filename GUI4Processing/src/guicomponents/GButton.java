@@ -268,6 +268,7 @@ public class GButton extends GComponent {
 	 */
 	public void draw(){
 		if(visible){
+			app.pushStyle();
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			// Draw button rectangle
@@ -284,6 +285,7 @@ public class GButton extends GComponent {
 			app.fill(localColor.btnFont);
 			app.textFont(localFont, localFont.size);
 			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width, height);
+			app.popStyle();
 		}
 	}
 

@@ -84,6 +84,7 @@ public class GLabel extends GComponent {
 	 */
 	public void draw(){
 		if(visible){
+			app.pushStyle();
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.strokeWeight(border);
@@ -98,6 +99,7 @@ public class GLabel extends GComponent {
 			app.fill(localColor.lblFont);
 			app.textFont(localFont, localFont.size);
 			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width - PADH - 2* border, height);
+			app.popStyle();
 		}
 	}
 
