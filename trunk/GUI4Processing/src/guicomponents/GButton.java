@@ -55,11 +55,9 @@ public class GButton extends GComponent {
 	
 	protected int[] col = new int[3];
 	
-	protected PImage img = null;
 	protected PImage[] bimage = new PImage[3];
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
-	protected int nbrImages = 1; // number of images in filmstrip default is 1?
 	
 	protected int imgAlignX;
 	/**
@@ -77,7 +75,7 @@ public class GButton extends GComponent {
 	public GButton(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setText(text);
-		buttonCtorCore(width, height);
+		buttonCtorCore(width, height, null, 0);
 	}
 
 	/**
@@ -87,21 +85,20 @@ public class GButton extends GComponent {
 	 * 
 	 * @param theApplet
 	 * @param imgFile filename of image to use on the button
-	 * @param x3 if true then image is a filmstrip of 3 images for different button states (OFF OVER DOWN)
+	 * @param nbrImages number of images in the filmstrip normally 1 or 3 (OFF OVER DOWN)
 	 * @param x horz position of button
 	 * @param y vert position
 	 * @param width minimum width of button
 	 * @param height minimum height of button
 	 */
-	public GButton(PApplet theApplet, String imgFile, int ni, int x, int y, int width, int height){
+	public GButton(PApplet theApplet, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		this.nbrImages = ni;
-		img = app.loadImage(imgFile);
+		PImage img = app.loadImage(imgFile);
 		if(img == null)
 			System.out.println("Can't find image file for GButton");
 		else
-			btnImgWidth = img.width /  ni;
-		buttonCtorCore(width, height);
+			btnImgWidth = img.width /  nbrImages;
+		buttonCtorCore(width, height, img, nbrImages);
 	}
 
 	/**
@@ -113,22 +110,21 @@ public class GButton extends GComponent {
 	 * @param theApplet
 	 * @param text text appearing on the button
 	 * @param imgFile filename of image to use on the button
-	 * @param x3 if true then image is a filmstrip of 3 images for different button states (OFF OVER DOWN)
+	 * @param nbrImages number of images in the filmstrip normally 1 or 3 (OFF OVER DOWN)
 	 * @param x horz position of button
 	 * @param y vert position
 	 * @param width minimum width of button
 	 * @param height minimum height of button
 	 */
-	public GButton(PApplet theApplet, String text, String imgFile, int ni, int x, int y, int width, int height){
+	public GButton(PApplet theApplet, String text, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setText(text);
-		this.nbrImages = ni;
-		img = app.loadImage(imgFile);
+		PImage img = app.loadImage(imgFile);
 		if(img == null)
 			System.out.println("Can't find image file for GButton");
 		else
-			btnImgWidth = img.width / ni;
-		buttonCtorCore(width, height);
+			btnImgWidth = img.width / nbrImages;
+		buttonCtorCore(width, height, img, nbrImages);
 	}
 
 	/**
@@ -137,7 +133,7 @@ public class GButton extends GComponent {
 	 * @param width
 	 * @param height
 	 */
-	private void buttonCtorCore(int width, int height) {
+	private void buttonCtorCore(int width, int height, PImage img, int nbrImages) {
 		col[0] = localColor.btnOff;
 		col[1] = localColor.btnOver;
 		col[2] = localColor.btnDown;
@@ -230,11 +226,11 @@ public class GButton extends GComponent {
 	 * Calculate text and image X alignment position
 	 */
 	protected void calcAlignX(){
-		if(img == null){
+		if(bimage[0] == null){
 			// text only, centre it
 			alignX = (width - textWidth)/2;
 		}
-		else if(img != null && text.length() == 0){
+		else if(bimage[0] != null && text.length() == 0){
 			// Image only, centre it
 			imageAlign = GAlign.CENTER;
 			imgAlignX = (width - btnImgWidth)/2;

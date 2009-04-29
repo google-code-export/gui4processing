@@ -40,7 +40,7 @@ public class GOption extends GComponent { //implements Comparable {
 	/**
 	 * All GOption objects should belong to a group
 	 */
-	protected GOptionGroup group;
+	protected GOptionGroup ownerGroup;
 
 	// Images used for selected/deselected option
 	protected static PImage imgSelected;
@@ -144,7 +144,7 @@ public class GOption extends GComponent { //implements Comparable {
 				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
 			}
 			app.fill(app.color(255,255));
-			if(group != null && group.getSelected() == this)
+			if(ownerGroup != null && ownerGroup.getSelected() == this)
 				app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
 			else
 				app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
@@ -158,7 +158,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 */
 	public void mouseEvent(MouseEvent event){
 		// If this option does not belong to a group then ignore mouseEvents
-		if(group == null) return;
+		if(ownerGroup == null) return;
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
@@ -170,7 +170,7 @@ public class GOption extends GComponent { //implements Comparable {
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
-				group.setSelected(this);
+				ownerGroup.setSelected(this);
 				fireEvent();
 				this.looseFocus();
 				mdx = mdy = Integer.MAX_VALUE;
@@ -194,7 +194,7 @@ public class GOption extends GComponent { //implements Comparable {
 		if(eventHandler != null){
 			try {
 				eventHandler.invoke(eventHandlerObject, 
-						new Object[] { this, group.getDeselected() });
+						new Object[] { this, ownerGroup.getDeselected() });
 			} catch (Exception e) {
 				System.out.println("Disabling " + eventHandler.getName() + " due to an error");
 				eventHandler = null;
@@ -208,7 +208,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 * @return
 	 */
 	public boolean isSelected(){
-		return (group != null && group.getSelected() == this);
+		return (ownerGroup != null && ownerGroup.getSelected() == this);
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 * @return
 	 */
 	public boolean isNotSelected(){
-		return !(group != null && group.getSelected() == this);		
+		return !(ownerGroup != null && ownerGroup.getSelected() == this);		
 	}
 
 	/**
@@ -226,8 +226,8 @@ public class GOption extends GComponent { //implements Comparable {
 	 * @param selected
 	 */
 	public void setSelected(boolean selected){
-		if(group != null){
-			group.setSelected(this);
+		if(ownerGroup != null){
+			ownerGroup.setSelected(this);
 		}
 	}
 
@@ -237,7 +237,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 * @return
 	 */
 	public GOptionGroup getGroup(){
-		return group;
+		return ownerGroup;
 	}
 
 	/**
@@ -246,15 +246,8 @@ public class GOption extends GComponent { //implements Comparable {
 	 * @param group
 	 */
 	public void setGroup(GOptionGroup group){
-		this.group = group;
+		this.ownerGroup = group;
 		//group.addOption(this);
 	}
-
-	//	@Override
-	//	public int compareTo(Object o) {
-	//		// TODO Auto-generated method stub
-	//		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
-	//	}
-
 
 }
