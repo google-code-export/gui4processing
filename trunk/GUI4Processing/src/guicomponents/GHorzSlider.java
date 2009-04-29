@@ -72,6 +72,7 @@ public class GHorzSlider extends GSlider {
 	 */
 	public void draw(){
 		if(visible){
+			app.pushStyle();
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 			app.noStroke();
@@ -85,6 +86,7 @@ public class GHorzSlider extends GSlider {
 				app.stroke(localColor.sdrBorder);
 				app.rect(pos.x, pos.y, width, height);
 			}
+			app.popStyle();
 		}
 	}
 	

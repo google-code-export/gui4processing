@@ -572,6 +572,7 @@ public class GTextField extends GComponent {
 	 */
 	public void draw () {
 		if(visible){
+			app.pushStyle();
 			Point pos = new Point(0,0);
 			calcAbsPosition(pos);
 
@@ -601,6 +602,7 @@ public class GTextField extends GComponent {
 				app.stroke(64);
 				app.line(pos.x + (int) cursorXPos + 4, pos.y + PADV, pos.x + (int) cursorXPos + 4, pos.y + height - 2 * PADV);
 			}
+			app.popStyle();
 		}
 	}
 
