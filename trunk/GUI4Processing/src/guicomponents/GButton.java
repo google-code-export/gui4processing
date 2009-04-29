@@ -46,7 +46,7 @@ import processing.core.PImage;
  */
 public class GButton extends GComponent {
 	
-	// Button states
+	// Button status values
 	public static final int OFF		= 0;
 	public static final int OVER	= 1;
 	public static final int DOWN	= 2;
@@ -59,7 +59,7 @@ public class GButton extends GComponent {
 	protected PImage[] bimage = new PImage[3];
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
-	protected boolean x3 = false; // filmstrip of 3 images in state order?
+	protected int nbrImages = 1; // number of images in filmstrip default is 1?
 	
 	protected int imgAlignX;
 	/**
@@ -93,15 +93,14 @@ public class GButton extends GComponent {
 	 * @param width minimum width of button
 	 * @param height minimum height of button
 	 */
-	public GButton(PApplet theApplet, String imgFile, boolean x3, int x, int y, int width, int height){
+	public GButton(PApplet theApplet, String imgFile, int ni, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		this.x3 = x3;
+		this.nbrImages = ni;
 		img = app.loadImage(imgFile);
-		btnImgWidth = (x3)? img.width /3 : img.width;
 		if(img == null)
-			System.out.println("Can't file image file for GButton");
+			System.out.println("Can't find image file for GButton");
 		else
-			btnImgWidth = (x3)? img.width /3 : img.width;
+			btnImgWidth = img.width /  ni;
 		buttonCtorCore(width, height);
 	}
 
@@ -120,15 +119,15 @@ public class GButton extends GComponent {
 	 * @param width minimum width of button
 	 * @param height minimum height of button
 	 */
-	public GButton(PApplet theApplet, String text, String imgFile, boolean x3, int x, int y, int width, int height){
+	public GButton(PApplet theApplet, String text, String imgFile, int ni, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setText(text);
-		this.x3 = x3;
+		this.nbrImages = ni;
 		img = app.loadImage(imgFile);
 		if(img == null)
-			System.out.println("Can't file image file for GButton");
+			System.out.println("Can't find image file for GButton");
 		else
-			btnImgWidth = (x3)? img.width /3 : img.width;
+			btnImgWidth = img.width / ni;
 		buttonCtorCore(width, height);
 	}
 
@@ -142,7 +141,7 @@ public class GButton extends GComponent {
 		col[0] = localColor.btnOff;
 		col[1] = localColor.btnOver;
 		col[2] = localColor.btnDown;
-		
+
 		// Check button is wide and tall enough for both text
 		this.width = Math.max(width, textWidth + 2 * PADH);
 		this.height = Math.max(height, localFont.size + 2 * PADV);
@@ -150,23 +149,17 @@ public class GButton extends GComponent {
 		if(img != null){
 			this.width = Math.max(this.width, textWidth + btnImgWidth + 2 * PADH);
 			this.height = Math.max(this.height, btnImgWidth + 2 * PADV);
-		}
-		// See if we have multiple images
-		if(img != null){
-			for(int i = 0; i < 3;  i++){
-				if(!x3){
-					bimage[i] = img;
-				}
-				else {
-					bimage[i] = new PImage(btnImgWidth, img.height, ARGB);
-					bimage[i].copy(img, 
-							i * btnImgWidth, 0, btnImgWidth, img.height,
-							0, 0, btnImgWidth, img.height);
-				}
+			// See if we have multiple images
+			for(int i = 0; i < nbrImages;  i++){
+				bimage[i] = new PImage(btnImgWidth, img.height, ARGB);
+				bimage[i].copy(img, 
+						i * btnImgWidth, 0, btnImgWidth, img.height,
+						0, 0, btnImgWidth, img.height);
 			}
-			img = bimage[0];
+			for(int i = nbrImages; i < 3; i++){
+				bimage[i] = bimage[nbrImages - 1];
+			}
 		}
-		
 		calcAlignX();
 		createEventHandler(app);
 		registerAutos_DMPK(true, true, false, false);
