@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ public class GLabel extends GComponent {
 		super(theApplet, x, y);
 		labelCoreCtor(text, width, height);
 	}
-	
+
 	/**
 	 * 
 	 * @param text
@@ -78,29 +78,33 @@ public class GLabel extends GComponent {
 			setText(text);
 		registerAutos_DMPK(true, false, false, false);
 	}
-	
+
 	/**
 	 * Draw the label
 	 */
 	public void draw(){
-		if(visible){
-			app.pushStyle();
-			Point pos = new Point(0,0);
-			calcAbsPosition(pos);
+		if(!visible) return;
+
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+		if(border != 0){
 			app.strokeWeight(border);
 			app.stroke(localColor.lblBorder);
-			if(opaque)
-				app.fill(localColor.lblBack);
-			else
-				app.noFill();
-			app.rect(pos.x,pos.y, width, height);
-			// Draw text
-			app.noStroke();
-			app.fill(localColor.lblFont);
-			app.textFont(localFont, localFont.size);
-			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width - PADH - 2* border, height);
-			app.popStyle();
 		}
+		else
+			app.noStroke();
+		if(opaque)
+			app.fill(localColor.lblBack);
+		else
+			app.noFill();
+		app.rect(pos.x,pos.y, width, height);
+		// Draw text
+		app.noStroke();
+		app.fill(localColor.lblFont);
+		app.textFont(localFont, localFont.size);
+		app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - PADH - 2* border, height);
+		app.popStyle();
 	}
-
 }

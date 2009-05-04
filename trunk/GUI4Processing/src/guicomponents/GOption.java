@@ -36,7 +36,7 @@ import processing.core.PImage;
  * @author Peter Lager
  *
  */
-public class GOption extends GComponent { //implements Comparable {
+public class GOption extends GComponent {
 	/**
 	 * All GOption objects should belong to a group
 	 */
@@ -87,8 +87,10 @@ public class GOption extends GComponent { //implements Comparable {
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
-			System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-			System.out.println("with a two parameters of type GOption");
+			if(G4P.messages){
+				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
+				System.out.println("with a two parameters of type GOption");
+			}
 			eventHandlerObject = null;
 		}
 	}
@@ -98,9 +100,11 @@ public class GOption extends GComponent { //implements Comparable {
 			this.eventHandler = obj.getClass().getMethod("handleOptionEvents", new Class[] { GOption.class, GOption.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
+			if(G4P.messages){
+				System.out.println("You might want to add a method to handle \noption events the syntax is");
+				System.out.println("void handleOptionEvents(GOption selected, GOption deselected){\n   ...\n}\n\n");
+			}
 			eventHandlerObject = null;
-			System.out.println("You might want to add a method to handle \noption events the syntax is");
-			System.out.println("void handleOptionEvents(GOption selected, GOption deselected){\n   ...\n}\n\n");
 		}
 	}
 
@@ -110,7 +114,7 @@ public class GOption extends GComponent { //implements Comparable {
 	protected void calcAlignX(){
 		switch(textAlign){
 		case GAlign.LEFT:
-			alignX = imgSelected.width + 2 * border;
+			alignX = imgSelected.width + 2 * border + PADV;
 			break;
 		case GAlign.RIGHT:
 			alignX = width - textWidth - 2 * border;
@@ -125,31 +129,39 @@ public class GOption extends GComponent { //implements Comparable {
 	 * draw the option
 	 */
 	public void draw(){
-		if(visible){
-			app.pushStyle();
-			Point pos = new Point(0,0);
-			calcAbsPosition(pos);
-			if (!text.equals("")){
-				app.strokeWeight(border);
-				app.stroke(localColor.btnBorder);
-				if(opaque)
-					app.fill(localColor.optBack);
-				else
-					app.noFill();
-				app.rect(pos.x, pos.y, width, height);
-				// Draw text
-				app.noStroke();
-				app.fill(localColor.optFont);
-				app.textFont(localFont, localFont.size);
-				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
+		if(!visible) return;
+
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+		if (!text.equals("")){
+			if(border == 0){
+				app.noStroke();					
 			}
-			app.fill(app.color(255,255));
-			if(ownerGroup != null && ownerGroup.getSelected() == this)
-				app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
+			else {
+				app.stroke(localColor.btnBorder);
+				app.strokeWeight(border);					
+			}
+			if(opaque)
+				app.fill(localColor.txfBack);
 			else
-				app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
-			app.popStyle();
+				app.noFill();
+			app.rect(pos.x, pos.y, width, height);
+			// Draw text
+			app.noStroke();
+			app.fill(localColor.optFont);
+			app.textFont(localFont, localFont.size);
+//				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
+			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - imgSelected.width, height);
 		}
+		app.fill(app.color(255,255));
+		if(ownerGroup != null && ownerGroup.selectedOption() == this)
+			app.image(imgSelected, pos.x + 1, pos.y + (height - imgSelected.height)/2);
+		else
+			app.image(imgCleared, pos.x + 1, pos.y + (height - imgSelected.height)/2);
+		app.popStyle();
+
 	}
 
 
@@ -158,8 +170,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 */
 	public void mouseEvent(MouseEvent event){
 		// If this option does not belong to a group then ignore mouseEvents
-		if(ownerGroup == null) return;
-
+		if(!visible || ownerGroup == null) return;
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
@@ -171,30 +182,30 @@ public class GOption extends GComponent { //implements Comparable {
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
 				ownerGroup.setSelected(this);
-				fireEvent();
-				this.looseFocus();
+				this.looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
+				fireEvent();
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
-				this.looseFocus();
 				mdx = mdy = Integer.MAX_VALUE;
+				this.looseFocus(null);
 			}
 			break;
 		}
 	}
 
 	/**
-	 * Fire an event for this component which has references to option
-	 * being deselected as well as option being selected.
+	 * Fire an event for this component which has a reference to the
+	 * option being deselected as well as the option being selected.
 	 * 
 	 */
 	protected void fireEvent(){
 		if(eventHandler != null){
 			try {
 				eventHandler.invoke(eventHandlerObject, 
-						new Object[] { this, ownerGroup.getDeselected() });
+						new Object[] { this, ownerGroup.deselectedOption() });
 			} catch (Exception e) {
 				System.out.println("Disabling " + eventHandler.getName() + " due to an error");
 				eventHandler = null;
@@ -208,7 +219,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 * @return
 	 */
 	public boolean isSelected(){
-		return (ownerGroup != null && ownerGroup.getSelected() == this);
+		return (ownerGroup != null && ownerGroup.selectedOption() == this);
 	}
 
 	/**
@@ -216,7 +227,7 @@ public class GOption extends GComponent { //implements Comparable {
 	 * @return
 	 */
 	public boolean isNotSelected(){
-		return !(ownerGroup != null && ownerGroup.getSelected() == this);		
+		return !(ownerGroup != null && ownerGroup.selectedOption() == this);		
 	}
 
 	/**

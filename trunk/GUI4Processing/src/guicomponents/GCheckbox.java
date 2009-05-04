@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -38,10 +38,10 @@ import processing.core.PImage;
 public class GCheckbox extends GComponent {
 
 	protected boolean selected;
-	
+
 	protected static PImage imgSelected;
 	protected static PImage imgCleared;
-	
+
 	/**
 	 * Create a check box.
 	 * 
@@ -96,7 +96,7 @@ public class GCheckbox extends GComponent {
 		createEventHandler(app);
 		registerAutos_DMPK(true, true, false, false);
 	}
-	
+
 	/**
 	 * Override the default event handler created with createEventHandler(Object obj)
 	 * @param obj
@@ -107,12 +107,14 @@ public class GCheckbox extends GComponent {
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GCheckbox.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
-			System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-			System.out.println("with a single parameter of type GCheckbox");
+			if(G4P.messages){
+				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
+				System.out.println("with a single parameter of type GCheckbox");
+			}
 			eventHandlerObject = null;
 		}
 	}
-	
+
 	/**
 	 * Create an event handler that will call a method handleCheckboxEvents(GCheckbox cbox)
 	 * when text is changed or entered
@@ -123,9 +125,11 @@ public class GCheckbox extends GComponent {
 			this.eventHandler = obj.getClass().getMethod("handleCheckboxEvents", new Class[] { GCheckbox.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
+			if(G4P.messages){
+				System.out.println("You might want to add a method to handle \ncheckbox events the syntax is");
+				System.out.println("void handleCheckboxEvents(GCheckbox cbox){\n   ...\n}\n\n");
+			}
 			eventHandlerObject = null;
-			System.out.println("You might want to add a method to handle \ncheckbox events the syntax is");
-			System.out.println("void handleCheckboxEvents(GCheckbox cbox){\n   ...\n}\n\n");
 		}
 	}
 
@@ -150,37 +154,39 @@ public class GCheckbox extends GComponent {
 	 * Draw the checkbox
 	 */
 	public void draw(){
-		if(visible){
-			app.pushStyle();
-			Point pos = new Point(0,0);
-			calcAbsPosition(pos);
-			if (!text.equals("")){
-				app.strokeWeight(border);
-				app.stroke(localColor.cbxBorder);	
-				if(opaque)
-					app.fill(localColor.cbxBack);	// depends on button state
-				else 
-					app.noFill();
-				app.rect(pos.x, pos.y, width, height);
-				// Draw text
-				app.noStroke();
-				app.fill(localColor.cbxFont);
-				app.textFont(localFont, localFont.size);
-				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
-			}
-			app.fill(app.color(255,255));
-			if(selected)
-				app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
-			else
-				app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
-			app.popStyle();
+		if(!visible) return;
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+		if (!text.equals("")){
+			app.strokeWeight(border);
+			app.stroke(localColor.cbxBorder);	
+			if(opaque)
+				app.fill(localColor.cbxBack);	// depends on button state
+			else 
+				app.noFill();
+			app.rect(pos.x, pos.y, width, height);
+			// Draw text
+			app.noStroke();
+			app.fill(localColor.cbxFont);
+			app.textFont(localFont, localFont.size);
+			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
 		}
+		app.fill(app.color(255,255));
+		if(selected)
+			app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
+		else
+			app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
+		app.popStyle();
 	}
 
 	/**
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
+		if(!visible) return;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
@@ -193,13 +199,13 @@ public class GCheckbox extends GComponent {
 			if(focusIsWith == this /*&& isOver(app.mouseX, app.mouseY)*/){
 				selected = !selected;
 				fireEvent();
-				this.looseFocus();
+				this.looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
-				this.looseFocus();
+				this.looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
@@ -209,9 +215,9 @@ public class GCheckbox extends GComponent {
 	public boolean isSelected(){
 		return selected;
 	}
-	
+
 	public void setSelected(boolean selected){
 		this.selected = selected;
 	}
-	
+
 }

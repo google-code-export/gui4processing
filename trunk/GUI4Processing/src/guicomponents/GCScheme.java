@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ import processing.core.PImage;
 /**
  * Stores all the colour information for the GUI components into a scheme.
  * 
- * Defines a set of predefined schemes covering the primary colors
+ * Defines a set of predefined schemes covering the primary colours
  * @author Peter Lager
  *
  */
@@ -46,11 +46,11 @@ public class GCScheme  {
 	public static final int YELLOW_SCHEME	= 4;
 	public static final int CYAN_SCHEME 	= 5;
 	public static final int GREY_SCHEME 	= 6;
-	
+
 	protected static PApplet app;
 
 	protected static PImage image = null;
-	
+
 	// Mask to get RGB
 	public static final int COL_MASK 		= 0x00ffffff;
 	// Mask to get alpha
@@ -71,7 +71,7 @@ public class GCScheme  {
 	public static GCScheme getColor(PApplet theApplet){
 		return getColor(theApplet, 0);
 	}
-	
+
 	/**
 	 * Set the color scheme to one of the preset schemes
 	 * BLUE / GREEN / RED /  PURPLE / YELLOW / CYAN /GREY
@@ -94,17 +94,19 @@ public class GCScheme  {
 					e.printStackTrace();
 				}
 				image = app.loadImage("user_col_schema.png");
-				System.out.println("USER DEFINED colour schema active");
+				if(G4P.messages)
+					System.out.println("USER DEFINED colour schema active");
 			}
 			else {
 				// User image not provided
 				image = app.loadImage("default_col_schema.png");
-				System.out.println("G4P colour schema active");
+				if(G4P.messages)
+					System.out.println("G4P colour schema active");
 			}
 		}
 		GCScheme scheme = new GCScheme(schemeNo);
 		populateScheme(scheme, schemeNo);
-		
+
 		return scheme;
 	}
 
@@ -115,36 +117,36 @@ public class GCScheme  {
 		s.pnlTabBack = image.get(1, schemeNo) | ALPHA_MASK;
 		s.pnlBack = image.get(2, schemeNo) | ALPHA_MASK;
 		s.pnlBorder = image.get(3, schemeNo) | ALPHA_MASK;
-		
+
 		s.btnFont = image.get(5, schemeNo) | ALPHA_MASK;
 		s.btnOff = image.get(6, schemeNo) | ALPHA_MASK;
 		s.btnOver = image.get(7, schemeNo) | ALPHA_MASK;
 		s.btnDown = image.get(8, schemeNo) | ALPHA_MASK;
-		
+
 		s.sdrTrack = image.get(10, schemeNo) | ALPHA_MASK;
 		s.sdrThumb = image.get(11, schemeNo) | ALPHA_MASK;
 		s.sdrBorder = image.get(12, schemeNo) | ALPHA_MASK;
-		
+
 		s.txfFont = image.get(15, schemeNo) | ALPHA_MASK;
 		s.txfBack = image.get(16, schemeNo) | ALPHA_MASK;
 		s.txfSelBack = image.get(17, schemeNo)  | ALPHA_MASK;
 		s.txfBorder = image.get(18, schemeNo)  | ALPHA_MASK;
-		
+
 		s.lblFont = image.get(20, schemeNo) | ALPHA_MASK;
 		s.lblBack = image.get(21, schemeNo) | ALPHA_MASK;
 		s.lblBorder = image.get(22, schemeNo) | ALPHA_MASK;
-		
+
 		s.optFont = image.get(25, schemeNo) | ALPHA_MASK;
 		s.optBack = image.get(26, schemeNo) | ALPHA_MASK;
 		s.optBorder = image.get(27, schemeNo) | ALPHA_MASK;
-		
+
 		s.cbxFont = image.get(30, schemeNo) | ALPHA_MASK;
 		s.cbxBack = image.get(31, schemeNo) | ALPHA_MASK;
 		s.cbxBorder = image.get(32, schemeNo) | ALPHA_MASK;
 	}
-	
+
 	// Class attributes and methods start here
-	
+
 	// Scheme number
 	public int schemeNo = 0;
 	// Panels
@@ -161,7 +163,7 @@ public class GCScheme  {
 	public int optFont, optBack, optBorder;
 	// Checkbox
 	public int cbxFont, cbxBack, cbxBorder;
-	
+
 	// Transparency level
 	private int alpha = 255;
 	/**
@@ -171,7 +173,7 @@ public class GCScheme  {
 		schemeNo = 0;
 		populateScheme(this, schemeNo);		
 	}
-	
+
 	/**
 	 * Create a scheme for a given scheme number
 	 * @param csn
@@ -224,7 +226,7 @@ public class GCScheme  {
 		cbxBack = (cbxBack & 0x00ffffff) | a;
 		cbxBorder = (cbxBorder & 0x00ffffff) | a;
 	}
-	
+
 	/**
 	 * Get the transparency level
 	 * @return
@@ -232,5 +234,5 @@ public class GCScheme  {
 	public int getAlpha(){
 		return alpha;
 	}
-	
+
 } // end of class

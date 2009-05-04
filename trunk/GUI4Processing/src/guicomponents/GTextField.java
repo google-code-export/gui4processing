@@ -14,7 +14,7 @@
   had the value -1 then no text was selected. In this class if they have the same
   value i.e. startSelect == endSelect then no text is selected. Also both will
   equal the cursorPos UNLESS we are selecting text. This has simplified the code.
-   
+
   Other modifications have been made in the way it handles events, draws itself 
   and focus handling to fit in with my library which supports floating panels.
 
@@ -80,30 +80,12 @@ public class GTextField extends GComponent {
 	 * @param y vertical position relative to PApplet or PPanel
 	 * @param width width of text field
 	 * @param height height of text field
-	 * @param colors colour scheme to use
-	 * @param font font to use
-	 */
-//	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, 
-//			GCScheme colors, PFont font){
-//		super(theApplet, x, y, colors, font);
-//		textFieldCtorCore(text, width, height);
-//	}
-	
-
-	/**
-	 * Creates a GTextField object
-	 * @param theApplet
-	 * @param text initial text to display
-	 * @param x horizontal position relative to PApplet or PPanel
-	 * @param y vertical position relative to PApplet or PPanel
-	 * @param width width of text field
-	 * @param height height of text field
 	 */
 	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		textFieldCtorCore(text, width, height);
 	}
-	
+
 	/**
 	 * Common code required by ctors
 	 * @param text initial text to display
@@ -131,8 +113,10 @@ public class GTextField extends GComponent {
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GTextField.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
-			System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-			System.out.println("with a parameter of type GTextField");
+			if(G4P.messages){
+				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
+				System.out.println("with a parameter of type GTextField");
+			}
 			eventHandlerObject = null;
 		}
 	}
@@ -147,16 +131,18 @@ public class GTextField extends GComponent {
 			this.eventHandler = obj.getClass().getMethod("handleTextFieldEvents", new Class[] { GTextField.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
+			if(G4P.messages){
+				System.out.println("You might want to add a method to handle \ntext field events the syntax is");
+				System.out.println("void handleTextFieldEvents(GTextField tfield){\n   ...\n}\n\n");
+			}
 			eventHandlerObject = null;
-			System.out.println("You might want to add a method to handle \ntext field events the syntax is");
-			System.out.println("void handleTextFieldEvents(GTextField tfield){\n   ...\n}\n\n");
 		}
 	}	
 
 	/**
 	 * When the textfield looses focus it also looses any text selection.
 	 */
-	protected void looseFocus(){
+	protected void looseFocus(GComponent toThis){
 		startSelect = endSelect = -1;
 		focusIsWith = null;
 	}
@@ -178,7 +164,6 @@ public class GTextField extends GComponent {
 	protected void appendToRightOfCursor(char c) {
 		appendToRightOfCursor("" + c);
 	}
-
 
 	/**
 	 * adds a string to the immediate right of the insertion point or replaces the selected group
@@ -416,8 +401,11 @@ public class GTextField extends GComponent {
 	 * @param e the MouseEvent to handle
 	 */
 	public void mouseEvent(MouseEvent e) {
+		if(!visible) return;
+
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
+//		app.textFont(localFont, localFont.size);
 
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:
@@ -463,6 +451,8 @@ public class GTextField extends GComponent {
 	 */
 	public void keyEvent(KeyEvent e) {
 		if(focusIsWith == this){
+//			app.textFont(localFont, localFont.size);
+
 			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 
@@ -550,7 +540,7 @@ public class GTextField extends GComponent {
 					} 
 				}
 			}
-		
+
 			else if(e.getID() == KeyEvent.KEY_TYPED) {
 				if((e.getModifiers() & shortcutMask) == shortcutMask) {
 				}
@@ -571,39 +561,46 @@ public class GTextField extends GComponent {
 	 * to the screen.
 	 */
 	public void draw () {
-		if(visible){
-			app.pushStyle();
-			Point pos = new Point(0,0);
-			calcAbsPosition(pos);
+		if(!visible) return;
 
-			// Draw the surrounding box
-			app.strokeWeight(border);
-			app.stroke(localColor.txfBorder);
-			app.fill(localColor.txfBack);
-			app.rect(pos.x, pos.y, width, height);
-			app.noStroke();
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+				
+		app.textFont(localFont, localFont.size);
 
-			// Draw the selection rectangle
-			if(startSelect != endSelect) {
-				//app.fill(0xffa0a0ff);
-				app.fill(localColor.txfSelBack);
-				app.rect(pos.x + startSelectXPos + 4, pos.y + PADV, endSelectXPos - startSelectXPos + 1, height - 2 * PADV + 1);
-			}
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
 
-			// Draw the string (using fixed offset = 4)
-			app.fill(localColor.txfFont);
-			app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
-					pos.y - 1 + (height - localFont.size)/2 , width - 8, height);
+		// Draw the surrounding box
+		app.strokeWeight(border);
+		app.stroke(localColor.txfBorder);
+		app.fill(localColor.txfBack);
+		app.rect(pos.x, pos.y, width, height);
+		app.noStroke();
 
-			// Draw the insertion point (it blinks!)
-			if(focusIsWith == this	&& ((app.millis() % 1000) > 500)
-					&& (cursorPos >= visiblePortionStart)
-					&& cursorPos <= visiblePortionEnd) {
-				app.stroke(64);
-				app.line(pos.x + (int) cursorXPos + 4, pos.y + PADV, pos.x + (int) cursorXPos + 4, pos.y + height - 2 * PADV);
-			}
-			app.popStyle();
+		// Draw the selection rectangle
+		if(startSelect != endSelect) {
+			app.fill(localColor.txfSelBack);
+			app.rect(pos.x + startSelectXPos + 4, pos.y + PADV, endSelectXPos - startSelectXPos + 1, height - 2 * PADV + 1);
 		}
+
+		// Draw the string (using fixed offset = 4)
+		app.noStroke();
+		app.fill(localColor.txfFont);
+		app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
+				pos.y + (height - localFont.size)/2 - PADV , width - 8, height);
+
+		// Draw the insertion point (it blinks!)
+		if(focusIsWith == this	&& ((app.millis() % 1000) > 500)
+				&& (cursorPos >= visiblePortionStart)
+				&& cursorPos <= visiblePortionEnd) {
+			app.noFill();
+			app.stroke(64);
+			app.strokeWeight(2);
+			app.line(pos.x + (int) cursorXPos + 4, pos.y + PADV, pos.x + (int) cursorXPos + 4, pos.y + height - 2 * PADV);
+		}
+		app.popStyle();
+
 	}
 
 	/**

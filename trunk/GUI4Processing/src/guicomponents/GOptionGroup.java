@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -23,54 +23,148 @@
 
 package guicomponents;
 
-import java.util.TreeSet;
+import java.util.ArrayList;
 
 import processing.core.PApplet;
 
 /**
  * This is used to group options together to provide single-selection
- * from 2 or more option buttons.
+ * from 2 or more GOption buttons.
  * 
  * @author Peter Lager
  *
  */
 public class GOptionGroup {
 
-	protected PApplet app;
-	
-	protected GOption selected;
-	protected GOption deselected;
-	
-	protected TreeSet<GOption> options;
-	
-	protected int nbrOptions;
-	
+	protected GOption selected = null;
+	protected GOption deselected = null;
+
+	protected ArrayList<GOption> options = new ArrayList<GOption>();;
+
+	public GOptionGroup(){
+	}
+
+	/**
+	 * @deprecated
+	 * @param theApplet
+	 */
 	public GOptionGroup(PApplet theApplet){
-		app = theApplet;
-		options = new TreeSet<GOption>();
-		selected = null;
-		deselected = null;
 	}
-	
-	public void addOption(GOption option){
-		if(options.isEmpty())
-			selected = option;
-		nbrOptions++;
-		options.add(option);
-		option.setGroup(this);
+
+	public ArrayList<GOption> getOptions(){
+		return options;
 	}
-	
+
+	public GOption get(int index){
+		return options.get(index);
+	}
+
+	public boolean addOption(GOption option){
+		if(option != null){
+			options.add(option);
+			option.setGroup(this);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public boolean addOption(int pos, GOption option){
+		if(option != null && pos >= 0 && pos <= options.size()){
+			options.add(pos, option);
+			option.setGroup(this);
+			return true;			
+		}
+		return false;
+	}
+
+	public GOption removeOption(GOption option){
+		options.remove(option);
+		return option;
+	}
+
+	public GOption removeOption(int index){
+		GOption option = null;
+		if(index >= 0 && index < options.size()){
+			option = options.remove(index);
+		}
+		return option;
+	}
+
+	public GOption removeOption(String optText){
+		System.out.println("REMOVE");
+		GOption option = null;
+		int i = options.size() - 1;
+		while(i >= 0){
+			if(options.get(i).getText().compareToIgnoreCase(optText) == 0){
+				option = options.get(i);
+				break;
+			}
+			i--;
+		}
+		if(option != null)
+			options.remove(option);
+		return option;
+	}
+
+	/**
+	 * Make this option the selected one
+	 * 
+	 * @param option
+	 */
 	public void setSelected(GOption option){
 		deselected = selected;
 		selected = option;
 	}
-	
-	public GOption getSelected(){
+
+	/**
+	 * If index is in range make this one selected
+	 *  
+	 * @param index
+	 */
+	public void setSelected(int index){
+		if(index >= 0 && index < options.size()){
+			deselected = selected;
+			options.get(index).setSelected(true);
+		}
+	}
+
+	public void setSelected(String optText){
+		int i = options.size();
+		while(i-- >= 0){
+			if(options.get(i).getText().compareToIgnoreCase(optText) == 0)
+				break;
+		}
+		if(i > 0)
+			setSelected(options.get(i));
+	}
+
+	public GOption selectedOption(){
 		return selected;
 	}
-	
-	public GOption getDeselected(){
+
+	public GOption deselectedOption(){
 		return deselected;
 	}
-	
+
+	public int selectedIndex(){
+		return options.indexOf(selected);
+	}
+
+	public int deselectedIndex(){
+		return options.indexOf(deselected);
+	}
+
+	public String selectedText(){
+		return selected.text;
+	}
+
+	public String deselectedText(){
+		return deselected.text;
+	}
+
+	public int size(){
+		return options.size();
+	}
+
 }

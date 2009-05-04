@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -28,6 +28,8 @@ import java.util.Iterator;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
+import processing.core.PStyle;
 
 /**
  * This class has only static methods. It keeps track of all GComponents created.
@@ -43,36 +45,63 @@ public class G4P implements PConstants {
 	 * Set of all the GUI components created
 	 */
 	private static HashSet<GComponent> all = new HashSet<GComponent>();
-	
+
 	private static boolean autoDrawOn = true;
-	
+
 	public static PApplet app = null;
-	
+
+	public static PStyle g4pStyle = null;
+
+	public static boolean messages = true;
+
 	/**
-	 * This should by all ctors in GComponent and since all GUI components
-	 * inherit from GComponent and are required to call a GComponent ctor
-	 * then all GUI components will automatically be registered in the set.
+	 * This should be called by all ctors in GComponent and since all GUI 
+	 * components inherit from GComponent and are required to call a 
+	 * GComponent ctor then all GUI components will automatically be 
+	 * registered in the set.
 	 * 
 	 * @param c the component that has been created.
 	 */
 	public static void addComponent(GComponent c){
-		if(all.contains(c))
-			System.out.println("Component " + c + " has already been regitered!");
+		if(g4pStyle == null)
+			getStyle();
+		if(all.contains(c)){
+			if(messages)
+				System.out.println("Component " + c + " has already been regitered!");
+		}
 		else
 			all.add(c);
 	}
 
+	private static void getStyle(){
+		PGraphics temp = new PGraphics();
+
+		g4pStyle = temp.getStyle();
+
+		g4pStyle.rectMode = CORNER;
+		g4pStyle.ellipseMode = DIAMETER;
+
+		g4pStyle.colorMode = RGB;
+		g4pStyle.colorModeA = 255.0f;
+		g4pStyle.colorModeX = 255.0f;
+		g4pStyle.colorModeY = 255.0f;
+		g4pStyle.colorModeZ = 255.0f;
+	}
+
+
 	public static void disableAutoDraw(){
 		unregisterFromPAppletDraw();
-		System.out.println("You have disabled autoDraw so you have to use");
-		System.out.println("G4P.draw() when you want to display the GUI" );
-		System.out.println("this is not action is not reversible." );
+		if(messages){
+			System.out.println("You have disabled autoDraw so you have to use");
+			System.out.println("G4P.draw() when you want to display the GUI" );
+			System.out.println("this is not action is not reversible." );
+		}
 	}
 
 	public static boolean isAutoDrawOn(){
 		return autoDrawOn;
 	}
-	
+
 	/**
 	 * Use G4P.draw() if you want to control when you the GUI is to be drawn
 	 */
@@ -114,5 +143,18 @@ public class G4P implements PConstants {
 		}
 		autoDrawOn = false;
 	}
-	
+
+	/**
+	 * G4P has a range of support messages eg <br>if you create a GUI component 
+	 * without an event handler or, <br>a slider where the visible size of the
+	 * slider is less than the difference between min and max values.
+	 * 
+	 * This method allows the user to enable (default) or disable this option. If
+	 * disable then it should be called before any GUI components are created.
+	 * 
+	 * @param enable
+	 */
+	public static void messagesEnabled(boolean enable){
+		messages = enable;
+	}
 }

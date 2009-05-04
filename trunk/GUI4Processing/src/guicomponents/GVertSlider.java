@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -35,25 +35,6 @@ import processing.core.PApplet;
  *
  */
 public class GVertSlider extends GSlider {
-	
-	/**
-	 * Create a vertical slider.
-	 * Default values:
-	 * 		Range 0-100
-	 *      Initial value 50
-	 * Use the setLimits method to customise these values.
-	 * 
-	 * @param theApplet
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param colorScheme
-	 */
-//	public GVertSlider(PApplet theApplet, int x, int y, int width, int height,GCScheme colorScheme){
-//		super(theApplet, x, y, width, height, colorScheme);
-//		initThumbDetails();
-//	}
 
 	/**
 	 * Create a vertical slider.
@@ -81,36 +62,51 @@ public class GVertSlider extends GSlider {
 		thumbMin = thumbSize/2;
 		thumbMax = height - thumbSize/2;
 		thumbTargetPos = thumbPos;
-//		setValue(value);
 	}
-	
+
 	/**
 	 * Draw the slider
 	 */
 	public void draw(){
-		if(visible){
-			app.pushStyle();
-			Point pos = new Point(0,0);
-			calcAbsPosition(pos);
-			app.noStroke();
-			app.fill(localColor.sdrTrack);
+		if(!visible) return;
+
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+		app.noStroke();
+		app.fill(localColor.sdrTrack);
+		app.rect(pos.x, pos.y, width, height);
+		app.fill(localColor.sdrThumb);
+		app.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);
+		if(border != 0){
+			app.strokeWeight(border);
+			app.noFill();
+			app.stroke(localColor.sdrBorder);
 			app.rect(pos.x, pos.y, width, height);
-			app.fill(localColor.sdrThumb);
-			app.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);
-			if(border != 0){
-				app.strokeWeight(border);
-				app.noFill();
-				app.stroke(localColor.sdrBorder);
-				app.rect(pos.x, pos.y, width, height);
-			}
-			app.popStyle();
 		}
+		app.popStyle();
+
 	}
-	
+
+	/** 
+	 * If this slider is part of a combo box then hand focus back to
+	 * the combo box 
+	 */
+	protected void looseFocus(GComponent grabber){
+		String pname = (parent == null) ? "" : parent.getClass().getSimpleName();
+		if(pname.equalsIgnoreCase("GCombo")){
+			focusIsWith = parent;
+		}
+		else
+			focusIsWith = null;
+	}
+
 	/**
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
+		if(!visible) return;
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
@@ -121,13 +117,13 @@ public class GVertSlider extends GSlider {
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
-				looseFocus();
+				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
-				looseFocus();
+				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
