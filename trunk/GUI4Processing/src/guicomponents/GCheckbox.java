@@ -56,7 +56,7 @@ public class GCheckbox extends GComponent {
 	 */
 	public GCheckbox(PApplet theApplet, String text, int x, int y, int width){
 		super(theApplet, x, y);
-		checkboxCtorCore(text, width, 0);
+		checkboxCtorCore(text, width);
 	}
 
 	/**
@@ -71,10 +71,10 @@ public class GCheckbox extends GComponent {
 	 * @param width width of component
 	 * @param height height of component
 	 */
-	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int height){
-		super(theApplet, x, y);
-		checkboxCtorCore(text, width, height);
-	}
+//	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int height){
+//		super(theApplet, x, y);
+//		checkboxCtorCore(text, width, height);
+//	}
 
 	/**
 	 * Core stuff to be done by all ctors
@@ -82,15 +82,13 @@ public class GCheckbox extends GComponent {
 	 * @param width
 	 * @param height
 	 */
-	private void checkboxCtorCore(String text, int width, int height){
+	private void checkboxCtorCore(String text, int width){
 		if(imgSelected == null)
 			imgSelected = app.loadImage("check1.png");
 		if(imgCleared == null)
 			imgCleared = app.loadImage("check0.png");
 		this.width = width;
-		this.height = localFont.size + 2 * PADV;
-		if(height > this.height)
-			this.height = height;
+		height = Math.max((int)localFont.size + 2 * PADV, imgCleared.height);
 		opaque = false;
 		setText(text);
 		createEventHandler(app);
@@ -131,6 +129,21 @@ public class GCheckbox extends GComponent {
 			}
 			eventHandlerObject = null;
 		}
+	}
+
+	/**
+	 * Set the font & size for the checkbox changing the height (+/-) 
+	 * and width(+) of the checkbox if necessary to display text. 
+	 */
+	public void setFont(String fontname, int fontsize){
+		int tw = textWidth;
+		int fs = (int) localFont.size;
+		localFont = GFont.getFont(app, fontname, fontsize);
+		if(fontsize != fs)
+			height += (fontsize - fs);
+		setText(text);
+		if(textWidth > tw)
+			width += (textWidth - tw);
 	}
 
 	/**

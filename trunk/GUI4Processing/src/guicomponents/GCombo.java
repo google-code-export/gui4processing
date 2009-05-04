@@ -25,6 +25,7 @@ package guicomponents;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import processing.core.PApplet;
@@ -74,7 +75,7 @@ public class GCombo extends GComponent {
 		if(imgArrow == null)
 			imgArrow = app.loadImage("combo0.png");
 		this.width = width;
-		this.height = localFont.size + 2 * PADV;
+		height = Math.max((int)localFont.size + 2 * PADV, imgArrow.height);
 		opaque = true;
 		border = 1;
 		createEventHandler(app);
@@ -131,6 +132,26 @@ public class GCombo extends GComponent {
 		return opt;
 	}
 	
+	/**
+	 * Set the font & size for the combo changing height and
+	 * width of the button if necessary to display text. <br>
+	 * It will not shrink if the font size is decreased.  
+	 */
+	public void setFont(String fontname, int fontsize){
+		int tw = textWidth;
+		int fs = (int) localFont.size;
+		localFont = GFont.getFont(app, fontname, fontsize);
+		if(fontsize > fs)
+			height += (fontsize - fs);
+		setText(text);
+		if(textWidth > tw)
+			width += (textWidth - tw);
+		ArrayList<GOption> options = optGroup.getOptions();
+		for(int i = 0; i < options.size(); i++)
+			options.get(i).setWidth(width - 10);
+		slider.setX(width - 10);
+	}
+
 	/**
 	 * Override the default event handler created with createEventHandler(Object obj)
 	 * @param obj
@@ -198,6 +219,7 @@ public class GCombo extends GComponent {
 	 */
 	public void setSelected(int index){
 		optGroup.setSelected(index);
+		setText(optGroup.selectedText());
 	}
 	
 	/**
@@ -206,6 +228,7 @@ public class GCombo extends GComponent {
 	 */
 	public void setSelected(String optText){
 		optGroup.setSelected(optText);
+		setText(optGroup.selectedText());
 	}
 
 	/**

@@ -131,9 +131,21 @@ public class GPanel extends GComponent {
 	}
 
 	/**
+	 * Set the font & size for the tab text changing the height (+/-) 
+	 * of the tab if necessary to display text.  
+	 */
+	public void setFont(String fontname, int fontsize){
+		int fs = (int) localFont.size;
+		localFont = GFont.getFont(app, fontname, fontsize);
+		if(fontsize != fs)
+			tabHeight += (fontsize - fs);
+		setText(text);
+	}
+
+	/**
 	 * What to do when the GPanel looses focus.
 	 */
-	protected void looseFocus(){
+	protected void looseFocus(GComponent grabber){
 		focusIsWith = null;
 		beingDragged = false;
 	}
@@ -216,15 +228,15 @@ public class GPanel extends GComponent {
 						x = app.getWidth() - width;
 				}
 				// This component does not keep the focus when clicked
-				looseFocus();
+				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this){
-				if( mouseHasMoved(app.mouseX, app.mouseY)){
+				if(mouseHasMoved(app.mouseX, app.mouseY)){
 					mdx = mdy = Integer.MAX_VALUE;
-					looseFocus();
+					looseFocus(null);
 				}
 			}
 			break;
@@ -265,10 +277,14 @@ public class GPanel extends GComponent {
 		else if(x + w > app.getWidth()) 
 			x = (int) (app.getWidth() - w);
 		// Constrain vertically
-		if(y - tabHeight - PADV * 2  < 0) 
-			y = tabHeight + PADV * 2;
+		if(y - tabHeight  < 0) 
+			y = tabHeight;
 		else if(y + h > app.getHeight()) 
 			y = app.getHeight() - h;
+//		if(y - tabHeight - PADV * 2  < 0) 
+//			y = tabHeight + PADV * 2;
+//		else if(y + h > app.getHeight()) 
+//			y = app.getHeight() - h;
 	}
 
 	/**

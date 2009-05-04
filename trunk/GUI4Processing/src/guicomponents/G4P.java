@@ -88,18 +88,43 @@ public class G4P implements PConstants {
 		g4pStyle.colorModeZ = 255.0f;
 	}
 
-
-	public static void disableAutoDraw(){
-		unregisterFromPAppletDraw();
-		if(messages){
-			System.out.println("You have disabled autoDraw so you have to use");
-			System.out.println("G4P.draw() when you want to display the GUI" );
-			System.out.println("this is not action is not reversible." );
-		}
+	/**
+	 * Set the color scheme to be used by G4P<br>
+	 * Only reqd if different from the default blue scheme to be
+	 * global specify before creating GUI components
+	 * 
+	 * Available schemes:
+	 * BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, PURPLE_SCHEME
+	 * YELLOW_SCHEME, CYAN_SCHEME, GREY_SCHEME
+	 * 
+	 * @param theApplet
+	 * @param schemeNo GCScheme.GREEN_SCHEME
+	 */
+	public static void setColorScheme(PApplet theApplet, int schemeNo){
+		// If both theApplet and app are null there is nothing we can do!
+		if(theApplet != null)
+			app = theApplet;
+		else if(app == null)
+			return;
+		GComponent.globalColor = GCScheme.getColor(app,  schemeNo);
 	}
 
-	public static boolean isAutoDrawOn(){
-		return autoDrawOn;
+	/**
+	 * Set the font type and size to be used by G4P<br>
+	 * Only reqd if different from the default "Serif" 11 <br>
+	 * to be global specify before creating GUI components
+	 * 
+	 * @param theApplet
+	 * @param fontName name of font
+	 * @param fontSize font size
+	 */
+	public static void setFont(PApplet theApplet, String fontName, int fontSize){
+		// If both theApplet and app are null there is nothing we can do!
+		if(theApplet != null)
+			app = theApplet;
+		else if(app == null)
+			return;
+		GComponent.globalFont = GFont.getFont(app, fontName, fontSize);
 	}
 
 	/**
@@ -142,6 +167,27 @@ public class G4P implements PConstants {
 			}
 		}
 		autoDrawOn = false;
+	}
+
+	/**
+	 * Once disabled you need to call G4P.draw() from the draw() method if you
+	 * wish to see the GUI
+	 */
+	public static void disableAutoDraw(){
+		unregisterFromPAppletDraw();
+		if(messages){
+			System.out.println("You have disabled autoDraw so you have to use");
+			System.out.println("G4P.draw() when you want to display the GUI" );
+			System.out.println("this is not action is not reversible." );
+		}
+	}
+
+	/**
+	 * Is autodraw on
+	 * 
+	 */
+	public static boolean isAutoDrawOn(){
+		return autoDrawOn;
 	}
 
 	/**

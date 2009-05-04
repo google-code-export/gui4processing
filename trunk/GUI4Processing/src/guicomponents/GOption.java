@@ -126,6 +126,23 @@ public class GOption extends GComponent {
 	}
 
 	/**
+	 * Set the font & size for the option button changing the height (+/-) 
+	 * and width(+/-) of the button if necessary to display text.  
+	 */
+	public void setFont(String fontname, int fontsize){
+		int tw = textWidth;
+		int fs = (int) localFont.size;
+		localFont = GFont.getFont(app, fontname, fontsize);
+		if(fontsize != fs){
+			height += (fontsize - fs);
+			height = Math.max(height, imgSelected.height);
+		}
+		setText(text);
+		if(textWidth != tw)
+			width += (textWidth - tw);
+	}
+
+	/**
 	 * draw the option
 	 */
 	public void draw(){
