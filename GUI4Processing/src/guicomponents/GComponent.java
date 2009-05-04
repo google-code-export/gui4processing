@@ -354,6 +354,10 @@ public class GComponent implements PConstants, Comparable  {
 		return parent;
 	}
 
+	public void setColorScheme(int schemeNo){
+		localColor = GCScheme.getColor(app, schemeNo);
+	}
+	
 	/**
 	 * @return the text
 	 */
@@ -393,15 +397,23 @@ public class GComponent implements PConstants, Comparable  {
 	}
 
 	/**
+	 * Override in child classes
+	 * @param fontname
+	 * @param fontsize
+	 */
+	public void setFont(String fontname, int fontsize){
+	}
+	
+	/**
 	 * Calculate text X position based on text alignment
 	 */
 	protected void calcAlignX(){
 		switch(textAlign){
 		case GAlign.LEFT:
-			alignX = 2 * border;
+			alignX = border + PADH;
 			break;
 		case GAlign.RIGHT:
-			alignX = width - textWidth - 2 * border;
+			alignX = width - textWidth - border - PADH;
 			break;
 		case GAlign.CENTER:
 			alignX = (width - textWidth)/2;
@@ -416,6 +428,22 @@ public class GComponent implements PConstants, Comparable  {
 	 */
 	public void setXY(int x, int y) {
 		this.x = x;
+		this.y = y;
+	}
+
+	/**
+	 * Sets the x position of a component
+	 * @param x
+ 	 */
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	/**
+	 * Sets the x position of a component
+	 * @param x
+ 	 */
+	public void setY(int y) {
 		this.y = y;
 	}
 

@@ -30,7 +30,8 @@ import processing.core.PFont;
 
 /**
  * This class only has static methods and are used to create and return
- * PFont objects for use by the GUI components.
+ * PFont objects for use by the GUI components.<br>
+ * 
  * 
  * @author Peter Lager
  *
@@ -46,12 +47,11 @@ public class GFont {
 	 * 
 	 * @param theApplet
 	 * @param fontname system name for font
-	 * @param fsize size of font to create
+	 * @param fsize size of font to create (8 - 144 incl)
 	 * @return
 	 */
 	public static PFont getFont(PApplet theApplet, String fontname, int fsize){
-		// Keep size to something manageable
-		fsize = PApplet.constrain(fsize, 8, 72);
+		fsize = PApplet.constrain(fsize, 8, 144);
 		GFontKey fkey = new GFontKey(fontname, fsize);
 		PFont pfont = null;
 		// See if the font has already been created
@@ -65,7 +65,8 @@ public class GFont {
 			if(pfont != null){
 				fontmap.put(fkey, pfont);	// remember it
 			} else {
-				// make sans-serif font at this size if not already done
+				// unable to make this font so make sans-serif font
+				// at this size if not already done
 				fkey = new GFontKey("SansSerif", fsize);
 				if(fontmap.containsKey(fkey))
 					pfont = fontmap.get(fkey);
@@ -78,62 +79,62 @@ public class GFont {
 		return pfont;
 	}
 	
-	/**
-	 * Get the system default Serif font
-	 * @param theApplet
-	 * @param fsize the font size wanted
-	 * @return
-	 */
-	public static PFont getSerifFont(PApplet theApplet, int fsize){
-		fsize = PApplet.constrain(fsize, 8, 72);
-		GFontKey fkey = new GFontKey("Serif", fsize);
-		PFont pfont;
-		if(fontmap.containsKey(fkey))
-			return fontmap.get(fkey);
-		else {
-			pfont = theApplet.createFont("Serif", fsize, true);
-			fontmap.put(fkey, pfont);
-			return pfont;
-		}
-	}
-
-	/**
-	 * Get the system Sans Serif font
-	 * @param theApplet
-	 * @param fsize the font size wanted
-	 * @return
-	 */
-	public static PFont getSansSerifFont(PApplet theApplet, int fsize){
-		fsize = PApplet.constrain(fsize, 8, 72);
-		GFontKey fkey = new GFontKey("SansSerif", fsize);
-		PFont pfont;
-		if(fontmap.containsKey(fkey))
-			pfont = fontmap.get(fkey);
-		else {
-			pfont = theApplet.createFont("SansSerif", fsize, true);
-			fontmap.put(fkey, pfont);
-		}
-		return pfont;
-	}
-
-	/**
-	 * Get the system mono-spaced font
-	 * @param theApplet
-	 * @param fsize the font size wanted
-	 * @return
-	 */
-	public static PFont getMonospacedFont(PApplet theApplet, int fsize){
-		fsize = PApplet.constrain(fsize, 8, 72);
-		GFontKey fkey = new GFontKey("Monospaced", fsize);
-		PFont pfont;
-		if(fontmap.containsKey(fkey))
-			pfont = fontmap.get(fkey);
-		else {
-			pfont = theApplet.createFont("Monospaced", fsize, true);
-			fontmap.put(fkey, pfont);
-		}
-		return pfont;
-	}
+//	/**
+//	 * Get the system default Serif font
+//	 * @param theApplet
+//	 * @param fsize the font size wanted
+//	 * @return
+//	 */
+//	public static PFont getSerifFont(PApplet theApplet, int fsize){
+//		fsize = PApplet.constrain(fsize, 8, 72);
+//		GFontKey fkey = new GFontKey("Serif", fsize);
+//		PFont pfont;
+//		if(fontmap.containsKey(fkey))
+//			return fontmap.get(fkey);
+//		else {
+//			pfont = theApplet.createFont("Serif", fsize, true);
+//			fontmap.put(fkey, pfont);
+//			return pfont;
+//		}
+//	}
+//
+//	/**
+//	 * Get the system Sans Serif font
+//	 * @param theApplet
+//	 * @param fsize the font size wanted
+//	 * @return
+//	 */
+//	public static PFont getSansSerifFont(PApplet theApplet, int fsize){
+//		fsize = PApplet.constrain(fsize, 8, 72);
+//		GFontKey fkey = new GFontKey("SansSerif", fsize);
+//		PFont pfont;
+//		if(fontmap.containsKey(fkey))
+//			pfont = fontmap.get(fkey);
+//		else {
+//			pfont = theApplet.createFont("SansSerif", fsize, true);
+//			fontmap.put(fkey, pfont);
+//		}
+//		return pfont;
+//	}
+//
+//	/**
+//	 * Get the system mono-spaced font
+//	 * @param theApplet
+//	 * @param fsize the font size wanted
+//	 * @return
+//	 */
+//	public static PFont getMonospacedFont(PApplet theApplet, int fsize){
+//		fsize = PApplet.constrain(fsize, 8, 72);
+//		GFontKey fkey = new GFontKey("Monospaced", fsize);
+//		PFont pfont;
+//		if(fontmap.containsKey(fkey))
+//			pfont = fontmap.get(fkey);
+//		else {
+//			pfont = theApplet.createFont("Monospaced", fsize, true);
+//			fontmap.put(fkey, pfont);
+//		}
+//		return pfont;
+//	}
 
 	/**
 	 * A quick way to get the default Sans Serif font (11pt)
@@ -141,8 +142,7 @@ public class GFont {
 	 * @return
 	 */
 	public static PFont getDefaultFont(PApplet theApplet){
-		PFont pfont = GFont.getFont(theApplet, "SansSerif", 11);
-		return pfont;
+		return getFont(theApplet, "SansSerif", 11);
 	}
 
 	

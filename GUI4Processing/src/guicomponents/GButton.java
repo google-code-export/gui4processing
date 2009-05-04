@@ -200,6 +200,16 @@ public class GButton extends GComponent {
 	}
 
 	/**
+	 * Set the color scheme for this button
+	 */
+	public void setColorScheme(int schemeNo){
+		localColor = GCScheme.getColor(app, schemeNo);
+		col[0] = localColor.btnOff;
+		col[1] = localColor.btnOver;
+		col[2] = localColor.btnDown;
+	}
+
+	/**
 	 * @param text the text to set with alignment
 	 */
 	public void setText(String text) {
@@ -209,6 +219,21 @@ public class GButton extends GComponent {
 		calcAlignX();
 	}
 
+	/**
+	 * Set the font & size for the button increasing height and
+	 * width of the button if necessary to display text. <br>
+	 * It will not shrink if the font size is decreased.  
+	 */
+	public void setFont(String fontname, int fontsize){
+		int tw = textWidth;
+		int fs = (int) localFont.size;
+		localFont = GFont.getFont(app, fontname, fontsize);
+		if(fontsize > fs)
+			height += (fontsize - fs);
+		setText(text);
+		if(textWidth > tw)
+			width += (textWidth - tw);
+	}
 
 	/**
 	 * Set the text alignment inside the box
@@ -280,7 +305,6 @@ public class GButton extends GComponent {
 		app.noStroke();
 		app.fill(localColor.btnFont);
 		app.textFont(localFont, localFont.size);
-//		app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width, height);
 		app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width, height);
 		app.popStyle();
 	}

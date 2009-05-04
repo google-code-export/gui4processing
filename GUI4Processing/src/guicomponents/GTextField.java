@@ -140,6 +140,23 @@ public class GTextField extends GComponent {
 	}	
 
 	/**
+	 * Set the font & size for the textfield changing the height (+/-) 
+	 * and width(+/-) of the textfield if necessary to display text.
+	 */
+	public void setFont(String fontname, int fontsize){
+		int tw = textWidth;
+		int fs = (int) localFont.size;
+		localFont = GFont.getFont(app, fontname, fontsize);
+		if(fontsize != fs)
+			height += (fontsize - fs);
+		setText(text);
+		if(textWidth != tw)
+			width += (textWidth - tw);
+		adjustVisiblePortionEnd();
+	}
+
+
+	/**
 	 * When the textfield looses focus it also looses any text selection.
 	 */
 	protected void looseFocus(GComponent toThis){
@@ -386,7 +403,9 @@ public class GTextField extends GComponent {
 		visiblePortionStart = 0;
 		visiblePortionEnd = text.length();
 		app.textFont(localFont);
-		if(app.textWidth(text) > width - 12) {
+		textWidth = (int) app.textWidth(text);
+//		if(app.textWidth(text) > width - 12) {
+		if(textWidth > width - 12) {
 			adjustVisiblePortionEnd();
 		}
 		eventType = SET;
