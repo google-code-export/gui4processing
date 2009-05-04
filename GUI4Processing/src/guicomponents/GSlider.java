@@ -87,9 +87,11 @@ public abstract class GSlider extends GComponent {
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GSlider.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
+			if(G4P.messages){
+				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
+				System.out.println("with a single parameter of type GSlider");
+			}
 			eventHandlerObject = null;
-			System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-			System.out.println("with a single parameter of type GSlider");
 		}
 	}
 	
@@ -103,12 +105,14 @@ public abstract class GSlider extends GComponent {
 			this.eventHandler = obj.getClass().getMethod("handleSliderEvents", new Class[] { GSlider.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
+			if(G4P.messages){
+				System.out.println("You might want to add a method to handle \nslider events the syntax is");
+				System.out.println("void handleSliderEvents(GSlider slider){\n   ...\n}\n\n");
+			}
 			eventHandlerObject = null;
-			System.out.println("You might want to add a method to handle \nslider events the syntax is");
-			System.out.println("void handleSliderEvents(GSlider slider){\n   ...\n}\n\n");
 		}
 	}
-	
+
 	/**
 	 * The user can change the range and initial value of the 
 	 * slider from the default values of range 0-100 and 
@@ -124,7 +128,7 @@ public abstract class GSlider extends GComponent {
 		maxValue = Math.max(min, max);
 		init = PApplet.constrain(init, minValue, maxValue);
 		
-		if(thumbMax - thumbMin < maxValue - minValue){
+		if(thumbMax - thumbMin < maxValue - minValue && G4P.messages){
 			System.out.println(this.getClass().getSimpleName()+".setLimits");
 			System.out.println("  not all values in the range "+min+" - "+max+" can be returned");
 			System.out.print("  either reduce the range or make the slider ");
@@ -156,8 +160,11 @@ public abstract class GSlider extends GComponent {
 			// If there is a change update the current value and generate an event
 			if(change != 0){
 				thumbPos += change;
-				value = (int) PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
-				fireEvent();
+				int newValue = (int) PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
+				boolean valueChanged = (newValue != value);
+				value = newValue;
+				if(valueChanged)
+					fireEvent();
 			}
 			else
 				isValueChanging = false;

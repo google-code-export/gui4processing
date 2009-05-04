@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui-for-processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -52,7 +53,7 @@ public class GComponent implements PConstants, Comparable  {
 	 * before setting its value to the new component 
 	 */
 	protected static GComponent focusIsWith; // READ ONLY
-	
+
 	/*
 	 * Used to track mouse required by GButton, GCheckbox, GHorzSlider
 	 * GVertSlider, GPanel classes
@@ -61,33 +62,39 @@ public class GComponent implements PConstants, Comparable  {
 
 	public static GCScheme globalColor;
 	public GCScheme localColor;
-	
+
 	public static PFont globalFont;
 	public PFont localFont;
-	
+
 	/*
 	 * Padding around fonts
 	 */
 	protected final static int PADH = 4;
 	protected final static int PADV = 2;
-	
+
 	/** This must be set by the constructor */
 	protected static PApplet app;
 
 	/** Link to the parent panel (if null then it is topmost panel) */
 	protected GComponent parent = null;
 
+	/**
+	 * A list of child GComponents added to this component
+	 * Used by GPanel and GCombo classes
+	 */
+	protected HashSet<GComponent> children; // = new HashSet<GComponent>();
+
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
 	/** The method in eventHandlerObject to execute */
 	protected Method eventHandler = null;
-	
+
 	/** Text value associated with component */
 	protected String text = "";
 	protected int textWidth;
 	protected int textAlign = GAlign.LEFT;
 	protected int alignX = 0;
-	
+
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
 	protected int x, y;
 
@@ -96,7 +103,7 @@ public class GComponent implements PConstants, Comparable  {
 
 	/** Minimum width and height of component in pixels based on child components */
 	protected int minWidth = 20, minHeight = 20;
-	
+
 	/** Maximum width and height of component in pixels based on child components */
 	protected int maxWidth = 200, maxHeight = 200;
 
@@ -107,7 +114,7 @@ public class GComponent implements PConstants, Comparable  {
 
 	// Whether to show background or not 
 	protected boolean opaque = true;
-	
+
 	/**
 	 * Prevent uninitialised instantiation
 	 */
@@ -149,39 +156,41 @@ public class GComponent implements PConstants, Comparable  {
 	 * The following methods are related to handling focus.
 	 * Most components can loose focus without affecting their state
 	 * but TextComponents that support mouse text selection need to 
-	 * clear this selection when they loose focus.
+	 * clear this selection when they loose focus. Also components
+	 * like GCombo that comprise other G4P components need additional
+	 * work
 	 */
-	
+
 	/**
 	 * Give the focus to this component but only after allowing the 
-	 * current component with focus to release it gracefully.
+	 * current component with focus to release it gracefully
 	 */
 	protected void takeFocus(){
-		if(focusIsWith != null)
-			focusIsWith.looseFocus();
+		if(focusIsWith != null && focusIsWith != this)
+			focusIsWith.looseFocus(this);
 		focusIsWith = this;
 	}
-	
+
 	/**
 	 * For most components there is nothing to do when they loose focus.
 	 * Override this method in classes that need to do something when
-	 * they loose focus e.g. TextField
+	 * they loose focus eg TextField
 	 */
-	protected void looseFocus(){
+	protected void looseFocus(GComponent grabber){
 		focusIsWith = null;
 	}
 
 	/**
-	 * Determines whether this component is to have focus or not.
+	 * Determines whether this component is to have focus or not
 	 * @param focus
 	 */
 	public void setFocus(boolean focus){
 		if(focus)
 			takeFocus();
 		else
-			looseFocus();
+			looseFocus(null);
 	}
-	
+
 	/**
 	 * Does this component have focus
 	 * 
@@ -190,7 +199,14 @@ public class GComponent implements PConstants, Comparable  {
 	public boolean hasFocus(){
 		return (this == focusIsWith);
 	}
-	
+
+	/**
+	 * Get a the object (if any) that currently has focus
+	 * @return 
+	 */
+	public static GComponent getFocusObject(){
+		return focusIsWith;
+	}
 	/**
 	 * Used by some components on the MOUSE_RELEASED event 
 	 * @param x
@@ -199,6 +215,39 @@ public class GComponent implements PConstants, Comparable  {
 	 */
 	protected boolean mouseHasMoved(int x, int y){
 		return (mdx != x || mdy != y);
+	}
+
+	/**
+	 * Add a GUI component to this GComponent at the position specified by
+	 * component being added. If transparency has been applied to the 
+	 * GComponent then the same level will be applied to the component.
+	 * Unregister the component for drawing this is managed by the 
+	 * GComponent draw method to preserve z-ordering
+	 * 
+	 * @return always true
+	 */
+	public boolean add(GComponent component){
+		if(component == null || children.contains(component)){
+			if(G4P.messages)
+				System.out.println("Either the component doesn't exist or has already been added to this panel");
+			return false;
+		} else {
+			component.parent = this;
+			children.add(component);
+			app.unregisterDraw(component);
+			if(localColor.getAlpha() < 255)
+				component.setAlpha(localColor.getAlpha());
+			return true;
+		}
+	}
+
+	/**
+	 * Remove a GUI component from this component
+	 * 
+	 * @param component
+	 */
+	public void remove(GComponent component){
+		children.remove(component);
 	}
 	
 	/**
@@ -227,7 +276,7 @@ public class GComponent implements PConstants, Comparable  {
 	 */
 	public void keyPressed(KeyEvent event){
 	}
-	
+
 	/**
 	 * Attempt to fire an event for this component
 	 */
@@ -342,7 +391,7 @@ public class GComponent implements PConstants, Comparable  {
 		textAlign = align;
 		calcAlignX();
 	}
-	
+
 	/**
 	 * Calculate text X position based on text alignment
 	 */
@@ -359,7 +408,7 @@ public class GComponent implements PConstants, Comparable  {
 			break;
 		}
 	}
-	
+
 	/**
 	 * Sets the position of a component
 	 * @param x
@@ -425,7 +474,7 @@ public class GComponent implements PConstants, Comparable  {
 	public void setVisible(boolean visible) {
 		// If we are making it invisible and it has focus give up the focus
 		if(!visible && focusIsWith == this)
-			looseFocus();
+			looseFocus(null);
 		this.visible = visible;
 	}
 
@@ -446,7 +495,7 @@ public class GComponent implements PConstants, Comparable  {
 	public int getBorder(){
 		return border;
 	}
-	
+
 	/**
 	 * Determines wheher to show tha back color or not.
 	 * Only applies to some components
@@ -474,7 +523,7 @@ public class GComponent implements PConstants, Comparable  {
 	public void setAlpha(int alpha){
 		localColor.setAlpha(alpha);
 	}
-	
+
 	/**
 	 * How transparent / opaque is this component
 	 * @return 0 (transparent) 255 (opaque)
@@ -482,11 +531,11 @@ public class GComponent implements PConstants, Comparable  {
 	public int getAlpha(){
 		return localColor.getAlpha();
 	}
-	
-	
+
+
 	public int compareTo(Object o) {
 		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
 	}
 
-	
+
 } // end of class

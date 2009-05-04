@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -45,20 +45,20 @@ import processing.core.PImage;
  *
  */
 public class GButton extends GComponent {
-	
+
 	// Button status values
 	public static final int OFF		= 0;
 	public static final int OVER	= 1;
 	public static final int DOWN	= 2;
 
 	protected int status;
-	
+
 	protected int[] col = new int[3];
-	
+
 	protected PImage[] bimage = new PImage[3];
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
-	
+
 	protected int imgAlignX;
 	/**
 	 * Create a button with text only.
@@ -94,8 +94,9 @@ public class GButton extends GComponent {
 	public GButton(PApplet theApplet, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		PImage img = app.loadImage(imgFile);
-		if(img == null)
-			System.out.println("Can't find image file for GButton");
+		if(img == null){
+			if(G4P.messages) System.out.println("Can't find image file for GButton");
+		}
 		else
 			btnImgWidth = img.width /  nbrImages;
 		buttonCtorCore(width, height, img, nbrImages);
@@ -120,8 +121,9 @@ public class GButton extends GComponent {
 		super(theApplet, x, y);
 		setText(text);
 		PImage img = app.loadImage(imgFile);
-		if(img == null)
-			System.out.println("Can't find image file for GButton");
+		if(img == null){
+			if(G4P.messages) System.out.println("Can't find image file for GButton");
+		}
 		else
 			btnImgWidth = img.width / nbrImages;
 		buttonCtorCore(width, height, img, nbrImages);
@@ -160,7 +162,7 @@ public class GButton extends GComponent {
 		createEventHandler(app);
 		registerAutos_DMPK(true, true, false, false);
 	}
-	
+
 	/**
 	 * Override the default event handler created with createEventHandler(Object obj)
 	 * @param obj
@@ -171,12 +173,14 @@ public class GButton extends GComponent {
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GButton.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
-			System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-			System.out.println("with a parameter of type GButton");
+			if(G4P.messages) {
+				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
+				System.out.println("with a parameter of type GButton");
+			}
 			eventHandlerObject = null;
 		}
 	}
-	
+
 	/**
 	 * Create an event handler that will call a method handleButtonEvents(GButton cbox)
 	 * when text is changed or entered
@@ -187,12 +191,14 @@ public class GButton extends GComponent {
 			this.eventHandler = obj.getClass().getMethod("handleButtonEvents", new Class[] { GButton.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
+			if(G4P.messages) {
+				System.out.println("You might want to add a method to handle \nbutton events the syntax is");
+				System.out.println("void handleButtonEvents(GButton button){\n   ...\n}\n\n");
+			}
 			eventHandlerObject = null;
-			System.out.println("You might want to add a method to handle \nbutton events the syntax is");
-			System.out.println("void handleButtonEvents(GButton button){\n   ...\n}\n\n");
 		}
 	}
-	
+
 	/**
 	 * @param text the text to set with alignment
 	 */
@@ -203,7 +209,7 @@ public class GButton extends GComponent {
 		calcAlignX();
 	}
 
-	
+
 	/**
 	 * Set the text alignment inside the box
 	 * @param align
@@ -256,32 +262,36 @@ public class GButton extends GComponent {
 	 * Draw the button
 	 */
 	public void draw(){
-		if(visible){
-			app.pushStyle();
-			Point pos = new Point(0,0);
-			calcAbsPosition(pos);
-			// Draw button rectangle
-			app.strokeWeight(1);
-			app.stroke(localColor.btnBorder);			
-			app.fill(col[status]);	// depends on button state
-			app.rect(pos.x,pos.y,width,height);
-			// Draw image
-			if(bimage[status] != null){
-				app.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
-			}
-			// Draw text
-			app.noStroke();
-			app.fill(localColor.btnFont);
-			app.textFont(localFont, localFont.size);
-			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width, height);
-			app.popStyle();
+		if(!visible) return;
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+		// Draw button rectangle
+		app.strokeWeight(1);
+		app.stroke(localColor.btnBorder);			
+		app.fill(col[status]);	// depends on button state
+		app.rect(pos.x,pos.y,width,height);
+		// Draw image
+		if(bimage[status] != null){
+			app.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
 		}
+		// Draw text
+		app.noStroke();
+		app.fill(localColor.btnFont);
+		app.textFont(localFont, localFont.size);
+//		app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, width, height);
+		app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width, height);
+		app.popStyle();
 	}
+
 
 	/**
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
+		if(!visible) return;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
@@ -294,10 +304,10 @@ public class GButton extends GComponent {
 		case MouseEvent.MOUSE_CLICKED:
 			// No need to test for isOver() since if the component has focus
 			// the mouse has not moved since MOUSE_PRESSED	
-			if(focusIsWith == this /* && isOver(app.mouseX, app.mouseY) */){
+			if(focusIsWith == this){
 				status = OFF;
 				fireEvent();
-				this.looseFocus();
+				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
@@ -305,7 +315,7 @@ public class GButton extends GComponent {
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
-				looseFocus();
+				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 				status = OFF;
 			}
@@ -318,5 +328,5 @@ public class GButton extends GComponent {
 				status = OFF;
 		}
 	}
-	
+
 }

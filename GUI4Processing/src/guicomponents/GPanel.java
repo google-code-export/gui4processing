@@ -2,7 +2,7 @@
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
-	
+
   Copyright (c) 2008-09 Peter Lager
 
   This library is free software; you can redistribute it and/or
@@ -47,18 +47,12 @@ public class GPanel extends GComponent {
 
 	/** The height of the tab calculated from font height + padding */
 	protected int tabHeight;
-	
+
 	/** Used to restore position when closing panel */
 	protected int dockX, dockY;
 
 	/** true if the panel is being dragged */
 	protected boolean beingDragged = false;
-	
-	/**
-	 * A list of child GComponents added to this panel
-	 * Only applicable to GPanel class
-	 */
-	private HashSet<GComponent> children = new HashSet<GComponent>();
 
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
@@ -87,6 +81,7 @@ public class GPanel extends GComponent {
 	 * @param height
 	 */
 	private void panelCtorCore(String text, int width, int height){
+		children = new HashSet<GComponent>();
 		setText(text);
 		tabHeight = localFont.size + 2 * PADV;
 		constrainPanelPosition();
@@ -98,7 +93,7 @@ public class GPanel extends GComponent {
 		this.height = height;
 		registerAutos_DMPK(true, true, false, false);
 	}
-	
+
 	/**
 	 * Create an event handler that will call a method handlePanelEvents(GPanle panel)
 	 * when paned is opned or closed
@@ -109,9 +104,11 @@ public class GPanel extends GComponent {
 			this.eventHandler = obj.getClass().getMethod("handlePanelEvents", new Class[] { GPanel.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
+			if(G4P.messages){
+				System.out.println("You might want to add a method to handle \npanel events the syntax is");
+				System.out.println("void handlePanelEvents(GPanle panel){\n   ...\n}\n\n");
+			}
 			eventHandlerObject = null;
-			System.out.println("You might want to add a method to handle \npanel events the syntax is");
-			System.out.println("void handlePanelEvents(GPanle panel){\n   ...\n}\n\n");
 		}
 	}	
 
@@ -125,8 +122,10 @@ public class GPanel extends GComponent {
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GPanel.class } );
 			eventHandlerObject = obj;
 		} catch (Exception e) {
-			System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-			System.out.println("with a parameter of type GPanel");
+			if(G4P.messages){
+				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
+				System.out.println("with a parameter of type GPanel");
+			}
 			eventHandlerObject = null;
 		}
 	}
@@ -138,29 +137,7 @@ public class GPanel extends GComponent {
 		focusIsWith = null;
 		beingDragged = false;
 	}
-	
-	/**
-	 * Add a GUI component to this Panel at the position specified by
-	 * component being added. If transparency has been applied to the panel
-	 * then the same level will be applied to the component.
-	 * Unregister the component for drawing this is managed by the 
-	 * Panel draw method to preserve z-ordering
-	 * 
-	 * @return always true
-	 */
-	public boolean add(GComponent component){
-		if(component == null || children.contains(component)){
-			System.out.println("Either the component doesn't exist or has already been added to this panel");
-			return false;
-		} else {
-			component.parent = this;
-			children.add(component);
-			app.unregisterDraw(component);
-			if(localColor.getAlpha() < 255)
-				component.setAlpha(localColor.getAlpha());
-			return true;
-		}
-	}
+
 
 	/**
 	 * Draw the panel.
@@ -170,39 +147,45 @@ public class GPanel extends GComponent {
 	 * 		draw tab and all child (added) components
 	 */
 	public void draw(){
-		if(visible){
-			app.pushStyle();
-			Point pos = new Point(0,0);
-			calcAbsPosition(pos);
-			app.noStroke();
-			app.fill(localColor.pnlTabBack);
-			// Display tab (length depends on whether panel is open or closed
-			int w = (tabOnly)? textWidth + PADH * 2 : width;
-			app.rect(pos.x, pos.y - tabHeight, w, tabHeight);
-			// Display tab text
-			app.fill(localColor.pnlFont);
-			app.textFont(localFont, localFont.size);
-			app.text(text, pos.x + PADH, pos.y - tabHeight + PADV, textWidth, tabHeight);
-			if(!tabOnly){
-				if(opaque){
-					app.strokeWeight(border);
-					app.stroke(localColor.pnlBorder);
-					app.fill(localColor.pnlBack);
-					app.rect(pos.x, pos.y, width - border, height - border);
-				}
-				Iterator<GComponent> iter = children.iterator();
-				while(iter.hasNext()){
-					iter.next().draw();
-				}
-			}
-			app.popStyle();
+		if(!visible) return;
+
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+		app.noStroke();
+		if(border > 0){
+			app.strokeWeight(border);
+			app.stroke(localColor.pnlBorder);
 		}
+		app.fill(localColor.pnlTabBack);
+		// Display tab (length depends on whether panel is open or closed
+		int w = (tabOnly)? textWidth + PADH * 2 : width;
+		app.rect(pos.x, pos.y - tabHeight, w, tabHeight);
+		// Display tab text
+		app.fill(localColor.pnlFont);
+		app.textFont(localFont, localFont.size);
+		app.text(text, pos.x + PADH, pos.y - (tabHeight + localFont.size)/2 - PADV , textWidth, tabHeight);
+		if(!tabOnly){
+			if(opaque){
+				app.fill(localColor.pnlBack);
+				app.rect(pos.x, pos.y, width, height);
+			}
+			Iterator<GComponent> iter = children.iterator();
+			while(iter.hasNext()){
+				iter.next().draw();
+			}
+		}
+		app.popStyle();
 	}
+
 
 	/**
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
+		if(!visible) return;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
@@ -268,7 +251,7 @@ public class GPanel extends GComponent {
 	public boolean isDragging(){
 		return beingDragged;
 	}
-	
+
 	/**
 	 * Ensures that the panel tab and panel body if open doesnot
 	 * extend off the screen.
@@ -287,7 +270,7 @@ public class GPanel extends GComponent {
 		else if(y + h > app.getHeight()) 
 			y = app.getHeight() - h;
 	}
-	
+
 	/**
 	 * Determines whether the position ax, ay is over the tab
 	 * of this GPanel.
@@ -338,7 +321,7 @@ public class GPanel extends GComponent {
 		if(!tabOnly)
 			constrainPanelPosition();
 	}
-	
+
 	/**
 	 * Find out if the panel is collapsed
 	 * @return true if collapsed
@@ -346,5 +329,5 @@ public class GPanel extends GComponent {
 	public boolean isCollapsed(){
 		return tabOnly;
 	}
-	
+
 } // end of class

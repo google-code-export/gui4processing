@@ -32,8 +32,14 @@ import javax.swing.Timer;
 import processing.core.PApplet;
 
 /**
- * This class is used to trigger events at regular intervals. The event will
- * call a user defined method/function.
+ * This class is used to trigger events at user defined intervals. The event will
+ * call a user defined method/function. The only restriction is that the method
+ * used has no parameters and returns void eg 
+ * <pre>
+ * void fireBall(){ ... }
+ * </pre>
+ * 
+ * It has no visible GUI representation so will not appear in the GUI.
  * 
  * @author Peter Lager
  *
@@ -63,8 +69,8 @@ public class GTimer {
 	 * For most users 'methodName' will be in their main sketch so this
 	 * parameter has the same value as 'theApplet'
 	 * 
-	 * @param theApplet a reference to the PApplet class (invariably <b>this</b>
-	 * @param obj the object that has the method to be executed
+	 * @param theApplet a reference to the PApplet object (invariably <b>this</b>)
+	 * @param obj the object that has the method to be executed (likely to be <b>this</b>)
 	 * @param methodName the name of the method to be called by the timer
 	 * @param interval the time (in millisecs) between function calls
 	 */
@@ -174,7 +180,9 @@ public class GTimer {
 	/**
 	 * Get the interval time (milliseconds)between 
 	 * events.
-	 * @return interval in millsecs
+	 * @return interval in millsecs or -1 if the timer failed to
+	 * be created.
+	 * 
 	 */
 	public int getInterval(){
 		if(timer != null)
@@ -185,7 +193,7 @@ public class GTimer {
 	
 	/**
 	 * See if the GTimer object has been created successfully
-	 * @return true success
+	 * @return true if successful
 	 */
 	public boolean isValid(){
 		return (eventHandlerObject != null && timer != null);
