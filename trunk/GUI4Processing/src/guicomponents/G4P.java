@@ -80,7 +80,9 @@ public class G4P implements PConstants {
 
 		g4pStyle.rectMode = CORNER;
 		g4pStyle.ellipseMode = DIAMETER;
-
+		g4pStyle.imageMode = CORNER;
+		g4pStyle.shapeMode = CORNER;
+		
 		g4pStyle.colorMode = RGB;
 		g4pStyle.colorModeA = 255.0f;
 		g4pStyle.colorModeX = 255.0f;

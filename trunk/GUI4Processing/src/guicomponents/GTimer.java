@@ -47,7 +47,7 @@ import processing.core.PApplet;
 public class GTimer {
 
 	/** This must be set by the constructor */
-	protected static PApplet app;
+	protected PApplet app;
 
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;

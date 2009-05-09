@@ -145,12 +145,10 @@ public class GCScheme  {
 		s.cbxBack = image.get(31, schemeNo) | ALPHA_MASK;
 		s.cbxBorder = image.get(32, schemeNo) | ALPHA_MASK;
 		
-		s.acbEdge = image.get(35, schemeNo) | ALPHA_MASK;
-		s.acbBorder = image.get(36, schemeNo) | ALPHA_MASK;
-		s.acbTrack = image.get(37, schemeNo) | ALPHA_MASK;
-		s.acbLead = image.get(38, schemeNo) | ALPHA_MASK;
-		s.acbTrail = image.get(39, schemeNo) | ALPHA_MASK;
-		
+		s.acbBorder = image.get(35, schemeNo) | ALPHA_MASK;
+		s.acbTrack = image.get(36, schemeNo) | ALPHA_MASK;
+		s.acbLast = image.get(37, schemeNo) | ALPHA_MASK;
+		s.acbFirst = image.get(38, schemeNo) | ALPHA_MASK;
 	}
 
 	// Class attributes and methods start here
@@ -172,7 +170,7 @@ public class GCScheme  {
 	// Checkbox
 	public int cbxFont, cbxBack, cbxBorder;
 	// ActivityBar
-	public int acbEdge, acbBorder, acbTrack, acbLead, acbTrail;
+	public int acbBorder, acbTrack, acbFirst, acbLast;
 	
 	// Transparency level
 	private int alpha = 255;
@@ -235,11 +233,10 @@ public class GCScheme  {
 		cbxFont = (cbxFont & 0x00ffffff) | a;
 		cbxBack = (cbxBack & 0x00ffffff) | a;
 		cbxBorder = (cbxBorder & 0x00ffffff) | a;
-		acbEdge = (acbEdge & 0x00ffffff | a);
 		acbBorder = (acbBorder & 0x00ffffff | a);
 		acbTrack = (acbTrack & 0x00ffffff | a);
-		acbLead = (acbLead & 0x00ffffff | a);
-		acbTrail = (acbTrail & 0x00ffffff | a);
+		acbLast = (acbLast & 0x00ffffff | a);
+		acbFirst = (acbFirst & 0x00ffffff | a);
 		
 	}
 

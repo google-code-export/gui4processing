@@ -354,6 +354,10 @@ public class GComponent implements PConstants, Comparable  {
 		return parent;
 	}
 
+	/**
+	 * Sets the local color scheme
+	 * @param schemeNo
+	 */
 	public void setColorScheme(int schemeNo){
 		localColor = GCScheme.getColor(app, schemeNo);
 	}
