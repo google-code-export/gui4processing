@@ -106,7 +106,7 @@ public class GPanel extends GComponent {
 		} catch (Exception e) {
 			if(G4P.messages){
 				System.out.println("You might want to add a method to handle \npanel events the syntax is");
-				System.out.println("void handlePanelEvents(GPanle panel){\n   ...\n}\n\n");
+				System.out.println("void handlePanelEvents(GPanel panel){\n   ...\n}\n\n");
 			}
 			eventHandlerObject = null;
 		}
@@ -197,7 +197,6 @@ public class GPanel extends GComponent {
 	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
-
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
@@ -281,10 +280,10 @@ public class GPanel extends GComponent {
 			y = tabHeight;
 		else if(y + h > app.getHeight()) 
 			y = app.getHeight() - h;
-//		if(y - tabHeight - PADV * 2  < 0) 
-//			y = tabHeight + PADV * 2;
-//		else if(y + h > app.getHeight()) 
-//			y = app.getHeight() - h;
+		//		if(y - tabHeight - PADV * 2  < 0) 
+		//			y = tabHeight + PADV * 2;
+		//		else if(y + h > app.getHeight()) 
+		//			y = app.getHeight() - h;
 	}
 
 	/**
