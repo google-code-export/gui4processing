@@ -33,6 +33,7 @@ import processing.core.PImage;
  * Stores all the colour information for the GUI components into a scheme.
  * 
  * Defines a set of predefined schemes covering the primary colours
+ * 
  * @author Peter Lager
  *
  */
@@ -143,6 +144,13 @@ public class GCScheme  {
 		s.cbxFont = image.get(30, schemeNo) | ALPHA_MASK;
 		s.cbxBack = image.get(31, schemeNo) | ALPHA_MASK;
 		s.cbxBorder = image.get(32, schemeNo) | ALPHA_MASK;
+		
+		s.acbEdge = image.get(35, schemeNo) | ALPHA_MASK;
+		s.acbBorder = image.get(36, schemeNo) | ALPHA_MASK;
+		s.acbTrack = image.get(37, schemeNo) | ALPHA_MASK;
+		s.acbLead = image.get(38, schemeNo) | ALPHA_MASK;
+		s.acbTrail = image.get(39, schemeNo) | ALPHA_MASK;
+		
 	}
 
 	// Class attributes and methods start here
@@ -163,7 +171,9 @@ public class GCScheme  {
 	public int optFont, optBack, optBorder;
 	// Checkbox
 	public int cbxFont, cbxBack, cbxBorder;
-
+	// ActivityBar
+	public int acbEdge, acbBorder, acbTrack, acbLead, acbTrail;
+	
 	// Transparency level
 	private int alpha = 255;
 	/**
@@ -225,6 +235,12 @@ public class GCScheme  {
 		cbxFont = (cbxFont & 0x00ffffff) | a;
 		cbxBack = (cbxBack & 0x00ffffff) | a;
 		cbxBorder = (cbxBorder & 0x00ffffff) | a;
+		acbEdge = (acbEdge & 0x00ffffff | a);
+		acbBorder = (acbBorder & 0x00ffffff | a);
+		acbTrack = (acbTrack & 0x00ffffff | a);
+		acbLead = (acbLead & 0x00ffffff | a);
+		acbTrail = (acbTrail & 0x00ffffff | a);
+		
 	}
 
 	/**
