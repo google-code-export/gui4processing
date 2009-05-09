@@ -1,37 +1,179 @@
+/*
+  Part of the GUI for Processing library 
+  	http://gui4processing.lagers.org.uk
+	http://code.google.com/p/gui-for-processing/
+
+  Copyright (c) 2008-09 Peter Lager
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
+
 package guicomponents;
+
+import java.awt.Point;
 
 import processing.core.PApplet;
 
+/**
+ * A simple animated bar that can be used to show that the program is working
+ * might be useful when loading large files etc.
+ * 
+ * The user can set a time limit for the bar to stay visible, or use the stop()
+ * method to stop and halt the bar
+ * 
+ * @author Peter Lager
+ *
+ */
 public class GActivityBar extends GComponent {
 
 	final protected int NBR_THUMBS = 4;
 	
 	protected int[] thumbX = new int[NBR_THUMBS];
+	protected int[] thumbCol = new int[NBR_THUMBS];
 	protected int[] thumbDeltaX = new int[NBR_THUMBS];
 	protected int thumbY, thumbDiameter;
 	protected int trackHeight;
 	protected GTimer timer;
+	protected long duration; // millisecs
 	
-	GActivityBar(PApplet app, int x, int y, int width, int height, int time){
-		height = Math.max(height,10);
-		trackHeight = height - 6;
-		width = Math.max(height * 6, width);
-		thumbX[0] = x + width/2 - NBR_THUMBS * trackHeight /2;
+	/**
+	 * Use this ctor to create the GActivityBar object.
+	 * 
+	 * The minimum height is 10 pixels and is rounded up to the nearest multiple of 2. <br>
+	 * Next the width is checked as it must be >= 4 * height (the width is increased
+	 * if necessary)
+	 * 
+	 * @param theApplet
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	public GActivityBar(PApplet theApplet, int x, int y, int width, int height){
+		super(theApplet,x,y);
+		this.height = Math.max(height,10);
+		if(this.height % 2 != 0)
+			this.height++;
+		trackHeight = this.height - 2 * PADV;
+		this.width = Math.max(this.height * 4, width);
+		initThumbPos();
+		initThumbColor();
+		timer = new GTimer(app, this , "update", 5);
+		timer.stop();
+		visible = false;
+		registerAutos_DMPK(true,false,false,false);
+	}
+	
+	/**
+	 * Initialise the thumb colors
+	 */
+	private void initThumbColor() {
+		thumbCol[0] = localColor.acbFirst;
+		thumbCol[NBR_THUMBS-1] = localColor.acbLast;
+		for(int i = 1; i < NBR_THUMBS - 1; i++)
+			thumbCol[i]= PApplet.lerpColor(thumbCol[0], thumbCol[NBR_THUMBS-1], ((float)i)/(NBR_THUMBS-1), PApplet.HSB);
+	}
+
+	/**
+	 * Initialise the stating position for the thumbs
+	 */
+	private void initThumbPos(){
+		thumbX[0] = width/2 + NBR_THUMBS * trackHeight /2;
 		thumbDeltaX[0] = 1;
 		for(int i=1; i<NBR_THUMBS; i++){
-			thumbX[i] = thumbX[i-1]- trackHeight + 2;
+			thumbX[i] = thumbX[i-1]- 1*trackHeight/2;
 			thumbDeltaX[i] = 1;
 		}
-		
 	}
 	
-	
-	
-	class GActivityBarThumb {
-		private int x,y;
-		private int diameter;
-		private int col;
-		
-		
+	/**
+	 * Start the GActivityBar animation and let it run for a
+	 * maximum duration of @aseconds
+	 * @param seconds if <= 0.0 then never stop
+	 */
+	public void start(float seconds){
+		if(seconds <= 0.0f)
+			duration = Long.MAX_VALUE;
+		else
+			duration = (long)seconds * 1000;
+		initThumbPos();
+		visible = true;
+		timer.start();
 	}
+	
+	/**
+	 * Stop the animation and make the GActivityBar invisible
+	 */
+	public void stop(){
+		visible = false;
+		timer.stop();
+	}
+	
+	/**
+	 * Update the position of the thumbs
+	 */
+	public void update(){
+		if(duration > 0){
+			duration -= timer.getInterval();
+			for(int i=0; i < NBR_THUMBS; i++){
+				if(thumbX[i] == 0 || thumbX[i] == width)
+					thumbDeltaX[i] = -thumbDeltaX[i];
+				thumbX[i] += this.thumbDeltaX[i];
+			}
+		}
+		else {
+			visible = false;
+			timer.stop();
+		}
+	}
+
+	/**
+	 * Sets the local color scheme
+	 * @param schemeNo
+	 */
+	public void setColorScheme(int schemeNo){
+		localColor = GCScheme.getColor(app, schemeNo);
+		this.initThumbColor();
+	}
+
+	/**
+	 * Draw the GActivityBar
+	 */
+	public void draw(){
+		if(!visible) return;
+		app.pushStyle();
+		app.style(G4P.g4pStyle);
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+		app.ellipseMode(PApplet.CENTER);
+		app.rectMode(PApplet.CORNER);
+		app.noStroke();
+		app.fill(localColor.acbBorder);
+		app.ellipse(pos.x, pos.y + height/2, height, height);
+		app.ellipse(pos.x + width, pos.y + height/2, height, height);
+		app.rect(pos.x, pos.y, width, height);
+		app.fill(localColor.acbTrack);
+		app.ellipse(pos.x, pos.y + height/2, trackHeight, trackHeight);
+		app.ellipse(pos.x + width, pos.y + height/2, trackHeight, trackHeight);
+		app.rect(pos.x, pos.y + PADV, width, trackHeight);
+		for(int i = NBR_THUMBS-1; i >= 0; i--){
+			app.fill(thumbCol[i]);
+			app.ellipse(pos.x + thumbX[i], pos.y + height/2, trackHeight, trackHeight);
+		}
+		app.popStyle();
+	}
+
 }
