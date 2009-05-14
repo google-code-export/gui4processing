@@ -36,39 +36,19 @@ import processing.core.PConstants;
  */
 public class CursorManager implements PConstants {
 
-	public boolean overControl = false;
-	private boolean enabled = true;
-	private int cursorOff = ARROW;
-	private int cursorOn = HAND;
 
 	CursorManager(){
 	}
 
-	public void setEnabled(PApplet theApplet, boolean enable){
-		
-		if(enabled != enable){
-			enabled = enable;
-			if(enabled){  // register the pre and post methos
-				theApplet.registerPre(this);
-				theApplet.registerPost(this);
-			}
-			else { // unregister the pre and post methods and restore cursor shape
-				theApplet.unregisterPre(this);
-				theApplet.unregisterPost(this);
-				theApplet.cursor(cursorOff);
-			}
-
-		}
-	}
 	
 	public void pre(){
-		if(enabled && overControl){
+		if(G4P.cursorEnabled && G4P.overControl){
 			
 		}
 	}
 	
 	public void post(){
-		overControl = false;
+		G4P.overControl = false;
 	}
 
 }
