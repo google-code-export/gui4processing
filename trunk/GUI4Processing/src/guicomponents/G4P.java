@@ -48,13 +48,17 @@ public class G4P implements PConstants {
 
 	private static boolean autoDrawOn = true;
 
+	// Will be set when and component is created
 	public static PApplet app = null;
 
 	public static PStyle g4pStyle = null;
 
 	public static boolean messages = true;
+	
+	private static CursorManager mcd = new CursorManager();
 
 	/**
+	 * INTERNAL USE ONLY
 	 * This should be called by all ctors in GComponent and since all GUI 
 	 * components inherit from GComponent and are required to call a 
 	 * GComponent ctor then all GUI components will automatically be 
@@ -72,7 +76,10 @@ public class G4P implements PConstants {
 		else
 			all.add(c);
 	}
-
+	
+	/**
+	 * INTERNAL USE ONLY
+	 */
 	private static void getStyle(){
 		PGraphics temp = new PGraphics();
 
@@ -205,4 +212,9 @@ public class G4P implements PConstants {
 	public static void messagesEnabled(boolean enable){
 		messages = enable;
 	}
+	
+	public void setCursorOverEnabled(boolean enable){
+		
+	}
+	
 }
