@@ -48,15 +48,42 @@ public class G4P implements PConstants {
 
 	private static boolean autoDrawOn = true;
 
-	// Will be set when and component is created
+	// Will be set when and first component is created
 	public static PApplet app = null;
 
 	public static PStyle g4pStyle = null;
 
 	public static boolean messages = true;
 	
+	/** INTERNAL USE ONLY  Cursor over changer */
 	private static CursorManager mcd = new CursorManager();
+	public static boolean overControl = false;
+	public static boolean cursorEnabled = true;
+	public static int cursorOff = ARROW;
+	public static int cursorOn = HAND;
 
+	/**
+	 * Enables or disables cursor over component change
+	 * 
+	 * This is ignored if no G4P components have been created yet
+	 * @param enable
+	 */
+	public static void setCursorOverEnabled(boolean enable){
+		if(app != null && cursorEnabled != enable){
+			cursorEnabled = enable;
+			if(cursorEnabled){  // register the pre and post methos
+				app.registerPre(mcd);
+				app.registerPost(mcd);
+			}
+			else { // unregister the pre and post methods and restore cursor shape
+				app.unregisterPre(mcd);
+				app.unregisterPost(mcd);
+				app.cursor(cursorOff);
+			}
+		}
+	}
+
+	
 	/**
 	 * INTERNAL USE ONLY
 	 * This should be called by all ctors in GComponent and since all GUI 
@@ -213,8 +240,5 @@ public class G4P implements PConstants {
 		messages = enable;
 	}
 	
-	public void setCursorOverEnabled(boolean enable){
-		
-	}
 	
 }
