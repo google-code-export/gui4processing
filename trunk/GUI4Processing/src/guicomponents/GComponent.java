@@ -44,17 +44,24 @@ import processing.core.PFont;
 public class GComponent implements PConstants, Comparable  {
 
 	/**
+	 * INTERNAL USE ONLY
 	 * This holds a reference to the GComponent that currently has the
 	 * focus.
-	 * It is made protected for performance reasons but should be treated
-	 * as a READ ONLY attribute.
 	 * A component looses focus when another component takes focus with the
 	 * takeFocus() method. The takeFocus method should use focusIsWith.looseFocus()
 	 * before setting its value to the new component 
 	 */
 	protected static GComponent focusIsWith; // READ ONLY
 
+	/**
+	 * INTERNAL USE ONLY
+	 * Keeps track of the component the mouse is over so the mouse
+	 * cursor can be changed if we wish.
+	 */
+	protected static GComponent cursorIsOver;
+	
 	/*
+	 * INTERNAL USE ONLY
 	 * Used to track mouse required by GButton, GCheckbox, GHorzSlider
 	 * GVertSlider, GPanel classes
 	 */
@@ -80,9 +87,9 @@ public class GComponent implements PConstants, Comparable  {
 
 	/**
 	 * A list of child GComponents added to this component
-	 * Used by GPanel and GCombo classes
+	 * Created and used by GPanel and GCombo classes
 	 */
-	protected HashSet<GComponent> children; // = new HashSet<GComponent>();
+	protected HashSet<GComponent> children;
 
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
@@ -177,6 +184,8 @@ public class GComponent implements PConstants, Comparable  {
 	 * they loose focus eg TextField
 	 */
 	protected void looseFocus(GComponent grabber){
+		if(cursorIsOver == this)
+			cursorIsOver = null;
 		focusIsWith = null;
 	}
 

@@ -60,23 +60,6 @@ public class GCheckbox extends GComponent {
 	}
 
 	/**
-	 * Create a check box.
-	 * 
-	 * The height will be calculated using the font height
-	 * 
-	 * @param theApplet
-	 * @param text text to appear alongside checkbox
-	 * @param x horz position
-	 * @param y vert position
-	 * @param width width of component
-	 * @param height height of component
-	 */
-//	public GCheckbox(PApplet theApplet, String text, int x, int y, int width, int height){
-//		super(theApplet, x, y);
-//		checkboxCtorCore(text, width, height);
-//	}
-
-	/**
 	 * Core stuff to be done by all ctors
 	 * @param text
 	 * @param width
@@ -152,10 +135,10 @@ public class GCheckbox extends GComponent {
 	protected void calcAlignX(){
 		switch(textAlign){
 		case GAlign.LEFT:
-			alignX = imgSelected.width + 2 * border;
+			alignX = imgSelected.width + 2 * border + PADH;
 			break;
 		case GAlign.RIGHT:
-			alignX = width - textWidth - 2 * border;
+			alignX = width - textWidth - 2 * border - PADH;
 			break;
 		case GAlign.CENTER:
 			alignX = imgSelected.width + (width - imgSelected.width - textWidth)/2;
@@ -173,18 +156,22 @@ public class GCheckbox extends GComponent {
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 		if (!text.equals("")){
-			app.strokeWeight(border);
-			app.stroke(localColor.cbxBorder);	
+			if(border != 0){
+				app.strokeWeight(border);
+				app.stroke(localColor.cbxBorder);
+			}
+			else
+				app.noStroke();
 			if(opaque)
-				app.fill(localColor.cbxBack);	// depends on button state
-			else 
+				app.fill(localColor.cbxBack);
+			else
 				app.noFill();
 			app.rect(pos.x, pos.y, width, height);
 			// Draw text
 			app.noStroke();
 			app.fill(localColor.cbxFont);
 			app.textFont(localFont, localFont.size);
-			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
+			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, textWidth, height);
 		}
 		app.fill(app.color(255,255));
 		if(selected)
@@ -200,9 +187,15 @@ public class GCheckbox extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
 
+		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		if(mouseOver) 
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+				cursorIsOver = null;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith != this && mouseOver){
 				mdx = app.mouseX;
 				mdy = app.mouseY;
 				this.takeFocus();

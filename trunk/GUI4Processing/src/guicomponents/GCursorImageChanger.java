@@ -23,7 +23,6 @@
 
 package guicomponents;
 
-import processing.core.PApplet;
 import processing.core.PConstants;
 
 /**
@@ -34,21 +33,18 @@ import processing.core.PConstants;
  * @author Peter Lager
  *
  */
-public class CursorManager implements PConstants {
+public class GCursorImageChanger implements PConstants {
 
 
-	CursorManager(){
-	}
+	GCursorImageChanger(){}
 
-	
-	public void pre(){
-		if(G4P.cursorEnabled && G4P.overControl){
-			
-		}
-	}
-	
 	public void post(){
-		G4P.overControl = false;
+		if(G4P.cursorChangeEnabled){
+			if(GComponent.cursorIsOver != null)
+				G4P.app.cursor(G4P.mouseOver);
+			else
+				G4P.app.cursor(G4P.mouseOff);
+		}
 	}
 
 }
