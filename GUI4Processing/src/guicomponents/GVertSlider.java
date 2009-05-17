@@ -94,6 +94,8 @@ public class GVertSlider extends GSlider {
 	 * the combo box 
 	 */
 	protected void looseFocus(GComponent grabber){
+		if(cursorIsOver == this)
+			cursorIsOver = null;
 		String pname = (parent == null) ? "" : parent.getClass().getSimpleName();
 		if(pname.equalsIgnoreCase("GCombo")){
 			focusIsWith = parent;
@@ -107,9 +109,16 @@ public class GVertSlider extends GSlider {
 	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
+
+		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		if(mouseOver || focusIsWith == this)
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+				cursorIsOver = null;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith != this && mouseOver){
 				mdx = app.mouseX;
 				mdy = app.mouseY;
 				takeFocus();

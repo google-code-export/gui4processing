@@ -395,7 +395,6 @@ public class GTextField extends GComponent {
 	 * @param val the string to become the text field's contents
 	 */
 	public void setText(String newValue) {
-
 		text = newValue;
 		cursorPos = text.length();
 		startSelect = endSelect = -1;
@@ -404,7 +403,6 @@ public class GTextField extends GComponent {
 		visiblePortionEnd = text.length();
 		app.textFont(localFont);
 		textWidth = (int) app.textWidth(text);
-//		if(app.textWidth(text) > width - 12) {
 		if(textWidth > width - 12) {
 			adjustVisiblePortionEnd();
 		}
@@ -422,9 +420,14 @@ public class GTextField extends GComponent {
 	public void mouseEvent(MouseEvent e) {
 		if(!visible) return;
 
+		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		if(mouseOver || focusIsWith == this) 
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+				cursorIsOver = null;
+
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-//		app.textFont(localFont, localFont.size);
 
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:

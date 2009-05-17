@@ -56,11 +56,11 @@ public class G4P implements PConstants {
 	public static boolean messages = true;
 	
 	/** INTERNAL USE ONLY  Cursor over changer */
-	private static CursorManager mcd = new CursorManager();
+	private static GCursorImageChanger mcd = new GCursorImageChanger();
 	public static boolean overControl = false;
-	public static boolean cursorEnabled = true;
-	public static int cursorOff = ARROW;
-	public static int cursorOn = HAND;
+	public static boolean cursorChangeEnabled = false;
+	public static int mouseOff = ARROW;
+	public static int mouseOver = HAND;
 
 	/**
 	 * Enables or disables cursor over component change
@@ -68,21 +68,42 @@ public class G4P implements PConstants {
 	 * This is ignored if no G4P components have been created yet
 	 * @param enable
 	 */
-	public static void setCursorOverEnabled(boolean enable){
-		if(app != null && cursorEnabled != enable){
-			cursorEnabled = enable;
-			if(cursorEnabled){  // register the pre and post methos
-				app.registerPre(mcd);
+	public static void setMouseOverEnabled(boolean enable){
+		if(app != null && cursorChangeEnabled != enable){
+			cursorChangeEnabled = enable;
+			if(cursorChangeEnabled){  // register the pre and post methos
 				app.registerPost(mcd);
 			}
 			else { // unregister the pre and post methods and restore cursor shape
-				app.unregisterPre(mcd);
 				app.unregisterPost(mcd);
-				app.cursor(cursorOff);
+				app.cursor(mouseOff);
 			}
+		}
+		else {
+			System.out.println("Unable to init cursor changes");
 		}
 	}
 
+	/**
+	 * Inform G4P which cursor shapes will be used.
+	 * Initial values are ARROW (off) and HAND (over)
+	 * 
+	 * @param cursorOff
+	 * @param cursorOver
+	 */
+	public static void cursor(int cursorOff, int cursorOver){
+		mouseOff = cursorOff;
+		mouseOver = cursorOver;
+	}
+	
+	/**
+	 * Inform G4P which cursor to use for mouse over.
+	 * 
+	 * @param cursorOver
+	 */
+	public static void cursor(int cursorOver){
+		mouseOver = cursorOver;
+	}
 	
 	/**
 	 * INTERNAL USE ONLY

@@ -36,8 +36,6 @@ import processing.core.PApplet;
  */
 public class GHorzSlider extends GSlider {
 
-
-
 	/**
 	 * Create a horizontal slider.
 	 * Default values:
@@ -97,9 +95,15 @@ public class GHorzSlider extends GSlider {
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
 
+		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		if(mouseOver || focusIsWith == this)
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+				cursorIsOver = null;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith != this && mouseOver){
 				mdx = app.mouseX;
 				mdy = app.mouseY;
 				takeFocus();

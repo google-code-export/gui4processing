@@ -114,10 +114,10 @@ public class GOption extends GComponent {
 	protected void calcAlignX(){
 		switch(textAlign){
 		case GAlign.LEFT:
-			alignX = imgSelected.width + 2 * border + PADV;
+			alignX = imgSelected.width + 2 * border + PADH;
 			break;
 		case GAlign.RIGHT:
-			alignX = width - textWidth - 2 * border;
+			alignX = width - textWidth - 2 * border - PADH;
 			break;
 		case GAlign.CENTER:
 			alignX = imgSelected.width + (width - imgSelected.width - textWidth)/2;
@@ -188,9 +188,16 @@ public class GOption extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		// If this option does not belong to a group then ignore mouseEvents
 		if(!visible || ownerGroup == null) return;
+
+		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		if(mouseOver) 
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+				cursorIsOver = null;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith != this && mouseOver){
 				mdx = app.mouseX;
 				mdy = app.mouseY;
 				this.takeFocus();

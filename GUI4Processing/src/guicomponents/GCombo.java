@@ -315,6 +315,7 @@ public class GCombo extends GComponent {
 		expanded = false;
 		for(int i = 0; i < optGroup.size(); i++)
 			optGroup.get(i).visible = false;
+		slider.visible = false;
 	}
 
 	/**
@@ -352,9 +353,16 @@ public class GCombo extends GComponent {
 	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
+
+		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		if(mouseOver) 
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+				cursorIsOver = null;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && isOver(app.mouseX, app.mouseY))
+			if(focusIsWith != this && mouseOver)
 				takeFocus();
 			else if(focusIsWith == this && !isOver(app.mouseX, app.mouseY))
 				looseFocus(null);
