@@ -101,6 +101,7 @@ public class GTextField extends GComponent {
 		setText(text);
 		createEventHandler(winApp);
 		registerAutos_DMPK(true, true, false, true);
+		winApp.textFont(localFont, localFont.size);
 	}
 
 	/**
@@ -152,6 +153,7 @@ public class GTextField extends GComponent {
 		setText(text);
 		if(textWidth != tw)
 			width += (textWidth - tw);
+		winApp.textFont(localFont, localFont.size);
 		adjustVisiblePortionEnd();
 	}
 
@@ -178,7 +180,7 @@ public class GTextField extends GComponent {
 	 * character is entered via the keyboard.
 	 * @param c the character to be added
 	 */
-	protected void appendToRightOfCursor(char c) {
+	private void appendToRightOfCursor(char c) {
 		appendToRightOfCursor("" + c);
 	}
 
@@ -187,8 +189,9 @@ public class GTextField extends GComponent {
 	 * of characters.
 	 * @param s the string to be added
 	 */
-	protected void appendToRightOfCursor(String s) {
+	private void appendToRightOfCursor(String s) {
 		String t1, t2;
+		winApp.textFont(localFont, localFont.size);
 		if(startSelect != endSelect) {
 			int start = Math.min(startSelect, endSelect);
 			int end = Math.max(startSelect, endSelect);
@@ -238,7 +241,7 @@ public class GTextField extends GComponent {
 		}
 	}
 
-	protected void deleteChar() {
+	private void deleteChar() {
 		if(startSelect != endSelect) {
 			deleteSubstring(startSelect, endSelect);
 		} else if(cursorPos < text.length()){
@@ -246,7 +249,7 @@ public class GTextField extends GComponent {
 		}
 	}
 
-	protected void deleteSubstring(int startString, int endString) {
+	private void deleteSubstring(int startString, int endString) {
 		int start = Math.min(startString, endString);
 		int end = Math.max(startString, endString);
 		text = text.substring(0, start) + text.substring(end);
@@ -278,7 +281,7 @@ public class GTextField extends GComponent {
 	 * @param start
 	 * @param end
 	 */
-	protected void copySubstring(int start, int end) {
+	private void copySubstring(int start, int end) {
 		int s = Math.min(start, end);
 		int e = Math.max(start, end);
 		GClip.copy(text.substring(s, e));
@@ -289,6 +292,7 @@ public class GTextField extends GComponent {
 	 * of selected text.
 	 */
 	private void updateXPos() {
+		winApp.textFont(localFont, localFont.size);
 		int tempStart = startSelect;
 		int tempEnd = endSelect;
 		cursorXPos = winApp.textWidth(text.substring(visiblePortionStart, cursorPos));
@@ -325,6 +329,7 @@ public class GTextField extends GComponent {
 	}
 
 	private void adjustVisiblePortionEnd() {
+		if(visiblePortionEnd > text.length()) visiblePortionEnd = text.length(); // pkl
 		if(winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 				if(visiblePortionEnd == text.length())
@@ -395,6 +400,7 @@ public class GTextField extends GComponent {
 	 * @param val the string to become the text field's contents
 	 */
 	public void setText(String newValue) {
+		winApp.textFont(localFont, localFont.size);
 		text = newValue;
 		cursorPos = text.length();
 		startSelect = endSelect = -1;
@@ -424,10 +430,12 @@ public class GTextField extends GComponent {
 		if(mouseOver || focusIsWith == this) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
-				cursorIsOver = null;
+			cursorIsOver = null;
 
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
+
+		winApp.textFont(localFont, localFont.size);
 
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:
@@ -473,7 +481,7 @@ public class GTextField extends GComponent {
 	 */
 	public void keyEvent(KeyEvent e) {
 		if(focusIsWith == this){
-//			app.textFont(localFont, localFont.size);
+			winApp.textFont(localFont, localFont.size);
 
 			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
@@ -587,7 +595,7 @@ public class GTextField extends GComponent {
 
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
-				
+
 		winApp.textFont(localFont, localFont.size);
 
 		Point pos = new Point(0,0);
@@ -631,7 +639,7 @@ public class GTextField extends GComponent {
 	 * @param b
 	 * @return
 	 */
-	public static boolean validUnicode(char b)
+	private static boolean validUnicode(char b)
 	{
 		int c = (int)b;
 		return (
@@ -764,53 +772,54 @@ public class GTextField extends GComponent {
 				(c == 0xF833));
 	}
 
-	public int getVisiblePortionStart()
-	{
-		return visiblePortionStart;
-	}
+//	private int getVisiblePortionStart()
+//	{
+//		return visiblePortionStart;
+//	}
+//
+//	private void setVisiblePortionStart(int VisiblePortionStart)
+//	{
+//		visiblePortionStart = VisiblePortionStart;
+//	}
+//
+//	private int getVisiblePortionEnd()
+//	{
+//		return visiblePortionEnd;
+//	}
+//
+//	private void setVisiblePortionEnd(int VisiblePortionEnd)
+//	{
+//		visiblePortionEnd = VisiblePortionEnd;
+//	}
+//
+//	public int getStartSelect()
+//	{
+//		return startSelect;
+//	}
+//
+//	public void setStartSelect(int StartSelect)
+//	{
+//		startSelect = StartSelect;
+//	}
+//
+//	public int getEndSelect()
+//	{
+//		return endSelect;
+//	}
+//
+//	public void setEndSelect(int EndSelect)
+//	{
+//		endSelect = EndSelect;
+//	}
+//
+//	public int getCursorPosition()
+//	{
+//		return cursorPos;
+//	}
+//
+//	public void setCursorPosition(int CursorPos)
+//	{
+//		cursorPos = CursorPos;
+//	}
 
-	public void setVisiblePortionStart(int VisiblePortionStart)
-	{
-		visiblePortionStart = VisiblePortionStart;
-	}
-
-	public int getVisiblePortionEnd()
-	{
-		return visiblePortionEnd;
-	}
-
-	public void setVisiblePortionEnd(int VisiblePortionEnd)
-	{
-		visiblePortionEnd = VisiblePortionEnd;
-	}
-
-	public int getStartSelect()
-	{
-		return startSelect;
-	}
-
-	public void setStartSelect(int StartSelect)
-	{
-		startSelect = StartSelect;
-	}
-
-	public int getEndSelect()
-	{
-		return endSelect;
-	}
-
-	public void setEndSelect(int EndSelect)
-	{
-		endSelect = EndSelect;
-	}
-
-	public int getCursorPosition()
-	{
-		return cursorPos;
-	}
-
-	public void setCursorPosition(int CursorPos)
-	{
-		cursorPos = CursorPos;
-	}
 }

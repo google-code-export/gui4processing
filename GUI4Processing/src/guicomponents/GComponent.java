@@ -36,13 +36,17 @@ import processing.core.PConstants;
 import processing.core.PFont;
 
 /**
+ * CLASS FOR INTERNAL USE ONLY
+ * 
+ * Do not attempt to use this class directly.
+ * 
  * The base class for all GUI components
  * 
  * @author Peter Lager
  *
  */
 @SuppressWarnings("unchecked")
-public class GComponent implements PConstants, Comparable  {
+public class GComponent implements PConstants, Comparable {
 
 	/**
 	 * INTERNAL USE ONLY
@@ -142,8 +146,12 @@ public class GComponent implements PConstants, Comparable  {
 	protected GComponent() { }
 
 	/**
-	 * This constructor should be called by all constructors  
+	 * INTERNAL USE ONLY
+	 * This constructor MUST be called by all constructors  
 	 * of any child class e.g. GPanel, GLabel etc.
+	 * 
+	 * Each component registers itself with G4P, the first component 
+	 * register the mainWinApp for later use.
 	 * 
 	 * Only create the GScheme the first time it is called.
 	 * 
@@ -153,7 +161,6 @@ public class GComponent implements PConstants, Comparable  {
 	 */
 	public GComponent(PApplet theApplet, int x, int y){
 		winApp = theApplet;
-		G4P.app = theApplet;
 		if(globalColor == null)
 			globalColor = GCScheme.getColor(theApplet);
 		localColor = new GCScheme(globalColor);
@@ -162,6 +169,7 @@ public class GComponent implements PConstants, Comparable  {
 		localFont = globalFont;
 		this.x = x;
 		this.y = y;
+		G4P.setMainApp(winApp);
 		G4P.addComponent(this);
 	}
 
@@ -347,24 +355,26 @@ public class GComponent implements PConstants, Comparable  {
 		}
 	}
 	
+	/**
+	 * Called when we add a component to another window. Transfers autos
+	 * to new window for this component and all it's children.
+	 * 
+	 * @param newWindowApp
+	 */
 	public void changeWindow(PApplet newWindowApp){
 		if(regDraw){
-			System.out.println("Change draw owner");
 			winApp.unregisterDraw(this);
 			newWindowApp.registerDraw(this);
 		}
 		if(regPre){
-			System.out.println("Change pre owner");
 			winApp.unregisterPre(this);
 			newWindowApp.registerPre(this);
 		}
 		if(regMouse){
-			System.out.println("Change mouse owner");
 			winApp.unregisterMouseEvent(this);
 			newWindowApp.registerMouseEvent(this);
 		}
 		if(regKey){
-			System.out.println("Change key owner");
 			winApp.unregisterKeyEvent(this);
 			newWindowApp.registerKeyEvent(this);
 		}
@@ -375,7 +385,6 @@ public class GComponent implements PConstants, Comparable  {
 			while(iter.hasNext())
 				iter.next().changeWindow(newWindowApp);
 		}
-
 	}
 	
 	
