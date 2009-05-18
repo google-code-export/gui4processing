@@ -75,6 +75,7 @@ public class GControlWindow extends Frame{
 			public void windowClosing(WindowEvent evt) {
 				removeFromG4P();
 				// close this frame
+				//embed.dispose();
 				dispose();
 			}
 		});
@@ -88,6 +89,7 @@ public class GControlWindow extends Frame{
 	public void removeFromG4P(){
 		embed.noLoop();
 		embed.unregisterPost(embed);
+		embed.unregisterDraw(embed);
 		G4P.removeControlWindow(this);
 	}
 
