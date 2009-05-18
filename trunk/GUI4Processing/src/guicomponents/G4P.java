@@ -44,18 +44,18 @@ public class G4P implements PConstants {
 	/**
 	 * Set of all the GUI components created
 	 */
-	private static HashSet<GComponent> all = new HashSet<GComponent>();
+	private static HashSet<GComponent> allComponents = new HashSet<GComponent>();
 
 	/**
 	 * Set of GControlWindows
 	 */
-	private static HashSet<GComponent> allWinApps = new HashSet<GComponent>();
+	private static HashSet<GControlWindow> allWinApps = new HashSet<GControlWindow>();
 	
 	
 	private static boolean autoDrawOn = true;
 
 	// Will be set when and first component is created
-	public static PApplet app = null;
+	public static PApplet mainWinApp = null;
 
 	public static PStyle g4pStyle = null;
 
@@ -75,21 +75,19 @@ public class G4P implements PConstants {
 	 * @param enable
 	 */
 	public static void setMouseOverEnabled(boolean enable){
-		if(app != null && cursorChangeEnabled != enable){
-			cursorChangeEnabled = enable;
-			if(cursorChangeEnabled){  // register the pre and post methos
-				app.registerPost(mcd);
+		cursorChangeEnabled = enable;
+		// If disabling make sure that the cursor is set to mouseOff
+		// for the mainWinApp and all control windows
+		if(cursorChangeEnabled == false){
+			mainWinApp.cursor(mouseOff);
+			GControlWindow cw;
+			Iterator<GControlWindow> iter = allWinApps.iterator();
+			while(iter.hasNext()){
+				iter.next().embed.cursor(mouseOff);
 			}
-			else { // unregister the pre and post methods and restore cursor shape
-				app.unregisterPost(mcd);
-				app.cursor(mouseOff);
-			}
-		}
-		else {
-			System.out.println("Unable to init cursor changes");
 		}
 	}
-
+	
 	/**
 	 * Inform G4P which cursor shapes will be used.
 	 * Initial values are ARROW (off) and HAND (over)
@@ -121,14 +119,43 @@ public class G4P implements PConstants {
 	 * @param c the component that has been created.
 	 */
 	public static void addComponent(GComponent c){
+//		if()
 		if(g4pStyle == null)
 			getStyle();
-		if(all.contains(c)){
+		if(allComponents.contains(c)){
 			if(messages)
 				System.out.println("Component " + c + " has already been regitered!");
 		}
 		else
-			all.add(c);
+			allComponents.add(c);
+	}
+	
+	public static void setMainApp(PApplet theApplet){
+		if(mainWinApp == null){
+			System.out.println("Set mainWinApp");
+			mainWinApp = theApplet;
+			mainWinApp.registerPost(mcd);
+		}
+	}
+	
+	/**
+	 * INTERNAL USE ONLY
+	 * Record a new control window
+	 * @param controlWindow
+	 */
+	public static void addControlWindow(GControlWindow controlWindow){
+		allWinApps.add(controlWindow);
+	}
+	
+	/**
+	 * INTERNAL USE ONLY
+	 * Remove control window - called when a ControlWindow is closed
+	 * for good.
+	 *  
+	 * @param controlWindow
+	 */
+	public static void removeControlWindow(GControlWindow controlWindow){
+		allWinApps.remove(controlWindow);
 	}
 	
 	/**
@@ -166,10 +193,10 @@ public class G4P implements PConstants {
 	public static void setColorScheme(PApplet theApplet, int schemeNo){
 		// If both theApplet and app are null there is nothing we can do!
 		if(theApplet != null)
-			app = theApplet;
-		else if(app == null)
+			setMainApp(theApplet);
+		else if(mainWinApp == null)
 			return;
-		GComponent.globalColor = GCScheme.getColor(app,  schemeNo);
+		GComponent.globalColor = GCScheme.getColor(mainWinApp,  schemeNo);
 	}
 
 	/**
@@ -184,31 +211,32 @@ public class G4P implements PConstants {
 	public static void setFont(PApplet theApplet, String fontName, int fontSize){
 		// If both theApplet and app are null there is nothing we can do!
 		if(theApplet != null)
-			app = theApplet;
-		else if(app == null)
+			setMainApp(theApplet);
+		else if(mainWinApp == null)
 			return;
-		GComponent.globalFont = GFont.getFont(app, fontName, fontSize);
+		GComponent.globalFont = GFont.getFont(mainWinApp, fontName, fontSize);
 	}
 
 	/**
 	 * Use G4P.draw() if you want to control when you the GUI is to be drawn
 	 */
 	public static void draw(){
-		if(all.size() > 0){
+		if(allComponents.size() > 0){
 			// Time to take over the responsibility for drawing
 			if(autoDrawOn)
 				unregisterFromPAppletDraw();
-			// Draw the components note that GPanels will call the appropriate
+			// Draw the components on the mainWinApp only.
+			// Note that GPanels will call the appropriate
 			// draw methods for the components on them
-			app.hint(DISABLE_DEPTH_TEST);
-			Iterator<GComponent> iter = all.iterator();
+			mainWinApp.hint(DISABLE_DEPTH_TEST);
+			Iterator<GComponent> iter = allComponents.iterator();
 			GComponent c;
 			while(iter.hasNext()){
 				c = iter.next();
-				if(c.getParent() == null)
+				if(c.getParent() == null && c.getPApplet() == mainWinApp)
 					c.draw();
 			}
-			app.hint(ENABLE_DEPTH_TEST);
+			mainWinApp.hint(ENABLE_DEPTH_TEST);
 		}
 	}
 
@@ -221,11 +249,12 @@ public class G4P implements PConstants {
 	 * 
 	 */
 	private static void unregisterFromPAppletDraw() {
-		Iterator<GComponent> iter = all.iterator();
+		Iterator<GComponent> iter = allComponents.iterator();
 		GComponent c;
 		while(iter.hasNext()){
 			c = iter.next();
-			if(c.getParent() == null){
+			if(c.getParent() == null && c.getPApplet() == mainWinApp){
+				c.regDraw = false;
 				c.getPApplet().unregisterDraw(c);
 			}
 		}
@@ -246,7 +275,7 @@ public class G4P implements PConstants {
 	}
 
 	/**
-	 * Is autodraw on
+	 * Is autodraw on?
 	 * 
 	 */
 	public static boolean isAutoDrawOn(){
@@ -266,6 +295,5 @@ public class G4P implements PConstants {
 	public static void messagesEnabled(boolean enable){
 		messages = enable;
 	}
-	
-	
+
 }
