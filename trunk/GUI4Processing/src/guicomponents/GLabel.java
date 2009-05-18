@@ -86,7 +86,7 @@ public class GLabel extends GComponent {
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.size;
-		localFont = GFont.getFont(app, fontname, fontsize);
+		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
 		setText(text);
@@ -100,26 +100,26 @@ public class GLabel extends GComponent {
 	public void draw(){
 		if(!visible) return;
 
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 		if(border != 0){
-			app.strokeWeight(border);
-			app.stroke(localColor.lblBorder);
+			winApp.strokeWeight(border);
+			winApp.stroke(localColor.lblBorder);
 		}
 		else
-			app.noStroke();
+			winApp.noStroke();
 		if(opaque)
-			app.fill(localColor.lblBack);
+			winApp.fill(localColor.lblBack);
 		else
-			app.noFill();
-		app.rect(pos.x,pos.y, width, height);
+			winApp.noFill();
+		winApp.rect(pos.x,pos.y, width, height);
 		// Draw text
-		app.noStroke();
-		app.fill(localColor.lblFont);
-		app.textFont(localFont, localFont.size);
-		app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - PADH - 2* border, height);
-		app.popStyle();
+		winApp.noStroke();
+		winApp.fill(localColor.lblFont);
+		winApp.textFont(localFont, localFont.size);
+		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - PADH - 2* border, height);
+		winApp.popStyle();
 	}
 }

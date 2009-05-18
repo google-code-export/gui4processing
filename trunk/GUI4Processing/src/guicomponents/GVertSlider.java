@@ -70,22 +70,22 @@ public class GVertSlider extends GSlider {
 	public void draw(){
 		if(!visible) return;
 
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
-		app.noStroke();
-		app.fill(localColor.sdrTrack);
-		app.rect(pos.x, pos.y, width, height);
-		app.fill(localColor.sdrThumb);
-		app.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);
+		winApp.noStroke();
+		winApp.fill(localColor.sdrTrack);
+		winApp.rect(pos.x, pos.y, width, height);
+		winApp.fill(localColor.sdrThumb);
+		winApp.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);
 		if(border != 0){
-			app.strokeWeight(border);
-			app.noFill();
-			app.stroke(localColor.sdrBorder);
-			app.rect(pos.x, pos.y, width, height);
+			winApp.strokeWeight(border);
+			winApp.noFill();
+			winApp.stroke(localColor.sdrBorder);
+			winApp.rect(pos.x, pos.y, width, height);
 		}
-		app.popStyle();
+		winApp.popStyle();
 
 	}
 
@@ -110,7 +110,7 @@ public class GVertSlider extends GSlider {
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
 
-		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -119,8 +119,8 @@ public class GVertSlider extends GSlider {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
-				mdx = app.mouseX;
-				mdy = app.mouseY;
+				mdx = winApp.mouseX;
+				mdy = winApp.mouseY;
 				takeFocus();
 			}
 			break;
@@ -131,7 +131,7 @@ public class GVertSlider extends GSlider {
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
+			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
@@ -141,7 +141,7 @@ public class GVertSlider extends GSlider {
 				isValueChanging = true;
 				Point p = new Point(0,0);
 				calcAbsPosition(p);
-				thumbTargetPos = PApplet.constrain(app.mouseY - offset - p.y, thumbMin, thumbMax);
+				thumbTargetPos = PApplet.constrain(winApp.mouseY - offset - p.y, thumbMin, thumbMax);
 			}
 			break;
 		}

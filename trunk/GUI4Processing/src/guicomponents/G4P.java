@@ -46,6 +46,12 @@ public class G4P implements PConstants {
 	 */
 	private static HashSet<GComponent> all = new HashSet<GComponent>();
 
+	/**
+	 * Set of GControlWindows
+	 */
+	private static HashSet<GComponent> allWinApps = new HashSet<GComponent>();
+	
+	
 	private static boolean autoDrawOn = true;
 
 	// Will be set when and first component is created

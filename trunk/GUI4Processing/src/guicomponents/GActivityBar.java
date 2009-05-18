@@ -71,7 +71,7 @@ public class GActivityBar extends GComponent {
 		this.width = Math.max(this.height * 4, width);
 		initThumbPos();
 		initThumbColor();
-		timer = new GTimer(app, this , "update", 5);
+		timer = new GTimer(winApp, this , "update", 5);
 		timer.stop();
 		visible = false;
 		registerAutos_DMPK(true,false,false,false);
@@ -145,7 +145,7 @@ public class GActivityBar extends GComponent {
 	 * @param schemeNo
 	 */
 	public void setColorScheme(int schemeNo){
-		localColor = GCScheme.getColor(app, schemeNo);
+		localColor = GCScheme.getColor(winApp, schemeNo);
 		this.initThumbColor();
 	}
 
@@ -154,26 +154,26 @@ public class GActivityBar extends GComponent {
 	 */
 	public void draw(){
 		if(!visible) return;
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
-		app.ellipseMode(PApplet.CENTER);
-		app.rectMode(PApplet.CORNER);
-		app.noStroke();
-		app.fill(localColor.acbBorder);
-		app.ellipse(pos.x, pos.y + height/2, height, height);
-		app.ellipse(pos.x + width, pos.y + height/2, height, height);
-		app.rect(pos.x, pos.y, width, height);
-		app.fill(localColor.acbTrack);
-		app.ellipse(pos.x, pos.y + height/2, trackHeight, trackHeight);
-		app.ellipse(pos.x + width, pos.y + height/2, trackHeight, trackHeight);
-		app.rect(pos.x, pos.y + PADV, width, trackHeight);
+		winApp.ellipseMode(PApplet.CENTER);
+		winApp.rectMode(PApplet.CORNER);
+		winApp.noStroke();
+		winApp.fill(localColor.acbBorder);
+		winApp.ellipse(pos.x, pos.y + height/2, height, height);
+		winApp.ellipse(pos.x + width, pos.y + height/2, height, height);
+		winApp.rect(pos.x, pos.y, width, height);
+		winApp.fill(localColor.acbTrack);
+		winApp.ellipse(pos.x, pos.y + height/2, trackHeight, trackHeight);
+		winApp.ellipse(pos.x + width, pos.y + height/2, trackHeight, trackHeight);
+		winApp.rect(pos.x, pos.y + PADV, width, trackHeight);
 		for(int i = NBR_THUMBS-1; i >= 0; i--){
-			app.fill(thumbCol[i]);
-			app.ellipse(pos.x + thumbX[i], pos.y + height/2, trackHeight, trackHeight);
+			winApp.fill(thumbCol[i]);
+			winApp.ellipse(pos.x + thumbX[i], pos.y + height/2, trackHeight, trackHeight);
 		}
-		app.popStyle();
+		winApp.popStyle();
 	}
 
 }

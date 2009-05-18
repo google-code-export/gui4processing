@@ -67,14 +67,14 @@ public class GCheckbox extends GComponent {
 	 */
 	private void checkboxCtorCore(String text, int width){
 		if(imgSelected == null)
-			imgSelected = app.loadImage("check1.png");
+			imgSelected = winApp.loadImage("check1.png");
 		if(imgCleared == null)
-			imgCleared = app.loadImage("check0.png");
+			imgCleared = winApp.loadImage("check0.png");
 		this.width = width;
 		height = Math.max((int)localFont.size + 2 * PADV, imgCleared.height);
 		opaque = false;
 		setText(text);
-		createEventHandler(app);
+		createEventHandler(winApp);
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -121,7 +121,7 @@ public class GCheckbox extends GComponent {
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.size;
-		localFont = GFont.getFont(app, fontname, fontsize);
+		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
 		setText(text);
@@ -151,34 +151,34 @@ public class GCheckbox extends GComponent {
 	 */
 	public void draw(){
 		if(!visible) return;
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 		if (!text.equals("")){
 			if(border != 0){
-				app.strokeWeight(border);
-				app.stroke(localColor.cbxBorder);
+				winApp.strokeWeight(border);
+				winApp.stroke(localColor.cbxBorder);
 			}
 			else
-				app.noStroke();
+				winApp.noStroke();
 			if(opaque)
-				app.fill(localColor.cbxBack);
+				winApp.fill(localColor.cbxBack);
 			else
-				app.noFill();
-			app.rect(pos.x, pos.y, width, height);
+				winApp.noFill();
+			winApp.rect(pos.x, pos.y, width, height);
 			// Draw text
-			app.noStroke();
-			app.fill(localColor.cbxFont);
-			app.textFont(localFont, localFont.size);
-			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, textWidth, height);
+			winApp.noStroke();
+			winApp.fill(localColor.cbxFont);
+			winApp.textFont(localFont, localFont.size);
+			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, textWidth, height);
 		}
-		app.fill(app.color(255,255));
+		winApp.fill(winApp.color(255,255));
 		if(selected)
-			app.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
+			winApp.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
 		else
-			app.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
-		app.popStyle();
+			winApp.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
+		winApp.popStyle();
 	}
 
 	/**
@@ -187,7 +187,7 @@ public class GCheckbox extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
 
-		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -196,8 +196,8 @@ public class GCheckbox extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
-				mdx = app.mouseX;
-				mdy = app.mouseY;
+				mdx = winApp.mouseX;
+				mdy = winApp.mouseY;
 				this.takeFocus();
 			}
 			break;
@@ -210,7 +210,7 @@ public class GCheckbox extends GComponent {
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
+			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				this.looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}

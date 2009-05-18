@@ -99,7 +99,7 @@ public class GTextField extends GComponent {
 		border = 1;
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
-		createEventHandler(app);
+		createEventHandler(winApp);
 		registerAutos_DMPK(true, true, false, true);
 	}
 
@@ -146,7 +146,7 @@ public class GTextField extends GComponent {
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.size;
-		localFont = GFont.getFont(app, fontname, fontsize);
+		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
 		setText(text);
@@ -204,7 +204,7 @@ public class GTextField extends GComponent {
 		cursorPos += s.length();
 
 		// Adjust the start and end positions of the visible portion of the string
-		if(app.textWidth(text) < width - 12) {
+		if(winApp.textWidth(text) < width - 12) {
 			visiblePortionStart = 0;
 			visiblePortionEnd = text.length();
 		} else {
@@ -252,7 +252,7 @@ public class GTextField extends GComponent {
 		text = text.substring(0, start) + text.substring(end);
 		cursorPos = start;
 
-		if(app.textWidth(text) < width - 12) {
+		if(winApp.textWidth(text) < width - 12) {
 			visiblePortionStart = 0;
 			visiblePortionEnd = text.length();
 		} else {
@@ -291,7 +291,7 @@ public class GTextField extends GComponent {
 	private void updateXPos() {
 		int tempStart = startSelect;
 		int tempEnd = endSelect;
-		cursorXPos = app.textWidth(text.substring(visiblePortionStart, cursorPos));
+		cursorXPos = winApp.textWidth(text.substring(visiblePortionStart, cursorPos));
 		if(startSelect != endSelect){
 			if(endSelect < startSelect) {
 				tempStart = endSelect;
@@ -300,40 +300,40 @@ public class GTextField extends GComponent {
 			if(tempStart < visiblePortionStart)
 				startSelectXPos = 0;
 			else
-				startSelectXPos = app.textWidth(text.substring(visiblePortionStart, tempStart));
+				startSelectXPos = winApp.textWidth(text.substring(visiblePortionStart, tempStart));
 
 			if(tempEnd > visiblePortionEnd)
 				endSelectXPos = width - 12;
 			else
-				endSelectXPos = app.textWidth(text.substring(visiblePortionStart, tempEnd));
+				endSelectXPos = winApp.textWidth(text.substring(visiblePortionStart, tempEnd));
 		}
 	}
 
 	private void adjustVisiblePortionStart() {
-		if(app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-			while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
+		if(winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
+			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 				if(visiblePortionStart == 0)
 					break;
 				else
 					visiblePortionStart--;
 			}
 		} else {
-			while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) > width - 12) {
+			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) > width - 12) {
 				visiblePortionStart++;
 			}
 		}
 	}
 
 	private void adjustVisiblePortionEnd() {
-		if(app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-			while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
+		if(winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
+			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 				if(visiblePortionEnd == text.length())
 					break;
 				else
 					visiblePortionEnd++;
 			}
 		} else {
-			while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) > width - 12) {
+			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) > width - 12) {
 				visiblePortionEnd--;
 			}
 		}
@@ -342,7 +342,7 @@ public class GTextField extends GComponent {
 	private void centerCursor() {
 		visiblePortionStart = visiblePortionEnd = cursorPos;
 
-		while (app.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
+		while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
 			if(visiblePortionStart != 0)
 				visiblePortionStart--;
 
@@ -376,7 +376,7 @@ public class GTextField extends GComponent {
 			}
 		}
 		for (int i = visiblePortionStart; i < text.length(); i++) {
-			cur = app.textWidth(text.substring(visiblePortionStart, i));
+			cur = winApp.textWidth(text.substring(visiblePortionStart, i));
 			if(cur > x) {
 				if(cur - x < x - prev)
 					return i;
@@ -401,8 +401,8 @@ public class GTextField extends GComponent {
 
 		visiblePortionStart = 0;
 		visiblePortionEnd = text.length();
-		app.textFont(localFont);
-		textWidth = (int) app.textWidth(text);
+		winApp.textFont(localFont);
+		textWidth = (int) winApp.textWidth(text);
 		if(textWidth > width - 12) {
 			adjustVisiblePortionEnd();
 		}
@@ -420,7 +420,7 @@ public class GTextField extends GComponent {
 	public void mouseEvent(MouseEvent e) {
 		if(!visible) return;
 
-		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver || focusIsWith == this) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -431,7 +431,7 @@ public class GTextField extends GComponent {
 
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(isOver(app.mouseX, app.mouseY)){
+			if(isOver(winApp.mouseX, winApp.mouseY)){
 				if(focusIsWith != this)
 					this.takeFocus();
 				startSelect = endSelect = cursorPos = findClosestGap(e.getX() - p.x, true);
@@ -585,43 +585,43 @@ public class GTextField extends GComponent {
 	public void draw () {
 		if(!visible) return;
 
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 				
-		app.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.size);
 
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 
 		// Draw the surrounding box
-		app.strokeWeight(border);
-		app.stroke(localColor.txfBorder);
-		app.fill(localColor.txfBack);
-		app.rect(pos.x, pos.y, width, height);
-		app.noStroke();
+		winApp.strokeWeight(border);
+		winApp.stroke(localColor.txfBorder);
+		winApp.fill(localColor.txfBack);
+		winApp.rect(pos.x, pos.y, width, height);
+		winApp.noStroke();
 
 		// Draw the selection rectangle
 		if(startSelect != endSelect) {
-			app.fill(localColor.txfSelBack);
-			app.rect(pos.x + startSelectXPos + 4, pos.y + PADV, endSelectXPos - startSelectXPos + 1, height - 2 * PADV + 1);
+			winApp.fill(localColor.txfSelBack);
+			winApp.rect(pos.x + startSelectXPos + 4, pos.y + PADV, endSelectXPos - startSelectXPos + 1, height - 2 * PADV + 1);
 		}
 
 		// Draw the string (using fixed offset = 4)
-		app.noStroke();
-		app.fill(localColor.txfFont);
-		app.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
+		winApp.noStroke();
+		winApp.fill(localColor.txfFont);
+		winApp.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
 				pos.y + (height - localFont.size)/2 - PADV , width - 8, height);
 
 		// Draw the insertion point (it blinks!)
-		if(focusIsWith == this	&& ((app.millis() % 1000) > 500)
+		if(focusIsWith == this	&& ((winApp.millis() % 1000) > 500)
 				&& (cursorPos >= visiblePortionStart)
 				&& cursorPos <= visiblePortionEnd) {
-			app.noFill();
-			app.stroke(64);
-			app.strokeWeight(2);
-			app.line(pos.x + (int) cursorXPos + 4, pos.y + PADV, pos.x + (int) cursorXPos + 4, pos.y + height - 2 * PADV);
+			winApp.noFill();
+			winApp.stroke(64);
+			winApp.strokeWeight(2);
+			winApp.line(pos.x + (int) cursorXPos + 4, pos.y + PADV, pos.x + (int) cursorXPos + 4, pos.y + height - 2 * PADV);
 		}
-		app.popStyle();
+		winApp.popStyle();
 
 	}
 

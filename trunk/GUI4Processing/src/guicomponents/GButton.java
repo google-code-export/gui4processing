@@ -93,7 +93,7 @@ public class GButton extends GComponent {
 	 */
 	public GButton(PApplet theApplet, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		PImage img = app.loadImage(imgFile);
+		PImage img = winApp.loadImage(imgFile);
 		if(img == null){
 			if(G4P.messages) System.out.println("Can't find image file for GButton");
 		}
@@ -120,7 +120,7 @@ public class GButton extends GComponent {
 	public GButton(PApplet theApplet, String text, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setText(text);
-		PImage img = app.loadImage(imgFile);
+		PImage img = winApp.loadImage(imgFile);
 		if(img == null){
 			if(G4P.messages) System.out.println("Can't find image file for GButton");
 		}
@@ -159,7 +159,7 @@ public class GButton extends GComponent {
 			}
 		}
 		calcAlignX();
-		createEventHandler(app);
+		createEventHandler(winApp);
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -203,7 +203,7 @@ public class GButton extends GComponent {
 	 * Set the color scheme for this button
 	 */
 	public void setColorScheme(int schemeNo){
-		localColor = GCScheme.getColor(app, schemeNo);
+		localColor = GCScheme.getColor(winApp, schemeNo);
 		col[0] = localColor.btnOff;
 		col[1] = localColor.btnOver;
 		col[2] = localColor.btnDown;
@@ -214,8 +214,8 @@ public class GButton extends GComponent {
 	 */
 	public void setText(String text) {
 		this.text = text;
-		app.textFont(localFont, localFont.size);
-		textWidth = (int) app.textWidth(text);
+		winApp.textFont(localFont, localFont.size);
+		textWidth = (int) winApp.textWidth(text);
 		calcAlignX();
 	}
 
@@ -227,7 +227,7 @@ public class GButton extends GComponent {
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.size;
-		localFont = GFont.getFont(app, fontname, fontsize);
+		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize > fs)
 			height += (fontsize - fs);
 		setText(text);
@@ -288,25 +288,25 @@ public class GButton extends GComponent {
 	 */
 	public void draw(){
 		if(!visible) return;
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 		// Draw button rectangle
-		app.strokeWeight(1);
-		app.stroke(localColor.btnBorder);			
-		app.fill(col[status]);	// depends on button state
-		app.rect(pos.x,pos.y,width,height);
+		winApp.strokeWeight(1);
+		winApp.stroke(localColor.btnBorder);			
+		winApp.fill(col[status]);	// depends on button state
+		winApp.rect(pos.x,pos.y,width,height);
 		// Draw image
 		if(bimage[status] != null){
-			app.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
+			winApp.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
 		}
 		// Draw text
-		app.noStroke();
-		app.fill(localColor.btnFont);
-		app.textFont(localFont, localFont.size);
-		app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width, height);
-		app.popStyle();
+		winApp.noStroke();
+		winApp.fill(localColor.btnFont);
+		winApp.textFont(localFont, localFont.size);
+		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width, height);
+		winApp.popStyle();
 	}
 
 
@@ -316,7 +316,7 @@ public class GButton extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
 
-		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -325,8 +325,8 @@ public class GButton extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
-				mdx = app.mouseX;
-				mdy = app.mouseY;
+				mdx = winApp.mouseX;
+				mdy = winApp.mouseY;
 				status = DOWN;
 				this.takeFocus();
 			}
@@ -344,7 +344,7 @@ public class GButton extends GComponent {
 		case MouseEvent.MOUSE_RELEASED:	
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
-			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
+			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 				status = OFF;
@@ -352,7 +352,7 @@ public class GButton extends GComponent {
 			break;
 		case MouseEvent.MOUSE_MOVED:
 			// If dragged state will stay as DOWN
-			if(isOver(app.mouseX, app.mouseY))
+			if(isOver(winApp.mouseX, winApp.mouseY))
 				status = OVER;
 			else
 				status = OFF;
