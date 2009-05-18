@@ -69,16 +69,16 @@ public class GOption extends GComponent {
 	 */
 	private void optionCtorCore(String text, int width, int height){
 		if(imgSelected == null)
-			imgSelected = app.loadImage("radio1.png");
+			imgSelected = winApp.loadImage("radio1.png");
 		if(imgCleared == null)
-			imgCleared = app.loadImage("radio0.png");
+			imgCleared = winApp.loadImage("radio0.png");
 		this.width = width;
 		this.height = localFont.size + 2 * PADV;
 		if(height > this.height)
 			this.height = height;
 		opaque = false;
 		setText(text);
-		createEventHandler(app);
+		createEventHandler(winApp);
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -132,7 +132,7 @@ public class GOption extends GComponent {
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.size;
-		localFont = GFont.getFont(app, fontname, fontsize);
+		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs){
 			height += (fontsize - fs);
 			height = Math.max(height, imgSelected.height);
@@ -148,36 +148,36 @@ public class GOption extends GComponent {
 	public void draw(){
 		if(!visible) return;
 
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 		if (!text.equals("")){
 			if(border == 0){
-				app.noStroke();					
+				winApp.noStroke();					
 			}
 			else {
-				app.stroke(localColor.btnBorder);
-				app.strokeWeight(border);					
+				winApp.stroke(localColor.btnBorder);
+				winApp.strokeWeight(border);					
 			}
 			if(opaque)
-				app.fill(localColor.txfBack);
+				winApp.fill(localColor.txfBack);
 			else
-				app.noFill();
-			app.rect(pos.x, pos.y, width, height);
+				winApp.noFill();
+			winApp.rect(pos.x, pos.y, width, height);
 			// Draw text
-			app.noStroke();
-			app.fill(localColor.optFont);
-			app.textFont(localFont, localFont.size);
+			winApp.noStroke();
+			winApp.fill(localColor.optFont);
+			winApp.textFont(localFont, localFont.size);
 //				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
-			app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - imgSelected.width, height);
+			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - imgSelected.width, height);
 		}
-		app.fill(app.color(255,255));
+		winApp.fill(winApp.color(255,255));
 		if(ownerGroup != null && ownerGroup.selectedOption() == this)
-			app.image(imgSelected, pos.x + 1, pos.y + (height - imgSelected.height)/2);
+			winApp.image(imgSelected, pos.x + 1, pos.y + (height - imgSelected.height)/2);
 		else
-			app.image(imgCleared, pos.x + 1, pos.y + (height - imgSelected.height)/2);
-		app.popStyle();
+			winApp.image(imgCleared, pos.x + 1, pos.y + (height - imgSelected.height)/2);
+		winApp.popStyle();
 
 	}
 
@@ -189,7 +189,7 @@ public class GOption extends GComponent {
 		// If this option does not belong to a group then ignore mouseEvents
 		if(!visible || ownerGroup == null) return;
 
-		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -198,8 +198,8 @@ public class GOption extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
-				mdx = app.mouseX;
-				mdy = app.mouseY;
+				mdx = winApp.mouseX;
+				mdy = winApp.mouseY;
 				this.takeFocus();
 			}
 			break;
@@ -212,7 +212,7 @@ public class GOption extends GComponent {
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(focusIsWith == this && mouseHasMoved(app.mouseX, app.mouseY)){
+			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				mdx = mdy = Integer.MAX_VALUE;
 				this.looseFocus(null);
 			}

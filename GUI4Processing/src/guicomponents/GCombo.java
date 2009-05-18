@@ -73,12 +73,12 @@ public class GCombo extends GComponent {
 	private void comboCtorCore(int width) {
 		children = new HashSet<GComponent>();
 		if(imgArrow == null)
-			imgArrow = app.loadImage("combo0.png");
+			imgArrow = winApp.loadImage("combo0.png");
 		this.width = width;
 		height = Math.max((int)localFont.size + 2 * PADV, imgArrow.height);
 		opaque = true;
 		border = 1;
-		createEventHandler(app);
+		createEventHandler(winApp);
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -86,7 +86,7 @@ public class GCombo extends GComponent {
 	 * Create the vertical slider for the drop down list
 	 */
 	private void createSlider(){
-		slider = new GVertSlider(app, width - 10, height, 10, maxRows * height);
+		slider = new GVertSlider(winApp, width - 10, height, 10, maxRows * height);
 		slider.setBorder(1);
 		slider.setVisible(false);
 		slider.setLimits(0, 0, maxRows - 1);
@@ -123,7 +123,7 @@ public class GCombo extends GComponent {
 	public GOption makeOption(String optText){
 		GOption opt = null;
 		if(optText != null && !optText.equals("")){
-			opt = new GOption(app, optText, 0, 0, width - 10);
+			opt = new GOption(winApp, optText, 0, 0, width - 10);
 			opt.addEventHandler(this, "processOptionSelection");
 			opt.setVisible(false);
 			opt.setOpaque(true);
@@ -140,7 +140,7 @@ public class GCombo extends GComponent {
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.size;
-		localFont = GFont.getFont(app, fontname, fontsize);
+		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize > fs)
 			height += (fontsize - fs);
 		setText(text);
@@ -354,7 +354,7 @@ public class GCombo extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
 
-		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -364,11 +364,11 @@ public class GCombo extends GComponent {
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver)
 				takeFocus();
-			else if(focusIsWith == this && !isOver(app.mouseX, app.mouseY))
+			else if(focusIsWith == this && !isOver(winApp.mouseX, winApp.mouseY))
 				looseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == this && isOver(app.mouseX, app.mouseY)){
+			if(focusIsWith == this && isOver(winApp.mouseX, winApp.mouseY)){
 				if(expanded)
 					shrink();
 				else
@@ -385,38 +385,38 @@ public class GCombo extends GComponent {
 	public void draw(){
 		if(!visible) return;
 
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 
 		// Draw selected option area
 		if(border == 0)
-			app.noStroke();
+			winApp.noStroke();
 		else {
-			app.strokeWeight(border);
-			app.stroke(localColor.txfBorder);
+			winApp.strokeWeight(border);
+			winApp.stroke(localColor.txfBorder);
 		}
 		if(opaque)
-			app.fill(localColor.txfBack);
+			winApp.fill(localColor.txfBack);
 		else
-			app.noFill();
-		app.rect(pos.x, pos.y, width, height);
+			winApp.noFill();
+		winApp.rect(pos.x, pos.y, width, height);
 		
 		// Draw selected text
-		app.noStroke();
-		app.fill(localColor.txfFont);
-		app.textFont(localFont, localFont.size);
-		app.text(text, pos.x + PADH, pos.y -PADV +(height - localFont.size)/2, width - 16, height);
+		winApp.noStroke();
+		winApp.fill(localColor.txfFont);
+		winApp.textFont(localFont, localFont.size);
+		winApp.text(text, pos.x + PADH, pos.y -PADV +(height - localFont.size)/2, width - 16, height);
 
 		// draw drop down list
-		app.fill(app.color(255,255));
-		app.image(imgArrow, pos.x + width - imgArrow.width - 1, pos.y + (height - imgArrow.height)/2);
+		winApp.fill(winApp.color(255,255));
+		winApp.image(imgArrow, pos.x + width - imgArrow.width - 1, pos.y + (height - imgArrow.height)/2);
 		if(expanded == true){
 			GOption opt;
-			app.noStroke();
-			app.fill(localColor.txfBack);
-			app.rect(pos.x,pos.y+height,width,nbrRowsToShow*height);
+			winApp.noStroke();
+			winApp.fill(localColor.txfBack);
+			winApp.rect(pos.x,pos.y+height,width,nbrRowsToShow*height);
 
 			for(int i = 0; i < optGroup.size(); i++){
 				opt = optGroup.get(i);
@@ -431,17 +431,17 @@ public class GCombo extends GComponent {
 			}
 			// Draw box round list
 			if(border != 0){
-				app.strokeWeight(border);
-				app.stroke(localColor.txfBorder);
-				app.noFill();
-				app.rect(pos.x,pos.y+height,width,nbrRowsToShow*height);
+				winApp.strokeWeight(border);
+				winApp.stroke(localColor.txfBorder);
+				winApp.noFill();
+				winApp.rect(pos.x,pos.y+height,width,nbrRowsToShow*height);
 			}
 			if(optGroup.size() > maxRows){
 				slider.setVisible(true);
 				slider.draw();
 			}
 		}
-		app.popStyle();
+		winApp.popStyle();
 	}
 
 	public int selectedIndex(){

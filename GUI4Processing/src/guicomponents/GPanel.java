@@ -85,7 +85,7 @@ public class GPanel extends GComponent {
 		setText(text);
 		tabHeight = localFont.size + 2 * PADV;
 		constrainPanelPosition();
-		createEventHandler(app);
+		createEventHandler(winApp);
 		opaque = true;
 		dockX = x;
 		dockY = y;
@@ -136,7 +136,7 @@ public class GPanel extends GComponent {
 	 */
 	public void setFont(String fontname, int fontsize){
 		int fs = (int) localFont.size;
-		localFont = GFont.getFont(app, fontname, fontsize);
+		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			tabHeight += (fontsize - fs);
 		setText(text);
@@ -161,34 +161,34 @@ public class GPanel extends GComponent {
 	public void draw(){
 		if(!visible) return;
 
-		app.pushStyle();
-		app.style(G4P.g4pStyle);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
-		app.noStroke();
+		winApp.noStroke();
 		if(border > 0){
-			app.strokeWeight(border);
-			app.stroke(localColor.pnlBorder);
+			winApp.strokeWeight(border);
+			winApp.stroke(localColor.pnlBorder);
 		}
-		app.fill(localColor.pnlTabBack);
+		winApp.fill(localColor.pnlTabBack);
 		// Display tab (length depends on whether panel is open or closed
 		int w = (tabOnly)? textWidth + PADH * 2 : width;
-		app.rect(pos.x, pos.y - tabHeight, w, tabHeight);
+		winApp.rect(pos.x, pos.y - tabHeight, w, tabHeight);
 		// Display tab text
-		app.fill(localColor.pnlFont);
-		app.textFont(localFont, localFont.size);
-		app.text(text, pos.x + PADH, pos.y - (tabHeight + localFont.size)/2 - PADV , textWidth, tabHeight);
+		winApp.fill(localColor.pnlFont);
+		winApp.textFont(localFont, localFont.size);
+		winApp.text(text, pos.x + PADH, pos.y - (tabHeight + localFont.size)/2 - PADV , textWidth, tabHeight);
 		if(!tabOnly){
 			if(opaque){
-				app.fill(localColor.pnlBack);
-				app.rect(pos.x, pos.y, width, height);
+				winApp.fill(localColor.pnlBack);
+				winApp.rect(pos.x, pos.y, width, height);
 			}
 			Iterator<GComponent> iter = children.iterator();
 			while(iter.hasNext()){
 				iter.next().draw();
 			}
 		}
-		app.popStyle();
+		winApp.popStyle();
 	}
 
 
@@ -198,7 +198,7 @@ public class GPanel extends GComponent {
 	public void mouseEvent(MouseEvent event){
 		if(!visible) return;
 		
-		boolean mouseOver = isOver(app.mouseX, app.mouseY);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -207,8 +207,8 @@ public class GPanel extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
-				mdx = app.mouseX;
-				mdy = app.mouseY;
+				mdx = winApp.mouseX;
+				mdy = winApp.mouseY;
 				takeFocus();
 				// May become true but will soon be set to false when
 				// we loose focus
@@ -228,10 +228,10 @@ public class GPanel extends GComponent {
 					dockX = x;
 					dockY = y;
 					// Open panel move on screen if needed
-					if(y + height > app.getHeight())
-						y = app.getHeight() - height;
-					if(x + width > app.getWidth())
-						x = app.getWidth() - width;
+					if(y + height > winApp.getHeight())
+						y = winApp.getHeight() - height;
+					if(x + width > winApp.getWidth())
+						x = winApp.getWidth() - width;
 				}
 				// This component does not keep the focus when clicked
 				looseFocus(null);
@@ -240,7 +240,7 @@ public class GPanel extends GComponent {
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this){
-				if(mouseHasMoved(app.mouseX, app.mouseY)){
+				if(mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 					mdx = mdy = Integer.MAX_VALUE;
 					looseFocus(null);
 				}
@@ -248,8 +248,8 @@ public class GPanel extends GComponent {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this && parent == null){
-				x += (app.mouseX - app.pmouseX);
-				y += (app.mouseY - app.pmouseY);
+				x += (winApp.mouseX - winApp.pmouseX);
+				y += (winApp.mouseY - winApp.pmouseY);
 				beingDragged = true;
 				constrainPanelPosition();
 				if(!tabOnly){
@@ -280,13 +280,13 @@ public class GPanel extends GComponent {
 		// Constrain horizontally
 		if(x < 0) 
 			x = 0;
-		else if(x + w > app.getWidth()) 
-			x = (int) (app.getWidth() - w);
+		else if(x + w > winApp.getWidth()) 
+			x = (int) (winApp.getWidth() - w);
 		// Constrain vertically
 		if(y - tabHeight  < 0) 
 			y = tabHeight;
-		else if(y + h > app.getHeight()) 
-			y = app.getHeight() - h;
+		else if(y + h > winApp.getHeight()) 
+			y = winApp.getHeight() - h;
 		//		if(y - tabHeight - PADV * 2  < 0) 
 		//			y = tabHeight + PADV * 2;
 		//		else if(y + h > app.getHeight()) 

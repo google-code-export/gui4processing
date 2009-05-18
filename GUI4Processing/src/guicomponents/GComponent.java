@@ -29,6 +29,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -79,9 +80,14 @@ public class GComponent implements PConstants, Comparable  {
 	protected final static int PADH = 4;
 	protected final static int PADV = 2;
 
-	/** This must be set by the constructor */
-	protected static PApplet app;
-
+	/** 
+	 * This is a reference the the PApplet that was used to create the 
+	 * component - in all cases this should be launching or main PApplet.
+	 *  
+	 * It must be set by the constructor 
+	 */
+	protected PApplet winApp;
+	
 	/** Link to the parent panel (if null then it is topmost panel) */
 	protected GComponent parent = null;
 
@@ -119,9 +125,17 @@ public class GComponent implements PConstants, Comparable  {
 	/** The border width for this component : default value is 0 */
 	protected int border = 0;
 
-	// Whether to show background or not 
+	/** Whether to show background or not */
 	protected boolean opaque = true;
 
+	/**
+	 * Remember what we have registered for.
+	 */
+	boolean regDraw = false;
+	boolean regMouse = false;
+	boolean regPre = false;
+	boolean regKey = false;
+	
 	/**
 	 * Prevent uninitialised instantiation
 	 */
@@ -138,7 +152,7 @@ public class GComponent implements PConstants, Comparable  {
 	 * @param y
 	 */
 	public GComponent(PApplet theApplet, int x, int y){
-		app = theApplet;
+		winApp = theApplet;
 		G4P.app = theApplet;
 		if(globalColor == null)
 			globalColor = GCScheme.getColor(theApplet);
@@ -156,7 +170,7 @@ public class GComponent implements PConstants, Comparable  {
 	 * @return
 	 */
 	public PApplet getPApplet(){
-		return GComponent.app;
+		return winApp;
 	}
 
 	/*
@@ -202,8 +216,7 @@ public class GComponent implements PConstants, Comparable  {
 
 	/**
 	 * Does this component have focus
-	 * 
-	 * @return
+	 * @return true if this component has focus else false
 	 */
 	public boolean hasFocus(){
 		return (this == focusIsWith);
@@ -211,11 +224,12 @@ public class GComponent implements PConstants, Comparable  {
 
 	/**
 	 * Get a the object (if any) that currently has focus
-	 * @return 
+	 * @return a reference to the object with focus (maybe null!)
 	 */
 	public static GComponent getFocusObject(){
 		return focusIsWith;
 	}
+	
 	/**
 	 * Used by some components on the MOUSE_RELEASED event 
 	 * @param x
@@ -228,8 +242,9 @@ public class GComponent implements PConstants, Comparable  {
 
 	/**
 	 * Add a GUI component to this GComponent at the position specified by
-	 * component being added. If transparency has been applied to the 
-	 * GComponent then the same level will be applied to the component.
+	 * component being added. If transparency has been applied to this 
+	 * GComponent then the same level will be applied to the component
+	 * to be added.
 	 * Unregister the component for drawing this is managed by the 
 	 * GComponent draw method to preserve z-ordering
 	 * 
@@ -243,7 +258,8 @@ public class GComponent implements PConstants, Comparable  {
 		} else {
 			component.parent = this;
 			children.add(component);
-			app.unregisterDraw(component);
+			winApp.unregisterDraw(component);
+			component.regDraw = false;
 			if(localColor.getAlpha() < 255)
 				component.setAlpha(localColor.getAlpha());
 			return true;
@@ -313,16 +329,56 @@ public class GComponent implements PConstants, Comparable  {
 	 */
 	protected void registerAutos_DMPK(boolean draw, boolean mouse, boolean pre, boolean key){
 		// if auto draw has been disabled then do not register for draw()
-		if(draw && G4P.isAutoDrawOn())
-			app.registerDraw(this);
-		if(mouse)
-			app.registerMouseEvent(this);
-		if(pre)
-			app.registerPre(this);
-		if(key)
-			app.registerKeyEvent(this);
+		if(draw && G4P.isAutoDrawOn()){
+			winApp.registerDraw(this);
+			regDraw = true;
+		}
+		if(mouse){
+			winApp.registerMouseEvent(this);
+			regMouse = true;
+		}
+		if(pre){
+			winApp.registerPre(this);
+			regPre = true;
+		}
+		if(key){
+			winApp.registerKeyEvent(this);
+			regKey = true;
+		}
 	}
+	
+	public void changeWindow(PApplet newWindowApp){
+		if(regDraw){
+			System.out.println("Change draw owner");
+			winApp.unregisterDraw(this);
+			newWindowApp.registerDraw(this);
+		}
+		if(regPre){
+			System.out.println("Change pre owner");
+			winApp.unregisterPre(this);
+			newWindowApp.registerPre(this);
+		}
+		if(regMouse){
+			System.out.println("Change mouse owner");
+			winApp.unregisterMouseEvent(this);
+			newWindowApp.registerMouseEvent(this);
+		}
+		if(regKey){
+			System.out.println("Change key owner");
+			winApp.unregisterKeyEvent(this);
+			newWindowApp.registerKeyEvent(this);
+		}
+		winApp = newWindowApp;
+		
+		if(children != null && !children.isEmpty()){
+			Iterator<GComponent> iter = children.iterator();
+			while(iter.hasNext())
+				iter.next().changeWindow(newWindowApp);
+		}
 
+	}
+	
+	
 	/**
 	 * Determines whether the position ax, ay is over this component.
 	 * This is the default implementation and assumes the component
@@ -368,7 +424,7 @@ public class GComponent implements PConstants, Comparable  {
 	 * @param schemeNo
 	 */
 	public void setColorScheme(int schemeNo){
-		localColor = GCScheme.getColor(app, schemeNo);
+		localColor = GCScheme.getColor(winApp, schemeNo);
 	}
 	
 	/**
@@ -384,8 +440,8 @@ public class GComponent implements PConstants, Comparable  {
 	 */
 	public void setText(String text) {
 		this.text = text;
-		app.textFont(localFont, localFont.size);
-		textWidth = (int) app.textWidth(text); 
+		winApp.textFont(localFont, localFont.size);
+		textWidth = (int) winApp.textWidth(text); 
 		calcAlignX();
 	}
 
@@ -395,8 +451,8 @@ public class GComponent implements PConstants, Comparable  {
 	public void setText(String text, int align) {
 		this.text = text;
 		textAlign = align;
-		app.textFont(localFont, localFont.size);
-		textWidth = (int) app.textWidth(text);
+		winApp.textFont(localFont, localFont.size);
+		textWidth = (int) winApp.textWidth(text);
 		calcAlignX();
 	}
 
