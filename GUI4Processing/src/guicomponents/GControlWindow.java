@@ -41,7 +41,6 @@ public class GControlWindow extends Frame{
 
 	public GCWinApplet embed;
 
-	private boolean visible = true;
 
 	private int dWidth, dHeight;
 	private int bkColor;
@@ -86,17 +85,23 @@ public class GControlWindow extends Frame{
 		G4P.addControlWindow(this);
 	}
 
-	public void removeFromG4P(){
+	public void add(GComponent component){
+		component.changeWindow(embed);
+	}
+
+	public void setPosition(int x, int y){
+		setLocation(x,y);
+	}
+	
+	
+	
+	private void removeFromG4P(){
 		embed.noLoop();
 		embed.unregisterPost(embed);
 		embed.unregisterDraw(embed);
 		G4P.removeControlWindow(this);
 	}
 
-	public void add(GComponent component){
-		component.changeWindow(embed);
-
-	}
 
 	/**
 	 * The PApplet embeded into a Frame
@@ -116,7 +121,7 @@ public class GControlWindow extends Frame{
 		}
 
 		public void draw() {
-			System.out.println("DRAW "+winName); //+"   "+w+" X "+h);
+//			System.out.println("DRAW "+winName); //+"   "+w+" X "+h);
 			background(bkColor);
 			strokeWeight(1);
 			stroke(255,255,0);
@@ -125,7 +130,7 @@ public class GControlWindow extends Frame{
 		}
 
 		public void post(){
-			if(visible && G4P.cursorChangeEnabled){
+			if(isVisible() && G4P.cursorChangeEnabled){
 				if(GComponent.cursorIsOver != null)
 					cursor(G4P.mouseOver);
 				else
