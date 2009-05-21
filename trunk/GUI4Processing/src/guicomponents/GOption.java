@@ -78,7 +78,7 @@ public class GOption extends GComponent {
 			this.height = height;
 		opaque = false;
 		setText(text);
-		createEventHandler(winApp);
+		createEventHandler(winApp, "handleOptionEvents", new Class[]{ GOption.class, GOption.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -90,19 +90,6 @@ public class GOption extends GComponent {
 			if(G4P.messages){
 				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
 				System.out.println("with a two parameters of type GOption");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	protected void createEventHandler(Object obj){
-		try{
-			this.eventHandler = obj.getClass().getMethod("handleOptionEvents", new Class[] { GOption.class, GOption.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("You might want to add a method to handle \noption events the syntax is");
-				System.out.println("void handleOptionEvents(GOption selected, GOption deselected){\n   ...\n}\n\n");
 			}
 			eventHandlerObject = null;
 		}

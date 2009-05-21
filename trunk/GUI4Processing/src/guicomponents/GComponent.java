@@ -177,6 +177,21 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	}
 
 	/**
+	 * Create an event handler that will call a method handleButtonEvents(GButton cbox)
+	 * when text is changed or entered
+	 * @param handlerObj
+	 */
+	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
+		try{
+			eventHandler = handlerObj.getClass().getMethod(methodName, parameters );
+			eventHandlerObject = handlerObj;
+		} catch (Exception e) {
+			GMessenger.message(MISSING, this, new Object[] {methodName, parameters});
+			eventHandlerObject = null;
+		}
+	}
+
+	/**
 	 * Get the PApplet object
 	 * @return
 	 */

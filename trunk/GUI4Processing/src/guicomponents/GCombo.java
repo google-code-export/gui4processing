@@ -78,8 +78,26 @@ public class GCombo extends GComponent {
 		height = Math.max((int)localFont.size + 2 * PADV, imgArrow.height);
 		opaque = true;
 		border = 1;
-		createEventHandler(winApp);
+		createEventHandler(winApp, "handleComboEvents", new Class[]{ GCombo.class });
 		registerAutos_DMPK(true, true, false, false);
+	}
+
+	/**
+	 * Override the default event handler created with createEventHandler(Object obj)
+	 * @param obj
+	 * @param methodName
+	 */
+	public void addEventHandler(Object obj, String methodName){
+		try{
+			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GCombo.class } );
+			eventHandlerObject = obj;
+		} catch (Exception e) {
+			if(G4P.messages){
+				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
+				System.out.println("with a parameter of type GCombo");
+			}
+			eventHandlerObject = null;
+		}
 	}
 
 	/**
@@ -150,42 +168,6 @@ public class GCombo extends GComponent {
 		for(int i = 0; i < options.size(); i++)
 			options.get(i).setWidth(width - 10);
 		slider.setX(width - 10);
-	}
-
-	/**
-	 * Override the default event handler created with createEventHandler(Object obj)
-	 * @param obj
-	 * @param methodName
-	 */
-	public void addEventHandler(Object obj, String methodName){
-		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GCombo.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-				System.out.println("with a parameter of type GCombo");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	/**
-	 * Create an event handler that will call a method handleComboEvents(GCombo combo)
-	 * when the selected option has changed
-	 * @param obj
-	 */
-	protected void createEventHandler(Object obj){
-		try{
-			this.eventHandler = obj.getClass().getMethod("handleComboEvents", new Class[] { GCombo.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("You might want to add a method to handle \ncombo events the syntax is");
-				System.out.println("void handleComboEvents(GCombo combo){\n   ...\n}\n\n");
-			}
-			eventHandlerObject = null;
-		}
 	}
 
 	/**

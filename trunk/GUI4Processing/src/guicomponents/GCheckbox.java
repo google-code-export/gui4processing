@@ -74,7 +74,7 @@ public class GCheckbox extends GComponent {
 		height = Math.max((int)localFont.size + 2 * PADV, imgCleared.height);
 		opaque = false;
 		setText(text);
-		createEventHandler(winApp);
+		createEventHandler(winApp, "handleCheckboxEvents", new Class[]{ GCheckbox.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -91,24 +91,6 @@ public class GCheckbox extends GComponent {
 			if(G4P.messages){
 				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
 				System.out.println("with a single parameter of type GCheckbox");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	/**
-	 * Create an event handler that will call a method handleCheckboxEvents(GCheckbox cbox)
-	 * when text is changed or entered
-	 * @param obj
-	 */
-	protected void createEventHandler(Object obj){
-		try{
-			this.eventHandler = obj.getClass().getMethod("handleCheckboxEvents", new Class[] { GCheckbox.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("You might want to add a method to handle \ncheckbox events the syntax is");
-				System.out.println("void handleCheckboxEvents(GCheckbox cbox){\n   ...\n}\n\n");
 			}
 			eventHandlerObject = null;
 		}
