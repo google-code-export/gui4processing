@@ -206,8 +206,9 @@ public class GOption extends GComponent {
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
 				ownerGroup.setSelected(this);
-				this.looseFocus(null);
+				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
+				eventType = SELECTED;
 				fireEvent();
 			}
 			break;

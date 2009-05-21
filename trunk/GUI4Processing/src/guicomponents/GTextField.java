@@ -54,15 +54,6 @@ import processing.core.PApplet;
  *
  */
 public class GTextField extends GComponent {
-	// Text has changed
-	public final static int CHANGED = 0x00ff0001;
-	// The enter key has been pressed
-	public final static int ENTERED = 0x00ff0002;
-	// The text has changed using the setText() method
-	public final static int SET = 0x00ff0003;
-
-	// The event type
-	private int eventType = 0;
 
 	// Measured in characters
 	private int cursorPos = 0;
@@ -164,14 +155,6 @@ public class GTextField extends GComponent {
 	protected void looseFocus(GComponent toThis){
 		startSelect = endSelect = -1;
 		focusIsWith = null;
-	}
-
-	/**
-	 * This can be used to detect the type of event
-	 * @return the eventType
-	 */
-	public int getEventType() {
-		return eventType;
 	}
 
 	/**

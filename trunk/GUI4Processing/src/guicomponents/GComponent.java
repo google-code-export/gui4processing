@@ -38,15 +38,13 @@ import processing.core.PFont;
 /**
  * CLASS FOR INTERNAL USE ONLY
  * 
- * Do not attempt to use this class directly.
- * 
- * The base class for all GUI components
+ * Abstract base class for all GUI components
  * 
  * @author Peter Lager
  *
  */
 @SuppressWarnings("unchecked")
-public class GComponent implements PConstants, Comparable {
+abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * INTERNAL USE ONLY
@@ -105,7 +103,9 @@ public class GComponent implements PConstants, Comparable {
 	protected Object eventHandlerObject = null;
 	/** The method in eventHandlerObject to execute */
 	protected Method eventHandler = null;
-
+	/** the name of the method to handle the event */ 
+	protected String eventHandlerMethodName;
+	
 	/** Text value associated with component */
 	protected String text = "";
 	protected int textWidth;
@@ -132,13 +132,16 @@ public class GComponent implements PConstants, Comparable {
 	/** Whether to show background or not */
 	protected boolean opaque = true;
 
+	// The event type
+	protected int eventType = 0;
+
 	/**
 	 * Remember what we have registered for.
 	 */
-	boolean regDraw = false;
-	boolean regMouse = false;
-	boolean regPre = false;
-	boolean regKey = false;
+	protected boolean regDraw = false;
+	protected boolean regMouse = false;
+	protected boolean regPre = false;
+	protected boolean regKey = false;
 	
 	/**
 	 * Prevent uninitialised instantiation
@@ -238,6 +241,14 @@ public class GComponent implements PConstants, Comparable {
 		return focusIsWith;
 	}
 	
+	/**
+	 * This can be used to detect the type of event
+	 * @return the eventType
+	 */
+	public int getEventType() {
+		return eventType;
+	}
+
 	/**
 	 * Used by some components on the MOUSE_RELEASED event 
 	 * @param x

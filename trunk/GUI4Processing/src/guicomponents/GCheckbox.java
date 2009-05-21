@@ -198,14 +198,18 @@ public class GCheckbox extends GComponent {
 			if(focusIsWith != this && mouseOver){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
-				this.takeFocus();
+				takeFocus();
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this /*&& isOver(app.mouseX, app.mouseY)*/){
 				selected = !selected;
+				if(selected)
+					eventType = SELECTED;
+				else
+					eventType = DESELECTED;
 				fireEvent();
-				this.looseFocus(null);
+				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;

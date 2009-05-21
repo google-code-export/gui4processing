@@ -163,8 +163,10 @@ public abstract class GSlider extends GComponent {
 				int newValue = (int) PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
 				boolean valueChanged = (newValue != value);
 				value = newValue;
-				if(valueChanged)
+				if(valueChanged){
+					eventType = CHANGED;
 					fireEvent();
+				}
 			}
 			else
 				isValueChanging = false;

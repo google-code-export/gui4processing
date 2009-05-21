@@ -60,6 +60,7 @@ public class GButton extends GComponent {
 	protected int imageAlign = GAlign.CENTER;
 
 	protected int imgAlignX;
+	
 	/**
 	 * Create a button with text only.
 	 * 
@@ -328,7 +329,7 @@ public class GButton extends GComponent {
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				status = DOWN;
-				this.takeFocus();
+				takeFocus();
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
@@ -336,6 +337,7 @@ public class GButton extends GComponent {
 			// the mouse has not moved since MOUSE_PRESSED	
 			if(focusIsWith == this){
 				status = OFF;
+				eventType = CLICKED;
 				fireEvent();
 				looseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
