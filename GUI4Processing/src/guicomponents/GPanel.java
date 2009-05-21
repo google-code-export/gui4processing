@@ -42,6 +42,7 @@ import processing.core.PApplet;
  */
 public class GPanel extends GComponent {
 
+
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
 
@@ -96,14 +97,15 @@ public class GPanel extends GComponent {
 
 	/**
 	 * Create an event handler that will call a method handlePanelEvents(GPanle panel)
-	 * when paned is opned or closed
+	 * when panel is opened or closed
 	 * @param obj
 	 */
 	protected void createEventHandler(Object obj){
 		try{
 			this.eventHandler = obj.getClass().getMethod("handlePanelEvents", new Class[] { GPanel.class } );
 			eventHandlerObject = obj;
-		} catch (Exception e) {
+			eventHandlerMethodName = "handlePanelEvents";
+			} catch (Exception e) {
 			if(G4P.messages){
 				System.out.println("You might want to add a method to handle \npanel events the syntax is");
 				System.out.println("void handlePanelEvents(GPanel panel){\n   ...\n}\n\n");
@@ -119,8 +121,9 @@ public class GPanel extends GComponent {
 	 */
 	public void addEventHandler(Object obj, String methodName){
 		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GPanel.class } );
+			eventHandler = obj.getClass().getMethod(methodName, new Class[] { GPanel.class } );
 			eventHandlerObject = obj;
+			eventHandlerMethodName = methodName;
 		} catch (Exception e) {
 			if(G4P.messages){
 				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
@@ -218,6 +221,10 @@ public class GPanel extends GComponent {
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
 				tabOnly = !tabOnly;
+				if(tabOnly)
+					eventType = COLLAPSED;
+				else
+					eventType = EXPANDED;
 				// fire an event
 				fireEvent();
 				if(tabOnly){
@@ -251,6 +258,8 @@ public class GPanel extends GComponent {
 				x += (winApp.mouseX - winApp.pmouseX);
 				y += (winApp.mouseY - winApp.pmouseY);
 				beingDragged = true;
+				eventType = DRAGGED;
+				fireEvent();
 				constrainPanelPosition();
 				if(!tabOnly){
 					dockX = x;
@@ -287,10 +296,6 @@ public class GPanel extends GComponent {
 			y = tabHeight;
 		else if(y + h > winApp.getHeight()) 
 			y = winApp.getHeight() - h;
-		//		if(y - tabHeight - PADV * 2  < 0) 
-		//			y = tabHeight + PADV * 2;
-		//		else if(y + h > app.getHeight()) 
-		//			y = app.getHeight() - h;
 	}
 
 	/**

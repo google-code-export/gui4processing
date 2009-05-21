@@ -89,8 +89,8 @@ public class GControlWindow extends Frame{
 		component.changeWindow(embed);
 	}
 
-	public void setPosition(int x, int y){
-		setLocation(x,y);
+	public void setLocation(int x, int y){
+		super.setLocation(x,y);
 	}
 	
 	
