@@ -74,7 +74,7 @@ public abstract class GSlider extends GComponent {
 		this.width = width;
 		this.height = height;
 		registerAutos_DMPK(true, true, true, false);
-		createEventHandler(theApplet);
+		createEventHandler(winApp, "handleSliderEvents", new Class[]{ GSlider.class });
 	}
 
 	/**
@@ -95,24 +95,6 @@ public abstract class GSlider extends GComponent {
 		}
 	}
 	
-	/**
-	 * Create an event handler that will call a method handleTextFieldEvents(GTextField tfield)
-	 * when text is changed or entered
-	 * @param obj
-	 */
-	protected void createEventHandler(Object obj){
-		try{
-			this.eventHandler = obj.getClass().getMethod("handleSliderEvents", new Class[] { GSlider.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("You might want to add a method to handle \nslider events the syntax is");
-				System.out.println("void handleSliderEvents(GSlider slider){\n   ...\n}\n\n");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
 	/**
 	 * The user can change the range and initial value of the 
 	 * slider from the default values of range 0-100 and 

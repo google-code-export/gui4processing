@@ -86,33 +86,14 @@ public class GPanel extends GComponent {
 		setText(text);
 		tabHeight = localFont.size + 2 * PADV;
 		constrainPanelPosition();
-		createEventHandler(winApp);
 		opaque = true;
 		dockX = x;
 		dockY = y;
 		this.width = width;
 		this.height = height;
+		createEventHandler(winApp, "handlePanelEvents", new Class[]{ GPanel.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
-
-	/**
-	 * Create an event handler that will call a method handlePanelEvents(GPanle panel)
-	 * when panel is opened or closed
-	 * @param obj
-	 */
-	protected void createEventHandler(Object obj){
-		try{
-			this.eventHandler = obj.getClass().getMethod("handlePanelEvents", new Class[] { GPanel.class } );
-			eventHandlerObject = obj;
-			eventHandlerMethodName = "handlePanelEvents";
-			} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("You might want to add a method to handle \npanel events the syntax is");
-				System.out.println("void handlePanelEvents(GPanel panel){\n   ...\n}\n\n");
-			}
-			eventHandlerObject = null;
-		}
-	}	
 
 	/**
 	 * Override the default event handler created with createEventHandler(Object obj)

@@ -90,7 +90,7 @@ public class GTextField extends GComponent {
 		border = 1;
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
-		createEventHandler(winApp);
+		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextField.class });
 		registerAutos_DMPK(true, true, false, true);
 		winApp.textFont(localFont, localFont.size);
 	}
@@ -114,24 +114,6 @@ public class GTextField extends GComponent {
 	}
 
 	/**
-	 * Create an event handler that will call a method handleTextFieldEvents(GTextField tfield)
-	 * when text is changed or entered
-	 * @param obj
-	 */
-	protected void createEventHandler(Object obj){
-		try{
-			this.eventHandler = obj.getClass().getMethod("handleTextFieldEvents", new Class[] { GTextField.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("You might want to add a method to handle \ntext field events the syntax is");
-				System.out.println("void handleTextFieldEvents(GTextField tfield){\n   ...\n}\n\n");
-			}
-			eventHandlerObject = null;
-		}
-	}	
-
-	/**
 	 * Set the font & size for the textfield changing the height (+/-) 
 	 * and width(+/-) of the textfield if necessary to display text.
 	 */
@@ -147,7 +129,6 @@ public class GTextField extends GComponent {
 		winApp.textFont(localFont, localFont.size);
 		adjustVisiblePortionEnd();
 	}
-
 
 	/**
 	 * When the textfield looses focus it also looses any text selection.
