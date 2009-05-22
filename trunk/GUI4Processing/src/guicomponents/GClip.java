@@ -52,6 +52,8 @@ import java.awt.datatransfer.Transferable;
  */
 
 /**
+ * CLASS FOR INTERNAL USE ONLY
+ * 
  * This provides clipboard functionality for text and is currently only used by the 
  * GTextField class.
  * 

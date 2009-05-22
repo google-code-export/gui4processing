@@ -96,25 +96,6 @@ public class GPanel extends GComponent {
 	}
 
 	/**
-	 * Override the default event handler created with createEventHandler(Object obj)
-	 * @param obj
-	 * @param methodName
-	 */
-	public void addEventHandler(Object obj, String methodName){
-		try{
-			eventHandler = obj.getClass().getMethod(methodName, new Class[] { GPanel.class } );
-			eventHandlerObject = obj;
-			eventHandlerMethodName = methodName;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-				System.out.println("with a parameter of type GPanel");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	/**
 	 * Set the font & size for the tab text changing the height (+/-) 
 	 * of the tab if necessary to display text.  
 	 */

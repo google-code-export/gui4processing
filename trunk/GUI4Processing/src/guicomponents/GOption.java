@@ -82,7 +82,12 @@ public class GOption extends GComponent {
 		registerAutos_DMPK(true, true, false, false);
 	}
 
-	public void addEventHandler(Object obj, String methodName){
+	/**
+	 * Overrides the GComponent 
+	 * @param obj
+	 * @param methodName
+	 */
+	public void addEventHandlerold(Object obj, String methodName){
 		try{
 			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
 			eventHandlerObject = obj;
@@ -93,6 +98,44 @@ public class GOption extends GComponent {
 			}
 			eventHandlerObject = null;
 		}
+	}
+
+	/**
+	 * Attempt to create the default event handler for the component class. 
+	 * The default event handler is a method that returns void and has a single
+	 * parameter of the same type as the componment class generating the
+	 * event and a method name specific for that class. 
+	 * 
+	 * @param handlerObj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 */
+	public void addEventHandler(Object obj, String methodName){
+		try{
+			eventHandler = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
+			eventHandlerObject = obj;
+			eventHandlerMethodName = methodName;
+		} catch (Exception e) {
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			eventHandlerObject = null;
+		}
+	}
+
+	/**
+	 * Fire an event for this component which has a reference to the
+	 * option being deselected as well as the option being selected.
+	 * 
+	 */
+	protected void fireEvent(){
+		if(eventHandler != null){
+			try {
+				eventHandler.invoke(eventHandlerObject, 
+						new Object[] { this, ownerGroup.deselectedOption() } );
+			} catch (Exception e) {
+				System.out.println("Disabling " + eventHandler.getName() + " due to an error");
+				eventHandler = null;
+				eventHandlerObject = null;
+			}
+		}		
 	}
 
 	/**
@@ -206,24 +249,6 @@ public class GOption extends GComponent {
 			}
 			break;
 		}
-	}
-
-	/**
-	 * Fire an event for this component which has a reference to the
-	 * option being deselected as well as the option being selected.
-	 * 
-	 */
-	protected void fireEvent(){
-		if(eventHandler != null){
-			try {
-				eventHandler.invoke(eventHandlerObject, 
-						new Object[] { this, ownerGroup.deselectedOption() });
-			} catch (Exception e) {
-				System.out.println("Disabling " + eventHandler.getName() + " due to an error");
-				eventHandler = null;
-				eventHandlerObject = null;
-			}
-		}		
 	}
 
 	/**
