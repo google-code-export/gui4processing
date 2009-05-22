@@ -83,24 +83,6 @@ public class GOption extends GComponent {
 	}
 
 	/**
-	 * Overrides the GComponent 
-	 * @param obj
-	 * @param methodName
-	 */
-	public void addEventHandlerold(Object obj, String methodName){
-		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-				System.out.println("with a two parameters of type GOption");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	/**
 	 * Attempt to create the default event handler for the component class. 
 	 * The default event handler is a method that returns void and has a single
 	 * parameter of the same type as the componment class generating the
