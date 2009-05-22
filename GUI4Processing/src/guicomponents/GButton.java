@@ -165,24 +165,6 @@ public class GButton extends GComponent {
 	}
 
 	/**
-	 * Override the default event handler created with createEventHandler(Object obj)
-	 * @param obj
-	 * @param methodName
-	 */
-	public void addEventHandler(Object obj, String methodName){
-		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GButton.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages) {
-				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-				System.out.println("with a parameter of type GButton");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	/**
 	 * Set the color scheme for this button
 	 */
 	public void setColorScheme(int schemeNo){

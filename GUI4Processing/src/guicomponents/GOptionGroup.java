@@ -45,6 +45,7 @@ public class GOptionGroup {
 	}
 
 	/**
+	 * This class does not need a reference to the applet class
 	 * @deprecated
 	 * @param theApplet
 	 */

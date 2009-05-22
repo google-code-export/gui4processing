@@ -96,24 +96,6 @@ public class GTextField extends GComponent {
 	}
 
 	/**
-	 * Override the default event handler created with createEventHandler(Object obj)
-	 * @param obj
-	 * @param methodName
-	 */
-	public void addEventHandler(Object obj, String methodName){
-		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GTextField.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-				System.out.println("with a parameter of type GTextField");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	/**
 	 * Set the font & size for the textfield changing the height (+/-) 
 	 * and width(+/-) of the textfield if necessary to display text.
 	 */

@@ -177,18 +177,86 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	}
 
 	/**
-	 * Create an event handler that will call a method handleButtonEvents(GButton cbox)
-	 * when text is changed or entered
-	 * @param handlerObj
+	 * Attempt to create the default event handler for the component class. 
+	 * The default event handler is a method that returns void and has a single
+	 * parameter of the same type as the componment class generating the
+	 * event and a method name specific for that class. 
+	 * 
+	 * @param handlerObj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 * @param parameters the parameter classes.
 	 */
 	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
 		try{
 			eventHandler = handlerObj.getClass().getMethod(methodName, parameters );
 			eventHandlerObject = handlerObj;
+			eventHandlerMethodName = methodName;
 		} catch (Exception e) {
 			GMessenger.message(MISSING, this, new Object[] {methodName, parameters});
 			eventHandlerObject = null;
 		}
+	}
+
+	/**
+	 * Attempt to create the default event handler for the component class. 
+	 * The default event handler is a method that returns void and has a single
+	 * parameter of the same type as the componment class generating the
+	 * event and a method name specific for that class. 
+	 * 
+	 * @param handlerObj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 */
+	public void addEventHandler(Object obj, String methodName){
+		try{
+			eventHandler = obj.getClass().getMethod(methodName, new Class[] {this.getClass() } );
+			eventHandlerObject = obj;
+			eventHandlerMethodName = methodName;
+		} catch (Exception e) {
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			eventHandlerObject = null;
+		}
+	}
+
+	/**
+	 * Attempt to create the default event handler for the component class. 
+	 * The default event handler is a method that returns void and has a single
+	 * parameter of the same type as the componment class generating the
+	 * event and a method name specific for that class. 
+	 * 
+	 * @param handlerObj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 * @param parameters the parameter classes.
+	 */
+	public void addEventHandler(Object obj, String methodName, Class[] parameters){
+		if(parameters == null)
+			parameters = new Class[0];
+		try{
+			eventHandler = obj.getClass().getMethod(methodName, parameters );
+			eventHandlerObject = obj;
+			eventHandlerMethodName = methodName;
+		} catch (Exception e) {
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, parameters } );
+			eventHandlerObject = null;
+		}
+	}
+
+	/**
+	 * Attempt to fire an event for this component.
+	 * 
+	 * The method called must have a single parameter which is the object 
+	 * firing the event.
+	 * If the method to be called is to have different parameters then it should
+	 * be overridden in the childclass
+	 * The method 
+	 */
+	protected void fireEvent(){
+		if(eventHandler != null){
+			try {
+				eventHandler.invoke(eventHandlerObject, new Object[] { this });
+			} catch (Exception e) {
+				GMessenger.message(FAILED, eventHandlerObject, new Object[] {eventHandlerMethodName } );
+			}
+		}		
 	}
 
 	/**
@@ -334,21 +402,6 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * @param event
 	 */
 	public void keyPressed(KeyEvent event){
-	}
-
-	/**
-	 * Attempt to fire an event for this component
-	 */
-	protected void fireEvent(){
-		if(eventHandler != null){
-			try {
-				eventHandler.invoke(eventHandlerObject, new Object[] { this });
-			} catch (Exception e) {
-				System.out.println("Disabling " + eventHandler.getName() + " due to an unknown error");
-				eventHandler = null;
-				eventHandlerObject = null;
-			}
-		}		
 	}
 
 	/**

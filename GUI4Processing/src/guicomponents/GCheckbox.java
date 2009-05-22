@@ -79,24 +79,6 @@ public class GCheckbox extends GComponent {
 	}
 
 	/**
-	 * Override the default event handler created with createEventHandler(Object obj)
-	 * @param obj
-	 * @param methodName
-	 */
-	public void addEventHandler(Object obj, String methodName){
-		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GCheckbox.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-				System.out.println("with a single parameter of type GCheckbox");
-			}
-			eventHandlerObject = null;
-		}
-	}
-
-	/**
 	 * Set the font & size for the checkbox changing the height (+/-) 
 	 * and width(+) of the checkbox if necessary to display text. 
 	 */

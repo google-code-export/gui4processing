@@ -78,24 +78,6 @@ public abstract class GSlider extends GComponent {
 	}
 
 	/**
-	 * Override the default event handler created with createEventHandler(Object obj)
-	 * @param obj
-	 * @param methodName
-	 */
-	public void addEventHandler(Object obj, String methodName){
-		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[] { GSlider.class } );
-			eventHandlerObject = obj;
-		} catch (Exception e) {
-			if(G4P.messages){
-				System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
-				System.out.println("with a single parameter of type GSlider");
-			}
-			eventHandlerObject = null;
-		}
-	}
-	
-	/**
 	 * The user can change the range and initial value of the 
 	 * slider from the default values of range 0-100 and 
 	 * initial value of 50.
