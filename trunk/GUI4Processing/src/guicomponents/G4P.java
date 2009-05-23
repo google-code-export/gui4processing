@@ -39,7 +39,7 @@ import processing.core.PStyle;
  * @author Peter Lager
  *
  */
-public class G4P implements PConstants {
+public class G4P implements PConstants, GConstants {
 
 	/**
 	 * Set of all the GUI components created
@@ -49,7 +49,7 @@ public class G4P implements PConstants {
 	/**
 	 * Set of GControlWindows
 	 */
-	private static HashSet<GControlWindow> allWinApps = new HashSet<GControlWindow>();
+	private static HashSet<GWindow> allWinApps = new HashSet<GWindow>();
 	
 	
 	private static boolean autoDrawOn = true;
@@ -80,8 +80,7 @@ public class G4P implements PConstants {
 		// for the mainWinApp and all control windows
 		if(cursorChangeEnabled == false){
 			mainWinApp.cursor(mouseOff);
-			GControlWindow cw;
-			Iterator<GControlWindow> iter = allWinApps.iterator();
+			Iterator<GWindow> iter = allWinApps.iterator();
 			while(iter.hasNext()){
 				iter.next().embed.cursor(mouseOff);
 			}
@@ -123,16 +122,19 @@ public class G4P implements PConstants {
 		if(g4pStyle == null)
 			getStyle();
 		if(allComponents.contains(c)){
-			if(messages)
-				System.out.println("Component " + c + " has already been regitered!");
+			GMessenger.message(ADD_DUPLICATE, c ,null);
 		}
 		else
 			allComponents.add(c);
 	}
 	
+	/**
+	 * INTERNAL USE ONLY
+	 * Used to register the main window for cursor over behaviour.
+	 * 
+	 */
 	public static void setMainApp(PApplet theApplet){
 		if(mainWinApp == null){
-			System.out.println("Set mainWinApp");
 			mainWinApp = theApplet;
 			mainWinApp.registerPost(mcd);
 		}
@@ -143,7 +145,7 @@ public class G4P implements PConstants {
 	 * Record a new control window
 	 * @param controlWindow
 	 */
-	public static void addControlWindow(GControlWindow controlWindow){
+	public static void addControlWindow(GWindow controlWindow){
 		allWinApps.add(controlWindow);
 	}
 	
@@ -154,7 +156,7 @@ public class G4P implements PConstants {
 	 *  
 	 * @param controlWindow
 	 */
-	public static void removeControlWindow(GControlWindow controlWindow){
+	public static void removeControlWindow(GWindow controlWindow){
 		allWinApps.remove(controlWindow);
 	}
 	
@@ -267,11 +269,7 @@ public class G4P implements PConstants {
 	 */
 	public static void disableAutoDraw(){
 		unregisterFromPAppletDraw();
-		if(messages){
-			System.out.println("You have disabled autoDraw so you have to use");
-			System.out.println("G4P.draw() when you want to display the GUI" );
-			System.out.println("this is not action is not reversible." );
-		}
+		GMessenger.message(DISABLE_AUTO_DRAW, null, null);
 	}
 
 	/**

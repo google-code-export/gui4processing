@@ -37,7 +37,7 @@ import processing.core.PApplet;
  * @author Peter Lager
  *
  */
-public class GControlWindow extends Frame{
+public class GWindow extends Frame{
 
 	public GCWinApplet embed;
 
@@ -46,7 +46,7 @@ public class GControlWindow extends Frame{
 	private int bkColor;
 	private String winName;
 
-	public GControlWindow(String name, int x, int y, int w, int h, int background) {
+	public GWindow(String name, int x, int y, int w, int h, int background) {
 		super(name);
 		winName = name;
 		dWidth = w;
@@ -108,7 +108,6 @@ public class GControlWindow extends Frame{
 	 * 
 	 * 
 	 * @author Peter Lager
-	 *
 	 */
 	public class GCWinApplet extends PApplet {
 
@@ -117,14 +116,13 @@ public class GControlWindow extends Frame{
 			registerPost(this);
 			System.out.println(dWidth+" X " +dHeight);
 			frameRate(15);
-
 		}
 
 		public void draw() {
 //			System.out.println("DRAW "+winName); //+"   "+w+" X "+h);
 			background(bkColor);
 			strokeWeight(1);
-			stroke(255,255,0);
+			stroke(255,0,0);
 			noFill();
 			rect(0,0,dWidth-1,dHeight-1);
 		}

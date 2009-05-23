@@ -30,33 +30,39 @@ package guicomponents;
 public interface GConstants {
 
 	// 0x0???????  user can disabled these messages 
-	// 0xf???????  always display these messages
+	// 0x8???????  always display these messages
 
+	
 	// ### Event constants ###
 	// TextField component (GSlider also uses CHANGED)
-	public final static int CHANGED = 		0x00000101;	// Text has changed
-	public final static int ENTERED = 		0x00000102;	// Enter key pressed
-	public final static int SET = 			0x00000103;		// setText() was used
+	public final static int CHANGED = 			0x00000101;	// Text has changed
+	public final static int ENTERED = 			0x00000102;	// Enter key pressed
+	public final static int SET = 				0x00000103;		// setText() was used
 
 	// GPanel component
-	public final static int COLLAPSED = 	0x00000201;	// Panel has been collapsed
-	public final static int EXPANDED = 		0x00000202;	// Panel has been expanded
-	public final static int DRAGGED = 		0x00000203;	// Panel has been dragged
+	public final static int COLLAPSED = 		0x00000201;	// Panel has been collapsed
+	public final static int EXPANDED = 			0x00000202;	// Panel has been expanded
+	public final static int DRAGGED = 			0x00000203;	// Panel has been dragged
 	
 	// GButton
-	public final static int CLICKED = 		0x00000301;
+	public final static int CLICKED = 			0x00000301;
 	
 	// GCheckbox & GOption
-	public final static int SELECTED = 		0x00000401;
-	public final static int DESELECTED = 	0x00000402;
+	public final static int SELECTED = 			0x00000401;
+	public final static int DESELECTED = 		0x00000402;
+	
+	// ### GUI build constants ###
+	public final static int ADD_DUPLICATE = 	0x00010101;
+	public final static int USER_COL_SCHEME = 	0x00010102;
+	public final static int DISABLE_AUTO_DRAW =	0x00010103;
+
 	
 	// ### Error MessageTypes ###
-	public final static int RUNTIME_ERROR = 0xf0000000;
-	
+	public final static int RUNTIME_ERROR = 	0xf0000000;
 	// Event method handler errors
-	public final static int MISSING = 		0x00010001;	// Can't find standard handler
-	public final static int NONEXISTANT = 	0x00010002;
-	public final static int FAILED =		0xf0010003;	// Exception in event handler
+	public final static int MISSING = 			0x01000001;	// Can't find standard handler
+	public final static int NONEXISTANT = 		0x01000002;
+	public final static int EXCP_IN_HANDLER =	0x81000003;	// Exception in event handler
 	
 
 }
