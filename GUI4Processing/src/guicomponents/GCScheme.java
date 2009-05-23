@@ -37,7 +37,7 @@ import processing.core.PImage;
  * @author Peter Lager
  *
  */
-public class GCScheme  {
+public class GCScheme implements GConstants {
 
 	// Color scheme constants
 	public static final int BLUE_SCHEME 	= 0;
@@ -95,14 +95,11 @@ public class GCScheme  {
 					e.printStackTrace();
 				}
 				image = app.loadImage("user_col_schema.png");
-				if(G4P.messages)
-					System.out.println("USER DEFINED colour schema active");
+				GMessenger.message(USER_COL_SCHEME, null, null);
 			}
 			else {
 				// User image not provided
 				image = app.loadImage("default_col_schema.png");
-				if(G4P.messages)
-					System.out.println("G4P colour schema active");
 			}
 		}
 		GCScheme scheme = new GCScheme(schemeNo);
@@ -237,7 +234,6 @@ public class GCScheme  {
 		acbTrack = (acbTrack & 0x00ffffff | a);
 		acbLast = (acbLast & 0x00ffffff | a);
 		acbFirst = (acbFirst & 0x00ffffff | a);
-		
 	}
 
 	/**

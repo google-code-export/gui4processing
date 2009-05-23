@@ -20,9 +20,8 @@
   Free Software Foundation, Inc., 59 Temple Place, Suite 330,
   Boston, MA  02111-1307  USA
  */
-package guicomponents;
 
-import java.util.HashMap;
+package guicomponents;
 
 /**
  * CLASS FOR INTERNAL USE ONLY
@@ -32,22 +31,33 @@ import java.util.HashMap;
  */
 public class GMessenger implements GConstants {
 
-	public static void message(Integer id, Object caller, Object[] info){
-		// Display G4P messages if requird
+	public static void message(Integer id, Object obj, Object[] info){
+		// Display G4P messages if required
 		if(G4P.messages){
 			switch(id){
 			case MISSING:
-				missingEventHandler(caller, info);
+				missingEventHandler(obj, info);
 				break;
 			case NONEXISTANT:
-				nonexistantEventHandler(caller, info);
+				nonexistantEventHandler(obj, info);
+				break;
+			case ADD_DUPLICATE:
+				System.out.println("Component " + obj + " has already been regitered!");
+				break;
+			case USER_COL_SCHEME:
+				System.out.println("USER DEFINED colour schema active");
+				break;
+			case DISABLE_AUTO_DRAW:
+				System.out.println("You have disabled autoDraw so you have to use");
+				System.out.println("G4P.draw() when you want to display the GUI" );
+				System.out.println("this is not action is not reversible." );
 				break;
 			}
 		}
 		// Display all runtime errors
 		switch(id){
-		case FAILED:
-			eventHandlerFailed(caller, info);
+		case EXCP_IN_HANDLER:
+			eventHandlerFailed(obj, info);
 			break;
 		
 		}
@@ -76,6 +86,7 @@ public class GMessenger implements GConstants {
 	 * @param obj2 the method name
 	 * @param obj3 parameter types (Class[])
 	 */
+	@SuppressWarnings("unchecked")
 	private static void missingEventHandler(Object caller, Object[] info) {
 		String className = caller.getClass().getSimpleName();
 		String methodName = (String) info[0];
@@ -107,6 +118,7 @@ public class GMessenger implements GConstants {
 	 * @param obj2 the method name
 	 * @param obj3 parameter types (Class[])
 	 */
+	@SuppressWarnings("unchecked")
 	private static void nonexistantEventHandler(Object handler, Object[] info) {
 		String className = handler.getClass().getSimpleName();
 		String methodName = (String) info[0];

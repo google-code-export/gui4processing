@@ -93,31 +93,32 @@ public class GOption extends GComponent {
 	 */
 	public void addEventHandler(Object obj, String methodName){
 		try{
-			eventHandler = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
 			eventHandlerObject = obj;
 			eventHandlerMethodName = methodName;
+			eventHandlerName = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			eventHandlerObject = null;
+			eventHandlerMethodName = "";
 		}
 	}
 
 	/**
 	 * Fire an event for this component which has a reference to the
-	 * option being deselected as well as the option being selected.
+	 * option being de-selected as well as the option being selected.
 	 * 
 	 */
 	protected void fireEvent(){
-		if(eventHandler != null){
-			try {
-				eventHandler.invoke(eventHandlerObject, 
-						new Object[] { this, ownerGroup.deselectedOption() } );
-			} catch (Exception e) {
-				System.out.println("Disabling " + eventHandler.getName() + " due to an error");
-				eventHandler = null;
-				eventHandlerObject = null;
-			}
-		}		
+		if(eventHandlerName != null){
+			if(eventHandlerName != null){
+				try {
+					eventHandlerName.invoke(eventHandlerObject,
+							new Object[] { this, ownerGroup.deselectedOption() } );
+				} catch (Exception e) {
+					GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, new Object[] {eventHandlerMethodName } );
+				}
+			}		
+		}
 	}
 
 	/**

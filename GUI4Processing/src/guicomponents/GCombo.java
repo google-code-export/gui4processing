@@ -90,7 +90,7 @@ public class GCombo extends GComponent {
 		slider.setBorder(1);
 		slider.setVisible(false);
 		slider.setLimits(0, 0, maxRows - 1);
-		slider.addEventHandler(this, "processSliderMotion");
+		slider.addEventHandler(this, "processSliderMotion", new Class[] { GVertSlider.class } );
 		add(slider);
 	}
 
@@ -158,7 +158,7 @@ public class GCombo extends GComponent {
 	 * 
 	 * @param slider
 	 */
-	public void processSliderMotion(GSlider slider){
+	public void processSliderMotion(GVertSlider vertslider){
 		startRow = slider.getValue();
 	}
 

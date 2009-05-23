@@ -102,7 +102,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
 	/** The method in eventHandlerObject to execute */
-	protected Method eventHandler = null;
+	protected Method eventHandlerName = null;
 	/** the name of the method to handle the event */ 
 	protected String eventHandlerMethodName;
 	
@@ -188,7 +188,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
 		try{
-			eventHandler = handlerObj.getClass().getMethod(methodName, parameters );
+			eventHandlerName = handlerObj.getClass().getMethod(methodName, parameters );
 			eventHandlerObject = handlerObj;
 			eventHandlerMethodName = methodName;
 		} catch (Exception e) {
@@ -208,12 +208,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public void addEventHandler(Object obj, String methodName){
 		try{
-			eventHandler = obj.getClass().getMethod(methodName, new Class[] {this.getClass() } );
 			eventHandlerObject = obj;
 			eventHandlerMethodName = methodName;
+			eventHandlerName = obj.getClass().getMethod(methodName, new Class[] {this.getClass() } );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			eventHandlerObject = null;
+			eventHandlerMethodName = "";
 		}
 	}
 
@@ -231,12 +232,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		if(parameters == null)
 			parameters = new Class[0];
 		try{
-			eventHandler = obj.getClass().getMethod(methodName, parameters );
 			eventHandlerObject = obj;
 			eventHandlerMethodName = methodName;
+			eventHandlerName = obj.getClass().getMethod(methodName, parameters );
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, parameters } );
+			GMessenger.message(NONEXISTANT, eventHandlerObject, new Object[] {methodName, parameters } );
 			eventHandlerObject = null;
+			eventHandlerMethodName = "";
 		}
 	}
 
@@ -250,11 +252,11 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * The method 
 	 */
 	protected void fireEvent(){
-		if(eventHandler != null){
+		if(eventHandlerName != null){
 			try {
-				eventHandler.invoke(eventHandlerObject, new Object[] { this });
+				eventHandlerName.invoke(eventHandlerObject, new Object[] { this });
 			} catch (Exception e) {
-				GMessenger.message(FAILED, eventHandlerObject, new Object[] {eventHandlerMethodName } );
+				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, new Object[] {eventHandlerMethodName } );
 			}
 		}		
 	}
