@@ -102,7 +102,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
 	/** The method in eventHandlerObject to execute */
-	protected Method eventHandlerName = null;
+	protected Method eventHandlerMethod = null;
 	/** the name of the method to handle the event */ 
 	protected String eventHandlerMethodName;
 	
@@ -188,7 +188,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
 		try{
-			eventHandlerName = handlerObj.getClass().getMethod(methodName, parameters );
+			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, parameters );
 			eventHandlerObject = handlerObj;
 			eventHandlerMethodName = methodName;
 		} catch (Exception e) {
@@ -210,7 +210,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		try{
 			eventHandlerObject = obj;
 			eventHandlerMethodName = methodName;
-			eventHandlerName = obj.getClass().getMethod(methodName, new Class[] {this.getClass() } );
+			eventHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {this.getClass() } );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			eventHandlerObject = null;
@@ -234,7 +234,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		try{
 			eventHandlerObject = obj;
 			eventHandlerMethodName = methodName;
-			eventHandlerName = obj.getClass().getMethod(methodName, parameters );
+			eventHandlerMethod = obj.getClass().getMethod(methodName, parameters );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, eventHandlerObject, new Object[] {methodName, parameters } );
 			eventHandlerObject = null;
@@ -252,9 +252,9 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * The method 
 	 */
 	protected void fireEvent(){
-		if(eventHandlerName != null){
+		if(eventHandlerMethod != null){
 			try {
-				eventHandlerName.invoke(eventHandlerObject, new Object[] { this });
+				eventHandlerMethod.invoke(eventHandlerObject, new Object[] { this });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, new Object[] {eventHandlerMethodName } );
 			}

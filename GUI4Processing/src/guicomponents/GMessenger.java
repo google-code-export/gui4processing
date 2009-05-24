@@ -108,7 +108,7 @@ public class GMessenger implements GConstants {
 					output.append(", ");
 			}
 		}
-		output.append(") { // code }\n");
+		output.append(") { /* code */ }\n");
 		System.out.println(output.toString());
 	}
 
@@ -140,7 +140,7 @@ public class GMessenger implements GConstants {
 					output.append(", ");
 			}
 		}
-		output.append(") { // code }\n");
+		output.append(") { /* code */ }\n");
 		System.out.println(output.toString());
 	}
 

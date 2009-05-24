@@ -219,18 +219,22 @@ public class G4P implements PConstants, GConstants {
 		GComponent.globalFont = GFont.getFont(mainWinApp, fontName, fontSize);
 	}
 
+	public static void draw(){
+		draw(mainWinApp);
+	}
+	
 	/**
 	 * Use G4P.draw() if you want to control when you the GUI is to be drawn
 	 */
-	public static void draw(){
+	public static void draw(PApplet app){
 		if(allComponents.size() > 0){
 			// Time to take over the responsibility for drawing
 			if(autoDrawOn)
-				unregisterFromPAppletDraw();
+				unregisterFromPAppletDraw(app);
 			// Draw the components on the mainWinApp only.
 			// Note that GPanels will call the appropriate
 			// draw methods for the components on them
-			mainWinApp.hint(DISABLE_DEPTH_TEST);
+			app.hint(DISABLE_DEPTH_TEST);
 			Iterator<GComponent> iter = allComponents.iterator();
 			GComponent c;
 			while(iter.hasNext()){
@@ -238,7 +242,7 @@ public class G4P implements PConstants, GConstants {
 				if(c.getParent() == null && c.getPApplet() == mainWinApp)
 					c.draw();
 			}
-			mainWinApp.hint(ENABLE_DEPTH_TEST);
+			app.hint(ENABLE_DEPTH_TEST);
 		}
 	}
 
@@ -250,12 +254,12 @@ public class G4P implements PConstants, GConstants {
 	 * It is called once on the first call to G4P.draw()
 	 * 
 	 */
-	private static void unregisterFromPAppletDraw() {
+	private static void unregisterFromPAppletDraw(PApplet app) {
 		Iterator<GComponent> iter = allComponents.iterator();
 		GComponent c;
 		while(iter.hasNext()){
 			c = iter.next();
-			if(c.getParent() == null && c.getPApplet() == mainWinApp){
+			if(c.getParent() == null && c.getPApplet() == app){
 				c.regDraw = false;
 				c.getPApplet().unregisterDraw(c);
 			}
@@ -268,7 +272,7 @@ public class G4P implements PConstants, GConstants {
 	 * wish to see the GUI
 	 */
 	public static void disableAutoDraw(){
-		unregisterFromPAppletDraw();
+		unregisterFromPAppletDraw(mainWinApp);
 		GMessenger.message(DISABLE_AUTO_DRAW, null, null);
 	}
 
