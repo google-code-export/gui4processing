@@ -51,6 +51,11 @@ public interface GConstants {
 	public final static int SELECTED = 			0x00000401;
 	public final static int DESELECTED = 		0x00000402;
 	
+	// GWindow
+	public final static int SHUTDOWN_ON_EXIT = 	0x00000f01;
+	public final static int CLOSE_ON_EXIT = 	0x00000f02;
+	
+	
 	// ### GUI build constants ###
 	public final static int ADD_DUPLICATE = 	0x00010101;
 	public final static int USER_COL_SCHEME = 	0x00010102;

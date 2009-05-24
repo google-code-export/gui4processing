@@ -318,5 +318,9 @@ public class GPanel extends GComponent {
 	public boolean isCollapsed(){
 		return tabOnly;
 	}
+	
+	public int getTabHeight(){
+		return tabHeight;
+	}
 
 } // end of class
