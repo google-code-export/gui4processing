@@ -51,9 +51,12 @@ public class G4P implements PConstants, GConstants {
 	 */
 	private static HashSet<GWindow> allWinApps = new HashSet<GWindow>();
 	
+	/**
+	 * Set of PApplet windos disabled
+	 */
+	private static HashSet<PApplet> autoDrawDisabled = new HashSet<PApplet>();
 	
-	private static boolean autoDrawOn = true;
-
+	
 	// Will be set when and first component is created
 	public static PApplet mainWinApp = null;
 
@@ -219,17 +222,24 @@ public class G4P implements PConstants, GConstants {
 		GComponent.globalFont = GFont.getFont(mainWinApp, fontName, fontSize);
 	}
 
+	/**
+	 * When you first use G4P() it switches off auto draw for the 
+	 * main PApplet
+	 * 
+	 */
 	public static void draw(){
 		draw(mainWinApp);
 	}
 	
 	/**
-	 * Use G4P.draw() if you want to control when you the GUI is to be drawn
+	 * When you first use G4P(app) it switches off auto draw for the 
+	 * PApplet app
+	 * 
 	 */
 	public static void draw(PApplet app){
 		if(allComponents.size() > 0){
 			// Time to take over the responsibility for drawing
-			if(autoDrawOn)
+			if(!autoDrawDisabled.contains(app))
 				unregisterFromPAppletDraw(app);
 			// Draw the components on the mainWinApp only.
 			// Note that GPanels will call the appropriate
@@ -239,7 +249,7 @@ public class G4P implements PConstants, GConstants {
 			GComponent c;
 			while(iter.hasNext()){
 				c = iter.next();
-				if(c.getParent() == null && c.getPApplet() == mainWinApp)
+				if(c.getParent() == null && c.getPApplet() == app)
 					c.draw();
 			}
 			app.hint(ENABLE_DEPTH_TEST);
@@ -264,7 +274,7 @@ public class G4P implements PConstants, GConstants {
 				c.getPApplet().unregisterDraw(c);
 			}
 		}
-		autoDrawOn = false;
+		autoDrawDisabled.add(app);
 	}
 
 	/**
@@ -277,13 +287,21 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * Is autodraw on?
+	 * Is autodraw on for the main PApplet window?
 	 * 
 	 */
 	public static boolean isAutoDrawOn(){
-		return autoDrawOn;
+		return isAutoDrawOn(mainWinApp);
 	}
 
+	/**
+	 * Is autodraw on for the PApplet app?
+	 * 
+	 */
+	public static boolean isAutoDrawOn(PApplet app){
+		return !autoDrawDisabled.contains(app);
+	}
+	
 	/**
 	 * G4P has a range of support messages eg <br>if you create a GUI component 
 	 * without an event handler or, <br>a slider where the visible size of the
