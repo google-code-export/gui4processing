@@ -50,6 +50,15 @@ public class GWindow extends Frame implements GConstants {
 
 	protected GWinData data;
 	
+	
+	/**
+	 * Remember what we have registered for.
+	 */
+	protected boolean regDraw = false;
+	protected boolean regMouse = false;
+	protected boolean regPre = false;
+	protected boolean regKey = false;
+
 	/** The object to handle the event */
 	protected Object drawHandlerObject = null;
 	/** The method in drawHandlerObject to execute */
@@ -110,15 +119,17 @@ public class GWindow extends Frame implements GConstants {
 	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
 	 */
-	public void addEventHandler(Object obj, String methodName){
+	public void addDrawHandler(Object obj, String methodName){
 		try{
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
 			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GCWinApplet.class, GWinData.class } );
+			regDraw = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			drawHandlerObject = null;
 			drawHandlerMethodName = "";
+			regDraw = false;
 		}
 	}
 
@@ -164,6 +175,7 @@ public class GWindow extends Frame implements GConstants {
 
 		public void draw() {
 			pushMatrix();
+			app.hint(DISABLE_DEPTH_TEST);
 			background(bkColor);
 			if(drawHandlerObject != null){
 				try {
@@ -172,6 +184,7 @@ public class GWindow extends Frame implements GConstants {
 					GMessenger.message(EXCP_IN_HANDLER, drawHandlerObject, new Object[] {drawHandlerMethodName } );
 				}
 			}
+			app.hint(ENABLE_DEPTH_TEST);
 			popMatrix();
 		}
 
