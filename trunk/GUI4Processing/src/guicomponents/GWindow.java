@@ -28,6 +28,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 
@@ -37,29 +39,42 @@ import processing.core.PApplet;
  * @author Peter Lager
  *
  */
-public class GWindow extends Frame{
+@SuppressWarnings("serial")
+public class GWindow extends Frame implements GConstants {
 
-	public GCWinApplet embed;
+	protected PApplet app;
+	protected GCWinApplet embed;
 
 
-	private int dWidth, dHeight;
-	private int bkColor;
-	private String winName;
+	protected String winName;
 
-	public GWindow(String name, int x, int y, int w, int h, int background) {
+	protected GWinData data;
+	
+	/** The object to handle the event */
+	protected Object drawHandlerObject = null;
+	/** The method in drawHandlerObject to execute */
+	protected Method drawHandlerMethod = null;
+	/** the name of the method to handle the event */ 
+	protected String drawHandlerMethodName;
+
+	
+	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, int background) {
 		super(name);
+		app = theApplet;
 		winName = name;
-		dWidth = w;
-		dHeight = h;
-		bkColor = background;
-
+		
 		embed = new GCWinApplet();
 		embed.frame = this;
 		embed.frame.setResizable(true);
 
-		embed.resize(dWidth, dHeight);
-		embed.setPreferredSize(new Dimension(dWidth, dHeight));
-		embed.setMinimumSize(new Dimension(dWidth, dHeight));
+		embed.appWidth = w;
+		embed.appHeight = h;
+		embed.bkColor = background;
+
+
+		embed.resize(embed.appWidth, embed.appHeight);
+		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
+		embed.setMinimumSize(new Dimension(embed.appWidth, embed.appHeight));
 
 		// add the PApplet to the Frame
 		setLayout(new BorderLayout());
@@ -79,21 +94,45 @@ public class GWindow extends Frame{
 			}
 		});
 
+		embed.registerDraw(embed);
+		
 		pack();
 		setLocation(x,y);
 		setVisible(true);
 		G4P.addControlWindow(this);
 	}
 
+	/**
+	 * Attempt to create the draw handler method. 
+	 * The default event handler is a method that returns void and has two
+	 * parameters Papplet and GWinData
+	 * 
+	 * @param obj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 */
+	public void addEventHandler(Object obj, String methodName){
+		try{
+			drawHandlerObject = obj;
+			drawHandlerMethodName = methodName;
+			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GCWinApplet.class, GWinData.class } );
+		} catch (Exception e) {
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			drawHandlerObject = null;
+			drawHandlerMethodName = "";
+		}
+	}
+
 	public void add(GComponent component){
 		component.changeWindow(embed);
 	}
 
+	public void addData(GWinData data){
+		data.owner = this;
+	}
+	
 	public void setLocation(int x, int y){
 		super.setLocation(x,y);
 	}
-	
-	
 	
 	private void removeFromG4P(){
 		embed.noLoop();
@@ -102,32 +141,42 @@ public class GWindow extends Frame{
 		G4P.removeControlWindow(this);
 	}
 
-
+	
 	/**
-	 * The PApplet embeded into a Frame
+	 * 
+	 * This class extends PApplet and provides a drawing surface for
+	 * the GWindo
+	 * The PApplet embedded into a Frame
 	 * 
 	 * 
 	 * @author Peter Lager
 	 */
 	public class GCWinApplet extends PApplet {
 
+		public int appWidth, appHeight;
+		public int bkColor;
+
 		public void setup() {
-			size(dWidth, dHeight);
+			size(appWidth, appHeight);
 			registerPost(this);
-			System.out.println(dWidth+" X " +dHeight);
-			frameRate(15);
+			//frameRate(30);
 		}
 
 		public void draw() {
-//			System.out.println("DRAW "+winName); //+"   "+w+" X "+h);
+			pushMatrix();
 			background(bkColor);
-			strokeWeight(1);
-			stroke(255,0,0);
-			noFill();
-			rect(0,0,dWidth-1,dHeight-1);
+			if(drawHandlerObject != null){
+				try {
+					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { embed, data });
+				} catch (Exception e) {
+					GMessenger.message(EXCP_IN_HANDLER, drawHandlerObject, new Object[] {drawHandlerMethodName } );
+				}
+			}
+			popMatrix();
 		}
 
 		public void post(){
+// Who registered this ???????????????
 			if(isVisible() && G4P.cursorChangeEnabled){
 				if(GComponent.cursorIsOver != null)
 					cursor(G4P.mouseOver);
@@ -135,6 +184,5 @@ public class GWindow extends Frame{
 					cursor(G4P.mouseOff);
 			}
 		}
-
 	}
 }

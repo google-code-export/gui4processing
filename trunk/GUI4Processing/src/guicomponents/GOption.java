@@ -95,7 +95,7 @@ public class GOption extends GComponent {
 		try{
 			eventHandlerObject = obj;
 			eventHandlerMethodName = methodName;
-			eventHandlerName = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
+			eventHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { GOption.class, GOption.class } );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			eventHandlerObject = null;
@@ -109,10 +109,10 @@ public class GOption extends GComponent {
 	 * 
 	 */
 	protected void fireEvent(){
-		if(eventHandlerName != null){
-			if(eventHandlerName != null){
+		if(eventHandlerMethod != null){
+			if(eventHandlerMethod != null){
 				try {
-					eventHandlerName.invoke(eventHandlerObject,
+					eventHandlerMethod.invoke(eventHandlerObject,
 							new Object[] { this, ownerGroup.deselectedOption() } );
 				} catch (Exception e) {
 					GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, new Object[] {eventHandlerMethodName } );
