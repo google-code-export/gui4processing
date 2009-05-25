@@ -237,8 +237,10 @@ public void handlePanelEvents(GPanel panel){
   if(pnlControls == panel){
     switch (pnlControls.getEventType()){
     case GPanel.DRAGGED:
-      sdrHorzPos.setValue(pnlControls.getX());
-      sdrVertPos.setValue(pnlControls.getY());
+      if(sdrHorzPos != null && sdrVertPos != null){
+        sdrHorzPos.setValue(pnlControls.getX());
+        sdrVertPos.setValue(pnlControls.getY());
+      }
     }
   }
 }
