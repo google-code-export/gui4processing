@@ -29,13 +29,17 @@ import java.awt.Frame;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 
 /**
- * Allows the user to specify one or more controls windows.
+ * Objects of this class are separate windows which can be used to hold
+ * G4P GUI components or used for drawing onor both combined.
+ * <br><br>
+ * A number of examples are included in the library and can be found
+ * at gui4processing.lagers.org.uk
+ * 
  * 
  * @author Peter Lager
  *
@@ -44,7 +48,7 @@ import processing.core.PApplet;
 public class GWindow extends Frame implements GConstants {
 
 	protected PApplet app;
-	protected GCWinApplet embed;
+	protected GWinApplet embed;
 
 	protected String winName;
 
@@ -82,13 +86,25 @@ public class GWindow extends Frame implements GConstants {
 	/** the name of the method to handle the event */ 
 	protected String mouseHandlerMethodName;
 
-	
+	/**
+	 * Create a window that can be used to hold G4P components or used
+	 * for drawing or both together.
+	 * 
+	 * @param theApplet
+	 * @param name
+	 * @param x initial position on the screen
+	 * @param y initial position on the screen
+	 * @param w width of the drawing area (the frame will be bigger to accommodate border)
+	 * @param h height of the drawing area (the frame will be bigger to accommodate border and title bar)
+	 * @param background background color to use
+	 */
 	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, int background) {
 		super(name);
 		app = theApplet;
 		winName = name;
 		
-		embed = new GCWinApplet();
+		embed = new GWinApplet();
+		embed.owner = this;
 		embed.frame = this;
 		embed.frame.setResizable(true);
 
@@ -153,7 +169,7 @@ public class GWindow extends Frame implements GConstants {
 		try{
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
-			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GCWinApplet.class, GWinData.class } );
+			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			drawHandlerObject = null;
@@ -173,7 +189,7 @@ public class GWindow extends Frame implements GConstants {
 		try{
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
-			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GCWinApplet.class, GWinData.class } );
+			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			preHandlerObject = null;
@@ -194,7 +210,7 @@ public class GWindow extends Frame implements GConstants {
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
 			preHandlerMethod = obj.getClass().getMethod(methodName, 
-					new Class[] {GCWinApplet.class, GWinData.class, MouseEvent.class } );
+					new Class[] {GWinApplet.class, GWinData.class, MouseEvent.class } );
 			embed.registerMouseEvent(embed);
 			regMouse = true;
 		} catch (Exception e) {
@@ -204,19 +220,48 @@ public class GWindow extends Frame implements GConstants {
 		}
 	}
 
+	/**
+	 * Add a G4P component onto the window.
+	 * 
+	 * @param component
+	 */
 	public void add(GComponent component){
 		component.changeWindow(embed);
 	}
 
+	/**
+	 * Add an object that holds the data this window needs to use.
+	 * 
+	 * Note: the object can be of any class that extends GWinData.
+	 * 
+	 * @param data
+	 */
 	public void addData(GWinData data){
 		this.data = data;
 		this.data.owner = this;
 	}
 	
+	/**
+	 * Sets the location of the window.
+	 * (Already available from the Frame class - helps visibility 
+	 * of method in G4P reference)
+	 */
 	public void setLocation(int x, int y){
 		super.setLocation(x,y);
 	}
 	
+	/**
+	 * Sets the visibility of the window
+	 * (Already available from the Frame class - helps visibility 
+	 * of method in G4P reference)
+	 */
+	public void setVisible(boolean visible){
+		super.setVisible(visible);
+	}
+	
+	/**
+	 * Used to remove from G4P when the Frame is disposed.
+	 */
 	private void removeFromG4P(){
 		embed.noLoop();
 		embed.unregisterPost(embed);
@@ -230,18 +275,20 @@ public class GWindow extends Frame implements GConstants {
 		G4P.removeControlWindow(this);
 	}
 
-	
-	
 	/**
-	 * @return the exitBehaviour
+	 * Set the background color for the window.
+	 * 
+	 * @param bkColor
 	 */
-	public int getExitBehaviour() {
-		return exitBehaviour;
+	public void setBackColor(int bkColor){
+		embed.bkColor = bkColor;
 	}
 
 	/**
-	 * CLOSE_ON_EXIT  - closes/hides the window
-	 * SHUTDOWN_ON_EXIT  - ends the application if the window is closed
+	 * Determines what happens when the Frame is closed by the user.
+	 * <br>
+	 * GWindow.CLOSE_ON_EXIT  - closes/hides the window <br>
+	 * GWindow.SHUTDOWN_ON_EXIT  - ends the application if the window is closed
 	 * 
 	 * @param exitBehaviour the exitBehaviour to set
 	 */
@@ -250,67 +297,12 @@ public class GWindow extends Frame implements GConstants {
 	}
 
 	/**
-	 * 
-	 * This class extends PApplet and provides a drawing surface for
-	 * the GWindo
-	 * The PApplet embedded into a Frame
-	 * 
-	 * 
-	 * @author Peter Lager
+	 * @see setExitBehaviour
+	 * @return the exitBehaviour
 	 */
-	public class GCWinApplet extends PApplet {
-
-		public int appWidth, appHeight;
-		public int bkColor;
-
-		public void setup() {
-			size(appWidth, appHeight);
-			registerPost(this);
-			//frameRate(30);
-		}
-
-		public void pre(){
-			if(drawHandlerObject != null){
-				try {
-					preHandlerMethod.invoke(preHandlerObject, new Object[] { embed, data });
-				} catch (Exception e) {
-					GMessenger.message(EXCP_IN_HANDLER, preHandlerObject, new Object[] {preHandlerMethodName } );
-				}
-			}
-		}
-		
-		public void draw() {
-			pushMatrix();
-			app.hint(DISABLE_DEPTH_TEST);
-			background(bkColor);
-			if(drawHandlerObject != null){
-				try {
-					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { embed, data });
-				} catch (Exception e) {
-					GMessenger.message(EXCP_IN_HANDLER, drawHandlerObject, new Object[] {drawHandlerMethodName } );
-				}
-			}
-			app.hint(ENABLE_DEPTH_TEST);
-			popMatrix();
-		}
-
-		public void mouseEvent(MouseEvent event){
-			if(drawHandlerObject != null){
-				try {
-					preHandlerMethod.invoke(preHandlerObject, new Object[] { embed, data, event });
-				} catch (Exception e) {
-					GMessenger.message(EXCP_IN_HANDLER, preHandlerObject, new Object[] {preHandlerMethodName } );
-				}
-			}
-		}
-	
-		public void post(){
-			if(isVisible() && G4P.cursorChangeEnabled){
-				if(GComponent.cursorIsOver != null)
-					cursor(G4P.mouseOver);
-				else
-					cursor(G4P.mouseOff);
-			}
-		}
+	public int getExitBehaviour() {
+		return exitBehaviour;
 	}
+
+
 }
