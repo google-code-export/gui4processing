@@ -1,6 +1,6 @@
 /*
   Part of the GUI for Processing library 
-  	http://gui-for-processing.lagers.org.uk
+  	http://gui4processing.lagers.org.uk
 	http://code.google.com/p/gui-for-processing/
 
   Copyright (c) 2008-09 Peter Lager
