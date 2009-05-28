@@ -60,25 +60,19 @@ public class GWinApplet extends PApplet implements GConstants {
 	}
 	
 	public void draw() {
-		pushMatrix();
-		hint(DISABLE_DEPTH_TEST);
 		background(bkColor);
 		if(owner.drawHandlerObject != null){
 			try {
-//				owner.drawHandlerMethod.invoke(owner.drawHandlerObject, new Object[] { owner.embed, owner.data });
 				owner.drawHandlerMethod.invoke(owner.drawHandlerObject, new Object[] { this, owner.data });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, owner.drawHandlerObject, new Object[] {owner.drawHandlerMethodName } );
 			}
 		}
-		hint(ENABLE_DEPTH_TEST);
-		popMatrix();
 	}
 
 	public void mouseEvent(MouseEvent event){
 		if(owner.drawHandlerObject != null){
 			try {
-//				owner.preHandlerMethod.invoke(owner.preHandlerObject, new Object[] { owner.embed, owner.data, event });
 				owner.preHandlerMethod.invoke(owner.preHandlerObject, new Object[] { this, owner.data, event });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, owner.preHandlerObject, new Object[] {owner.preHandlerMethodName } );

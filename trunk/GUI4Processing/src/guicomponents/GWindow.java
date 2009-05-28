@@ -52,7 +52,7 @@ public class GWindow extends Frame implements GConstants {
 
 	protected String winName;
 
-	protected GWinData data;
+	public GWinData data;
 	
 	protected int exitBehaviour = CLOSE_ON_EXIT;
 	
@@ -112,7 +112,6 @@ public class GWindow extends Frame implements GConstants {
 		embed.appHeight = h;
 		embed.bkColor = background;
 
-
 		embed.resize(embed.appWidth, embed.appHeight);
 		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
 		embed.setMinimumSize(new Dimension(embed.appWidth, embed.appHeight));
@@ -145,7 +144,7 @@ public class GWindow extends Frame implements GConstants {
 		setLocation(x,y);
 		setVisible(true);
 		try{
-		setAlwaysOnTop(true);
+			setAlwaysOnTop(true);
 		} catch (Exception e){
 			e.printStackTrace();
 		}
