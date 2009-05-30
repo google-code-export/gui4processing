@@ -35,7 +35,7 @@ import processing.core.PApplet;
 
 /**
  * Objects of this class are separate windows which can be used to hold
- * G4P GUI components or used for drawing onor both combined.
+ * G4P GUI components or used for drawing or both combined.
  * <br><br>
  * A number of examples are included in the library and can be found
  * at gui4processing.lagers.org.uk
@@ -48,7 +48,7 @@ import processing.core.PApplet;
 public class GWindow extends Frame implements GConstants {
 
 	protected PApplet app;
-	protected GWinApplet embed;
+	public GWinApplet embed;
 
 	protected String winName;
 
@@ -201,6 +201,7 @@ public class GWindow extends Frame implements GConstants {
 			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
+			embed.registerPre(embed);
 			regPre = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
