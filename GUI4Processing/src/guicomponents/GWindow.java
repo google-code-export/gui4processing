@@ -64,6 +64,7 @@ public class GWindow extends Frame implements GConstants {
 	protected boolean regMouse = false;
 	protected boolean regPre = false;
 	protected boolean regKey = false;
+	protected boolean regPost = false;
 
 	/** The object to handle the pre event */
 	protected Object preHandlerObject = null;
@@ -72,19 +73,26 @@ public class GWindow extends Frame implements GConstants {
 	/** the name of the method to handle the event */ 
 	protected String preHandlerMethodName;
 
-	/** The object to handle the event */
+	/** The object to handle the draw event */
 	protected Object drawHandlerObject = null;
 	/** The method in drawHandlerObject to execute */
 	protected Method drawHandlerMethod = null;
 	/** the name of the method to handle the event */ 
 	protected String drawHandlerMethodName;
 
-	/** The object to handle the event */
+	/** The object to handle the mouse event */
 	protected Object mouseHandlerObject = null;
-	/** The method in drawHandlerObject to execute */
+	/** The method in mouseHandlerObject to execute */
 	protected Method mouseHandlerMethod = null;
 	/** the name of the method to handle the event */ 
 	protected String mouseHandlerMethodName;
+
+	/** The object to handle the post event */
+	protected Object postHandlerObject = null;
+	/** The method in postHandlerObject to execute */
+	protected Method postHandlerMethod = null;
+	/** the name of the method to handle the event */ 
+	protected String postHandlerMethodName;
 
 	/**
 	 * Create a window that can be used to hold G4P components or used
@@ -98,8 +106,9 @@ public class GWindow extends Frame implements GConstants {
 	 * @param h height of the drawing area (the frame will be bigger to accommodate border and title bar)
 	 * @param background background color to use
 	 */
-	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, int background) {
+	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, boolean noFrame) {
 		super(name);
+		setUndecorated(noFrame);
 		app = theApplet;
 		winName = name;
 		
@@ -110,7 +119,7 @@ public class GWindow extends Frame implements GConstants {
 
 		embed.appWidth = w;
 		embed.appHeight = h;
-		embed.bkColor = background;
+		embed.bkColor = embed.color(0);
 
 		embed.resize(embed.appWidth, embed.appHeight);
 		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
@@ -166,13 +175,11 @@ public class GWindow extends Frame implements GConstants {
 	 */
 	public void addDrawHandler(Object obj, String methodName){
 		try{
+			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
-			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
-			drawHandlerObject = null;
-			drawHandlerMethodName = "";
 		}
 	}
 
@@ -186,13 +193,12 @@ public class GWindow extends Frame implements GConstants {
 	 */
 	public void addPreHandler(Object obj, String methodName){
 		try{
+			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
-			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
+			regPre = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
-			preHandlerObject = null;
-			preHandlerMethodName = "";
 		}
 	}
 
@@ -206,16 +212,34 @@ public class GWindow extends Frame implements GConstants {
 	 */
 	public void addMouseHandler(Object obj, String methodName){
 		try{
-			preHandlerObject = obj;
-			preHandlerMethodName = methodName;
-			preHandlerMethod = obj.getClass().getMethod(methodName, 
+			mouseHandlerMethod = obj.getClass().getMethod(methodName, 
 					new Class[] {GWinApplet.class, GWinData.class, MouseEvent.class } );
+			mouseHandlerObject = obj;
+			mouseHandlerMethodName = methodName;
 			embed.registerMouseEvent(embed);
 			regMouse = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
-			preHandlerObject = null;
-			preHandlerMethodName = "";
+		}
+	}
+
+	/**
+	 * Attempt to add the 'mouse' handler method. 
+	 * The default event handler is a method that returns void and has two
+	 * parameters Papplet and GWinData
+	 * 
+	 * @param obj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 */
+	public void addPostHandler(Object obj, String methodName){
+		try{
+			postHandlerMethod = obj.getClass().getMethod(methodName, 
+					new Class[] {GWinApplet.class, GWinData.class } );
+			postHandlerObject = obj;
+			postHandlerMethodName = methodName;
+			regPost = true;
+		} catch (Exception e) {
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 		}
 	}
 
@@ -259,28 +283,12 @@ public class GWindow extends Frame implements GConstants {
 	}
 	
 	/**
-	 * Used to remove from G4P when the Frame is disposed.
-	 */
-	private void removeFromG4P(){
-		embed.noLoop();
-		embed.unregisterPost(embed);
-		if(regDraw)
-			embed.unregisterDraw(embed);
-		if(regPre)
-			embed.unregisterPre(embed);
-		if(regMouse)
-			embed.unregisterMouseEvent(embed);
-		regDraw = regPre = regMouse = false;
-		G4P.removeControlWindow(this);
-	}
-
-	/**
 	 * Set the background color for the window.
 	 * 
-	 * @param bkColor
+	 * @param col
 	 */
-	public void setBackColor(int bkColor){
-		embed.bkColor = bkColor;
+	public void setBackground(int col){
+		embed.bkColor = col;
 	}
 
 	/**
@@ -303,5 +311,20 @@ public class GWindow extends Frame implements GConstants {
 		return exitBehaviour;
 	}
 
+	/**
+	 * Used to remove from G4P when the Frame is disposed.
+	 */
+	private void removeFromG4P(){
+		embed.noLoop();
+		embed.unregisterPost(embed);
+		if(regDraw)
+			embed.unregisterDraw(embed);
+		if(regPre)
+			embed.unregisterPre(embed);
+		if(regMouse)
+			embed.unregisterMouseEvent(embed);
+		regDraw = regPre = regMouse = false;
+		G4P.removeControlWindow(this);
+	}
 
 }
