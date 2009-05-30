@@ -290,10 +290,12 @@ public class GButton extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
-				mdx = winApp.mouseX;
-				mdy = winApp.mouseY;
+//				mdx = winApp.mouseX;
+//				mdy = winApp.mouseY;
 				status = DOWN;
 				takeFocus();
+				eventType = PRESSED;
+				fireEvent();
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
@@ -301,19 +303,21 @@ public class GButton extends GComponent {
 			// the mouse has not moved since MOUSE_PRESSED	
 			if(focusIsWith == this){
 				status = OFF;
+				looseFocus(null);
+//				mdx = mdy = Integer.MAX_VALUE;
 				eventType = CLICKED;
 				fireEvent();
-				looseFocus(null);
-				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:	
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
-			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
+			if(focusIsWith == this){ // && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				looseFocus(null);
-				mdx = mdy = Integer.MAX_VALUE;
+//				mdx = mdy = Integer.MAX_VALUE;
 				status = OFF;
+				eventType = CLICKED;
+				fireEvent();
 			}
 			break;
 		case MouseEvent.MOUSE_MOVED:
