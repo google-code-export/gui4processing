@@ -1,6 +1,5 @@
 import guicomponents.*;
 
-
 private GWindow[] window;
 private int sx,sy,ex,ey;
 private boolean done;
@@ -20,7 +19,8 @@ public void createWindows(){
   window = new GWindow[3];
   for(int i = 0; i < 3; i++){
     col = (128 << (i * 8)) | 0xff000000;
-    window[i] = new GWindow(this, "Window "+i, 130+i*210, 100+i*100,200,200,col);
+    window[i] = new GWindow(this, "Window "+i, 130+i*210, 100+i*100,200,200,false, JAVA2D);
+    window[i].setBackground(col);
     window[i].addData(new MyWinData());
     window[i].addDrawHandler(this, "windowDraw");
     window[i].addMouseHandler(this, "windowMouse");
@@ -32,7 +32,7 @@ public void createWindows(){
  * @param button
  */
 public void handleButtonEvents(GButton button){
-  if(window == null){
+  if(window == null && button.getEventType() == GButton.CLICKED){
     createWindows();
     lblInstr.setVisible(true);
   }
@@ -103,5 +103,4 @@ class MyWinData extends GWinData {
   public int sx,sy,ex,ey;
   public boolean done;
 }
-
 

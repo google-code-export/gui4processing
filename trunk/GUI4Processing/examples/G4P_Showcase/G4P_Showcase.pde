@@ -185,7 +185,7 @@ public void handleSliderEvents(GSlider slider){
 }
 
 public void handleButtonEvents(GButton button){
-  if(btnTimer == button){
+  if(btnTimer == button && button.getEventType() == GButton.CLICKED){
     if(tmrTimer.isRunning()){
       lblAction.setText("Timer stopped");
       btnTimer.setText("Start");
@@ -197,7 +197,7 @@ public void handleButtonEvents(GButton button){
       tmrTimer.start();
     }
   }
-  if(btnControl == button){
+  if(btnControl == button && button.getEventType() == GButton.CLICKED){
     createControlWindow();
     btnControl.setVisible(false);
   }
@@ -245,7 +245,7 @@ public void handlePanelEvents(GPanel panel){
   }
 }
 public void createControlWindow(){
-  windControl = new GWindow(this, "Controls",600,400,width/4 + 16,height/4 + 16, color(0));
+  windControl = new GWindow(this, "Controls",600,400,width/4 + 16,height/4 + 16, false, null);
   sdrHorzPos = new GHorzSlider(this,0,height/4,width/4,16);
   sdrHorzPos.setLimits(pX, 0 ,width - pWidth);
   sdrVertPos = new GVertSlider(this,width/4,0,16,height/4);
@@ -272,4 +272,3 @@ public void drawController(GWinApplet appc, GWinData data){
   appc.rect(pnlControls.getX()/4, (pnlControls.getY() - pnlControls.getTabHeight())/4, 
   pnlControls.getWidth()/4, (pnlControls.getHeight()+ pnlControls.getTabHeight())/4);
 }
-

@@ -69,7 +69,6 @@ void pre(){
   for(i = 0; i < deadBalls.size(); i++){
     liveBalls.remove(deadBalls.get(i));
   }
-  println("Living: " + liveBalls.size() + "     Died: " + deadBalls.size());
   // Done with dead balls
   deadBalls.clear();
 }
@@ -94,9 +93,9 @@ void handleSliderEvents(GSlider slider){
 
 // This method is called when a button is clicked
 void handleButtonEvents(GButton button){
-  if(button == btnStart)
+  if(button == btnStart && button.getEventType() == GButton.CLICKED)
     timer.start();
-  if(button == btnStop)
+  if(button == btnStop && button.getEventType() == GButton.CLICKED)
     timer.stop();
 }
 
@@ -141,9 +140,3 @@ class Ball {
   }
 
 }
-
-
-
-
-
-
