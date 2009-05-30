@@ -41,6 +41,9 @@ public class GWinApplet extends PApplet implements GConstants {
 	public GWindow owner;
 	// The applet width and height
 	public int appWidth, appHeight;
+	// applet graphics mode e.g. JAVA2D, P3D etc.
+	public String mode;
+	
 	// background color
 	public int bkColor;
 	// backgroundimage if any

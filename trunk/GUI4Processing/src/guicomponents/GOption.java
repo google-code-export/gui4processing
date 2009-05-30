@@ -115,7 +115,8 @@ public class GOption extends GComponent {
 					eventHandlerMethod.invoke(eventHandlerObject,
 							new Object[] { this, ownerGroup.deselectedOption() } );
 				} catch (Exception e) {
-					GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, new Object[] {eventHandlerMethodName } );
+					GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, 
+							new Object[] {eventHandlerMethodName, e } );
 				}
 			}		
 		}
