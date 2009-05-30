@@ -46,6 +46,8 @@ public interface GConstants {
 	
 	// GButton
 	public final static int CLICKED = 			0x00000301;
+	public final static int PRESSED = 			0x00000302;
+	public final static int RELEASED = 			0x00000303;
 	
 	// GCheckbox & GOption
 	public final static int SELECTED = 			0x00000401;
