@@ -61,6 +61,7 @@ public class GWinApplet extends PApplet implements GConstants {
 	
 	public void pre(){
 		if(owner.preHandlerObject != null){
+			System.out.println("app pre");
 			try {
 				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
 						new Object[] { owner.embed, owner.data });
