@@ -26,6 +26,7 @@ package guicomponents;
 import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 
 /**
  * CLASS FOR INTERNAL USE ONLY
@@ -36,25 +37,33 @@ import processing.core.PApplet;
  * @author Peter Lager
  */
 public class GWinApplet extends PApplet implements GConstants {
-	
+	// Must be set by GWindo 'owning' this PApplet
 	public GWindow owner;
+	// The applet width and height
 	public int appWidth, appHeight;
+	// background color
 	public int bkColor;
-
+	// backgroundimage if any
+	public PImage bkImage;
+	
+	// setuo for embeded applet object
 	public void setup() {
 		size(appWidth, appHeight);
 		registerPost(this);
-		//frameRate(30);
 	}
 
+	public void setBackground(int col){
+		bkColor = col;
+	}
+	
 	public void pre(){
-		if(owner.drawHandlerObject != null){
+		if(owner.preHandlerObject != null){
 			try {
 				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
 						new Object[] { owner.embed, owner.data });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, owner.preHandlerObject, 
-						new Object[] {owner.preHandlerMethodName } );
+						new Object[] {owner.preHandlerMethodName, e} );
 			}
 		}
 	}
@@ -65,17 +74,19 @@ public class GWinApplet extends PApplet implements GConstants {
 			try {
 				owner.drawHandlerMethod.invoke(owner.drawHandlerObject, new Object[] { this, owner.data });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.drawHandlerObject, new Object[] {owner.drawHandlerMethodName } );
+				GMessenger.message(EXCP_IN_HANDLER, owner.drawHandlerObject, 
+						new Object[] {owner.drawHandlerMethodName, e} );
 			}
 		}
 	}
 
 	public void mouseEvent(MouseEvent event){
-		if(owner.drawHandlerObject != null){
+		if(owner.mouseHandlerObject != null){
 			try {
-				owner.preHandlerMethod.invoke(owner.preHandlerObject, new Object[] { this, owner.data, event });
+				owner.mouseHandlerMethod.invoke(owner.mouseHandlerObject, new Object[] { this, owner.data, event });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.preHandlerObject, new Object[] {owner.preHandlerMethodName } );
+				GMessenger.message(EXCP_IN_HANDLER, owner.mouseHandlerObject, 
+						new Object[] {owner.mouseHandlerMethodName, e} );
 			}
 		}
 	}
@@ -86,6 +97,14 @@ public class GWinApplet extends PApplet implements GConstants {
 				cursor(G4P.mouseOver);
 			else
 				cursor(G4P.mouseOff);
+		}
+		if(owner.postHandlerObject != null){
+			try {
+				owner.postHandlerMethod.invoke(owner.postHandlerObject, new Object[] { this, owner.data });
+			} catch (Exception e) {
+				GMessenger.message(EXCP_IN_HANDLER, owner.postHandlerObject, 
+						new Object[] {owner.mouseHandlerMethodName, e} );
+			}
 		}
 	}
 }
