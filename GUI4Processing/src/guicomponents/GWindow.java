@@ -106,7 +106,7 @@ public class GWindow extends Frame implements GConstants {
 	 * @param h height of the drawing area (the frame will be bigger to accommodate border and title bar)
 	 * @param background background color to use
 	 */
-	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, boolean noFrame) {
+	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, boolean noFrame, String mode) {
 		super(name);
 		setUndecorated(noFrame);
 		app = theApplet;
@@ -121,6 +121,11 @@ public class GWindow extends Frame implements GConstants {
 		embed.appHeight = h;
 		embed.bkColor = embed.color(0);
 
+		if(mode == null || mode.equals(""))
+			embed.mode = PApplet.JAVA2D;
+		else
+			embed.mode = mode;
+		
 		embed.resize(embed.appWidth, embed.appHeight);
 		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
 		embed.setMinimumSize(new Dimension(embed.appWidth, embed.appHeight));

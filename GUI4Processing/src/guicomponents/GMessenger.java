@@ -71,13 +71,15 @@ public class GMessenger implements GConstants {
 	private static void eventHandlerFailed(Object handler, Object[] info) {
 		String className = handler.getClass().getSimpleName();
 		String methodName = (String) info[0];
+		Exception e = (Exception) info[1];
 		StringBuilder output = new StringBuilder();
-
-		output.append("#######  EXCEPTION IN EVENT HANDLER  #######\n");
+		output.append("##########  EXCEPTION IN EVENT HANDLER  ##########\n");
 		output.append("An exception occured during execution of the\n");
 		output.append("eventhandler. Examine your code\n");
 		output.append("  Class: "+className+"   Method: "+methodName+"\n");
 		System.out.println(output);
+		e.printStackTrace();
+		System.out.println("##################################################\n");
 	}
 
 	/**

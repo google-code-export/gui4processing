@@ -256,7 +256,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 			try {
 				eventHandlerMethod.invoke(eventHandlerObject, new Object[] { this });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, new Object[] {eventHandlerMethodName } );
+				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, 
+						new Object[] {eventHandlerMethodName, e } );
 			}
 		}		
 	}
