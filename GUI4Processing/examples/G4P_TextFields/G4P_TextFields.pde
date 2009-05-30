@@ -106,13 +106,12 @@ void handleTextFieldEvents(GTextField tfield){
 
 // Handle button events
 void handleButtonEvents(GButton button){
-  if(button == btnCopy12)
+  if(button == btnCopy12 && button.getEventType() == GButton.CLICKED)
     txf2.setText(txf1.getText());
-  else if(button == btnCopy21)
+  else if(button == btnCopy21 && button.getEventType() == GButton.CLICKED)
     txf1.setText(txf2.getText());
 }
 
 void draw(){
   background(200);
 }
-

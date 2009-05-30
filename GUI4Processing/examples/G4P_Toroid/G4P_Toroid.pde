@@ -83,6 +83,7 @@ void setup(){
   p.add(cbxWire);
   optShape.addOption(optTorroid);
   optShape.addOption(optHelix);
+  optTorroid.setSelected(true);
  
 }
 
@@ -107,8 +108,6 @@ public void handleButtonEvents(GButton button){
 }
 
 public void handleOptionEvents(GOption selected, GOption deselected){
-  println("Selected    : " + selected);
-  println("Deselected    : " + deselected);
   if(selected == optHelix)
     t1.setIsHelix(true);
   else
