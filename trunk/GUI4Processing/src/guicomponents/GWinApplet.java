@@ -36,8 +36,10 @@ import processing.core.PImage;
  * 
  * @author Peter Lager
  */
+@SuppressWarnings("serial")
 public class GWinApplet extends PApplet implements GConstants {
-	// Must be set by GWindo 'owning' this PApplet
+
+	// Must be set by GWindow 'owning' this PApplet
 	public GWindow owner;
 	// The applet width and height
 	public int appWidth, appHeight;
@@ -61,7 +63,6 @@ public class GWinApplet extends PApplet implements GConstants {
 	
 	public void pre(){
 		if(owner.preHandlerObject != null){
-			System.out.println("app pre");
 			try {
 				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
 						new Object[] { owner.embed, owner.data });
@@ -73,7 +74,10 @@ public class GWinApplet extends PApplet implements GConstants {
 	}
 	
 	public void draw() {
-		background(bkColor);
+		if(bkImage != null)
+			background(bkImage);
+		else
+			background(bkColor);
 		if(owner.drawHandlerObject != null){
 			try {
 				owner.drawHandlerMethod.invoke(owner.drawHandlerObject, new Object[] { this, owner.data });
@@ -107,7 +111,7 @@ public class GWinApplet extends PApplet implements GConstants {
 				owner.postHandlerMethod.invoke(owner.postHandlerObject, new Object[] { this, owner.data });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, owner.postHandlerObject, 
-						new Object[] {owner.mouseHandlerMethodName, e} );
+						new Object[] {owner.postHandlerMethodName, e} );
 			}
 		}
 	}
