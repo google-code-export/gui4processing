@@ -32,6 +32,7 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 
 /**
  * Objects of this class are separate windows which can be used to hold
@@ -108,7 +109,6 @@ public class GWindow extends Frame implements GConstants {
 	 */
 	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, boolean noFrame, String mode) {
 		super(name);
-		setUndecorated(noFrame);
 		app = theApplet;
 		winName = name;
 		
@@ -119,8 +119,53 @@ public class GWindow extends Frame implements GConstants {
 
 		embed.appWidth = w;
 		embed.appHeight = h;
-		embed.bkColor = embed.color(0);
 
+		windowCtorCore(x, y, w, h, noFrame, mode);
+		
+		super.setResizable(true);
+	}
+
+	/**
+	 * 
+	 * @param theApplet
+	 * @param name
+	 * @param x initial position on the screen
+	 * @param y initial position on the screen
+	 * @param image background image (used to size window)
+	 * @param noFrame if true then the frame has no border
+	 * @param mode JAVA2D / P2D / P3D / OPENGL
+	 */
+	public GWindow(PApplet theApplet, String name, int x, int y, PImage image, boolean noFrame, String mode) {
+		super(name);
+		app = theApplet;
+		winName = name;
+		
+		embed = new GWinApplet();
+		embed.owner = this;
+		embed.frame = this;
+		embed.frame.setResizable(true);
+		/// Get image details to set size
+		embed.bkImage = image;
+		embed.appWidth = image.width;
+		embed.appHeight = image.height;
+
+		windowCtorCore(x, y, image.width, image.height, noFrame, mode);
+		
+		super.setResizable(false);
+	}
+
+	/**
+	 * Core stuff for GWindo ctor
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @param noFrame
+	 * @param mode
+	 */
+	private void windowCtorCore(int x, int y, int w, int h, boolean noFrame, String mode){
+		embed.bkColor = embed.color(0);
 		if(mode == null || mode.equals(""))
 			embed.mode = PApplet.JAVA2D;
 		else
@@ -153,10 +198,12 @@ public class GWindow extends Frame implements GConstants {
 					}
 			}
 		});
-
+		// Pack the window, position it and make visible
+		setUndecorated(noFrame);
 		pack();
 		setLocation(x,y);
 		setVisible(true);
+		
 		try{
 			setAlwaysOnTop(true);
 		} catch (Exception e){
@@ -168,6 +215,120 @@ public class GWindow extends Frame implements GConstants {
 		
 		// Make sure G4P knows about this window
 		G4P.addControlWindow(this);
+		
+	}
+	
+	/**
+	 * Add a G4P component onto the window.
+	 * 
+	 * @param component
+	 */
+	public void add(GComponent component){
+		component.changeWindow(embed);
+	}
+
+	/**
+	 * Add an object that holds the data this window needs to use.
+	 * 
+	 * Note: the object can be of any class that extends GWinData.
+	 * 
+	 * @param data
+	 */
+	public void addData(GWinData data){
+		this.data = data;
+		this.data.owner = this;
+	}
+	
+	/**
+	 * Sets the location of the window.
+	 * (Already available from the Frame class - helps visibility 
+	 * of method in G4P reference)
+	 */
+	public void setLocation(int x, int y){
+		super.setLocation(x,y);
+	}
+	
+	/**
+	 * Sets the visibility of the window
+	 * (Already available from the Frame class - helps visibility 
+	 * of method in G4P reference)
+	 */
+	public void setVisible(boolean visible){
+		super.setVisible(visible);
+	}
+	
+	/**
+	 * Determines whether the window is resizabale or not. <br>
+	 * This cannot be set to true if a background image is used.
+	 */
+	public void setResizable(boolean resizable){
+		if(resizable == false)
+			super.setResizable(false);
+		else {
+			if(embed.bkImage == null)
+				super.setResizable(true);
+		}
+	}
+	
+	public void setBackground(PImage image){
+		embed.noLoop();
+		embed.bkImage = null;
+		super.setResizable(true);
+		embed.bkImage = image;
+		embed.resize(image.width, image.height);
+		embed.appWidth = image.width;
+		embed.appHeight = image.height;
+		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
+		embed.setMinimumSize(new Dimension(embed.appWidth, embed.appHeight));
+		pack();
+		super.setVisible(true);
+		super.setResizable(false);
+		embed.loop();
+	}
+	
+	/**
+	 * Set the background color for the window.
+	 * 
+	 * @param col
+	 */
+	public void setBackground(int col){
+		embed.bkColor = col;
+	}
+
+	/**
+	 * Determines what happens when the Frame is closed by the user.
+	 * <br>
+	 * GWindow.CLOSE_ON_EXIT  - closes/hides the window <br>
+	 * GWindow.SHUTDOWN_ON_EXIT  - ends the application if the window is closed
+	 * 
+	 * @param exitBehaviour the exitBehaviour to set
+	 */
+	public void setExitBehaviour(int exitBehaviour) {
+		this.exitBehaviour = exitBehaviour;
+	}
+
+	/**
+	 * @see setExitBehaviour
+	 * @return the exitBehaviour
+	 */
+	public int getExitBehaviour() {
+		return exitBehaviour;
+	}
+
+	/**
+	 * Used to remove from G4P when the Frame is disposed.
+	 */
+	private void removeFromG4P(){
+		embed.noLoop();
+		embed.unregisterPost(embed);
+		if(regDraw)
+			embed.unregisterDraw(embed);
+		if(regPre)
+			embed.unregisterPre(embed);
+		if(regMouse)
+			embed.unregisterMouseEvent(embed);
+		regDraw = regPre = regMouse = false;
+		G4P.removeControlWindow(this);
 	}
 
 	/**
@@ -247,90 +408,6 @@ public class GWindow extends Frame implements GConstants {
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 		}
-	}
-
-	/**
-	 * Add a G4P component onto the window.
-	 * 
-	 * @param component
-	 */
-	public void add(GComponent component){
-		component.changeWindow(embed);
-	}
-
-	/**
-	 * Add an object that holds the data this window needs to use.
-	 * 
-	 * Note: the object can be of any class that extends GWinData.
-	 * 
-	 * @param data
-	 */
-	public void addData(GWinData data){
-		this.data = data;
-		this.data.owner = this;
-	}
-	
-	/**
-	 * Sets the location of the window.
-	 * (Already available from the Frame class - helps visibility 
-	 * of method in G4P reference)
-	 */
-	public void setLocation(int x, int y){
-		super.setLocation(x,y);
-	}
-	
-	/**
-	 * Sets the visibility of the window
-	 * (Already available from the Frame class - helps visibility 
-	 * of method in G4P reference)
-	 */
-	public void setVisible(boolean visible){
-		super.setVisible(visible);
-	}
-	
-	/**
-	 * Set the background color for the window.
-	 * 
-	 * @param col
-	 */
-	public void setBackground(int col){
-		embed.bkColor = col;
-	}
-
-	/**
-	 * Determines what happens when the Frame is closed by the user.
-	 * <br>
-	 * GWindow.CLOSE_ON_EXIT  - closes/hides the window <br>
-	 * GWindow.SHUTDOWN_ON_EXIT  - ends the application if the window is closed
-	 * 
-	 * @param exitBehaviour the exitBehaviour to set
-	 */
-	public void setExitBehaviour(int exitBehaviour) {
-		this.exitBehaviour = exitBehaviour;
-	}
-
-	/**
-	 * @see setExitBehaviour
-	 * @return the exitBehaviour
-	 */
-	public int getExitBehaviour() {
-		return exitBehaviour;
-	}
-
-	/**
-	 * Used to remove from G4P when the Frame is disposed.
-	 */
-	private void removeFromG4P(){
-		embed.noLoop();
-		embed.unregisterPost(embed);
-		if(regDraw)
-			embed.unregisterDraw(embed);
-		if(regPre)
-			embed.unregisterPre(embed);
-		if(regMouse)
-			embed.unregisterMouseEvent(embed);
-		regDraw = regPre = regMouse = false;
-		G4P.removeControlWindow(this);
 	}
 
 }
