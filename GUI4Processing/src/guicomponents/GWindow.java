@@ -155,7 +155,7 @@ public class GWindow extends Frame implements GConstants {
 	}
 
 	/**
-	 * Core stuff for GWindo ctor
+	 * Core stuff for GWindows ctor
 	 * 
 	 * @param x
 	 * @param y
@@ -274,14 +274,13 @@ public class GWindow extends Frame implements GConstants {
 		embed.noLoop();
 		embed.bkImage = null;
 		super.setResizable(true);
-		embed.bkImage = image;
 		embed.resize(image.width, image.height);
+		embed.bkImage = image;
 		embed.appWidth = image.width;
 		embed.appHeight = image.height;
 		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
 		embed.setMinimumSize(new Dimension(embed.appWidth, embed.appHeight));
 		pack();
-		super.setVisible(true);
 		super.setResizable(false);
 		embed.loop();
 	}
