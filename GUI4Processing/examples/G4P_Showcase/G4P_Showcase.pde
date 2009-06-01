@@ -151,6 +151,8 @@ public void handleComboEvents(GCombo combo){
     btnTimer.setColorScheme(cboColor.selectedIndex());
     lblCursor.setColorScheme(cboColor.selectedIndex());
     btnControl.setColorScheme(cboColor.selectedIndex());
+    cboFont.setColorScheme(cboColor.selectedIndex());
+    cboColor.setColorScheme(cboColor.selectedIndex());
     sdrAlpha.setColorScheme(cboColor.selectedIndex());
     sdrAlpha.setValue(255);
     lblAction.setText("Color changed to " + cboColor.selectedText());
