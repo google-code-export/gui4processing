@@ -95,6 +95,16 @@ public class GCombo extends GComponent {
 	}
 
 	/**
+	 * Sets the local color scheme
+	 * @param schemeNo
+	 */
+	public void setColorScheme(int schemeNo){
+		System.out.println("Combo color scheme");
+		localColor = GCScheme.getColor(winApp, schemeNo);
+		slider.localColor = GCScheme.getColor(winApp, schemeNo);
+	}
+
+	/**
 	 * Create initial options based on string array.
 	 * 
 	 * @param optTexts
