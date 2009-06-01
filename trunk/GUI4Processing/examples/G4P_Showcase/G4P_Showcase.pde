@@ -49,7 +49,7 @@ void setup(){
   G4P.setMouseOverEnabled(true);
 
   // Create a second control window
-  btnControl = new GButton(this, "Open Control Window", 10, pHeight - 100,200,30);
+  btnControl = new GButton(this, "Open Panel Position Window", 10, pHeight - 100,200,30);
   pnlControls.add(btnControl);
 }
 
