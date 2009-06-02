@@ -187,7 +187,7 @@ public void handleSliderEvents(GSlider slider){
 }
 
 public void handleButtonEvents(GButton button){
-  if(btnTimer == button && button.getEventType() == GButton.CLICKED){
+  if(btnTimer == button && button.eventType == GButton.CLICKED){
     if(tmrTimer.isRunning()){
       lblAction.setText("Timer stopped");
       btnTimer.setText("Start");
@@ -199,7 +199,7 @@ public void handleButtonEvents(GButton button){
       tmrTimer.start();
     }
   }
-  if(btnControl == button && button.getEventType() == GButton.CLICKED){
+  if(btnControl == button && button.eventType == GButton.CLICKED){
     createControlWindow();
     btnControl.setVisible(false);
   }

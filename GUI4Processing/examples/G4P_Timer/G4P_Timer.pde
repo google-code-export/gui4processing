@@ -93,9 +93,9 @@ void handleSliderEvents(GSlider slider){
 
 // This method is called when a button is clicked
 void handleButtonEvents(GButton button){
-  if(button == btnStart && button.getEventType() == GButton.CLICKED)
+  if(button == btnStart && button.eventType == GButton.CLICKED)
     timer.start();
-  if(button == btnStop && button.getEventType() == GButton.CLICKED)
+  if(button == btnStop && button.eventType == GButton.CLICKED)
     timer.stop();
 }
 

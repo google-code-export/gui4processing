@@ -22,7 +22,6 @@ GCheckbox cbxWire;
 GOption optTorroid, optHelix;
 GOptionGroup optShape;
 GPanel p;
-GButton btn;
 
 Toroid t1;
 
@@ -101,10 +100,6 @@ public void handleSliderEvents(GSlider slider){
 public void handleCheckboxEvents(GCheckbox cbox){
   if(cbox == cbxWire)
     t1.setIsWire(cbxWire.isSelected());
-}
-
-public void handleButtonEvents(GButton button){
-  System.out.println("Button "+ button.getText());
 }
 
 public void handleOptionEvents(GOption selected, GOption deselected){

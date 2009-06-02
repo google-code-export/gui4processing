@@ -69,7 +69,7 @@ void handleTextFieldEvents(GTextField tfield){
   String line1 = "", line2 = "";
   if(tfield == txf1){
     line1 = "Field txf1 has triggered ";
-    switch (txf1.getEventType()){
+    switch (txf1.eventType){
     case GTextField.CHANGED:
       line1 += "CHANGED";
       break;
@@ -85,7 +85,7 @@ void handleTextFieldEvents(GTextField tfield){
   }
   if(tfield == txf2){
     line1 = "Text in field txf2 has been ";
-    switch (txf2.getEventType()){
+    switch (txf2.eventType){
     case GTextField.CHANGED:
       line1 += "CHANGED";
       break;
@@ -106,9 +106,9 @@ void handleTextFieldEvents(GTextField tfield){
 
 // Handle button events
 void handleButtonEvents(GButton button){
-  if(button == btnCopy12 && button.getEventType() == GButton.CLICKED)
+  if(button == btnCopy12 && button.eventType == GButton.CLICKED)
     txf2.setText(txf1.getText());
-  else if(button == btnCopy21 && button.getEventType() == GButton.CLICKED)
+  else if(button == btnCopy21 && button.eventType == GButton.CLICKED)
     txf1.setText(txf2.getText());
 }
 
