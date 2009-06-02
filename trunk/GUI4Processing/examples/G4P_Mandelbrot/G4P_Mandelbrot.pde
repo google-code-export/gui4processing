@@ -1,3 +1,11 @@
+/**
+ * The most complicated example so far. This will display the Mandelbrot
+ * set in a separate window. Draw a rectangle over the image to create 
+ * a new Mandelbrot in a new window ...
+ *
+ * by Peter Lager
+ */
+ 
 import guicomponents.*;
 
 final int MAX_ITERATE = 128;
@@ -304,10 +312,3 @@ public void windowDraw(GWinApplet appc, GWinData data){
     }	
   }
 }	
-
-
-
-
-
-
-

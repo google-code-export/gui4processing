@@ -32,7 +32,7 @@ public void createWindows(){
  * @param button
  */
 public void handleButtonEvents(GButton button){
-  if(window == null && button.getEventType() == GButton.CLICKED){
+  if(window == null && button.eventType == GButton.CLICKED){
     createWindows();
     lblInstr.setVisible(true);
   }
@@ -103,4 +103,3 @@ class MyWinData extends GWinData {
   public int sx,sy,ex,ey;
   public boolean done;
 }
-
