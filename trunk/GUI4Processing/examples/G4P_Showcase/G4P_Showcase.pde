@@ -29,7 +29,7 @@ int pHeight = 280;
 int pWidth = 600;
 
 void setup(){
-  size(800,400);
+  size(700,340);
   // Load the background image
   imgBgImage = loadImage("bground.jpg");
   // Set the colour scheme
