@@ -132,8 +132,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/** Whether to show background or not */
 	protected boolean opaque = true;
 
-	// The event type
-	protected int eventType = 0;
+	// The event type use READ ONLY
+	public int eventType = 0;
 
 	/**
 	 * Remember what we have registered for.
