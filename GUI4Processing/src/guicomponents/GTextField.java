@@ -1,7 +1,7 @@
 /*
   Part of the GUI for Processing library 
   	http://gui4processing.lagers.org.uk
-	http://code.google.com/p/gui-for-processing/
+	http://gui4processing.googlecode.com/svn/trunk/
 
   Copyright (c) 2008-09 Peter Lager
 
