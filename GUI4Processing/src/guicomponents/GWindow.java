@@ -213,6 +213,10 @@ public class GWindow extends Frame implements GConstants {
 		// Make the window always on top
 		setOnTop(true);
 		
+		// Make sure we have some data even if not used
+		data = new GWinData();
+		data.owner = this;
+		
 		// Make sure G4P knows about this window
 		G4P.addControlWindow(this);
 	}
