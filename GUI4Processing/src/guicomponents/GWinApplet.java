@@ -29,10 +29,11 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 /**
- * CLASS FOR INTERNAL USE ONLY
+ * CLASS FOR INTERNAL USE ONLY <br>
  * 
  * This class extends PApplet and provides a drawing surface for
- * the GWindow class.
+ * the GWindow class. Do not instantiate objects of this class, create
+ * GWindow objects instead.
  * 
  * @author Peter Lager
  */
@@ -48,24 +49,38 @@ public class GWinApplet extends PApplet implements GConstants {
 	
 	// background color
 	public int bkColor;
+	
 	// backgroundimage if any
 	public PImage bkImage;
+	
 	
 	public GWinApplet(String mode){
 		super();
 		this.mode = mode;
 	}
 	
-	// setuo for embeded applet object
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * The PApplet setup method to intialise the drawing surface
+	 */
 	public void setup() {
 		size(appWidth, appHeight, mode);
 		registerPost(this);
 	}
 
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use the equivalent method in GWindow
+	 * @param col
+	 */
 	public void setBackground(int col){
 		bkColor = col;
 	}
 	
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use addPreHandler in GWindow to activate this method
+	 */
 	public void pre(){
 		if(owner.preHandlerObject != null){
 			try {
@@ -78,6 +93,10 @@ public class GWinApplet extends PApplet implements GConstants {
 		}
 	}
 	
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use addDrawHandler in GWindow to activate this method
+	 */
 	public void draw() {
 		if(bkImage != null)
 			background(bkImage);
@@ -93,6 +112,10 @@ public class GWinApplet extends PApplet implements GConstants {
 		}
 	}
 
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use addDMouseHandler in GWindow to activate this method
+	 */
 	public void mouseEvent(MouseEvent event){
 		if(owner.mouseHandlerObject != null){
 			try {
@@ -104,6 +127,11 @@ public class GWinApplet extends PApplet implements GConstants {
 		}
 	}
 
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Already active to provide cursor over component image changes
+	 * Use addDPostHandler in GWindow to activate this method for your use
+	 */
 	public void post(){
 		if(isVisible() && G4P.cursorChangeEnabled){
 			if(GComponent.cursorIsOver != null)
