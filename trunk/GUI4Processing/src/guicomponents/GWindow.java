@@ -114,8 +114,6 @@ public class GWindow extends Frame implements GConstants {
 
 		if(mode == null || mode.equals(""))
 			mode = PApplet.JAVA2D;
-		else
-			mode = mode;
 		
 		embed = new GWinApplet(mode);
 		embed.owner = this;
@@ -147,8 +145,6 @@ public class GWindow extends Frame implements GConstants {
 				
 		if(mode == null || mode.equals(""))
 			mode = PApplet.JAVA2D;
-		else
-			mode = mode;
 		
 		embed = new GWinApplet(mode);
 		embed.owner = this;
@@ -210,18 +206,15 @@ public class GWindow extends Frame implements GConstants {
 		setLocation(x,y);
 		setVisible(true);
 		
-		try{
-			setAlwaysOnTop(true);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
 		// At least get a blank screen
 		embed.registerDraw(embed);
 		regDraw = true;
 		
+		// Make the window always on top
+		setOnTop(true);
+		
 		// Make sure G4P knows about this window
 		G4P.addControlWindow(this);
-		
 	}
 	
 	/**
@@ -243,6 +236,22 @@ public class GWindow extends Frame implements GConstants {
 	public void addData(GWinData data){
 		this.data = data;
 		this.data.owner = this;
+	}
+	
+	/**
+	 * Always make this window appear on top of other windows (or not). <br>
+	 * This will not work when run from a remote server (ie Applet over the web)
+	 * for security reasons. In this situation a call to this method is ignored
+	 * and no error is generated. 
+	 * 
+	 * @param onTop
+	 */
+	public void setOnTop(boolean onTop){
+		try{
+			setAlwaysOnTop(onTop);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	/**
