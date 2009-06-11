@@ -255,7 +255,7 @@ public class GWindow extends Frame implements GConstants {
 	}
 	
 	/**
-	 * Sets the location of the window.
+	 * Sets the location of the window. <br>
 	 * (Already available from the Frame class - helps visibility 
 	 * of method in G4P reference)
 	 */
@@ -264,7 +264,7 @@ public class GWindow extends Frame implements GConstants {
 	}
 	
 	/**
-	 * Sets the visibility of the window
+	 * Sets the visibility of the window <br>
 	 * (Already available from the Frame class - helps visibility 
 	 * of method in G4P reference)
 	 */
@@ -285,6 +285,11 @@ public class GWindow extends Frame implements GConstants {
 		}
 	}
 	
+	/**
+	 * Set the background image to be used instead of a plain color background <br>
+	 * The window will resize to accommodate the image.
+	 * @param image
+	 */
 	public void setBackground(PImage image){
 		embed.noLoop();
 		embed.bkImage = null;
