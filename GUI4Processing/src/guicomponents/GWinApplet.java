@@ -51,9 +51,14 @@ public class GWinApplet extends PApplet implements GConstants {
 	// backgroundimage if any
 	public PImage bkImage;
 	
+	public GWinApplet(String mode){
+		super();
+		this.mode = mode;
+	}
+	
 	// setuo for embeded applet object
 	public void setup() {
-		size(appWidth, appHeight);
+		size(appWidth, appHeight, mode);
 		registerPost(this);
 	}
 

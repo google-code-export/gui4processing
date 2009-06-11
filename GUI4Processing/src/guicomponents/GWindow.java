@@ -111,8 +111,13 @@ public class GWindow extends Frame implements GConstants {
 		super(name);
 		app = theApplet;
 		winName = name;
+
+		if(mode == null || mode.equals(""))
+			mode = PApplet.JAVA2D;
+		else
+			mode = mode;
 		
-		embed = new GWinApplet();
+		embed = new GWinApplet(mode);
 		embed.owner = this;
 		embed.frame = this;
 		embed.frame.setResizable(true);
@@ -139,8 +144,13 @@ public class GWindow extends Frame implements GConstants {
 		super(name);
 		app = theApplet;
 		winName = name;
+				
+		if(mode == null || mode.equals(""))
+			mode = PApplet.JAVA2D;
+		else
+			mode = mode;
 		
-		embed = new GWinApplet();
+		embed = new GWinApplet(mode);
 		embed.owner = this;
 		embed.frame = this;
 		embed.frame.setResizable(true);
@@ -166,10 +176,6 @@ public class GWindow extends Frame implements GConstants {
 	 */
 	private void windowCtorCore(int x, int y, int w, int h, boolean noFrame, String mode){
 		embed.bkColor = embed.color(0);
-		if(mode == null || mode.equals(""))
-			embed.mode = PApplet.JAVA2D;
-		else
-			embed.mode = mode;
 		
 		embed.resize(embed.appWidth, embed.appHeight);
 		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
