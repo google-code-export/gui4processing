@@ -242,7 +242,7 @@ public class GPanel extends GComponent {
 	}
 
 	/**
-	 * Ensures that the panel tab and panel body if open doesnot
+	 * Ensures that the panel tab and panel body if open does not
 	 * extend off the screen.
 	 */
 	private void constrainPanelPosition(){
@@ -263,7 +263,7 @@ public class GPanel extends GComponent {
 	/**
 	 * Determines whether the position ax, ay is over the tab
 	 * of this GPanel.
-	 * @return true if mouse is over the panel tab else fale
+	 * @return true if mouse is over the panel tab else false
 	 */
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);

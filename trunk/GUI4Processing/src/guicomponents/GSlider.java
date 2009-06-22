@@ -59,7 +59,7 @@ public abstract class GSlider extends GComponent {
 	protected int offset;
 	
 	protected boolean isValueChanging = false;
-	
+		
 	/**
 	 * Called by GHorzSlider and GVertSlider.
 	 * 
@@ -157,7 +157,6 @@ public abstract class GSlider extends GComponent {
 	public boolean isOver(int ax, int ay){
 		return false;
 	}
-
 	
 	/**
 	 * Get the minimum slider value
@@ -197,7 +196,9 @@ public abstract class GSlider extends GComponent {
 	 * Sets the target value of the slider, if setInertia(x) has been 
 	 * to implement inertia then the actual slider value will gradually
 	 * change until it reaches the target value. The slider thumb is 
-	 * always in the right position for the current slider value.
+	 * always in the right position for the current slider value. <br>
+	 * <b>Note</b> that events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
 	 * 
 	 * @param newValue the value we wish the slider to become
 	 */
@@ -208,15 +209,18 @@ public abstract class GSlider extends GComponent {
 	
 	/**
 	 * The same as setValue(newValue) except the second parameter determines 
-	 * whether we should ignore any inertia value so the affect is immediate.
+	 * whether we should ignore any inertia value so the affect is immediate. <br>
+	 * <b>Note</b> if false then events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
 	 * 
 	 * @param newValue the value we wish the slider to become
 	 * @param ignoreInteria if true change is immediate
 	 */
 	public void setValue(int newValue,  boolean ignoreInteria){
 		setValue(newValue);
-		if(ignoreInteria)
+		if(ignoreInteria){
 			thumbPos = thumbTargetPos;
+		}
 	}
 	
 	/**
