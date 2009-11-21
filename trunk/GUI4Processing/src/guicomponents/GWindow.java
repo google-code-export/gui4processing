@@ -218,7 +218,7 @@ public class GWindow extends Frame implements GConstants {
 		data.owner = this;
 		
 		// Make sure G4P knows about this window
-		G4P.addControlWindow(this);
+		G4P.addWindow(this);
 	}
 	
 	/**
@@ -351,7 +351,7 @@ public class GWindow extends Frame implements GConstants {
 		if(regMouse)
 			embed.unregisterMouseEvent(embed);
 		regDraw = regPre = regMouse = false;
-		G4P.removeControlWindow(this);
+		G4P.removeWindow(this);
 	}
 
 	/**
@@ -368,7 +368,7 @@ public class GWindow extends Frame implements GConstants {
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class } } );
 		}
 	}
 
@@ -388,7 +388,7 @@ public class GWindow extends Frame implements GConstants {
 			embed.registerPre(embed);
 			regPre = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class } } );
 		}
 	}
 
@@ -409,7 +409,7 @@ public class GWindow extends Frame implements GConstants {
 			embed.registerMouseEvent(embed);
 			regMouse = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class, MouseEvent.class } } );
 		}
 	}
 
@@ -429,7 +429,7 @@ public class GWindow extends Frame implements GConstants {
 			postHandlerMethodName = methodName;
 			regPost = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class } } );
 		}
 	}
 

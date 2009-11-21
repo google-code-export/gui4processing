@@ -147,10 +147,10 @@ public class G4P implements PConstants, GConstants {
 	/**
 	 * INTERNAL USE ONLY
 	 * Record a new control window
-	 * @param controlWindow
+	 * @param window
 	 */
-	public static void addControlWindow(GWindow controlWindow){
-		allWinApps.add(controlWindow);
+	public static void addWindow(GWindow window){
+		allWinApps.add(window);
 	}
 	
 	/**
@@ -158,10 +158,19 @@ public class G4P implements PConstants, GConstants {
 	 * Remove control window - called when a ControlWindow is closed
 	 * for good.
 	 *  
-	 * @param controlWindow
+	 * @param window
 	 */
-	public static void removeControlWindow(GWindow controlWindow){
-		allWinApps.remove(controlWindow);
+	public static void removeWindow(GWindow window){
+		allWinApps.remove(window);
+	}
+	
+	/**
+	 * Determines whether a window is still open or has been closed
+	 * @param window
+	 * @return
+	 */
+	public static boolean isWindowActive(GWindow window){
+		return allWinApps.contains(window);
 	}
 	
 	/**

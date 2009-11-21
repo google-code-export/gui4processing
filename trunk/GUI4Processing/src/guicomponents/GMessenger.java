@@ -42,7 +42,7 @@ public class GMessenger implements GConstants {
 				nonexistantEventHandler(obj, info);
 				break;
 			case ADD_DUPLICATE:
-				System.out.println("Component " + obj + " has already been regitered!");
+				System.out.println("Component " + obj + " has already been registered!");
 				break;
 			case USER_COL_SCHEME:
 				System.out.println("USER DEFINED colour schema active");
@@ -107,8 +107,8 @@ public class GMessenger implements GConstants {
 			for(int i = 0; i < parameters.length; i++){
 				pname = (parameters[i]).getSimpleName();
 				output.append(pname + " " + pname.substring(1).toLowerCase());
-				if(parameters.length > 1)
-					output.append(i);
+//				if(parameters.length > 1)
+//					output.append(i);
 				if(i < parameters.length - 1)
 					output.append(", ");
 			}
@@ -130,7 +130,7 @@ public class GMessenger implements GConstants {
 		String pname;
 		StringBuilder output = new StringBuilder();
 		
-		output.append("The "+className+" class does not have this method \n");
+		output.append("The "+className+" class cannot find this method \n");
 		output.append("\tvoid " + methodName + "(");
 		if(info != null && info.length > 1){
 			Class[] parameters = (Class[])(info[1]);
@@ -139,8 +139,8 @@ public class GMessenger implements GConstants {
 			for(int i = 0; i < parameters.length; i++){
 				pname = (parameters[i]).getSimpleName();
 				output.append(pname + " " + pname.substring(1).toLowerCase());
-				if(parameters.length > 1)
-					output.append(i);
+//				if(parameters.length > 1)
+//					output.append(i);
 				if(i < parameters.length - 1)
 					output.append(", ");
 			}
