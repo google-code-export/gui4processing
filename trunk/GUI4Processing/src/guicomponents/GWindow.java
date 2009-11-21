@@ -368,7 +368,7 @@ public class GWindow extends Frame implements GConstants {
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { GWinApplet.class, GWinData.class } } );
 		}
 	}
 
@@ -388,7 +388,7 @@ public class GWindow extends Frame implements GConstants {
 			embed.registerPre(embed);
 			regPre = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { GWinApplet.class, GWinData.class } } );
 		}
 	}
 
@@ -409,7 +409,7 @@ public class GWindow extends Frame implements GConstants {
 			embed.registerMouseEvent(embed);
 			regMouse = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class, MouseEvent.class } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { GWinApplet.class, GWinData.class, MouseEvent.class } } );
 		}
 	}
 
@@ -429,7 +429,7 @@ public class GWindow extends Frame implements GConstants {
 			postHandlerMethodName = methodName;
 			regPost = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass(), GWinData.class } } );
+			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { GWinApplet.class, GWinData.class } } );
 		}
 	}
 

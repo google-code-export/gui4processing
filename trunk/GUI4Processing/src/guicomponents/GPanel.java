@@ -263,6 +263,8 @@ public class GPanel extends GComponent {
 	/**
 	 * Determines whether the position ax, ay is over the tab
 	 * of this GPanel.
+	 * @param ax x position
+	 * @param ay y position
 	 * @return true if mouse is over the panel tab else false
 	 */
 	public boolean isOver(int ax, int ay){
@@ -273,6 +275,29 @@ public class GPanel extends GComponent {
 			return true;
 		else
 			return false;
+	}
+	
+	/**
+	 * Determines whether the position ax, ay is over the panel, takimg
+	 * into account whether the panel is collapsed or not. <br>
+	 * 
+	 * @param ax
+	 * @param ay
+	 * @param ax x position
+	 * @param ay y position
+	 * @return true if mouse is over the panel surface else false
+	 */
+	public boolean isOverPanel(int ax, int ay){
+		if(tabOnly)
+			return isOver(ax,ay);
+		else {
+			Point p = new Point(0,0);
+			calcAbsPosition(p);
+			if(ax >= p.x && ax <= p.x + width && ay >= p.y - tabHeight && ay <= p.y + height)
+				return true;
+			else 
+				return false;
+		}
 	}
 
 	/**
