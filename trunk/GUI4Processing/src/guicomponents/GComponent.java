@@ -666,7 +666,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	}
 
 	/**
-	 * Enable or disable the ability of the component to generate text and mouse events.
+	 * Enable or disable the ability of the component to generate mouse events.<br>
+	 * This will also disable key press events in GTextField <br>
 	 * @param enable true to enable else false
 	 */
 	public void setEnabled(boolean enable){
@@ -674,7 +675,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	}
 	
 	/**
-	 * Is this component able to generate mouse and keyboard events
+	 * Is this component enabled
 	 * @return
 	 */
 	public boolean isEnabled(){
