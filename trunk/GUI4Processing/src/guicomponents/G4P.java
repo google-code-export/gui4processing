@@ -86,7 +86,7 @@ public class G4P implements PConstants, GConstants {
 			mainWinApp.cursor(mouseOff);
 			Iterator<GWindow> iter = allWinApps.iterator();
 			while(iter.hasNext()){
-				iter.next().embed.cursor(mouseOff);
+				iter.next().papplet.cursor(mouseOff);
 			}
 		}
 	}
