@@ -85,7 +85,7 @@ public class GWinApplet extends PApplet implements GConstants {
 		if(owner.preHandlerObject != null){
 			try {
 				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
-						new Object[] { owner.embed, owner.data });
+						new Object[] { owner.papplet, owner.data });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, owner.preHandlerObject, 
 						new Object[] {owner.preHandlerMethodName, e} );

@@ -49,8 +49,19 @@ import processing.core.PImage;
 public class GWindow extends Frame implements GConstants {
 
 	protected PApplet app;
-	public GWinApplet embed;
+	
+	/**
+	 * Gives direct access to the PApplet object inside the frame
+	 * 
+	 */
+	public GWinApplet papplet;
 
+	/**
+	 * Gives direct access to the PApplet object inside the frame
+	 * @deprecated use papplet instead
+	 */
+	public GWinApplet embed;
+	
 	protected String winName;
 
 	public GWinData data;
@@ -115,13 +126,14 @@ public class GWindow extends Frame implements GConstants {
 		if(mode == null || mode.equals(""))
 			mode = PApplet.JAVA2D;
 		
-		embed = new GWinApplet(mode);
-		embed.owner = this;
-		embed.frame = this;
-		embed.frame.setResizable(true);
+		papplet = new GWinApplet(mode);
+		embed = papplet;
+		papplet.owner = this;
+		papplet.frame = this;
+		papplet.frame.setResizable(true);
 
-		embed.appWidth = w;
-		embed.appHeight = h;
+		papplet.appWidth = w;
+		papplet.appHeight = h;
 
 		windowCtorCore(x, y, w, h, noFrame, mode);
 		
@@ -146,14 +158,15 @@ public class GWindow extends Frame implements GConstants {
 		if(mode == null || mode.equals(""))
 			mode = PApplet.JAVA2D;
 		
-		embed = new GWinApplet(mode);
-		embed.owner = this;
-		embed.frame = this;
-		embed.frame.setResizable(true);
+		papplet = new GWinApplet(mode);
+		embed = papplet;
+		papplet.owner = this;
+		papplet.frame = this;
+		papplet.frame.setResizable(true);
 		/// Get image details to set size
-		embed.bkImage = image;
-		embed.appWidth = image.width;
-		embed.appHeight = image.height;
+		papplet.bkImage = image;
+		papplet.appWidth = image.width;
+		papplet.appHeight = image.height;
 
 		windowCtorCore(x, y, image.width, image.height, noFrame, mode);
 		
@@ -171,19 +184,19 @@ public class GWindow extends Frame implements GConstants {
 	 * @param mode
 	 */
 	private void windowCtorCore(int x, int y, int w, int h, boolean noFrame, String mode){
-		embed.bkColor = embed.color(0);
+		papplet.bkColor = papplet.color(0);
 		
-		embed.resize(embed.appWidth, embed.appHeight);
-		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
-		embed.setMinimumSize(new Dimension(embed.appWidth, embed.appHeight));
+		papplet.resize(papplet.appWidth, papplet.appHeight);
+		papplet.setPreferredSize(new Dimension(papplet.appWidth, papplet.appHeight));
+		papplet.setMinimumSize(new Dimension(papplet.appWidth, papplet.appHeight));
 
 		// add the PApplet to the Frame
 		setLayout(new BorderLayout());
-		add(embed, BorderLayout.CENTER);
+		add(papplet, BorderLayout.CENTER);
 
 		// ensures that the animation thread is started and
 		// that other internal variables are properly set.
-		embed.init();
+		papplet.init();
 
 		// add an exit on close listener
 		addWindowListener(new WindowAdapter() {
@@ -207,7 +220,7 @@ public class GWindow extends Frame implements GConstants {
 		setVisible(true);
 		
 		// At least get a blank screen
-		embed.registerDraw(embed);
+		papplet.registerDraw(papplet);
 		regDraw = true;
 		
 		// Make the window always on top
@@ -227,7 +240,7 @@ public class GWindow extends Frame implements GConstants {
 	 * @param component
 	 */
 	public void add(GComponent component){
-		component.changeWindow(embed);
+		component.changeWindow(papplet);
 	}
 
 	/**
@@ -284,7 +297,7 @@ public class GWindow extends Frame implements GConstants {
 		if(resizable == false)
 			super.setResizable(false);
 		else {
-			if(embed.bkImage == null)
+			if(papplet.bkImage == null)
 				super.setResizable(true);
 		}
 	}
@@ -295,18 +308,18 @@ public class GWindow extends Frame implements GConstants {
 	 * @param image
 	 */
 	public void setBackground(PImage image){
-		embed.noLoop();
-		embed.bkImage = null;
+		papplet.noLoop();
+		papplet.bkImage = null;
 		super.setResizable(true);
-		embed.resize(image.width, image.height);
-		embed.bkImage = image;
-		embed.appWidth = image.width;
-		embed.appHeight = image.height;
-		embed.setPreferredSize(new Dimension(embed.appWidth, embed.appHeight));
-		embed.setMinimumSize(new Dimension(embed.appWidth, embed.appHeight));
+		papplet.resize(image.width, image.height);
+		papplet.bkImage = image;
+		papplet.appWidth = image.width;
+		papplet.appHeight = image.height;
+		papplet.setPreferredSize(new Dimension(papplet.appWidth, papplet.appHeight));
+		papplet.setMinimumSize(new Dimension(papplet.appWidth, papplet.appHeight));
 		pack();
 		super.setResizable(false);
-		embed.loop();
+		papplet.loop();
 	}
 	
 	/**
@@ -315,7 +328,7 @@ public class GWindow extends Frame implements GConstants {
 	 * @param col
 	 */
 	public void setBackground(int col){
-		embed.bkColor = col;
+		papplet.bkColor = col;
 	}
 
 	/**
@@ -342,14 +355,14 @@ public class GWindow extends Frame implements GConstants {
 	 * Used to remove from G4P when the Frame is disposed.
 	 */
 	private void removeFromG4P(){
-		embed.noLoop();
-		embed.unregisterPost(embed);
+		papplet.noLoop();
+		papplet.unregisterPost(papplet);
 		if(regDraw)
-			embed.unregisterDraw(embed);
+			papplet.unregisterDraw(papplet);
 		if(regPre)
-			embed.unregisterPre(embed);
+			papplet.unregisterPre(papplet);
 		if(regMouse)
-			embed.unregisterMouseEvent(embed);
+			papplet.unregisterMouseEvent(papplet);
 		regDraw = regPre = regMouse = false;
 		G4P.removeWindow(this);
 	}
@@ -385,7 +398,7 @@ public class GWindow extends Frame implements GConstants {
 			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
-			embed.registerPre(embed);
+			papplet.registerPre(papplet);
 			regPre = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { GWinApplet.class, GWinData.class } } );
@@ -406,7 +419,7 @@ public class GWindow extends Frame implements GConstants {
 					new Class[] {GWinApplet.class, GWinData.class, MouseEvent.class } );
 			mouseHandlerObject = obj;
 			mouseHandlerMethodName = methodName;
-			embed.registerMouseEvent(embed);
+			papplet.registerMouseEvent(papplet);
 			regMouse = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { GWinApplet.class, GWinData.class, MouseEvent.class } } );
