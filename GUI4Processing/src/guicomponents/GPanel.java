@@ -115,6 +115,18 @@ public class GPanel extends GComponent {
 		beingDragged = false;
 	}
 
+	/**
+	 * Setting to false will prevent the panel being moved/collapsed/expanded and
+	 * disable all existing components on the panel.
+	 * Setting to true eanbles these features.
+	 */
+	public void setEnabled(boolean enable){
+		enabled = enable;
+		Iterator<GComponent> iter = children.iterator();
+		while(iter.hasNext()){
+			iter.next().setEnabled(enable);
+		}
+	}
 
 	/**
 	 * Draw the panel.
