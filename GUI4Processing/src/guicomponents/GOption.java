@@ -201,7 +201,7 @@ public class GOption extends GComponent {
 	 */
 	public void mouseEvent(MouseEvent event){
 		// If this option does not belong to a group then ignore mouseEvents
-		if(!visible || ownerGroup == null) return;
+		if(!visible || !enabled || ownerGroup == null) return;
 
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
