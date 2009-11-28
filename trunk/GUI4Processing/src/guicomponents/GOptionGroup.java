@@ -56,10 +56,30 @@ public class GOptionGroup {
 		return options;
 	}
 
+	/**
+	 * Enable or disable all the options in this group
+	 * @param enable
+	 */
+	public void setEnabled(boolean enable){
+		for(int i = 0; i < options.size(); i++){
+			options.get(i).setEnabled(enable);
+		}
+	}
+
+	/**
+	 * INTERNAL USE ONLY
+	 * @param index
+	 * @return
+	 */
 	public GOption get(int index){
 		return options.get(index);
 	}
 
+	/**
+	 * INTERNAL USE ONLY
+	 * @param option
+	 * @return
+	 */
 	public boolean addOption(GOption option){
 		if(option != null){
 			options.add(option);
@@ -70,6 +90,12 @@ public class GOptionGroup {
 			return false;
 	}
 
+	/**
+	 * Add a new Option at the given position
+	 * @param pos
+	 * @param option
+	 * @return
+	 */
 	public boolean addOption(int pos, GOption option){
 		if(option != null && pos >= 0 && pos <= options.size()){
 			options.add(pos, option);
@@ -79,11 +105,21 @@ public class GOptionGroup {
 		return false;
 	}
 
+	/**
+	 * Remove an existing option
+	 * @param option
+	 * @return
+	 */
 	public GOption removeOption(GOption option){
 		options.remove(option);
 		return option;
 	}
 
+	/**
+	 * Remove an option at the given position
+	 * @param index
+	 * @return
+	 */
 	public GOption removeOption(int index){
 		GOption option = null;
 		if(index >= 0 && index < options.size()){
@@ -92,6 +128,11 @@ public class GOptionGroup {
 		return option;
 	}
 
+	/**
+	 * Remove an option based on the option's text (this ignores case)
+	 * @param optText
+	 * @return
+	 */
 	public GOption removeOption(String optText){
 		System.out.println("REMOVE");
 		GOption option = null;
@@ -130,6 +171,10 @@ public class GOptionGroup {
 		}
 	}
 
+	/**
+	 * Set option selected based on the option text (this case insensitive)
+	 * @param optText the text of the option to select
+	 */
 	public void setSelected(String optText){
 		int i = options.size();
 		while(i-- >= 0){
@@ -140,30 +185,62 @@ public class GOptionGroup {
 			setSelected(options.get(i));
 	}
 
+	/**
+	 * INTERNAL USE ONLY
+	 * Return the option that has just been selected
+	 * @return
+	 */
 	public GOption selectedOption(){
 		return selected;
 	}
 
+	/**
+	 * INTERNAL USE ONLY
+	 * Return the option that has just been deselected
+	 * @return
+	 */
 	public GOption deselectedOption(){
 		return deselected;
 	}
 
+	/**
+	 * INTERNAL USE ONLY
+	 * @return the index of the currently selected option
+	 */
 	public int selectedIndex(){
 		return options.indexOf(selected);
 	}
 
+	/**
+	 * INTERNAL USE ONLY
+	 * Return the index of the option that has just been deselected
+	 * @return
+	 */
 	public int deselectedIndex(){
 		return options.indexOf(deselected);
 	}
 
+	/**
+	 * INTERNAL USE ONLY
+	 * @return the text of the currently selected option
+	 */
 	public String selectedText(){
 		return selected.text;
 	}
 
+	/**
+	 * INTERNAL USE ONLY
+	 * Return the text of the option that has just been deselected
+	 * @return
+	 */
 	public String deselectedText(){
 		return deselected.text;
 	}
 
+	/**
+	 * The number of options in this GOptionGroup
+	 * @return
+	 */
 	public int size(){
 		return options.size();
 	}

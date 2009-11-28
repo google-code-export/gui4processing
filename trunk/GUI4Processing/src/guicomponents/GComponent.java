@@ -124,8 +124,17 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/** Maximum width and height of component in pixels based on child components */
 	protected int maxWidth = 200, maxHeight = 200;
 
+	/**
+	 * Is the component visible or not
+	 */
 	protected boolean visible = true;
 
+	/**
+	 * Is the component enabled to generate mouse and keyboard events
+	 */
+	protected boolean enabled = true;
+
+	
 	/** The border width for this component : default value is 0 */
 	protected int border = 0;
 
@@ -656,6 +665,21 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		return visible;
 	}
 
+	/**
+	 * Enable or disable the ability of the component to generate text and mouse events.
+	 * @param enable true to enable else false
+	 */
+	public void setEnabled(boolean enable){
+		enabled = enable;
+	}
+	
+	/**
+	 * Is this component able to generate mouse and keyboard events
+	 * @return
+	 */
+	public boolean isEnabled(){
+		return enabled;
+	}
 	/**
 	 * @param visible the visibility to set
 	 */

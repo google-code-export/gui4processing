@@ -370,7 +370,7 @@ public class GTextField extends GComponent {
 	 * @param e the MouseEvent to handle
 	 */
 	public void mouseEvent(MouseEvent e) {
-		if(!visible) return;
+		if(!visible  || !enabled) return;
 
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver || focusIsWith == this) 
@@ -426,6 +426,7 @@ public class GTextField extends GComponent {
 	 * @param e the KeyEvent to be handled
 	 */
 	public void keyEvent(KeyEvent e) {
+		if(!enabled) return;
 		if(focusIsWith == this){
 			winApp.textFont(localFont, localFont.size);
 

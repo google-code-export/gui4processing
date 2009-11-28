@@ -276,10 +276,22 @@ public class GButton extends GComponent {
 
 
 	/**
-	 * All GUI components are registered for mouseEvents
+	 * All GUI components are registered for mouseEvents. <br>
+	 * When a button is clicked on a GButton it generates 3 events (in this order) 
+	 * mouse down, mouse up and mouse pressed. <br>
+	 * If you only wish to respond to button click events then you should test the 
+	 * event type e.g. <br>
+	 * <pre>
+	 * 	void handleButtonEvents(GButton button) {
+	 *	  if(button == btnName && button.eventType == GButton.CLICKED){
+	 *        // code for button click event
+	 *    }
+	 * </pre> <br>
+	 * Where <pre><b>btnName</b></pre> is the GButton identifier (variable name)
+	 * 
 	 */
 	public void mouseEvent(MouseEvent event){
-		if(!visible) return;
+		if(!visible || !enabled) return;
 
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
@@ -290,8 +302,6 @@ public class GButton extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
-//				mdx = winApp.mouseX;
-//				mdy = winApp.mouseY;
 				status = DOWN;
 				takeFocus();
 				eventType = PRESSED;
@@ -304,7 +314,6 @@ public class GButton extends GComponent {
 			if(focusIsWith == this){
 				status = OFF;
 				looseFocus(null);
-//				mdx = mdy = Integer.MAX_VALUE;
 				eventType = CLICKED;
 				fireEvent();
 			}
@@ -314,7 +323,6 @@ public class GButton extends GComponent {
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this){ // && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				looseFocus(null);
-//				mdx = mdy = Integer.MAX_VALUE;
 				status = OFF;
 				eventType = CLICKED;
 				fireEvent();

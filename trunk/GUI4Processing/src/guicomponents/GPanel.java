@@ -161,7 +161,7 @@ public class GPanel extends GComponent {
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
-		if(!visible) return;
+		if(!visible || !enabled) return;
 		
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
