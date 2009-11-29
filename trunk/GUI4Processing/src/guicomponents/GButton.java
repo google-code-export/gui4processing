@@ -53,8 +53,6 @@ public class GButton extends GComponent {
 
 	protected int status;
 
-	protected int[] col = new int[3];
-
 	protected PImage[] bimage = new PImage[3];
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
@@ -137,10 +135,6 @@ public class GButton extends GComponent {
 	 * @param height
 	 */
 	private void buttonCtorCore(int width, int height, PImage img, int nbrImages) {
-		col[0] = localColor.btnOff;
-		col[1] = localColor.btnOver;
-		col[2] = localColor.btnDown;
-
 		// Check button is wide and tall enough for both text
 		this.width = Math.max(width, textWidth + 2 * PADH);
 		this.height = Math.max(height, localFont.size + 2 * PADV);
@@ -169,9 +163,6 @@ public class GButton extends GComponent {
 	 */
 	public void setColorScheme(int schemeNo){
 		localColor = GCScheme.getColor(winApp, schemeNo);
-		col[0] = localColor.btnOff;
-		col[1] = localColor.btnOver;
-		col[2] = localColor.btnDown;
 	}
 
 	/**
@@ -259,8 +250,19 @@ public class GButton extends GComponent {
 		calcAbsPosition(pos);
 		// Draw button rectangle
 		winApp.strokeWeight(1);
-		winApp.stroke(localColor.btnBorder);			
-		winApp.fill(col[status]);	// depends on button state
+		winApp.stroke(localColor.btnBorder);
+		switch(status){
+		case 0:
+			winApp.fill(localColor.btnOff);
+			break;
+		case 1:
+			winApp.fill(localColor.btnOver);
+			break;
+		case 2:
+			winApp.fill(localColor.btnDown);
+			break;
+		}
+//winApp.fill(col[status]);	// depends on button state
 		winApp.rect(pos.x,pos.y,width,height);
 		// Draw image
 		if(bimage[status] != null){
