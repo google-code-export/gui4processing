@@ -39,7 +39,7 @@ import processing.core.PImage;
  * G4P GUI components or used for drawing or both combined.
  * <br><br>
  * A number of examples are included in the library and can be found
- * at gui4processing.lagers.org.uk
+ * at www.lagers.org.uk
  * 
  * 
  * @author Peter Lager
