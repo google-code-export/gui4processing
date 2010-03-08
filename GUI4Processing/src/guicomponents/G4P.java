@@ -122,7 +122,6 @@ public class G4P implements PConstants, GConstants {
 	 * @param c the component that has been created.
 	 */
 	public static void addComponent(GComponent c){
-//		if()
 		if(g4pStyle == null)
 			getStyle();
 		if(allComponents.contains(c)){
