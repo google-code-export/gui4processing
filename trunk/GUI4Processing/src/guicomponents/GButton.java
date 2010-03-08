@@ -262,7 +262,7 @@ public class GButton extends GComponent {
 			winApp.fill(localColor.btnDown);
 			break;
 		}
-//winApp.fill(col[status]);	// depends on button state
+
 		winApp.rect(pos.x,pos.y,width,height);
 		// Draw image
 		if(bimage[status] != null){
