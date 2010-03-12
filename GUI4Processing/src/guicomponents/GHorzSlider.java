@@ -136,7 +136,7 @@ public class GHorzSlider extends GSlider {
 	 * Determines whether the position ax, ay is over the thumb
 	 * of this Slider.
 	 * 
-	 * @return true if mouse is over the panel tab else false
+	 * @return true if mouse is over the slider thumb else false
 	 */
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
