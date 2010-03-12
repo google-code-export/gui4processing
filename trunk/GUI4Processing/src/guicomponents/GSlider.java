@@ -36,13 +36,21 @@ import processing.core.PApplet;
  */
 public abstract class GSlider extends GComponent {
 
+	public static final int INTEGER = 0;
+	public static final int DECIMAL = 1;
+	public static final int EXPONENT = 2;
+	
 	/**
 	 * These are the values that are supplied back to the user
 	 */
-	protected int minValue = 0;
-	protected int maxValue = 100;
-	protected int value = 50;
-	
+	protected float init;
+	protected float maxValue;
+	protected float minValue;
+	protected float value;
+
+	// Indicates the type of value used in the display
+	protected int _valueType;
+
 	/** 
 	 * Pixel values relative to slider top left
 	 */
@@ -90,7 +98,7 @@ public abstract class GSlider extends GComponent {
 	public void setLimits(int init, int min, int max){
 		minValue = Math.min(min, max);
 		maxValue = Math.max(min, max);
-		init = PApplet.constrain(init, minValue, maxValue);
+		this.init = Math.round(PApplet.constrain((float)init, minValue, maxValue));
 		
 		if(thumbMax - thumbMin < maxValue - minValue && G4P.messages){
 			System.out.println(this.getClass().getSimpleName()+".setLimits");
@@ -106,7 +114,23 @@ public abstract class GSlider extends GComponent {
 		// Set the value immediately ignoring inertia
 		setValue(init, true);
 	}
-	
+
+
+	/**
+	 * Sets the limits of the slider as float values. Converted to floats or integer depending
+	 * on the type of the slider.
+	 * @see setValueType 
+	 */
+	public void setLimits(float init, float min, float max){
+		minValue = Math.min(min, max);
+		maxValue = Math.max(min, max);
+		this.init = PApplet.constrain(init, minValue, maxValue);
+
+		thumbTargetPos = thumbPos;
+		// Set the value immediately ignoring inertia
+		setValue(init, true);
+	}
+
 	/**
 	 * Move thumb if not at desired position
 	 */
@@ -163,7 +187,7 @@ public abstract class GSlider extends GComponent {
 	 * @return min value
 	 */
 	public int getMinValue() {
-		return minValue;
+		return Math.round(minValue);
 	}
 
 	/**
@@ -171,7 +195,7 @@ public abstract class GSlider extends GComponent {
 	 * @return max value
 	 */
 	public int getMaxValue() {
-		return maxValue;
+		return Math.round(maxValue);
 	}
 
 	/**
@@ -180,8 +204,21 @@ public abstract class GSlider extends GComponent {
 	 * @return current value
 	 */
 	public int getValue(){
-		return value;
+		return Math.round(value);
 	}
+	
+	/**
+	 * Gets the current value of the slider. If the value type is integer
+	 * then the value is rounded.
+	 */
+	public float getValuef(){
+		if(_valueType == INTEGER)
+			return Math.round(value);
+		else
+			return value;
+	}
+
+
 	/**
 	 * Is the value changing as a results of the slider thumb being 
 	 * dragged with the mouse.
@@ -208,6 +245,21 @@ public abstract class GSlider extends GComponent {
 	}
 	
 	/**
+	 * Sets the target value of the slider, if setInertia(x) has been 
+	 * to implement inertia then the actual slider value will gradually
+	 * change until it reaches the target value. The slider thumb is 
+	 * always in the right position for the current slider value. <br>
+	 * <b>Note</b> that events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
+	 * 
+	 * @param newValue the value we wish the slider to become
+	 */
+	public void setValue(float newValue){
+		value = PApplet.constrain(newValue, minValue, maxValue);
+		thumbTargetPos = (int) PApplet.map(value, minValue, maxValue, thumbMin, thumbMax);
+	}
+
+	/**
 	 * The same as setValue(newValue) except the second parameter determines 
 	 * whether we should ignore any inertia value so the affect is immediate. <br>
 	 * <b>Note</b> if false then events will continue to be generated so if this
@@ -222,7 +274,23 @@ public abstract class GSlider extends GComponent {
 			thumbPos = thumbTargetPos;
 		}
 	}
-	
+		
+	/**
+	 * The same as setValue(newValue) except the second parameter determines 
+	 * whether we should ignore any inertia value so the affect is immediate. <br>
+	 * <b>Note</b> if false then events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
+	 * 
+	 * @param newValue the value we wish the slider to become
+	 * @param ignoreInteria if true change is immediate
+	 */
+	public void setValue(float newValue,  boolean ignoreInteria){
+		setValue(newValue);
+		if(ignoreInteria){
+			thumbPos = thumbTargetPos;
+		}
+	}
+
 	/**
 	 * When dragging the slider thumb rapidly with the mouse a certain amount of 
 	 * inertia will give a nice visual effect by trailing the thumb behind the
