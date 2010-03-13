@@ -1,6 +1,6 @@
 /*
   Part of the GUI for Processing library 
-  	http://gui4processing.lagers.org.uk
+  	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
   Copyright (c) 2008-09 Peter Lager
@@ -84,7 +84,7 @@ public class GPanel extends GComponent {
 	private void panelCtorCore(String text, int width, int height){
 		children = new HashSet<GComponent>();
 		setText(text);
-		tabHeight = localFont.size + 2 * PADV;
+		tabHeight = (int) (1.2f * localFont.size + 2 * PADV);
 		constrainPanelPosition();
 		opaque = true;
 		dockX = x;
@@ -102,8 +102,11 @@ public class GPanel extends GComponent {
 	public void setFont(String fontname, int fontsize){
 		int fs = (int) localFont.size;
 		localFont = GFont.getFont(winApp, fontname, fontsize);
-		if(fontsize != fs)
-			tabHeight += (fontsize - fs);
+
+		tabHeight = (int) (1.2f * localFont.size + 2 * PADV);
+		
+//		if(fontsize != fs)
+//			tabHeight += (fontsize - fs);
 		setText(text);
 	}
 
@@ -149,7 +152,7 @@ public class GPanel extends GComponent {
 		}
 		winApp.fill(localColor.pnlTabBack);
 		// Display tab (length depends on whether panel is open or closed
-		int w = (tabOnly)? textWidth + PADH * 2 : width;
+		int w = (tabOnly)? textWidth + PADH * 4 : width;
 		winApp.rect(pos.x, pos.y - tabHeight, w, tabHeight);
 		// Display tab text
 		winApp.fill(localColor.pnlFont);
