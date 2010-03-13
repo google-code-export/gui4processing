@@ -1,6 +1,6 @@
 /*
   Part of the GUI for Processing library 
-  	http://gui4processing.lagers.org.uk
+  	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 	
   Copyright (c) 2008-09 Peter Lager
@@ -230,7 +230,7 @@ public abstract class GSlider extends GComponent {
 	}
 
 	/**
-	 * Sets the target value of the slider, if setInertia(x) has been 
+	 * Sets the target value of the slider, if setInertia(x) has been used
 	 * to implement inertia then the actual slider value will gradually
 	 * change until it reaches the target value. The slider thumb is 
 	 * always in the right position for the current slider value. <br>

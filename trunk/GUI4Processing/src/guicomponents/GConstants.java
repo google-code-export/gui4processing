@@ -1,6 +1,6 @@
 /*
   Part of the GUI for Processing library 
-  	http://gui4processing.lagers.org.uk
+  	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
   Copyright (c) 2008-09 Peter Lager
@@ -29,7 +29,7 @@ package guicomponents;
  */
 public interface GConstants {
 
-	// 0x0???????  user can disabled these messages 
+	// 0x0???????  user can disable these messages 
 	// 0x8???????  always display these messages
 
 	

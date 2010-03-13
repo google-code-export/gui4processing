@@ -1,11 +1,16 @@
-/**
+/*
  *  Copyright notice
  *  
- *  This file is part of the Processing library `gwoptics' 
+ *  This file was created as part of the Processing library `gwoptics' 
  *  http://www.gwoptics.org/processing/gwoptics_p5lib/
  *  
  *  Copyright (C) 2009 onwards Daniel Brown and Andreas Freise
  *  
+ *  
+ *  It has been integrated into the GUI for Processing library 
+ * 	http://www.lagers.org.uk/g4p/index.html
+ *	http://gui4processing.googlecode.com/svn/trunk/
+ *
  *  This library is free software; you can redistribute it and/or modify it under 
  *  the terms of the GNU Lesser General Public License version 2.1 as published 
  *  by the Free Software Foundation.
@@ -108,8 +113,8 @@ import processing.core.PImage;
  * between tick and then relating that into a distance in pixels, rather than dividing length of slider by tick
  * number.
  * </p>
+ * 
  * @author Daniel Brown 21/6/09
- * @since 0.3.0
  *
  */
 public class GWSlider extends GSlider { //implements IRenderable {
@@ -144,7 +149,9 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	/**
 	 * Sets the number of decimal places to print in the value labels
 	 */
-	public void setPrecision(int acc){_precision = PApplet.constrain(acc, 0, 6);}
+	public void setPrecision(int acc){
+		_precision = PApplet.constrain(acc, 0, 6);
+	}
 	
 	/**
 	 * Sets the type of slider that this should be.
@@ -155,11 +162,64 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	}
 	
 	/**
+	 * Sets the target value of the slider, if setInertia(x) has been used
+	 * to implement inertia then the actual slider value will gradually
+	 * change until it reaches the target value. The slider thumb is 
+	 * always in the right position for the current slider value. <br>
+	 * <b>Note</b> that events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
+	 * 
+	 * @param newValue the value we wish the slider to become
+	 */
+	public void setValue(int newValue){
+		value = PApplet.constrain(newValue, minValue, maxValue);
+		thumbTargetPos = (int) PApplet.map(value, minValue, maxValue, thumbMin, thumbMax);
+		if(_stickToTicks)
+			_stickToTickByValue(value);
+	}
+	
+	/**
+	 * Sets the target value of the slider, if setInertia(x) has been 
+	 * to implement inertia then the actual slider value will gradually
+	 * change until it reaches the target value. The slider thumb is 
+	 * always in the right position for the current slider value. <br>
+	 * <b>Note</b> that events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
+	 * 
+	 * @param newValue the value we wish the slider to become
+	 */
+	public void setValue(float newValue){
+		value = PApplet.constrain(newValue, minValue, maxValue);
+		thumbTargetPos = (int) PApplet.map(value, minValue, maxValue, thumbMin, thumbMax);
+		if(_stickToTicks)
+			_stickToTickByValue(value);
+	}
+
+	/**
+	 * Sets the target value of the slider according to the tick number.
+	 * If setInertia(x) has been to implement inertia then the actual 
+	 * slider value will gradually change until it reaches the target
+	 * value. The slider thumb is always in the right position for the 
+	 * current slider value. <br>
+	 * <b>Note</b> that events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
+	 * 
+	 * @param tickNo >=0 and < number of ticks
+	 */
+	public void setValueToTickNumber(int tickNo){
+		if(_stickToTicks){
+			tickNo = PApplet.constrain(tickNo, 0, _numTicks);
+			float newValue = PApplet.map((float)tickNo, 0.0f, (float)_numTicks, minValue, maxValue);
+			_stickToTickByValue(newValue);
+		}		
+	}
+	
+	/**
 	 * Sets the number of ticks shown on the slider. This will cancel any labels 
 	 * previously set.
 	 */
-	public void setTickCount(int n){
-		_numTicks = n + 1;
+	public void setTickCount(int nbrTicks){
+		_numTicks = nbrTicks + 1;
 		_tickLabels = null;
 		_calcTickPositions();
 		// ***********************************************************
@@ -184,9 +244,9 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	 * Setting to true limits the thumb to only take values that each tick represents and no 
 	 * value in between them
 	 */
-	public void setStickToTicks(boolean b){
-		_stickToTicks = b;
-		if(b){
+	public void setStickToTicks(boolean stick){
+		_stickToTicks = stick;
+		if(stick){
 			_stickToTickByValue(PApplet.map(winApp.mouseX, thumbMin, thumbMax, minValue, maxValue));
 		}
 		_calcTickPositions();
@@ -400,32 +460,19 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	protected void _calcTickPositions(){
 		Point p = new Point();
 		calcAbsPosition(p);
-		
-//		if(_tickLabels == null){
-			float sliderRange = maxValue - minValue;
-			float dTick = sliderRange / _numTicks; //distance in terms of value
-			
-			_tickPositions = new int[_numTicks + 1];
-			_tickValues = new float[_numTicks + 1];
-			
-			for(int i = 0; i <= _numTicks;i++){
-				_tickPositions[i] = Math.round(PApplet.map(minValue + i * dTick, minValue, maxValue, thumbMin, thumbMax));
-				_tickValues[i] = minValue + i * dTick;
-			}
-//		}else{			
-//			float dTick = _centre.width / _numTicks; //distance in terms of px
-//			
-//			_tickPositions = new int[_numTicks + 1];
-//			_tickValues = new float[_numTicks + 1];
-//			
-//			for(int i = 0; i <= _numTicks;i++){
-////				_tickPositions[i] = Math.round(p.x + _leftEnd.width + i * dTick);
-//				_tickPositions[i] = Math.round(p.x +  i * dTick);
-//				_tickValues[i] = PApplet.map(_leftEnd.width + i * dTick, thumbMin, thumbMax, minValue, maxValue);
-//			}
-//		}
+
+		float sliderRange = maxValue - minValue;
+		float dTick = sliderRange / _numTicks; //distance in terms of value
+
+		_tickPositions = new int[_numTicks + 1];
+		_tickValues = new float[_numTicks + 1];
+
+		for(int i = 0; i <= _numTicks;i++){
+			_tickPositions[i] = Math.round(PApplet.map(minValue + i * dTick, minValue, maxValue, thumbMin, thumbMax));
+			_tickValues[i] = minValue + i * dTick;
+		}
 	}
-	
+
 	/**
 	 * This method takes a value that is to represented on the slider and determines which
 	 * tick it is closet to and sets the thumb at the relevant position
@@ -437,12 +484,10 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		
 		int index = Math.round(PApplet.constrain(v, minValue, maxValue) / dTick);
 		
-		// 2 lines modified by Daniel 12/3/10
-//		index = PApplet.constrain(index, 0, _tickPositions.length-1);
-//		thumbTargetPos = _tickPositions[index];
-
 		_currTickStuck = PApplet.constrain(index, 0, _tickPositions.length-1);
 		thumbTargetPos = _tickPositions[_currTickStuck];
+		if(_stickToTicks)
+			value = index * dTick;
 }
 	
 	/**
@@ -459,8 +504,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		float v = PApplet.map(pos, thumbMin, thumbMax, minValue, maxValue);
 		
 		int index = Math.round((v - minValue) / dTick);
-//		index = PApplet.constrain(index, 0, _tickPositions.length-1);
-//		thumbTargetPos = _tickPositions[index];
+
 		_currTickStuck = PApplet.constrain(index, 0, _tickPositions.length-1);
 		thumbTargetPos = _tickPositions[_currTickStuck];
 	}
@@ -516,7 +560,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 			     break;	 
 			     
 			   case MouseEvent.MOUSE_DRAGGED:
-				 if((focusIsWith == this) && _mousePressedOverThumb){  // #################################
+				 if((focusIsWith == this) && _mousePressedOverThumb){
 					 thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
 				 }
 			     break;
@@ -538,12 +582,6 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	 */
 	public void keyEvent(KeyEvent e){
 		if(e.getID() == KeyEvent.KEY_PRESSED && this.hasFocus()){
-//			if(e.getKeyCode()== LEFT){
-//				thumbTargetPos = PApplet.constrain(thumbTargetPos - 1,thumbMin,thumbMax);
-//			}else if(e.getKeyCode()== RIGHT){
-//				thumbTargetPos = PApplet.constrain(thumbTargetPos + 1,thumbMin,thumbMax);
-//			}
-			// Daniels solution
 			if(e.getKeyCode()== 37){ //left arrow
 				if(_stickToTicks){			
 					_currTickStuck = PApplet.constrain(_currTickStuck - 1, 0, _tickPositions.length-1);
@@ -556,16 +594,10 @@ public class GWSlider extends GSlider { //implements IRenderable {
 					_currTickStuck = PApplet.constrain(_currTickStuck + 1, 0, _tickPositions.length-1);
 					thumbTargetPos = _tickPositions[_currTickStuck];
 				}else
-					thumbTargetPos = PApplet.constrain(thumbTargetPos + 1,thumbMin,thumbMax);
-				
+					thumbTargetPos = PApplet.constrain(thumbTargetPos + 1,thumbMin,thumbMax);			
 			}
 
 		}
-
-//		if(_stickToTicks && e.getID() == KeyEvent.KEY_RELEASED
-//				&& (e.getKeyCode()== LEFT || e.getKeyCode() == RIGHT)){
-//				_stickToTickByPosition((float)thumbTargetPos);
-//		}
 	}
 	
 	/**
@@ -603,88 +635,6 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		else 
 			return false;
 	}
-	
-	/**
-	 * Sets the limits of the slider as integer values. Converted to floats depending on slider type
-	 * @see setValueType 
-	 */
-	@Override
-//	public void setLimits(int init, int min, int max){
-//		setLimits((float)init,(float)min,(float)max);
-//	}
-	
-//	/**
-//	 * Sets the limits of the slider as float values. Converted to floats or integer depending
-//	 * on the type of the slider.
-//	 * @see setValueType 
-//	 */
-//	public void setLimits(float init, float min, float max){
-//		if(_valueType != ValueType.INTEGER){
-//			minValue = Math.min(min, max);
-//			maxValue = Math.max(min, max);
-//			this.init = PApplet.constrain(init, minValue, maxValue);
-//		}else{
-//			minValue = Math.round(Math.min(min, max));
-//			maxValue = Math.round(Math.max(min, max));
-//			this.init = Math.round(PApplet.constrain(init, minValue, maxValue));
-//		}
-//		
-//		/*if(thumbMax - thumbMin < maxValue - minValue && G4P.messages){
-//			System.out.println(this.getClass().getSimpleName()+".setLimits");
-//			System.out.println("  not all values in the range "+min+" - "+max+" can be returned");
-//			System.out.print("  either reduce the range or make the slider ");
-//			if(this.getClass().getSimpleName().equals("gwSlider")) 
-//				System.out.print("width");
-//			else
-//				System.out.print("height");
-//			System.out.println(" at least " + (max-min+thumbSize));
-//		}*/
-//		
-//		thumbTargetPos = thumbPos;
-//		// Set the value immediately ignoring inertia
-//		setValue(init, true);
-//	}
-	
-	/**
-	 * sets the current value of the slider
-	 */
-//	@Override
-//	public void setValue(int newValue){
-//		setValuef((float) newValue);
-//	}
-	
-	/**
-	 * sets the current value of the slider. Value is rounded to integer depending on type of slider
-	 */
-//	public void setValuef(float newValue){
-//		if(_valueType == ValueType.INTEGER)
-//			value = Math.round(PApplet.constrain(newValue, minValue, maxValue));
-//		else
-//			value = PApplet.constrain(newValue, minValue, maxValue);
-//			
-//		if(_stickToTicks){
-//			_stickToTickByValue(newValue);
-//		}else{
-//			thumbTargetPos = Math.round(PApplet.map(value, minValue, maxValue, thumbMin, thumbMax));
-//		}
-//	}
-	
-	/**
-	 * sets the current value of the slider, and also switches on inertia for smoother motions
-	 */
-//	@Override
-//	public void setValue(int newValue,  boolean ignoreInteria){
-//		setValue((float) newValue, ignoreInteria);
-//	}
-//	
-//	/**
-//	 * sets the current value of the slider, and also switches on inertia for smoother motions
-//	 */
-//	public void setValue(float newValue,  boolean ignoreInteria){
-//		setValuef(newValue);
-//		if(ignoreInteria)
-//			thumbPos = thumbTargetPos;
-//	}
 	
 	/**
 	 * Sets font of labels
