@@ -120,7 +120,7 @@ import processing.core.PImage;
 public class GWSlider extends GSlider { //implements IRenderable {
 
 	public String unit;
-	
+
 	protected PImage _leftEnd;
 	protected PImage _thumb;
 	protected PImage _thumb_mouseover;
@@ -141,7 +141,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	protected float[] _tickValues;
 	protected int _tickColour;	
 	protected int _fontColour;	
-	
+
 	// Mod made by Daniel 12/3/10
 	protected int _currTickStuck; //Index of current index stuck to 
 
@@ -152,7 +152,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public void setPrecision(int acc){
 		_precision = PApplet.constrain(acc, 0, 6);
 	}
-	
+
 	/**
 	 * Sets the type of slider that this should be.
 	 * @see ValueType
@@ -160,7 +160,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public void setValueType(int type){
 		_valueType = type;
 	}
-	
+
 	/**
 	 * Sets the target value of the slider, if setInertia(x) has been used
 	 * to implement inertia then the actual slider value will gradually
@@ -177,7 +177,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		if(_stickToTicks)
 			_stickToTickByValue(value);
 	}
-	
+
 	/**
 	 * Sets the target value of the slider, if setInertia(x) has been 
 	 * to implement inertia then the actual slider value will gradually
@@ -213,19 +213,20 @@ public class GWSlider extends GSlider { //implements IRenderable {
 			_stickToTickByValue(newValue);
 		}		
 	}
-	
+
 	/**
 	 * Sets the number of ticks shown on the slider. This will cancel any labels 
 	 * previously set.
 	 */
 	public void setTickCount(int nbrTicks){
-		_numTicks = nbrTicks + 1;
+		_numTicks = nbrTicks;
 		_tickLabels = null;
 		_calcTickPositions();
 		// ***********************************************************
-		_stickToTickByValue(value);
+		if(_stickToTicks)
+			_stickToTickByValue(value);
 	}
-	
+
 	/**
 	 * Accepts an array of strings that then determines the number of ticks shown and the label 
 	 * underneath each of them. This overrides any previous setting of the tick count and value
@@ -237,9 +238,10 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		_numTicks = lbls.length - 1;
 		_calcTickPositions();
 		// **********************************************************************
-		_stickToTickByValue(value);
+		if(_stickToTicks)
+			_stickToTickByValue(value);
 	}
-	
+
 	/**
 	 * Setting to true limits the thumb to only take values that each tick represents and no 
 	 * value in between them
@@ -247,11 +249,12 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public void setStickToTicks(boolean stick){
 		_stickToTicks = stick;
 		if(stick){
-			_stickToTickByValue(PApplet.map(winApp.mouseX, thumbMin, thumbMax, minValue, maxValue));
+			_stickToTickByValue(value);
+			//			_stickToTickByValue(PApplet.map(winApp.mouseX, thumbMin, thumbMax, minValue, maxValue));
 		}
 		_calcTickPositions();
 	}
-	
+
 	/**
 	 * Adjusts the length of the ticks
 	 * @param l
@@ -260,7 +263,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		_tickLength = PApplet.constrain(l, 1, 10);
 		_calcControlWidthHeight();
 	}
-	
+
 	/**
 	 * set to false to not render the min/max labels for a more minamalistic look.
 	 */
@@ -268,14 +271,14 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		_renderMaxMinLabel = showMinMax;
 		_calcControlWidthHeight();
 	}
-	
+
 	/**
 	 * set to false to not render the value label for a more minamalistic look.
 	 */
 	public void setRenderValueLabel(boolean showValue){
 		_renderValueLabel = showValue;
 	}
-	
+
 	/**
 	 * Set the colour of the ticks
 	 * 
@@ -286,7 +289,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public void setTickColour(int R,int G, int B){
 		setTickColour(winApp.color(R,G,B));
 	}
-	
+
 	/**
 	 * Set the colour of the ticks
 	 * 
@@ -295,7 +298,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public void setTickColour(int c){
 		_tickColour = c;
 	}
-	
+
 	/**
 	 * Set the colour of the font
 	 * 
@@ -329,7 +332,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public GWSlider(PApplet theApplet, int x, int y, int length) {
 		this(theApplet,"gwSlider",x,y,length);
 	}
-	
+
 	/**
 	 * Alternative constructor that applies a given skin to the slider. Accepts the x and y 
 	 * position of the slider, the PApplet theApplet where the slider is rendered and the length
@@ -343,17 +346,17 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	 */
 	public GWSlider(PApplet theApplet, String skin, int x, int y, int length) {
 		super(theApplet, x, y, length, 1); //we reset the height later when we get the image heights
-		
+
 		if(length < 1){throw new RuntimeException("Length of slider must be greater than 0.");}
 		//signs up to the g4p events system
 		createEventHandler(winApp, "handleSliderEvents", new Class[]{ GSlider.class });
-		
+
 		//Here we set a bunch of default values for everything
 		if(skin == null)
 			_skin = "gwSlider";
 		else
 			_skin = skin;
-		
+
 		_numTicks = 5;
 		_tickLength = 5;
 		_tickOffset = 3;
@@ -364,9 +367,9 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		_valueType = INTEGER;
 		_tickColour = winApp.color(0);
 		_fontColour = winApp.color(0);
-		
+
 		unit = "";
-		
+
 		//Look for the skin images, if these dont exist the variable come out null
 		// no excetpions are thrown
 		_leftEnd = theApplet.loadImage(_skin + "/end_left.png");
@@ -376,9 +379,9 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		//load the centre image up temporarily as we will generate the final stretched
 		//image to use shortly
 		PImage cTemp = theApplet.loadImage(_skin + "/centre.png");
-		
+
 		String files = "";
-		
+
 		//generate a list of files that aren't there
 		if(_leftEnd == null)
 			files += "end_left.png\n";
@@ -390,7 +393,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 			files += "handle_mouseover.png\n";
 		if(cTemp == null)
 			files += "centre.png\n";
-		
+
 		// See if we have problems with the skin files
 		if(files != ""){
 			PApplet.println("The following files could not be found for the skin " + _skin + ": \n" + files
@@ -403,40 +406,40 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		if(cTemp.height != _leftEnd.height || cTemp.height != _rightEnd.height){
 			PApplet.println("The image components of the slider are not all the same height.");
 		}
-		
+
 		this.height = cTemp.height;
 		int cWidth = length - _leftEnd.width - _rightEnd.width;
 		if(cWidth < 0){cWidth = 0;}
-		
-		
+
+
 		_centre = new PImage(cWidth,cTemp.height);
-		
+
 		//now copy over the data from cTemp to main centre image
 		//the standard pimage stretch method is no good in this case 
 		//appears better to do it manually.
 		cTemp.loadPixels();
 		_centre.loadPixels();
-		
+
 		for (int i = 0; i < _centre.height; i++) {
 			for (int j = 0; j < _centre.width; j++) {
 				_centre.pixels[i*_centre.width +j] = cTemp.pixels[i];
 			}
 		}
-		
+
 		//the thumb only moves along the centre section
 		thumbMin = _leftEnd.width;
 		thumbMax = _leftEnd.width + _centre.width;
 		this.setLimits(50.0f, 0.0f, 100.0f);
-		
+
 		localFont = globalFont;
 		winApp.textFont(localFont);
 		winApp.textAlign(PConstants.CENTER);
-		
+
 		_calcControlWidthHeight();
 		_calcTickPositions();
 		winApp.registerKeyEvent(this);
 	}
-	
+
 	/**
 	 * the width of the control and height, is determined by the length and also 
 	 * the various images used in the skins. This function deals with that. It is
@@ -448,10 +451,10 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		//width is determined by image sizes
 		width = _leftEnd.width + _centre.width + _rightEnd.width;
 		height =  _centre.height + _tickLength + _tickOffset;
-		
+
 		if(_renderMaxMinLabel){height += localFont.size;}
 	}
-	
+
 	/**
 	 * The tick positions are stored in an array and referenced on each draw call.
 	 * It is done this way to provide a more accurate way of lining up the ticks and
@@ -481,35 +484,35 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	protected void _stickToTickByValue(float v){
 		float sliderRange = maxValue - minValue;
 		float dTick = sliderRange / _numTicks; //distance in terms of value
-		
-		int index = Math.round(PApplet.constrain(v, minValue, maxValue) / dTick);
-		
-		_currTickStuck = PApplet.constrain(index, 0, _tickPositions.length-1);
+
+		int index = Math.round(PApplet.constrain(v - minValue, 0, sliderRange) / dTick);
+
+		_currTickStuck = PApplet.constrain(index, 0,  _numTicks);
 		thumbTargetPos = _tickPositions[_currTickStuck];
-		if(_stickToTicks)
-			value = index * dTick;
-}
-	
+
+		value = _currTickStuck * dTick;
+	}
+
 	/**
-	 * This method accepts an input value that states a screen position(usually from a mouse click) and 
-	 * determines the nearest tick marks to stick the thumb to
+	 * This method accepts an input value that states a screen position(usually from a 
+	 * mouse click) and determines the nearest tick marks to stick the thumb to
 	 * @param pos
 	 */
 	protected void _stickToTickByPosition(float pos){
 		Point p = new Point();
 		calcAbsPosition(p);
-		
+
 		float sliderRange = maxValue - minValue;
 		float dTick = sliderRange / _numTicks; //distance in terms of value
 		float v = PApplet.map(pos, thumbMin, thumbMax, minValue, maxValue);
-		
+
 		int index = Math.round((v - minValue) / dTick);
 
 		_currTickStuck = PApplet.constrain(index, 0, _tickPositions.length-1);
 		thumbTargetPos = _tickPositions[_currTickStuck];
 	}
 
-	
+
 	/**
 	 * handles all the mouse events that may effect the slider. depending on mouse position and action
 	 * the focus is set to the slider and the relevant function and members set.
@@ -520,62 +523,62 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		calcAbsPosition(p);
 
 		float sliderRange = maxValue - minValue;
-		
+
 		if(isVisible() && sliderRange > 0.0f){
 			boolean isMouseOver = this.isOver(event.getX(), event.getY());
-			
+
 			switch (event.getID()) {
-			   case MouseEvent.MOUSE_PRESSED:
-				   if(isMouseOver){
-					   this.takeFocus();
-					   if(isOverThumb(event.getX(), event.getY()))
-						   _mousePressedOverThumb = true;
-					   else
-						   _mousePressedOverThumb = false;
-				   }
-			     break;
-			     
-			   case MouseEvent.MOUSE_RELEASED:
-				   if(focusIsWith == this && isMouseOver || (_mousePressedOverThumb == true)){
-					   if(_stickToTicks){
-						   _stickToTickByPosition(winApp.mouseX - p.x);
-					   }else{
-						    thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x, thumbMin, thumbMax);
-					   }
-					   
-					   if(isOverThumb(event.getX(), event.getY())){
-						   _isMouseOverThumb = true;
-					   }else{
-						   _isMouseOverThumb = false;
-					   }
-					   
-					   _mousePressedOverThumb = false;					  
-					   
-					   eventType = RELEASED;
-					   fireEvent();
-				   }else{
-					   _isMouseOverThumb = false;
-					   _mousePressedOverThumb = false;
-				   }
-			     break;	 
-			     
-			   case MouseEvent.MOUSE_DRAGGED:
-				 if((focusIsWith == this) && _mousePressedOverThumb){
-					 thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
-				 }
-			     break;
-			     
-			   case MouseEvent.MOUSE_MOVED:
-				   if(isOverThumb(event.getX(), event.getY())){
-					   _isMouseOverThumb = true;
-				   }
-				   else
-					   _isMouseOverThumb = false;
-			       break;
-			 }
+			case MouseEvent.MOUSE_PRESSED:
+				if(isMouseOver){
+					this.takeFocus();
+					if(isOverThumb(event.getX(), event.getY()))
+						_mousePressedOverThumb = true;
+					else
+						_mousePressedOverThumb = false;
+				}
+				break;
+
+			case MouseEvent.MOUSE_RELEASED:
+				if(focusIsWith == this && isMouseOver || (_mousePressedOverThumb == true)){
+					if(_stickToTicks){
+						_stickToTickByPosition(winApp.mouseX - p.x);
+					}else{
+						thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x, thumbMin, thumbMax);
+					}
+
+					if(isOverThumb(event.getX(), event.getY())){
+						_isMouseOverThumb = true;
+					}else{
+						_isMouseOverThumb = false;
+					}
+
+					_mousePressedOverThumb = false;					  
+
+					eventType = RELEASED;
+					fireEvent();
+				}else{
+					_isMouseOverThumb = false;
+					_mousePressedOverThumb = false;
+				}
+				break;	 
+
+			case MouseEvent.MOUSE_DRAGGED:
+				if((focusIsWith == this) && _mousePressedOverThumb){
+					thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
+				}
+				break;
+
+			case MouseEvent.MOUSE_MOVED:
+				if(isOverThumb(event.getX(), event.getY())){
+					_isMouseOverThumb = true;
+				}
+				else
+					_isMouseOverThumb = false;
+				break;
+			}
 		}
 	}
-	
+
 	/**
 	 * Registered key event of parent object, checks if arrow keys are being pressed and has focus
 	 * if so the thumb is moved one pixel.
@@ -588,7 +591,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 					thumbTargetPos = _tickPositions[_currTickStuck];
 				}else
 					thumbTargetPos = PApplet.constrain(thumbTargetPos - 1,thumbMin,thumbMax);
-				
+
 			}else if(e.getKeyCode()== 39){ //right arrow
 				if(_stickToTicks){
 					_currTickStuck = PApplet.constrain(_currTickStuck + 1, 0, _tickPositions.length-1);
@@ -599,7 +602,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 
 		}
 	}
-	
+
 	/**
 	 * returns whether the positions supplied is over the mouse or not
 	 */
@@ -608,13 +611,13 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		float val = (float) (_centre.height * 0.5 - _thumb.height * 0.5); //takes into account if the thumbs height
-																		  //is greater than the central bar image
+		//is greater than the central bar image
 		if(ax >= p.x && ax <= p.x + width && ay >= (p.y + val) && ay <= (p.y + height - val))
 			return true;
 		else 
 			return false;
 	}
-	
+
 	/**
 	 * return whether input position is over the thumb, used to determine whether to show the
 	 * handle_mouseover image
@@ -626,23 +629,23 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		Rectangle r = new Rectangle((int)(p.x + thumbPos - 0.5*_thumb.width - 1),
-									(int)(p.y + 0.5*_centre.height -  0.5*_thumb.height -1),
-									(int)(_thumb.width + 1),
-									(int)(_thumb.height + 1));
-		
+				(int)(p.y + 0.5*_centre.height -  0.5*_thumb.height -1),
+				(int)(_thumb.width + 1),
+				(int)(_thumb.height + 1));
+
 		if(r.contains(ax, ay))
 			return true;
 		else 
 			return false;
 	}
-	
+
 	/**
 	 * Sets font of labels
 	 */
 	public void setFont(String fontname, int fontsize){
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 	}
-	
+
 	/**
 	 * Pre is called before each draw call and should not be used by the end user.
 	 * It checks to see if the thumb and value positions match up correctly.
@@ -664,24 +667,24 @@ public class GWSlider extends GSlider { //implements IRenderable {
 				thumbPos += change;
 				float newValue = 0.0f;
 				float upperVal, lowerVal;
-				
+
 				//Here we need to do opposite of what _stickToTickByValue() does and
 				//relate a position to a value to make sure the value does change
 				//gradually but in steps
 				if(_stickToTicks){
 					float tickDist = (_centre.width)/(float)_numTicks;
-					float relPos = (float) (thumbPos - x - _thumb.width*0.5);
+					float relPos = (float) (thumbPos - x + _thumb.width * 0.5f);
 					int num = Math.round(relPos/tickDist);
 					newValue = _tickValues[num];
 				}else{
-					//To deal with the situation when a user sets a value that cant
+					//To deal with the situation when a user sets a value that can't
 					//be fully represented on the slider due to there not being enough
 					//pixels(not long enough). I have taken the next highest and lowest
 					//pixels and found the values they represent on the slider.
 					upperVal = PApplet.map(thumbPos + 1, thumbMin, thumbMax, minValue, maxValue);
 					newValue = PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
 					lowerVal = PApplet.map(thumbPos -1, thumbMin, thumbMax, minValue, maxValue);
-					
+
 					//now if our value is between these bounds then we want to keep the value that
 					//the user set but not to change the position of the slider and its true position
 					//is in fractions of pixels. if that makes sense.
@@ -690,9 +693,9 @@ public class GWSlider extends GSlider { //implements IRenderable {
 						newValue = value;
 					}
 				}
-				
+
 				boolean valueChanged = (newValue != value);
-				
+
 				value = newValue;
 				if(valueChanged){
 					eventType = CHANGED;
@@ -703,12 +706,12 @@ public class GWSlider extends GSlider { //implements IRenderable {
 			}
 		}			
 	}
-	
+
 	@Override
 	public void draw(){		
 		if(!visible) return;
 		String format = null;
-		
+
 		//depending on slider type we want to format the 
 		//labels as necessary
 		switch(_valueType){
@@ -722,22 +725,22 @@ public class GWSlider extends GSlider { //implements IRenderable {
 			format = "%." + _precision + "E%s";
 			break;
 		}
-		
+
 		//calculates the absolute position, this is 
 		//for when the slider is embedded in other panels and controls
 		Point p = new Point(); 
 		calcAbsPosition(p);
-		
+
 		//draw each of the slider skin images
 		winApp.image(_leftEnd, p.x, p.y);
 		winApp.image(_centre, p.x + _leftEnd.width, p.y);
 		winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
-		
+
 		winApp.pushStyle();
 
 		winApp.textFont(localFont);
 		winApp.textAlign(PConstants.CENTER);
-		
+
 		//calc a few tick variables for drawing
 		float tickDist =  (_centre.width )/(float)_numTicks;
 		winApp.stroke(_tickColour);
@@ -745,7 +748,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		winApp.fill(_fontColour);
 		//draw ticks
 		float tickYPos = p.y + _centre.height + _tickOffset + _tickLength + localFont.size;
-		
+
 		for(int i = 0;i < _tickPositions.length;i++){
 			if(_tickLabels != null){
 				Point pos = new Point(_tickPositions[i],(int) tickYPos);
@@ -757,7 +760,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 					winApp.text(String.format(format,Math.round(minValue),unit),pos.x,pos.y);
 				else
 					winApp.text(String.format(format,minValue,unit),pos.x,pos.y);
-				
+
 			}else if(i == _numTicks && _renderMaxMinLabel){	
 				//Draw in the max value			
 				Point pos = new Point(p.x + _leftEnd.width + Math.round(i * tickDist),p.y + _centre.height + _tickOffset + _tickLength + localFont.size) ;
@@ -766,7 +769,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 				else
 					winApp.text(String.format(format,maxValue,unit),pos.x,pos.y);
 			}
-			
+
 			winApp.beginShape(LINE);
 			winApp.vertex(p.x + _tickPositions[i], p.y + _centre.height + _tickOffset);
 			winApp.vertex(p.x + _tickPositions[i], p.y + _centre.height + _tickOffset + _tickLength);
@@ -781,12 +784,12 @@ public class GWSlider extends GSlider { //implements IRenderable {
 			winApp.vertex(p.x + _tickPositions[i] + 1, p.y + _centre.height + _tickOffset + _tickLength);
 			winApp.endShape();
 			winApp.popStyle();
-			
+
 			if(!_isMouseOverThumb)
 				winApp.image(_thumb, p.x + thumbPos - Math.round(_thumb.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb.height));
 			else
 				winApp.image(_thumb_mouseover, p.x + thumbPos - Math.round(_thumb_mouseover.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb_mouseover.height));
-			
+
 			if(_renderValueLabel){
 				if(_valueType == INTEGER)
 					winApp.text(String.format(format,Math.round(value),unit),p.x + thumbPos, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
@@ -794,7 +797,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 					winApp.text(String.format(format,value,unit),p.x + thumbPos, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
 			}			
 		}			
-		
+
 		winApp.popStyle();
 	}
 }

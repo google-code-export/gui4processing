@@ -125,10 +125,12 @@ public abstract class GSlider extends GComponent {
 		minValue = Math.min(min, max);
 		maxValue = Math.max(min, max);
 		this.init = PApplet.constrain(init, minValue, maxValue);
+		PApplet.println("Init " + this.init + "  ( " + minValue + " <-> " + maxValue + " )");
 
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
-		setValue(init, true);
+		setValue(this.init, true);
+		PApplet.println("Init " + value + "  ( " + minValue + " <-> " + maxValue + " )");
 	}
 
 	/**
