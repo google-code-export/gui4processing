@@ -56,7 +56,8 @@ public class GButton extends GComponent {
 	protected PImage[] bimage = new PImage[3];
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
-
+	protected boolean useImages = false;
+	
 	protected int imgAlignX;
 	
 	/**
@@ -74,7 +75,7 @@ public class GButton extends GComponent {
 	public GButton(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setText(text);
-		buttonCtorCore(width, height, null, 0);
+		buttonCtorCore(width, height);
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class GButton extends GComponent {
 	 * 
 	 * @param theApplet
 	 * @param imgFile filename of image to use on the button
-	 * @param nbrImages number of images in the filmstrip normally 1 or 3 (OFF OVER DOWN)
+	 * @param nbrImages number of images in the film strip normally 1 or 3 (OFF OVER DOWN)
 	 * @param x horz position of button
 	 * @param y vert position
 	 * @param width minimum width of button
@@ -92,13 +93,10 @@ public class GButton extends GComponent {
 	 */
 	public GButton(PApplet theApplet, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		PImage img = winApp.loadImage(imgFile);
-		if(img == null){
-			if(G4P.messages) System.out.println("Can't find image file for GButton");
-		}
-		else
-			btnImgWidth = img.width /  nbrImages;
-		buttonCtorCore(width, height, img, nbrImages);
+		setImages(imgFile, nbrImages);
+		btnImgWidth = this.getButtonImageWidth();
+		useImages = (btnImgWidth > 0);
+		buttonCtorCore(width, height);
 	}
 
 	/**
@@ -110,7 +108,7 @@ public class GButton extends GComponent {
 	 * @param theApplet
 	 * @param text text appearing on the button
 	 * @param imgFile filename of image to use on the button
-	 * @param nbrImages number of images in the filmstrip normally 1 or 3 (OFF OVER DOWN)
+	 * @param nbrImages number of images in the film strip normally 1 or 3 (OFF OVER DOWN)
 	 * @param x horz position of button
 	 * @param y vert position
 	 * @param width minimum width of button
@@ -118,46 +116,105 @@ public class GButton extends GComponent {
 	 */
 	public GButton(PApplet theApplet, String text, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
+		setImages(imgFile, nbrImages);
+		btnImgWidth = this.getButtonImageWidth();
+		useImages = (btnImgWidth > 0);
 		setText(text);
-		PImage img = winApp.loadImage(imgFile);
-		if(img == null){
-			if(G4P.messages) System.out.println("Can't find image file for GButton");
-		}
-		else
-			btnImgWidth = img.width / nbrImages;
-		buttonCtorCore(width, height, img, nbrImages);
+		buttonCtorCore(width, height);
 	}
 
 	/**
 	 * 
-	 * @param text
 	 * @param width
 	 * @param height
 	 */
-	private void buttonCtorCore(int width, int height, PImage img, int nbrImages) {
+	private void buttonCtorCore(int width, int height) {
 		// Check button is wide and tall enough for both text
 		this.width = Math.max(width, textWidth + 2 * PADH);
 		this.height = Math.max(height, localFont.size + 2 * PADV);
 		// and now update for image/text combined
-		if(img != null){
-			this.width = Math.max(this.width, textWidth + btnImgWidth + 2 * PADH);
-			this.height = Math.max(this.height, btnImgWidth + 2 * PADV);
-			// See if we have multiple images
-			for(int i = 0; i < nbrImages;  i++){
-				bimage[i] = new PImage(btnImgWidth, img.height, ARGB);
-				bimage[i].copy(img, 
-						i * btnImgWidth, 0, btnImgWidth, img.height,
-						0, 0, btnImgWidth, img.height);
-			}
-			for(int i = nbrImages; i < 3; i++){
-				bimage[i] = bimage[nbrImages - 1];
-			}
-		}
 		calcAlignX();
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 
+	public void setColours(int normal, int mouseOver, int pressed){
+		localColor.btnOff = normal;
+		localColor.btnOver = mouseOver;
+		localColor.btnDown = pressed;
+	}
+
+	protected int getButtonImageWidth(){
+		int bw = 0;
+		for(int i = 0; i < 3; i++)
+			bw = Math.max(bw, ((bimage[i] == null) ? 0 : bimage[i].width));
+		return bw;		
+	}
+	
+	
+	public void setImages(String ifileNormal, String ifileOver, String ifilePressed){
+		bimage[0] = winApp.loadImage(ifileNormal);
+		if(bimage[0] == null)
+			if(G4P.messages) System.out.println("Can't find normal button image file");
+		bimage[1] = winApp.loadImage(ifileOver);
+		if(bimage[2] == null)
+			if(G4P.messages) System.out.println("Can't find over button image file");
+		bimage[0] = winApp.loadImage(ifilePressed);
+		if(bimage[2] == null)
+			if(G4P.messages) System.out.println("Can't find pressed button image file");
+	}
+	
+	public void setImages(String[] imgFiles){
+		if(imgFiles != null && imgFiles.length > 1)
+			setImages(imgFiles[0], imgFiles[1 % imgFiles.length], imgFiles[2 % imgFiles.length]);
+	}
+	
+	public void setImages(String imgFile, int nbrImages){
+		if(imgFile != null && nbrImages > 0){
+			PImage img = winApp.loadImage(imgFile);
+			if(img == null){
+				if(G4P.messages) System.out.println("Can't find button image file");
+			}
+			else
+				setImages(img, nbrImages);
+		}
+	}
+	
+	public void setImages(PImage imgNormal, PImage imgOver, PImage imgPressed){
+		bimage[0] = imgNormal;
+		bimage[1] = imgOver;
+		bimage[2] = imgPressed;
+	}
+	
+	public void setImages(PImage[] images){
+		if(images != null){
+			for(int i = 0; i < images.length ; i++)
+				bimage[i] = images[i];
+			for(int i = images.length; i < 3; i++)
+				bimage[i] = bimage[images.length - 1];
+		}
+	}
+	
+	public void setImages(PImage img, int nbrImages){
+		if(img != null && nbrImages > 0){
+			int iw = img.width / nbrImages;
+			System.out.println("Width "+iw);
+			for(int i = 0; i < nbrImages;  i++){
+				bimage[i] = new PImage(iw, img.height, ARGB);
+				bimage[i].copy(img, 
+						i * iw, 0, iw, img.height,
+						0, 0, iw, img.height);
+			}
+			for(int i = nbrImages; i < 3; i++){
+				bimage[i] = bimage[nbrImages - 1];
+			}
+		}
+	}
+	
+	public void setUseImages(boolean use){
+		useImages = use;
+	}
+	
 	/**
 	 * Set the color scheme for this button
 	 */
@@ -244,6 +301,7 @@ public class GButton extends GComponent {
 	 */
 	public void draw(){
 		if(!visible) return;
+		
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
@@ -265,7 +323,7 @@ public class GButton extends GComponent {
 
 		winApp.rect(pos.x,pos.y,width,height);
 		// Draw image
-		if(bimage[status] != null){
+		if(bimage[status] != null && useImages){
 			winApp.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
 		}
 		// Draw text
@@ -299,8 +357,8 @@ public class GButton extends GComponent {
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
-				cursorIsOver = null;
-		
+			cursorIsOver = null;
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
@@ -312,7 +370,8 @@ public class GButton extends GComponent {
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			// No need to test for isOver() since if the component has focus
-			// the mouse has not moved since MOUSE_PRESSED	
+			// and the mouse has not moved since MOUSE_PRESSED otherwise we 
+			// would not get the Java MouseEvent.MOUSE_CLICKED event
 			if(focusIsWith == this){
 				status = OFF;
 				looseFocus(null);
@@ -326,7 +385,7 @@ public class GButton extends GComponent {
 			if(focusIsWith == this){ // && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				looseFocus(null);
 				status = OFF;
-				eventType = CLICKED;
+				eventType = RELEASED;
 				fireEvent();
 			}
 			break;
