@@ -75,7 +75,7 @@ public class GCombo extends GComponent {
 		if(imgArrow == null)
 			imgArrow = winApp.loadImage("combo0.png");
 		this.width = width;
-		height = Math.max((int)localFont.size + 2 * PADV, imgArrow.height);
+		height = Math.max((int)localFont.getFont().getSize() + 2 * PADV, imgArrow.height);
 		opaque = true;
 		border = 1;
 		createEventHandler(winApp, "handleComboEvents", new Class[]{ GCombo.class });
@@ -139,7 +139,7 @@ public class GCombo extends GComponent {
 	 */
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
-		int fs = (int) localFont.size;
+		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize > fs)
 			height += (fontsize - fs);
@@ -383,8 +383,8 @@ public class GCombo extends GComponent {
 		// Draw selected text
 		winApp.noStroke();
 		winApp.fill(localColor.txfFont);
-		winApp.textFont(localFont, localFont.size);
-		winApp.text(text, pos.x + PADH, pos.y -PADV +(height - localFont.size)/2, width - 16, height);
+		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.text(text, pos.x + PADH, pos.y -PADV +(height - localFont.getFont().getSize())/2, width - 16, height);
 
 		// draw drop down list
 		winApp.fill(winApp.color(255,255));

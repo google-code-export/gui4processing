@@ -71,7 +71,7 @@ public class GCheckbox extends GComponent {
 		if(imgCleared == null)
 			imgCleared = winApp.loadImage("check0.png");
 		this.width = width;
-		height = Math.max((int)localFont.size + 2 * PADV, imgCleared.height);
+		height = Math.max((int)localFont.getFont().getSize() + 2 * PADV, imgCleared.height);
 		opaque = false;
 		setText(text);
 		createEventHandler(winApp, "handleCheckboxEvents", new Class[]{ GCheckbox.class });
@@ -84,7 +84,7 @@ public class GCheckbox extends GComponent {
 	 */
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
-		int fs = (int) localFont.size;
+		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
@@ -134,8 +134,8 @@ public class GCheckbox extends GComponent {
 			// Draw text
 			winApp.noStroke();
 			winApp.fill(localColor.cbxFont);
-			winApp.textFont(localFont, localFont.size);
-			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, textWidth, height);
+			winApp.textFont(localFont, localFont.getFont().getSize());
+			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, textWidth, height);
 		}
 		winApp.fill(winApp.color(255,255));
 		if(selected)

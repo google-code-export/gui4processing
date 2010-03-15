@@ -73,7 +73,7 @@ public class GOption extends GComponent {
 		if(imgCleared == null)
 			imgCleared = winApp.loadImage("radio0.png");
 		this.width = width;
-		this.height = localFont.size + 2 * PADV;
+		this.height = localFont.getFont().getSize() + 2 * PADV;
 		if(height > this.height)
 			this.height = height;
 		opaque = false;
@@ -145,7 +145,7 @@ public class GOption extends GComponent {
 	 */
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
-		int fs = (int) localFont.size;
+		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs){
 			height += (fontsize - fs);
@@ -182,9 +182,9 @@ public class GOption extends GComponent {
 			// Draw text
 			winApp.noStroke();
 			winApp.fill(localColor.optFont);
-			winApp.textFont(localFont, localFont.size);
+			winApp.textFont(localFont, localFont.getFont().getSize());
 //				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
-			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - imgSelected.width, height);
+			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width - imgSelected.width, height);
 		}
 		winApp.fill(winApp.color(255,255));
 		if(ownerGroup != null && ownerGroup.selectedOption() == this)

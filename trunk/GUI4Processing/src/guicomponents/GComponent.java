@@ -540,7 +540,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public void setText(String text) {
 		this.text = text;
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 		textWidth = (int) winApp.textWidth(text); 
 		calcAlignX();
 	}
@@ -551,7 +551,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	public void setText(String text, int align) {
 		this.text = text;
 		textAlign = align;
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 		textWidth = (int) winApp.textWidth(text);
 		calcAlignX();
 	}

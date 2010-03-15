@@ -86,13 +86,13 @@ public class GTextField extends GComponent {
 
 	private void textFieldCtorCore(String text, int width, int height) {
 		this.width = Math.max(width, textWidth + PADH * 2);
-		this.height = Math.max(height, localFont.size + PADV * 2);
+		this.height = Math.max(height, localFont.getFont().getSize() + PADV * 2);
 		border = 1;
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextField.class });
 		registerAutos_DMPK(true, true, false, true);
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 	}
 
 	/**
@@ -101,14 +101,14 @@ public class GTextField extends GComponent {
 	 */
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
-		int fs = (int) localFont.size;
+		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
 		setText(text);
 		if(textWidth != tw)
 			width += (textWidth - tw);
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 		adjustVisiblePortionEnd();
 	}
 
@@ -137,7 +137,7 @@ public class GTextField extends GComponent {
 	 */
 	private void appendToRightOfCursor(String s) {
 		String t1, t2;
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 		if(startSelect != endSelect) {
 			int start = Math.min(startSelect, endSelect);
 			int end = Math.max(startSelect, endSelect);
@@ -238,7 +238,7 @@ public class GTextField extends GComponent {
 	 * of selected text.
 	 */
 	private void updateXPos() {
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 		int tempStart = startSelect;
 		int tempEnd = endSelect;
 		cursorXPos = winApp.textWidth(text.substring(visiblePortionStart, cursorPos));
@@ -346,7 +346,7 @@ public class GTextField extends GComponent {
 	 * @param val the string to become the text field's contents
 	 */
 	public void setText(String newValue) {
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 		text = newValue;
 		cursorPos = text.length();
 		startSelect = endSelect = -1;
@@ -381,7 +381,7 @@ public class GTextField extends GComponent {
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 
 		switch(e.getID()){
 		case MouseEvent.MOUSE_PRESSED:
@@ -428,7 +428,7 @@ public class GTextField extends GComponent {
 	public void keyEvent(KeyEvent e) {
 		if(!enabled) return;
 		if(focusIsWith == this){
-			winApp.textFont(localFont, localFont.size);
+			winApp.textFont(localFont, localFont.getFont().getSize());
 
 			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
@@ -543,7 +543,7 @@ public class GTextField extends GComponent {
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
 
-		winApp.textFont(localFont, localFont.size);
+		winApp.textFont(localFont, localFont.getFont().getSize());
 
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
@@ -565,7 +565,7 @@ public class GTextField extends GComponent {
 		winApp.noStroke();
 		winApp.fill(localColor.txfFont);
 		winApp.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
-				pos.y + (height - localFont.size)/2 - PADV , width - 8, height);
+				pos.y + (height - localFont.getFont().getSize())/2 - PADV , width - 8, height);
 
 		// Draw the insertion point (it blinks!)
 		if(focusIsWith == this	&& ((winApp.millis() % 1000) > 500)
