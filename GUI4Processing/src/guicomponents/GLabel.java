@@ -70,7 +70,7 @@ public class GLabel extends GComponent {
 	 */
 	private void labelCoreCtor(String text, int width, int height){
 		this.width = width;
-		this.height = localFont.size + 2 * PADV;
+		this.height = localFont.getFont().getSize() + 2 * PADV;
 		if(height > this.height)
 			this.height = height;
 		opaque = false;
@@ -85,7 +85,7 @@ public class GLabel extends GComponent {
 	 */
 	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
-		int fs = (int) localFont.size;
+		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
@@ -118,8 +118,8 @@ public class GLabel extends GComponent {
 		// Draw text
 		winApp.noStroke();
 		winApp.fill(localColor.lblFont);
-		winApp.textFont(localFont, localFont.size);
-		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2 - PADV, width - PADH - 2* border, height);
+		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width - PADH - 2* border, height);
 		winApp.popStyle();
 	}
 }
