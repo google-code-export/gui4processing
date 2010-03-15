@@ -94,7 +94,7 @@ public class GButton extends GComponent {
 	public GButton(PApplet theApplet, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setImages(imgFile, nbrImages);
-		btnImgWidth = this.getButtonImageWidth();
+		btnImgWidth = this.getMaxButtonImageWidth();
 		useImages = (btnImgWidth > 0);
 		buttonCtorCore(width, height);
 	}
@@ -117,16 +117,16 @@ public class GButton extends GComponent {
 	public GButton(PApplet theApplet, String text, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setImages(imgFile, nbrImages);
-		btnImgWidth = this.getButtonImageWidth();
+		btnImgWidth = this.getMaxButtonImageWidth();
 		useImages = (btnImgWidth > 0);
 		setText(text);
 		buttonCtorCore(width, height);
 	}
 
 	/**
-	 * 
-	 * @param width
-	 * @param height
+	 * Core code for all ctors.
+	 * @param width button width reqd
+	 * @param height button height reqd
 	 */
 	private void buttonCtorCore(int width, int height) {
 		// Check button is wide and tall enough for both text
@@ -138,38 +138,79 @@ public class GButton extends GComponent {
 		registerAutos_DMPK(true, true, false, false);
 	}
 
+	/**
+	 * Set the colors to be used by the GButton without having to create a new
+	 * color scheme (GCScheme). Use PApplet's color() method to calculate the color 
+	 * values to be passed.<br>
+	 *  
+	 * @param normal
+	 * @param mouseOver
+	 * @param pressed
+	 */
 	public void setColours(int normal, int mouseOver, int pressed){
 		localColor.btnOff = normal;
 		localColor.btnOver = mouseOver;
 		localColor.btnDown = pressed;
 	}
 
-	protected int getButtonImageWidth(){
+	/**
+	 * Get the maximum width of the button images. <br>
+	 * @return zero if no button images
+	 */
+	protected int getMaxButtonImageWidth(){
 		int bw = 0;
 		for(int i = 0; i < 3; i++)
 			bw = Math.max(bw, ((bimage[i] == null) ? 0 : bimage[i].width));
 		return bw;		
 	}
 	
+	/**
+	 * Get the maximum height of the button images. <br>
+	 * @return zero if no button images
+	 */
+	protected int getMaxButtonImageHeight(){
+		int bh = 0;
+		for(int i = 0; i < 3; i++)
+			bh = Math.max(bh, ((bimage[i] == null) ? 0 : bimage[i].height));
+		return bh;		
+	}
 	
+	/**
+	 * Specify the 3 images files to be used to display the button's state.
+	 * 
+	 * @param ifileNormal
+	 * @param ifileOver
+	 * @param ifilePressed
+	 */
 	public void setImages(String ifileNormal, String ifileOver, String ifilePressed){
 		bimage[0] = winApp.loadImage(ifileNormal);
 		if(bimage[0] == null)
 			if(G4P.messages) System.out.println("Can't find normal button image file");
 		bimage[1] = winApp.loadImage(ifileOver);
-		if(bimage[2] == null)
+		if(bimage[1] == null)
 			if(G4P.messages) System.out.println("Can't find over button image file");
-		bimage[0] = winApp.loadImage(ifilePressed);
+		bimage[2] = winApp.loadImage(ifilePressed);
 		if(bimage[2] == null)
 			if(G4P.messages) System.out.println("Can't find pressed button image file");
 	}
 	
+	/**
+	 * Specify the 3 images files to be used to display the button's state. 
+	 * @param imgFiles an array of filenames
+	 */
 	public void setImages(String[] imgFiles){
 		if(imgFiles != null && imgFiles.length > 1)
 			setImages(imgFiles[0], imgFiles[1 % imgFiles.length], imgFiles[2 % imgFiles.length]);
 	}
 	
+	/**
+	 * Specify the image file that contains the image{s} to be used for the button's state. <br>
+	 * This image may be a composite of 1 to 3 images tiled horizontally. 
+	 * @param imgFile
+	 * @param nbrImages in the range 1 - 3
+	 */
 	public void setImages(String imgFile, int nbrImages){
+		nbrImages = PApplet.constrain(nbrImages, 1, 3);
 		if(imgFile != null && nbrImages > 0){
 			PImage img = winApp.loadImage(imgFile);
 			if(img == null){
@@ -180,12 +221,22 @@ public class GButton extends GComponent {
 		}
 	}
 	
+	/**
+	 * Specify the 3 images to be used to display the button's state.
+	 * @param imgNormal
+	 * @param imgOver
+	 * @param imgPressed
+	 */
 	public void setImages(PImage imgNormal, PImage imgOver, PImage imgPressed){
 		bimage[0] = imgNormal;
 		bimage[1] = imgOver;
 		bimage[2] = imgPressed;
 	}
 	
+	/**
+	 * Specify the 3 images to be used to display the button's state. 
+	 * @param images an array of PImages
+	 */
 	public void setImages(PImage[] images){
 		if(images != null){
 			for(int i = 0; i < images.length ; i++)
@@ -195,6 +246,12 @@ public class GButton extends GComponent {
 		}
 	}
 	
+	/**
+	 * Specify the PImage that contains the image{s} to be used for the button's state. <br>
+	 * This image may be a composite of 1 to 3 images tiled horizontally. 
+	 * @param img
+	 * @param nbrImages in the range 1 - 3
+	 */
 	public void setImages(PImage img, int nbrImages){
 		if(img != null && nbrImages > 0){
 			int iw = img.width / nbrImages;
@@ -211,6 +268,11 @@ public class GButton extends GComponent {
 		}
 	}
 	
+	/** 
+	 * Whether or not to display the button images.
+	 * 
+	 * @param use
+	 */
 	public void setUseImages(boolean use){
 		useImages = use;
 	}
@@ -362,6 +424,8 @@ public class GButton extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver){
+				mdx = winApp.mouseX;
+				mdy = winApp.mouseY;
 				status = DOWN;
 				takeFocus();
 				eventType = PRESSED;
@@ -375,6 +439,8 @@ public class GButton extends GComponent {
 			if(focusIsWith == this){
 				status = OFF;
 				looseFocus(null);
+				eventType = RELEASED;
+				fireEvent();
 				eventType = CLICKED;
 				fireEvent();
 			}
@@ -382,10 +448,13 @@ public class GButton extends GComponent {
 		case MouseEvent.MOUSE_RELEASED:	
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
-			if(focusIsWith == this){ // && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
+			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				looseFocus(null);
+				if(isOver(winApp.mouseX, winApp.mouseY))
+					eventType = RELEASED;
+				else
+					eventType = RELEASED;
 				status = OFF;
-				eventType = RELEASED;
 				fireEvent();
 			}
 			break;
