@@ -35,10 +35,25 @@ import processing.core.PImage;
  * The button face can have either text or an image or both just
  * pick the right constructor.
  * 
+ * Three types of event can be generated :-  <br>
+ * <b> PRESSED  RELEASED  CLICKED </b><br>
+ * 
+ * To simplify event handling the button only fires off CLICKED events 
+ * if the mouse button is pressed and released over the button face 
+ * (the default behaviour). <br>
+ * 
+ * Using <pre>button1.fireAllEvents(true);</pre> enables the other 2 events
+ * for button <b>button1</b>. A PRESSED event is created if the mouse button
+ * is pressed down over the button face, the CLICKED event is then generated 
+ * if the mouse button is released over the button face. Releasing the 
+ * button off the button face creates a RELEASED event. <br>
+ * 
  * The image file can either be a single image which is used for 
  * all button states, or be a composite of 3 images (tiled horizontally)
  * which are used for the different button states OFF, OVER and DOWN 
- * in which case the image width should be divisible by 3
+ * in which case the image width should be divisible by 3. <br>
+ * A number of setImages(...) methods exist to set button state images, these
+ * can be used once the button is created.<br>
  * 
  * 
  * @author Peter Lager
@@ -57,6 +72,8 @@ public class GButton extends GComponent {
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
 	protected boolean useImages = false;
+	
+	protected boolean reportAllButtonEvents = false;
 	
 	protected int imgAlignX;
 	
@@ -396,6 +413,14 @@ public class GButton extends GComponent {
 		winApp.popStyle();
 	}
 
+	/**
+	 * If the parameter is true all 3 event types are generated, if false
+	 * only CLICKED events are generated (default behaviour).
+	 * @param all
+	 */
+	public void fireAllEvents(boolean all){
+		reportAllButtonEvents = all;
+	}
 
 	/**
 	 * All GUI components are registered for mouseEvents. <br>
@@ -429,7 +454,8 @@ public class GButton extends GComponent {
 				status = DOWN;
 				takeFocus();
 				eventType = PRESSED;
-				fireEvent();
+				if(reportAllButtonEvents)
+					fireEvent();
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
@@ -439,8 +465,10 @@ public class GButton extends GComponent {
 			if(focusIsWith == this){
 				status = OFF;
 				looseFocus(null);
-				eventType = RELEASED;
-				fireEvent();
+//				if(reportAllButtonEvents){
+//					eventType = RELEASED;
+//					fireEvent();
+//				}
 				eventType = CLICKED;
 				fireEvent();
 			}
@@ -450,12 +478,17 @@ public class GButton extends GComponent {
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 				looseFocus(null);
-				if(isOver(winApp.mouseX, winApp.mouseY))
-					eventType = RELEASED;
-				else
-					eventType = RELEASED;
+				if(isOver(winApp.mouseX, winApp.mouseY)){
+					eventType = CLICKED;
+					fireEvent();
+				}
+				else {
+					if(reportAllButtonEvents){
+						eventType = RELEASED;
+						fireEvent();
+					}
+				}
 				status = OFF;
-				fireEvent();
 			}
 			break;
 		case MouseEvent.MOUSE_MOVED:
