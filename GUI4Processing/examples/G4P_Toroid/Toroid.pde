@@ -80,10 +80,10 @@ class Toroid {
       }
       angle+=360.0/pts;
     }
-
   }
 
   void draw(){
+    pushStyle();
     if(isHelix)
       fillVertexArrays();
     pushMatrix();
@@ -94,7 +94,7 @@ class Toroid {
     } 
     else {
       noStroke();
-      fill(150, 195, 125);
+      fill(60, 60, 200);
     }
 
     // draw toroid
@@ -124,6 +124,7 @@ class Toroid {
       endShape();
     }
     popMatrix();
+    popStyle();
   }
 
 }
