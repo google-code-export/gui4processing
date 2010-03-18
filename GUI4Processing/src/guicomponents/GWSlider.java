@@ -7,7 +7,7 @@
  *  Copyright (C) 2009 onwards Daniel Brown and Andreas Freise
  *  
  *  
- *  It has been integrated into the GUI for Processing library 
+ *  It has been integrated into the GUI for Processing (G4)) library 
  * 	http://www.lagers.org.uk/g4p/index.html
  *	http://gui4processing.googlecode.com/svn/trunk/
  *
@@ -335,8 +335,8 @@ public class GWSlider extends GSlider { //implements IRenderable {
 
 	/**
 	 * Alternative constructor that applies a given skin to the slider. Accepts the x and y 
-	 * position of the slider, the PApplet theApplet where the slider is rendered and the length
-	 *  of the slider. Throws GUIException if the necessary skin images are not present.
+	 * position of the slider, the PApplet theApplet where the slider is rendered and the length 
+	 * of the slider. Throws GUIException if the necessary skin images are not present.
 	 * 
 	 * @param theApplet
 	 * @param x
@@ -646,66 +646,6 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 	}
 
-	/**
-	 * Pre is called before each draw call and should not be used by the end user.
-	 * It checks to see if the thumb and value positions match up correctly.
-	 */
-	@Override
-	public void pre(){
-		int change, inertia = thumbInertia;
-		if(thumbPos == thumbTargetPos){
-			isValueChanging = false;
-		}
-		else {
-			// Make sure we get a change value by repeatedly decreasing the inertia value
-			do {
-				change = (thumbTargetPos - thumbPos)/inertia;
-				inertia--;
-			} while (change == 0 && inertia > 0);
-			// If there is a change update the current value and generate an event
-			if(change != 0){
-				thumbPos += change;
-				float newValue = 0.0f;
-				float upperVal, lowerVal;
-
-				//Here we need to do opposite of what _stickToTickByValue() does and
-				//relate a position to a value to make sure the value does change
-				//gradually but in steps
-				if(_stickToTicks){
-					float tickDist = (_centre.width)/(float)_numTicks;
-					float relPos = (float) (thumbPos - x + _thumb.width * 0.5f);
-					int num = Math.round(relPos/tickDist);
-					newValue = _tickValues[num];
-				}else{
-					//To deal with the situation when a user sets a value that can't
-					//be fully represented on the slider due to there not being enough
-					//pixels(not long enough). I have taken the next highest and lowest
-					//pixels and found the values they represent on the slider.
-					upperVal = PApplet.map(thumbPos + 1, thumbMin, thumbMax, minValue, maxValue);
-					newValue = PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
-					lowerVal = PApplet.map(thumbPos -1, thumbMin, thumbMax, minValue, maxValue);
-
-					//now if our value is between these bounds then we want to keep the value that
-					//the user set but not to change the position of the slider and its true position
-					//is in fractions of pixels. if that makes sense.
-					if(value > lowerVal && value < upperVal){
-						//set the new value to the old so that we preserve user set value.
-						newValue = value;
-					}
-				}
-
-				boolean valueChanged = (newValue != value);
-
-				value = newValue;
-				if(valueChanged){
-					eventType = CHANGED;
-					fireEvent();
-				}
-			}else{
-				isValueChanging = false;
-			}
-		}			
-	}
 
 	@Override
 	public void draw(){		
@@ -800,4 +740,70 @@ public class GWSlider extends GSlider { //implements IRenderable {
 
 		winApp.popStyle();
 	}
+	
+	
+	// Removed
+	/*
+	 * Pre is called before each draw call and should not be used by the end user.
+	 * It checks to see if the thumb and value positions match up correctly.
+	 */
+//	public void pre(){
+//		int change, inertia = thumbInertia;
+//		if(thumbPos == thumbTargetPos){
+//			isValueChanging = false;
+//		}
+//		else {
+//			// Make sure we get a change value by repeatedly decreasing the inertia value
+//			do {
+//				change = (thumbTargetPos - thumbPos)/inertia;
+//				inertia--;
+//			} while (change == 0 && inertia > 0);
+//			// If there is a change update the current value and generate an event
+//			if(change == 0){
+//				isValueChanging = false;
+//				
+//			}
+//			else {
+//				thumbPos += change;
+//				float newValue = 0.0f;
+//				float upperVal, lowerVal;
+//
+//				//Here we need to do opposite of what _stickToTickByValue() does and
+//				//relate a position to a value to make sure the value does change
+//				//gradually but in steps
+//				if(_stickToTicks){
+//
+//					float tickDist = (_centre.width)/(float)_numTicks;
+//					float relPos = (float) (thumbPos - x + _thumb.width * 0.5f);
+//					int num = Math.round(relPos/tickDist);
+//					newValue = _tickValues[num];
+//				}else{
+//					//To deal with the situation when a user sets a value that can't
+//					//be fully represented on the slider due to there not being enough
+//					//pixels(not long enough). I have taken the next highest and lowest
+//					//pixels and found the values they represent on the slider.
+//					upperVal = PApplet.map(thumbPos + 1, thumbMin, thumbMax, minValue, maxValue);
+//					newValue = PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
+//					lowerVal = PApplet.map(thumbPos -1, thumbMin, thumbMax, minValue, maxValue);
+//
+//					//now if our value is between these bounds then we want to keep the value that
+//					//the user set but not to change the position of the slider and its true position
+//					//is in fractions of pixels. if that makes sense.
+//					if(value > lowerVal && value < upperVal){
+//						//set the new value to the old so that we preserve user set value.
+//						newValue = value;
+//					}
+//				}
+//
+//				boolean valueChanged = (newValue != value);
+//
+//				value = newValue;
+//				if(valueChanged){
+//					eventType = CHANGED;
+//					fireEvent();
+//				}
+//			}
+//		}			
+//	}
+
 }

@@ -44,8 +44,8 @@ public abstract class GSlider extends GComponent {
 	 * These are the values that are supplied back to the user
 	 */
 	protected float init;
-	protected float maxValue;
-	protected float minValue;
+	protected float maxValue = 0;
+	protected float minValue = 100;
 	protected float value;
 
 	// Indicates the type of value used in the display
@@ -125,12 +125,12 @@ public abstract class GSlider extends GComponent {
 		minValue = Math.min(min, max);
 		maxValue = Math.max(min, max);
 		this.init = PApplet.constrain(init, minValue, maxValue);
-		PApplet.println("Init " + this.init + "  ( " + minValue + " <-> " + maxValue + " )");
+//		PApplet.println("Init " + this.init + "  ( " + minValue + " <-> " + maxValue + " )");
 
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
 		setValue(this.init, true);
-		PApplet.println("Init " + value + "  ( " + minValue + " <-> " + maxValue + " )");
+//		PApplet.println("Init " + value + "  ( " + minValue + " <-> " + maxValue + " )");
 	}
 
 	/**
@@ -150,7 +150,7 @@ public abstract class GSlider extends GComponent {
 			// If there is a change update the current value and generate an event
 			if(change != 0){
 				thumbPos += change;
-				int newValue = (int) PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
+				float newValue = PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
 				boolean valueChanged = (newValue != value);
 				value = newValue;
 				if(valueChanged){
