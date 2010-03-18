@@ -3,19 +3,25 @@ import guicomponents.*;
 GButton b1,b2,b3;
 
 void setup(){
-  size(200,200);
+  size(340,260);
+
+  G4P.setColorScheme(this, GCScheme.BLUE_SCHEME);
+  G4P.setFont(this, "Verdana", 38);
+
   // A text only button that generates all event types
-  b1= new GButton(this, "No image here", 50,20,100,20);
+  b1= new GButton(this, "Text Only", 20,20,300,50);
+  b1.setBorder(2);
   b1.fireAllEvents(true);
 
   // Image only button : CLICKED events only
-  b2= new GButton(this, "btnA.png",1, 80,70,40,40);
+  b2= new GButton(this, "smile01.png",3, 100,100,66,66);
+  b2.setBorder(0);
 
   // Image & text button : CLICKED events only
-  b3= new GButton(this, "btnB.png",3, 50,130,100,40);
-  b3.setText("Peter Lager");
+  b3= new GButton(this, "pic001.png",1, 60,190,220,50);
+  b3.setText("Pictures");
   b3.setImageAlign(GAlign.LEFT);
-  
+
   // Enable mouse over image change
   G4P.setMouseOverEnabled(true);
 }
@@ -40,7 +46,3 @@ void handleButtonEvents(GButton button) {
 void draw(){
   background(255,255,200);
 }
-
-
-
-
