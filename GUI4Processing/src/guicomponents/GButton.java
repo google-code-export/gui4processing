@@ -149,6 +149,7 @@ public class GButton extends GComponent {
 		// Check button is wide and tall enough for both text
 		this.width = Math.max(width, textWidth + 2 * PADH);
 		this.height = Math.max(height, localFont.getFont().getSize() + 2 * PADV);
+		border = 1;
 		// and now update for image/text combined
 		calcAlignX();
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
@@ -307,7 +308,7 @@ public class GButton extends GComponent {
 	public void setText(String text) {
 		this.text = text;
 		winApp.textFont(localFont, localFont.getFont().getSize());
-		textWidth = (int) winApp.textWidth(text);
+		textWidth = Math.round(winApp.textWidth(text));
 		calcAlignX();
 	}
 
@@ -385,9 +386,16 @@ public class GButton extends GComponent {
 		winApp.style(G4P.g4pStyle);
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
+		
 		// Draw button rectangle
-		winApp.strokeWeight(1);
-		winApp.stroke(localColor.btnBorder);
+		if(border == 0){
+			winApp.strokeWeight(0);
+			winApp.noStroke();
+		}
+		else {
+			winApp.strokeWeight(border);
+			winApp.stroke(localColor.btnBorder);
+		}
 		switch(status){
 		case 0:
 			winApp.fill(localColor.btnOff);
@@ -399,8 +407,8 @@ public class GButton extends GComponent {
 			winApp.fill(localColor.btnDown);
 			break;
 		}
-
 		winApp.rect(pos.x,pos.y,width,height);
+		
 		// Draw image
 		if(bimage[status] != null && useImages){
 			winApp.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
