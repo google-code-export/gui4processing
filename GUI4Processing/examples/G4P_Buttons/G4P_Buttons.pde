@@ -44,5 +44,5 @@ void handleButtonEvents(GButton button) {
 }	
 
 void draw(){
-  background(255,255,200);
+  background(180,220,180);
 }
