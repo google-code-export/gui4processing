@@ -17,7 +17,7 @@ import processing.opengl.*;
 import guicomponents.*;
 
 GLabel lblSegs, lblERad, lblPts, lblLRad;
-GSlider sdrSegs, sdrERad, sdrPts, sdrLRad;
+GWSlider sdrSegs, sdrERad, sdrPts, sdrLRad;
 GCheckbox cbxWire;
 GOption optTorroid, optHelix;
 GOptionGroup optShape;
@@ -26,7 +26,7 @@ GPanel p;
 Toroid t1;
 
 void setup(){
-  size(640, 360, OPENGL);
+  size(640, 480, OPENGL);
   t1 = new Toroid();
 
   // Sets the colour scheme for the GUI components 
@@ -34,7 +34,7 @@ void setup(){
   // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
   // YELLOW_SCHEME, CYAN_SCHEME, PURPLE_SCHEME
   // Defaults to BLUE_SCHEME 
-  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.BLUE_SCHEME);
+  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.PURPLE_SCHEME);
   /* GFont.getFont() - parameters
    * 1) this (always)
    * 2) font name (see below)
@@ -45,28 +45,39 @@ void setup(){
    * println(PFont.list());
    * in a Processing sketch
    */
-  GComponent.globalFont = GFont.getFont(this, "Georgia", 11);
-  
+  GComponent.globalFont = GFont.getFont(this, "Verdana", 11);
+
   // Create the various GUI components
-  p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 90);
-  p.setAlpha(192);
-  lblSegs = new GLabel(this, "Segment detail", 2, 4, 120);
-  lblPts = new GLabel(this, "Ellipse detail", 2, 18, 120);
-  lblERad = new GLabel(this, "Ellipse Radius", 2, 32, 120);
-  lblLRad = new GLabel(this, "Toroid Radius", 2, 46, 120);
-  sdrSegs = new GHorzSlider(this, 125, 4, 325, 11);
-  sdrPts = new GHorzSlider(this, 125, 18, 325, 11);
-  sdrERad = new GHorzSlider(this, 125, 32, 325, 11);
-  sdrLRad = new GHorzSlider(this, 125, 46, 325, 11);
-  sdrSegs.setLimits(60, 3, 80);
-  sdrPts.setLimits(40,3,40);
-  sdrERad.setLimits(60,10,100);
-  sdrLRad.setLimits(100,0,240);
+  p = new GPanel(this, "Toroid Control Panel", 30, 30, 460, 200);
+  p.setAlpha(210);
+  lblSegs = new GLabel(this, "Segment detail", 2, 24, 120);
+  lblPts = new GLabel(this, "Ellipse detail", 2, 64, 120);
+  lblERad = new GLabel(this, "Ellipse Radius", 2, 104, 120);
+  lblLRad = new GLabel(this, "Toroid Radius", 2, 144, 120);
 
-  optTorroid = new GOption(this, "Toroid?", 2, 60, 80);
-  optHelix = new GOption(this, "Helix?", 2, 74, 80);
-  cbxWire = new GCheckbox(this, "Wire frame?", 102, 60, 100);
+  sdrSegs = new GWSlider(this, "purple18px", 110, 20, 325);
+  sdrSegs.setLimits(60, 3, 60);
+  sdrSegs.setValueType(GWSlider.INTEGER);
+  sdrSegs.setRenderMaxMinLabel(false); //hides labels
 
+  sdrPts = new GWSlider(this, "purple18px", 110, 60, 325);
+  sdrPts.setLimits(32,3,32);
+  sdrPts.setValueType(GWSlider.INTEGER);
+  sdrPts.setRenderMaxMinLabel(false); //hides labels
+
+  sdrERad = new GWSlider(this, 110, 100, 325);
+  sdrERad.setLimits(60,10,100);  
+  sdrERad.setRenderMaxMinLabel(false); //hides labels
+  sdrERad.setRenderValueLabel(false); //hides labels
+
+  sdrLRad = new GWSlider(this, 110, 140, 325);
+  sdrLRad.setLimits(140,0,240);
+  sdrLRad.setRenderMaxMinLabel(false); //hides labels
+  sdrLRad.setRenderValueLabel(false); //hides labels
+
+  optTorroid = new GOption(this, "Toroid?", 2, 180, 80);
+  optHelix = new GOption(this, "Helix?", 102, 180, 80);
+  cbxWire = new GCheckbox(this, "Wire frame?", 202, 180, 100);
 
   p.add(lblSegs);
   p.add(lblPts);
@@ -83,7 +94,6 @@ void setup(){
   optShape.addOption(optTorroid);
   optShape.addOption(optHelix);
   optTorroid.setSelected(true);
- 
 }
 
 public void handleSliderEvents(GSlider slider){
@@ -111,7 +121,7 @@ public void handleOptionEvents(GOption selected, GOption deselected){
 
 void draw(){
   pushMatrix();
-  background(192, 220, 192);
+  background(220, 220, 220);
   // basic lighting setup
   lights();
   // 2 rendering styles
