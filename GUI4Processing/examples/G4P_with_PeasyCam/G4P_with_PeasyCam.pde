@@ -40,13 +40,10 @@ double distance = 0.0f;
 int lastSx, lastSy, lastSz;
 int currSx, currSy, currSz;
 
-// Used to remember PGraphics3D transformation matrix
-PGraphics3D g3;
-
 void setup() {
   // Change OPENGL to P3D to use Java 3D both work but OpenGL
   // gives a better font display while Java 3D is probably
-  // better for applets - smaller file size but needs  larger 
+  // better for applets - smaller file size but needs larger 
   // font size.
   size(400,400,OPENGL);
   // Create a PeasyCam object
@@ -71,7 +68,7 @@ void setup() {
    * println(PFont.list());
    * in a Processing sketch
    */
-  GComponent.globalFont = GFont.getFont(this, "Georgia", 12);
+  GComponent.globalFont = GFont.getFont(this, "Verdana", 12);
 
   // Create a collapsible panel
   // (this, tab title, x, y, width, height)
@@ -102,8 +99,6 @@ void setup() {
   pnl.add(sy);
   pnl.add(sz);
 
-  // Remember PGraphics3D transformation matrix
-  g3 = (PGraphics3D)g;
 }
 
 void draw() {
@@ -121,49 +116,37 @@ void draw() {
   rotateX(-.5);
   rotateY(-.5);
   background(0);
+  // Draw big box
   strokeWeight(2);
   stroke(255,255,0);
   fill(255,0,0);
   box(30);
+  // Draw little box
   translate(0,0,20);
   fill(0,0,255);
   box(5);
   popMatrix();
-  Gui2D();
+  
+  // Synchonise actaula rotations and slider positions
+  syncSliders();
+  
+  // Use the PeaseyCam HUD commands to set the graphics enabling
+  // correct drawing of the G4P gui components
+  cam.beginHUD();
+  G4P.draw();
+  cam.endHUD();
 }
 
 
 /*
 This function displays how we can create a HUD with PeasyCam.
  */
-void Gui2D(){
+void syncSliders(){
   // Get the current PeasyCam details to restore later
-  //  offsets = cam.getLookAt();
   rotations = cam.getRotations();
-  //  distance = cam.getDistance();
-
-  // Get a handle on the current PGraphics?D transformation matrix
-  PMatrix3D currCameraMatrix = new PMatrix3D(g3.camera);
-
-  // This statement resets the camera in PGraphics3D, this effectively 
-  // sets the display to behave as 2D with the origin 0,0 at the top-left
-  // of the display
-  camera();
-
-  // Draw the HUD using PApplet graphics commands and GUI for Processing
-  // 2D gui components
-  G4P.draw();
-
-  // Reset the PGraphics3D transformation matrix
-  g3.camera = currCameraMatrix;
-
-
-  // Since this code will modify the PeasyCam object it must be
-  // done after we have set the g3.camera back to its original
-  // 3D state.
 
   // If neccessary update slider positions
-  if(pnl.isCollapsed() == true){
+  if(pnl.isCollapsed()){
     // Update slider positions
     currSx = lastSx = (int)Math.toDegrees(rotations[0]);
     currSy = lastSy = (int)Math.toDegrees(rotations[1]);
@@ -204,19 +187,15 @@ void handlePanelEvents(GPanel panel){
     println("Panel has collapsed");
   else
     println("Panel has opened");
-
 }
 
 // Handles slider events for both horizontal and
 // vertical sliders
 void handleSliderEvents(GSlider slider){
-  if(slider == sx){
+  if(slider == sx)
     currSx = slider.getValue();
-  }
-  if(slider == sy){
+  if(slider == sy)
     currSy = slider.getValue(); 
-  }
-  if(slider == sz){
-    currSz = slider.getValue(); 
-  }
+  if(slider == sz)
+    currSz = slider.getValue();
 }
