@@ -517,7 +517,6 @@ public class GTextField extends GComponent {
 					} 
 				}
 			}
-
 			else if(e.getID() == KeyEvent.KEY_TYPED) {
 				if((e.getModifiers() & shortcutMask) == shortcutMask) {
 				}
@@ -718,55 +717,5 @@ public class GTextField extends GComponent {
 				(c >= 0xF81F && c <= 0xF820) ||
 				(c == 0xF833));
 	}
-
-//	private int getVisiblePortionStart()
-//	{
-//		return visiblePortionStart;
-//	}
-//
-//	private void setVisiblePortionStart(int VisiblePortionStart)
-//	{
-//		visiblePortionStart = VisiblePortionStart;
-//	}
-//
-//	private int getVisiblePortionEnd()
-//	{
-//		return visiblePortionEnd;
-//	}
-//
-//	private void setVisiblePortionEnd(int VisiblePortionEnd)
-//	{
-//		visiblePortionEnd = VisiblePortionEnd;
-//	}
-//
-//	public int getStartSelect()
-//	{
-//		return startSelect;
-//	}
-//
-//	public void setStartSelect(int StartSelect)
-//	{
-//		startSelect = StartSelect;
-//	}
-//
-//	public int getEndSelect()
-//	{
-//		return endSelect;
-//	}
-//
-//	public void setEndSelect(int EndSelect)
-//	{
-//		endSelect = EndSelect;
-//	}
-//
-//	public int getCursorPosition()
-//	{
-//		return cursorPos;
-//	}
-//
-//	public void setCursorPosition(int CursorPos)
-//	{
-//		cursorPos = CursorPos;
-//	}
 
 }

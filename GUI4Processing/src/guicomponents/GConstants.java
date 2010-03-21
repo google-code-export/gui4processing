@@ -37,7 +37,7 @@ public interface GConstants {
 	// TextField component (GSlider also uses CHANGED)
 	public final static int CHANGED = 			0x00000101;	// Text has changed
 	public final static int ENTERED = 			0x00000102;	// Enter key pressed
-	public final static int SET = 				0x00000103;		// setText() was used
+	public final static int SET = 				0x00000103;	// setText() was used
 
 	// GPanel component
 	public final static int COLLAPSED = 		0x00000201;	// Panel has been collapsed
