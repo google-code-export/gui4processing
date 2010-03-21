@@ -127,7 +127,7 @@ void draw() {
   box(5);
   popMatrix();
   
-  // Synchonise actaula rotations and slider positions
+  // Synchronise the actual rotations and slider positions
   syncSliders();
   
   // Use the PeaseyCam HUD commands to set the graphics enabling
