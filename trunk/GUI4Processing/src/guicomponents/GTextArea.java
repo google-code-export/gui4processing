@@ -52,7 +52,7 @@ import processing.core.PApplet;
  * can also be pasted in. It supports text that is longer than the displayable
  * area
  *
- * @author Peter Lager
+ * @author Brendan Nichols Peter Lager
  *
  */
 public class GTextArea extends GComponent {
@@ -61,7 +61,6 @@ public class GTextArea extends GComponent {
 	private int cursorPos = 0; 						//stores the cursor's position in the 1D string
 	private int startSelect = -1, endSelect = -1; 	//stores where the selection start/end are
 	private int startX = 0, startY = 0, endY = 0; 	//stores where to begin showing text and end showing text
-	private float lineSpacing = 1.5f;				// Font size multiplier to calculate leading
 	private float leading;							//space between lines
 
 	private boolean drawSepLines = true; 			//whether or not to draw separating lines between each 
@@ -93,27 +92,32 @@ public class GTextArea extends GComponent {
 		border = 1;
 		leading = (int)(1.5f * localFont.getFont().getSize()); 						//default line leading is 1.5 times the font height
 		endY = (int)Math.floor(this.height / leading); 								//calculate the number of lines that can be displayed fully
-
-		setText(text); // Set text AFTER the width of the textfield has been set
+		// Set text AFTER the width of the textfield has been set
+		setText(text); 		
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextArea.class }); //create the event handler for user to code
 		registerAutos_DMPK(true, true, false, true);
 		winApp.textFont(localFont, localFont.getFont().getSize());
 	}
 
 	/**
-	 * Set the font & size for the textfield
-	 * EDIT: LOSS OF FUNCTIONALITY: will not resize textbox
+	 * Set the font, size and leading for the textfield. <br>
+	 * This will not alter the size of the textfield so use with caution
+	 * if the font is too tall it may not be possible to see anything
 	 * ADDED: font leading input which will change the spacing between lines
+	 * @param fontname
+	 * @param fontSize
+	 * @param fontLeading
 	 */
-	public void setFont(String fontname, int fontsize, int fontleading){
-		localFont = GFont.getFont(winApp, fontname, fontsize); 	//possible change in font size
-		leading = fontleading; //update the line leading
-		endY = (int) Math.floor(this.height / fontleading); //change the number of lines that can be displayed fully
+	public void setFont(String fontname, int fontSize, float fontLeading){
+		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
+		leading = Math.max(fontSize, fontLeading); 				//update the line leading
+		endY = (int) Math.floor(this.height / fontLeading); 	//change the number of lines that can be displayed fully
 
 		setText(text);
 		winApp.textFont(localFont, localFont.getFont().getSize());
 	}
 
+	
 	/**
 	 * When the textfield loses focus it also loses any text selection.
 	 */
@@ -333,8 +337,9 @@ public class GTextArea extends GComponent {
 	}
 
 	/**
-	 * sets the contents of the text box and displays the
-	 * specified string in the text box widget.
+	 * Sets the contents of the text box and displays the
+	 * specified string in the text box widget. <br>
+	 * Fires SET event.
 	 * @param val the string to become the text field's contents
 	 */
 	public void setText(String newValue) {
@@ -344,9 +349,7 @@ public class GTextArea extends GComponent {
 		//reset the selection and cursor positions
 		startSelect = endSelect = -1;
 		cursorPos = 0;
-
-		//update the view to show cursor
-
+		
 		eventType = SET;
 		fireEvent();
 	}
@@ -356,10 +359,10 @@ public class GTextArea extends GComponent {
 	}
 
 	public void setStartY(int newy) {
-		int diff = endY - startY; //the difference in the start and end
-		startY = newy; //change the start
-		cursorPos = cursorPos1D(new Point(0, startY)); //put the cursor at the start of the new line so showCursor doesn't move the view back
-		endY = startY + diff; //update the end accordingly
+		int diff = endY - startY; 						//the difference in the start and end
+		startY = newy; 									//change the start
+		cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
+		endY = startY + diff; 							//update the end accordingly
 	}
 
 	public int getStartX() {
@@ -635,7 +638,6 @@ public class GTextArea extends GComponent {
 					pos.y + cursorPix.y + localFont.getFont().getSize()+2);
 			winApp.fill(localColor.txfFont);
 		}
-
 		winApp.popStyle(); //pop the push we did earlier
 	}
 
