@@ -59,7 +59,15 @@ public class GMessenger implements GConstants {
 		case EXCP_IN_HANDLER:
 			eventHandlerFailed(obj, info);
 			break;
-		
+		case NOT_PEASYCAM:
+			System.out.println("G4P.draw(pcam) - pcam must be a PeasyCam object");
+			System.out.println("	you have used a " + obj.getClass().getSimpleName() + " object");
+			break;
+		case HUD_UNSUPPORTED:
+			System.out.println("Please use latest version of PeasyCam");
+			break;
+		case INVALID_STATUS:
+			System.out.println("Unknown camera status - inform Quark at www.processing.org");
 		}
 	}
 	
