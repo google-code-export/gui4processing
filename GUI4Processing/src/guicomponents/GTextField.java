@@ -306,7 +306,7 @@ public class GTextField extends GComponent {
 	}
 
 	/**
-	 * given the X position of the mouse in relation to the X
+	 * Given the X position of the mouse in relation to the X
 	 * position of the text field, findClosestGap(int x) will
 	 * return the index of the closest letter boundary in the 
 	 * letterWidths array.
@@ -341,7 +341,7 @@ public class GTextField extends GComponent {
 	}
 
 	/**
-	 * sets the contents of the text box and displays the
+	 * Sets the contents of the text box and displays the
 	 * specified string in the text box widget.
 	 * @param val the string to become the text field's contents
 	 */
@@ -421,7 +421,7 @@ public class GTextField extends GComponent {
 	}
 
 	/**
-	 * receives KeyEvents forwarded to it by the GUIController
+	 * Receives KeyEvents forwarded to it by the GUIController
 	 * if the current instance is currently in focus.
 	 * @param e the KeyEvent to be handled
 	 */
