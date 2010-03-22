@@ -130,11 +130,12 @@ void draw() {
   // Synchronise the actual rotations and slider positions
   syncSliders();
   
-  // Use the PeaseyCam HUD commands to set the graphics enabling
-  // correct drawing of the G4P gui components
-  cam.beginHUD();
-  G4P.draw();
-  cam.endHUD();
+  // This version of the draw command was introduced in
+  // version 1.5.1 and simplifies combining the use of
+  // the G4P and the PeasyCam library.
+  // It effectively wraps up the G4P.draw(0 call with the
+  // calls to beginHUD() and endHUD()
+  G4P.draw(cam);
 }
 
 
@@ -145,7 +146,7 @@ void syncSliders(){
   // Get the current PeasyCam details to restore later
   rotations = cam.getRotations();
 
-  // If neccessary update slider positions
+  // If necessary update slider positions
   if(pnl.isCollapsed()){
     // Update slider positions
     currSx = lastSx = (int)Math.toDegrees(rotations[0]);
@@ -156,7 +157,7 @@ void syncSliders(){
     // setValue(value); it takes into account any inertia
     // setValue(value, ignore); where ignore is a boolean value
     // which if true will set the value and move the thumb
-    // immediatetly ignoring any inertia value
+    // immediately ignoring any inertia value
     sx.setValue((int)Math.toDegrees(rotations[0]), true);
     sy.setValue((int)Math.toDegrees(rotations[1]), true);
     sz.setValue((int)Math.toDegrees(rotations[2]), true);
