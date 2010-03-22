@@ -23,7 +23,7 @@
 
 package guicomponents;
 
-
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -51,26 +51,34 @@ public class G4P implements PConstants, GConstants {
 	 * Set of GControlWindows
 	 */
 	private static HashSet<GWindow> allWinApps = new HashSet<GWindow>();
-	
+
 	/**
 	 * Set of PApplet windos disabled
 	 */
 	private static HashSet<PApplet> autoDrawDisabled = new HashSet<PApplet>();
-	
-	
+
+
 	// Will be set when and first component is created
 	public static PApplet mainWinApp = null;
 
 	public static PStyle g4pStyle = null;
 
 	public static boolean messages = true;
-	
+
 	/** INTERNAL USE ONLY  Cursor over changer */
 	private static GCursorImageChanger mcd = new GCursorImageChanger();
 	public static boolean overControl = false;
 	public static boolean cursorChangeEnabled = false;
 	public static int mouseOff = ARROW;
 	public static int mouseOver = HAND;
+
+	private final static int PCAM_UNINITIALISED = 0;
+	private final static int PCAM_AVAILABLE = 1;
+	private final static int PCAM_UNAVAILABLE = 2;
+	private static Object peasyCam;
+	private static Method beginHud, endHud;
+	private static int camStatus = PCAM_UNINITIALISED;
+
 
 	/**
 	 * Enables or disables cursor over component change
@@ -90,7 +98,7 @@ public class G4P implements PConstants, GConstants {
 			}
 		}
 	}
-	
+
 	/**
 	 * Inform G4P which cursor shapes will be used.
 	 * Initial values are ARROW (off) and HAND (over)
@@ -102,7 +110,7 @@ public class G4P implements PConstants, GConstants {
 		mouseOff = cursorOff;
 		mouseOver = cursorOver;
 	}
-	
+
 	/**
 	 * Inform G4P which cursor to use for mouse over.
 	 * 
@@ -111,7 +119,7 @@ public class G4P implements PConstants, GConstants {
 	public static void cursor(int cursorOver){
 		mouseOver = cursorOver;
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY
 	 * This should be called by all ctors in GComponent and since all GUI 
@@ -130,7 +138,7 @@ public class G4P implements PConstants, GConstants {
 		else
 			allComponents.add(c);
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY
 	 * Used to register the main window for cursor over behaviour.
@@ -142,7 +150,7 @@ public class G4P implements PConstants, GConstants {
 			mainWinApp.registerPost(mcd);
 		}
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY
 	 * Record a new control window
@@ -151,7 +159,7 @@ public class G4P implements PConstants, GConstants {
 	public static void addWindow(GWindow window){
 		allWinApps.add(window);
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY
 	 * Remove control window - called when a ControlWindow is closed
@@ -162,7 +170,7 @@ public class G4P implements PConstants, GConstants {
 	public static void removeWindow(GWindow window){
 		allWinApps.remove(window);
 	}
-	
+
 	/**
 	 * Determines whether a window is still open or has been closed
 	 * @param window
@@ -171,7 +179,7 @@ public class G4P implements PConstants, GConstants {
 	public static boolean isWindowActive(GWindow window){
 		return allWinApps.contains(window);
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY
 	 */
@@ -184,7 +192,7 @@ public class G4P implements PConstants, GConstants {
 		g4pStyle.ellipseMode = DIAMETER;
 		g4pStyle.imageMode = CORNER;
 		g4pStyle.shapeMode = CORNER;
-		
+
 		g4pStyle.colorMode = RGB;
 		g4pStyle.colorModeA = 255.0f;
 		g4pStyle.colorModeX = 255.0f;
@@ -232,6 +240,71 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
+	 * This method is called once to initialise a PeasyCam object.
+	 * 
+	 * @param pcam
+	 * @return
+	 */
+	private static int initPeasyCamHUD(Object pcam){
+		if(!pcam.getClass().getSimpleName().equals("PeasyCam")){
+			GMessenger.message(NOT_PEASYCAM, pcam, null);
+			return PCAM_UNAVAILABLE;
+		}
+		try {
+			beginHud = pcam.getClass().getMethod("beginHUD", (Class[]) null);
+			endHud = pcam.getClass().getMethod("endHUD", (Class[])null);
+			peasyCam = pcam;
+			return PCAM_AVAILABLE;
+		}
+		catch(Exception excp){
+			GMessenger.message(HUD_UNSUPPORTED, null, null);
+		}		
+		return PCAM_UNAVAILABLE;
+	}
+
+	/**
+	 * This method is provided to simplify using G4P with PeasyCam. <br>
+	 * Simply call this method passing the PeasyCam object you created as
+	 * a parameter and it will automatically call the beginHUD and endHUD
+	 * methods for you so if your PeasyCam is called <b><pre>pcam</pre></b> then
+	 * <pre>
+	 * pcam.beginHUD();
+	 * G4P.draw();
+	 * pcam.endHUD(); </pre>
+	 * becomes
+	 * <pre>
+	 * G4P.draw(pcam);
+	 * </pre>
+	 * 
+	 * @param pcam
+	 */
+	public static void draw(Object pcam){
+		switch(camStatus){
+		case PCAM_AVAILABLE:
+			try {
+				beginHud.invoke(peasyCam, (Object[])null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+			draw();
+			try {
+				endHud.invoke(peasyCam, (Object[])null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case PCAM_UNAVAILABLE: 
+			draw();
+			break;
+		case PCAM_UNINITIALISED:
+			camStatus = initPeasyCamHUD(pcam);
+			break;
+		default:
+			GMessenger.message(INVALID_STATUS, null, null);
+		}
+	}
+
+	/**
 	 * When you first use G4P() it switches off auto draw for the 
 	 * main PApplet
 	 * 
@@ -239,7 +312,7 @@ public class G4P implements PConstants, GConstants {
 	public static void draw(){
 		draw(mainWinApp);
 	}
-	
+
 	/**
 	 * When you first use G4P(app) it switches off auto draw for the 
 	 * PApplet app
@@ -310,7 +383,7 @@ public class G4P implements PConstants, GConstants {
 	public static boolean isAutoDrawOn(PApplet app){
 		return !autoDrawDisabled.contains(app);
 	}
-	
+
 	/**
 	 * G4P has a range of support messages eg <br>if you create a GUI component 
 	 * without an event handler or, <br>a slider where the visible size of the

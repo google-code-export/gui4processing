@@ -70,6 +70,9 @@ public interface GConstants {
 	public final static int MISSING = 			0x01000001;	// Can't find standard handler
 	public final static int NONEXISTANT = 		0x01000002;
 	public final static int EXCP_IN_HANDLER =	0x81000003;	// Exception in event handler
+	// PeasyCam errors
+	public final static int NOT_PEASYCAM =		0x82000001; // Not a PeasyCam object
+	public final static int HUD_UNSUPPORTED = 	0x82000002; // HUD not supported
+	public final static int INVALID_STATUS = 	0x82000003; // HUD not supported
 	
-
 }
