@@ -124,6 +124,9 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/** Maximum width and height of component in pixels based on child components */
 	protected int maxWidth = 200, maxHeight = 200;
 
+	/** Simple tag that can be used by the user */
+	public String tag;
+	
 	/**
 	 * Is the component visible or not
 	 */
