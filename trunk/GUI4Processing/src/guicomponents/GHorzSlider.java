@@ -111,13 +111,13 @@ public class GHorzSlider extends GSlider {
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
-				looseFocus(null);
+				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
-				looseFocus(null);
+				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;

@@ -297,7 +297,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	protected void takeFocus(){
 		if(focusIsWith != null && focusIsWith != this)
-			focusIsWith.looseFocus(this);
+			focusIsWith.loseFocus(this);
 		focusIsWith = this;
 	}
 
@@ -306,7 +306,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * Override this method in classes that need to do something when
 	 * they loose focus eg TextField
 	 */
-	protected void looseFocus(GComponent grabber){
+	protected void loseFocus(GComponent grabber){
 		if(cursorIsOver == this)
 			cursorIsOver = null;
 		focusIsWith = null;
@@ -320,7 +320,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		if(focus)
 			takeFocus();
 		else
-			looseFocus(null);
+			loseFocus(null);
 	}
 
 	/**
@@ -690,7 +690,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	public void setVisible(boolean visible) {
 		// If we are making it invisible and it has focus give up the focus
 		if(!visible && focusIsWith == this)
-			looseFocus(null);
+			loseFocus(null);
 		this.visible = visible;
 	}
 

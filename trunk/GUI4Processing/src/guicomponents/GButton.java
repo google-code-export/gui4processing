@@ -472,7 +472,7 @@ public class GButton extends GComponent {
 			// would not get the Java MouseEvent.MOUSE_CLICKED event
 			if(focusIsWith == this){
 				status = OFF;
-				looseFocus(null);
+				loseFocus(null);
 //				if(reportAllButtonEvents){
 //					eventType = RELEASED;
 //					fireEvent();
@@ -485,7 +485,7 @@ public class GButton extends GComponent {
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
-				looseFocus(null);
+				loseFocus(null);
 				if(isOver(winApp.mouseX, winApp.mouseY)){
 					eventType = CLICKED;
 					fireEvent();

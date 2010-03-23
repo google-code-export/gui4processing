@@ -187,7 +187,7 @@ public class GCombo extends GComponent {
 		if(sOpt != dOpt)
 			fireEvent();
 		shrink();
-		looseFocus(null);
+		loseFocus(null);
 	}
 
 	/**
@@ -318,7 +318,7 @@ public class GCombo extends GComponent {
 	 * that is not a child of this, then shrink the drop
 	 * down list and release focus
 	 */
-	public void looseFocus(GComponent grabber){
+	public void loseFocus(GComponent grabber){
 		if(!children.contains(grabber)){
 			shrink();
 			focusIsWith = null;
@@ -342,7 +342,7 @@ public class GCombo extends GComponent {
 			if(focusIsWith != this && mouseOver)
 				takeFocus();
 			else if(focusIsWith == this && !isOver(winApp.mouseX, winApp.mouseY))
-				looseFocus(null);
+				loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this && isOver(winApp.mouseX, winApp.mouseY)){
