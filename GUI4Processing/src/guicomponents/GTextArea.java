@@ -52,7 +52,7 @@ import processing.core.PApplet;
  * can also be pasted in. It supports text that is longer than the displayable
  * area
  *
- * @author Brendan Nichols Peter Lager
+ * @author Brendan Nichols  & Peter Lager
  *
  */
 public class GTextArea extends GComponent {
@@ -60,12 +60,16 @@ public class GTextArea extends GComponent {
 	//Define all the private variables needed to keep track of view window and selection and etc.
 	private int cursorPos = 0; 						//stores the cursor's position in the 1D string
 	private int startSelect = -1, endSelect = -1; 	//stores where the selection start/end are
-	private int startX = 0, startY = 0, endY = 0; 	//stores where to begin showing text and end showing text
+	public int startX = 0, startY = 0, endY = 0; 	//stores where to begin showing text and end showing text
 	private float leading;							//space between lines
 
 	private boolean drawSepLines = true; 			//whether or not to draw separating lines between each 
 	// line, really only needed in my application
 
+	public String toString(){
+		return ("Cursor pos " +cursorPos + "   sX " + startX+"   sY "+startY+"   eY "+ endY);
+	}
+	
 	/**
 	 * Creates a GTextField object
 	 * @param theApplet
@@ -253,8 +257,14 @@ public class GTextArea extends GComponent {
 		String[] splittext = text.split("\n"); //split the text into lines
 		int cursorY = (int) ((int) y / leading + startY); //take nearest integer multiple of line height and add to starting line number
 
-		if(cursorY >= splittext.length){return cursorPosition(cursorPos);} //if the click was out of the range, return the current cursor pos.
-		if(cursorY < 0){return new Point(0,0);} //return 0,0 if outside the lowest range.
+		//if the click was out of the range, return the current cursor pos.
+		if(cursorY >= splittext.length){
+			return cursorPosition(cursorPos);
+		} 
+		//return 0,0 if outside the lowest range.
+		if(cursorY < 0){
+			return new Point(0,0);
+		} 
 
 		float prev = 0, cur; //measures of line widths
 		for(int i = startX; i < splittext[cursorY].length(); i++){ //loop from visible start to end of line
@@ -274,7 +284,7 @@ public class GTextArea extends GComponent {
 	/**
 	 * Returns the string of text that the text box can display
 	 */
-	private String viewText() {
+	public String viewText() {
 		showCursor();
 		String[] splittext = PApplet.split(text, "\n"); //split the text into its separate lines
 		String[] cuttext = new String[endY - startY]; //start a new array that will hold just the visible lines
@@ -321,18 +331,22 @@ public class GTextArea extends GComponent {
 			}
 		}
 		// cursor went out at the top move the text until inside
-		if(cursorPosition(cursorPos).y < startY){ 			
+		if(cursorPosition(cursorPos).y < startY){ 	
+System.out.println(tag+" showCursor decY:  > "+this + " "+ cursorPosition(cursorPos).y);			
 			while (cursorPosition(cursorPos).y < startY){ 
 				startY --;
 				endY --;
 			}
+System.out.println(tag+ "showCursor decY:  > "+this+ " "+ cursorPosition(cursorPos).y);			
 		}
 		// cursor went out past the bottom move the text until inside
 		if(cursorPosition(cursorPos).y > endY - 2){ 		
+System.out.println(tag+" showCursor incY:  > "+this+ " "+ cursorPosition(cursorPos).y);			
 			while (cursorPosition(cursorPos).y > endY - 2){
 				startY ++;
 				endY ++;
 			}
+System.out.println(tag+"  showCursor incY:  < "+this+ " "+ cursorPosition(cursorPos).y);			
 		}
 	}
 
@@ -359,10 +373,12 @@ public class GTextArea extends GComponent {
 	}
 
 	public void setStartY(int newy) {
+System.out.println("setStartY:  > "+this);
 		int diff = endY - startY; 						//the difference in the start and end
 		startY = newy; 									//change the start
 		cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
 		endY = startY + diff; 							//update the end accordingly
+System.out.println("setStartY:  < "+this);
 	}
 
 	public int getStartX() {
@@ -407,7 +423,9 @@ public class GTextArea extends GComponent {
 				if(focusIsWith != this){ //if focus is not on box
 					this.takeFocus(); //give focus to the box
 				}
+//System.out.println(tag+ " > "+ this);
 				startSelect = endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y));//set the cursor position to the nearest location to where the user clicked
+//System.out.println(tag+ " > "+ this);
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
@@ -427,7 +445,7 @@ public class GTextArea extends GComponent {
 	 */
 	public void keyEvent(KeyEvent e) {
 		if(!enabled) return;
-		winApp.println("Show text " + startX + " " + startY + " " + endY);
+//		PApplet.println("Show text " + startX + " " + startY + " " + endY);
 		if(focusIsWith == this){ //if the textbox has focus
 			winApp.textFont(localFont, localFont.getFont().getSize()); //set the font so we can get the widths of everything
 
@@ -624,7 +642,7 @@ public class GTextArea extends GComponent {
 		// Draw the string
 		winApp.fill(localColor.txfFont);
 		winApp.textLeading(leading); //set the leading
-		winApp.text (viewText(), pos.x + 4, pos.y , width - 8, height - 8);
+		winApp.text (viewText(), pos.x + 4, pos.y , width - 8, height - 4);
 
 		// Draw the insertion point (it blinks!)
 		if(focusIsWith == this && (winApp.millis() % 1000) > 500) {
