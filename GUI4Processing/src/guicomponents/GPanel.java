@@ -113,7 +113,7 @@ public class GPanel extends GComponent {
 	/**
 	 * What to do when the GPanel looses focus.
 	 */
-	protected void looseFocus(GComponent grabber){
+	protected void loseFocus(GComponent grabber){
 		focusIsWith = null;
 		beingDragged = false;
 	}
@@ -218,7 +218,7 @@ public class GPanel extends GComponent {
 						x = winApp.getWidth() - width;
 				}
 				// This component does not keep the focus when clicked
-				looseFocus(null);
+				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
@@ -226,7 +226,7 @@ public class GPanel extends GComponent {
 			if(focusIsWith == this){
 				if(mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 					mdx = mdy = Integer.MAX_VALUE;
-					looseFocus(null);
+					loseFocus(null);
 				}
 			}
 			break;

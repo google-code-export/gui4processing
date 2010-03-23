@@ -173,13 +173,13 @@ public class GCheckbox extends GComponent {
 				else
 					eventType = DESELECTED;
 				fireEvent();
-				looseFocus(null);
+				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
-				this.looseFocus(null);
+				this.loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;

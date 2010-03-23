@@ -63,12 +63,7 @@ public class GTextArea extends GComponent {
 	public int startX = 0, startY = 0, endY = 0; 	//stores where to begin showing text and end showing text
 	private float leading;							//space between lines
 
-	private boolean drawSepLines = true; 			//whether or not to draw separating lines between each 
-	// line, really only needed in my application
-
-	public String toString(){
-		return ("Cursor pos " +cursorPos + "   sX " + startX+"   sY "+startY+"   eY "+ endY);
-	}
+	private boolean drawSepLines = true; 			//whether or not to draw separating lines between each line
 	
 	/**
 	 * Creates a GTextField object
@@ -81,7 +76,7 @@ public class GTextArea extends GComponent {
 	 */
 	public GTextArea(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y); 					//applet set as super something?
-		textFieldCtorCore(text, width, height); 	//call the function below to create textbox?
+		textAreaCtorCore(text, width, height); 	//call the function below to create textbox?
 	}
 
 	/**
@@ -90,15 +85,18 @@ public class GTextArea extends GComponent {
 	 * @param width width of text field
 	 * @param height height of text field
 	 */
-	private void textFieldCtorCore(String text, int width, int height) {
-		this.width = Math.max(width, textWidth + PADH * 2); 						//set to either the spec. width or the width of the box plus horz. padding
-		this.height = Math.max(height, localFont.getFont().getSize() + PADV * 2); 	//set to either the spec. height or the height of font plus vert. padding
+	private void textAreaCtorCore(String text, int width, int height) {
+		//set to either the spec. width or the width of the box plus horz. padding
+		this.width = Math.max(width, textWidth + PADH * 2); 
+		// Ensure that the box height is large enough to display at least 1 line of text
+		this.height = Math.max(height, (int)(1.5f * localFont.getFont().getSize() + 0.5f)); 	//set to either the spec. height or the height of font plus vert. padding
 		border = 1;
-		leading = (int)(1.5f * localFont.getFont().getSize()); 						//default line leading is 1.5 times the font height
+		// default line leading is 1.5 times the font height
+		leading = (int)(2.0f * localFont.getFont().getSize());
 		endY = (int)Math.floor(this.height / leading); 								//calculate the number of lines that can be displayed fully
 		// Set text AFTER the width of the textfield has been set
-		setText(text); 		
-		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextArea.class }); //create the event handler for user to code
+		setText(text);
+		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextArea.class });
 		registerAutos_DMPK(true, true, false, true);
 		winApp.textFont(localFont, localFont.getFont().getSize());
 	}
@@ -114,7 +112,7 @@ public class GTextArea extends GComponent {
 	 */
 	public void setFont(String fontname, int fontSize, float fontLeading){
 		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
-		leading = Math.max(fontSize, fontLeading); 				//update the line leading
+		leading = Math.max(fontSize, fontLeading); 				//update the line leading (can't be less than font height
 		endY = (int) Math.floor(this.height / fontLeading); 	//change the number of lines that can be displayed fully
 
 		setText(text);
@@ -125,9 +123,9 @@ public class GTextArea extends GComponent {
 	/**
 	 * When the textfield loses focus it also loses any text selection.
 	 */
-	protected void looseFocus(GComponent toThis){ //spelling, but don't know if I can change
-		startSelect = endSelect = -1; //reset text selection to nothing
-		focusIsWith = null; //reset focus to nothing
+	protected void loseFocus(GComponent toThis){ 		//spelling, but don't know if I can change
+		startSelect = endSelect = -1; 					//reset text selection to nothing
+		focusIsWith = null; 							//reset focus to nothing
 	}
 
 	/**
@@ -137,7 +135,7 @@ public class GTextArea extends GComponent {
 	 * @param c the character to be added
 	 */
 	private void appendToRightOfCursor(char c) {
-		appendToRightOfCursor("" + c); //just converts a character to string and passes to function below
+		appendToRightOfCursor("" + c); 			//just converts a character to string and passes to function below
 	}
 
 	/**
@@ -148,19 +146,19 @@ public class GTextArea extends GComponent {
 	private void appendToRightOfCursor(String s) {
 		String t1, t2;
 		if(startSelect != endSelect) { //if bunch of text is selected
-			int start = Math.min(startSelect, endSelect); //make sure start < end
-			int end = Math.max(startSelect, endSelect); //make sure end > start
-			t1 = text.substring(0, start); //take text up until start of selection
-			t2 = text.substring(end); //take text past end of selection
-			startSelect = endSelect = cursorPos = start; //put cursor at start of added text, then later we add the length of text
+			int start = Math.min(startSelect, endSelect); 	//make sure start < end
+			int end = Math.max(startSelect, endSelect); 	//make sure end > start
+			t1 = text.substring(0, start); 					//take text up until start of selection
+			t2 = text.substring(end); 						//take text past end of selection
+			startSelect = endSelect = cursorPos = start; 	//put cursor at start of added text, then later we add the length of text
 		} else {
-			t1 = text.substring(0, cursorPos); //take text up until cursor position
-			t2 = text.substring(cursorPos); //take text past cursor position
+			t1 = text.substring(0, cursorPos); 	//take text up until cursor position
+			t2 = text.substring(cursorPos); 	//take text past cursor position
 		}
 
-		text = t1 + s + t2; //appended text
-		cursorPos += s.length(); //set cursor position to end of appended text
-		startSelect = endSelect = cursorPos; //reset any selection but put start and end select at cursor
+		text = t1 + s + t2; 					//appended text
+		cursorPos += s.length(); 				//set cursor position to end of appended text
+		startSelect = endSelect = cursorPos; 	//reset any selection but put start and end select at cursor
 
 		// refresh view to include cursor
 
@@ -176,28 +174,30 @@ public class GTextArea extends GComponent {
 	 * <pre>public void keyEvent</pre> when the delete key is pressed.
 	 */
 	protected void backspaceChar() {
-		if(startSelect != endSelect) {//if a bunch of text is selected
-			deleteSubstring(startSelect, endSelect); //delete substring function with range of selected text
-		} else if(cursorPos > 0){//no selection and can't be at the beginning of the text
-			deleteSubstring(cursorPos - 1, cursorPos);//delete one character to the left of cursor
+		if(startSelect != endSelect) {					//if a bunch of text is selected
+			deleteSubstring(startSelect, endSelect); 	//delete substring function with range of selected text
+		} else if(cursorPos > 0){						//no selection and can't be at the beginning of the text
+			deleteSubstring(cursorPos - 1, cursorPos);	//delete one character to the left of cursor
 		}
 	}
 
+	/**
+	 * 
+	 */
 	private void deleteChar() {
-		if(startSelect != endSelect) { //if a bunch of text is selected
-			deleteSubstring(startSelect, endSelect); //delete substring function with range of selected text
-		} else if(cursorPos < text.length()){ //no selection and can't be at the end of the text
-			deleteSubstring(cursorPos, cursorPos + 1); //delete one character to right of cursor
+		if(startSelect != endSelect) { 					//if a bunch of text is selected
+			deleteSubstring(startSelect, endSelect); 	//delete substring function with range of selected text
+		} else if(cursorPos < text.length()){ 			//no selection and can't be at the end of the text
+			deleteSubstring(cursorPos, cursorPos + 1); 	//delete one character to right of cursor
 		}
 	}
 
 	private void deleteSubstring(int startString, int endString) {
-		int start = Math.min(startString, endString); //make sure start < end
-		int end = Math.max(startString, endString); //make sure end > start
-		text = text.substring(0, start) + text.substring(end); //replace text with subsets of surrounding text
+		int start = Math.min(startString, endString); 			//make sure start < end
+		int end = Math.max(startString, endString); 			//make sure end > start
+		text = text.substring(0, start) + text.substring(end); 	//replace text with subsets of surrounding text
 
-		startSelect = endSelect = cursorPos = start; //reset cursor position to start of string
-		//refresh view to include cursor
+		startSelect = endSelect = cursorPos = start; 			//reset cursor position to start of string
 
 		eventType = CHANGED;
 		fireEvent();
@@ -253,8 +253,8 @@ public class GTextArea extends GComponent {
 	 * Converts an x, y position(pixels) relative to corner of textbox to an x,y cursor index
 	 */
 	private Point cursorPos2D(int x, int y){
-		x -= 4; y -= 4; //subtract the padding from the cursor position
-		String[] splittext = text.split("\n"); //split the text into lines
+		x -= 4; y -= 4; 						//subtract the padding from the cursor position
+		String[] splittext = text.split("\n"); 	//split the text into lines
 		int cursorY = (int) ((int) y / leading + startY); //take nearest integer multiple of line height and add to starting line number
 
 		//if the click was out of the range, return the current cursor pos.
@@ -332,21 +332,17 @@ public class GTextArea extends GComponent {
 		}
 		// cursor went out at the top move the text until inside
 		if(cursorPosition(cursorPos).y < startY){ 	
-System.out.println(tag+" showCursor decY:  > "+this + " "+ cursorPosition(cursorPos).y);			
 			while (cursorPosition(cursorPos).y < startY){ 
 				startY --;
 				endY --;
 			}
-System.out.println(tag+ "showCursor decY:  > "+this+ " "+ cursorPosition(cursorPos).y);			
 		}
 		// cursor went out past the bottom move the text until inside
-		if(cursorPosition(cursorPos).y > endY - 2){ 		
-System.out.println(tag+" showCursor incY:  > "+this+ " "+ cursorPosition(cursorPos).y);			
-			while (cursorPosition(cursorPos).y > endY - 2){
+		if(cursorPosition(cursorPos).y > endY - 1){ 		
+			while (cursorPosition(cursorPos).y > endY - 1){
 				startY ++;
 				endY ++;
 			}
-System.out.println(tag+"  showCursor incY:  < "+this+ " "+ cursorPosition(cursorPos).y);			
 		}
 	}
 
@@ -357,8 +353,7 @@ System.out.println(tag+"  showCursor incY:  < "+this+ " "+ cursorPosition(cursor
 	 * @param val the string to become the text field's contents
 	 */
 	public void setText(String newValue) {
-		winApp.textFont(localFont, localFont.getFont().getSize()); //set the font used
-		text = newValue; //change the text to whatever the user specified
+		text = newValue; 				//change the text to whatever the user specified
 
 		//reset the selection and cursor positions
 		startSelect = endSelect = -1;
@@ -368,32 +363,30 @@ System.out.println(tag+"  showCursor incY:  < "+this+ " "+ cursorPosition(cursor
 		fireEvent();
 	}
 
-	public void setStartX(int newx) {
-		startX = newx;
-	}
+//	public void setStartX(int newx) {
+//		startX = newx;
+//	}
 
-	public void setStartY(int newy) {
-System.out.println("setStartY:  > "+this);
-		int diff = endY - startY; 						//the difference in the start and end
-		startY = newy; 									//change the start
-		cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
-		endY = startY + diff; 							//update the end accordingly
-System.out.println("setStartY:  < "+this);
-	}
+//	public void setStartY(int newy) {
+//		int diff = endY - startY; 						//the difference in the start and end
+//		startY = newy; 									//change the start
+//		cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
+//		endY = startY + diff; 							//update the end accordingly
+//	}
 
-	public int getStartX() {
-		return startX;
-	}
+//	public int getStartX() {
+//		return startX;
+//	}
+//
+//	public int getStartY() {
+//		return startY;
+//	}
+//
+//	public int getEndY() {
+//		return endY;
+//	}
 
-	public int getStartY() {
-		return startY;
-	}
-
-	public int getEndY() {
-		return endY;
-	}
-
-	public void setDrawLines(boolean drawlines){
+	public void showLines(boolean drawlines){
 		drawSepLines = drawlines;
 	}
 
@@ -423,9 +416,7 @@ System.out.println("setStartY:  < "+this);
 				if(focusIsWith != this){ //if focus is not on box
 					this.takeFocus(); //give focus to the box
 				}
-//System.out.println(tag+ " > "+ this);
 				startSelect = endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y));//set the cursor position to the nearest location to where the user clicked
-//System.out.println(tag+ " > "+ this);
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
@@ -445,23 +436,23 @@ System.out.println("setStartY:  < "+this);
 	 */
 	public void keyEvent(KeyEvent e) {
 		if(!enabled) return;
-//		PApplet.println("Show text " + startX + " " + startY + " " + endY);
-		if(focusIsWith == this){ //if the textbox has focus
-			winApp.textFont(localFont, localFont.getFont().getSize()); //set the font so we can get the widths of everything
+		if(focusIsWith == this){ 			//if the textbox has focus
+			// Set the textFont so we can use 
+			winApp.textFont(localFont, localFont.getFont().getSize());
 
-			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); //init some java toolbox or something?
-			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK); //simplify SHIFT check?
+			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 
-			if(e.getID() == KeyEvent.KEY_PRESSED) {//if a key is pressed
+			if(e.getID() == KeyEvent.KEY_PRESSED) {						//if a key is pressed
 				if(e.getKeyCode() == KeyEvent.VK_END) {
-					if(shiftDown) { // Select to end of text
+					if(shiftDown) { 									// Select to end of text
 						if(text.indexOf("\n", cursorPos) != -1){
 							cursorPos = text.indexOf("\n", cursorPos);
 						} else{
 							cursorPos = text.length();
 						}
 						endSelect = cursorPos;
-					} else { // Move cursor to end of text
+					} else { 											// Move cursor to end of text
 						if(text.indexOf("\n", cursorPos) != -1){
 							cursorPos = text.indexOf("\n", cursorPos);
 						} else{
@@ -471,14 +462,14 @@ System.out.println("setStartY:  < "+this);
 					}
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_HOME) {
-					if(shiftDown) { // select to start of text
+					if(shiftDown) { 									// select to start of text
 						if(text.lastIndexOf("\n", cursorPos) != cursorPos){
 							cursorPos = text.lastIndexOf("\n", cursorPos) + 1;
 						} else{
 							cursorPos = text.lastIndexOf("\n", cursorPos-1) + 1;
 						}
 						startSelect = cursorPos;
-					} else { //Move cursor to start of text
+					} else { 											//Move cursor to start of text
 						if(text.lastIndexOf("\n", cursorPos) != cursorPos){
 							cursorPos = text.lastIndexOf("\n", cursorPos) + 1;
 						} else{
@@ -488,82 +479,82 @@ System.out.println("setStartY:  < "+this);
 					}
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-					if(shiftDown) { // selecting text to left
-						if(cursorPos > 0) { //don't go past the beginning
+					if(shiftDown) { 									// selecting text to left
+						if(cursorPos > 0) { 							//don't go past the beginning
 							cursorPos --;
 							endSelect = cursorPos;
 						}
-					} else { // moving cursor left
-						if(cursorPos > 0){ //don't go past the beginning
+					} else { 											// moving cursor left
+						if(cursorPos > 0){ 								//don't go past the beginning
 							cursorPos --;
 						}
 						startSelect = endSelect = cursorPos;
 					}
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					if(shiftDown) { // selecting text to right
-						if(cursorPos < text.length()) { //don't go past the end
+					if(shiftDown) { 									// selecting text to right
+						if(cursorPos < text.length()) { 				//don't go past the end
 							cursorPos ++;
 							endSelect = cursorPos;
 						}
-					} else { // moving cursor right
-						if(cursorPos < text.length()){ //don't go past the end
+					} else { 											// moving cursor right
+						if(cursorPos < text.length()){ 					//don't go past the end
 							cursorPos ++;
 						}
 						startSelect = endSelect = cursorPos;
 					}
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_UP) {
-					String[] splittext = text.split("\n"); //to get the total number of lines
-					if(shiftDown) { // selecting text upward
-						if(cursorPosition(cursorPos).y > 0){//don't go past beginning
+					String[] splittext = text.split("\n"); 				//to get the total number of lines
+					if(shiftDown) { 									// selecting text upward
+						if(cursorPosition(cursorPos).y > 0){			//don't go past beginning
 							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y - 1].length()), cursorPosition(cursorPos).y - 1));
 							startSelect = cursorPos;
 						}
-					} else { // moving cursor upward
-						if(cursorPosition(cursorPos).y > 0){//don't go past beginning
+					} else { 											// moving cursor upward
+						if(cursorPosition(cursorPos).y > 0){			//don't go past beginning
 							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y - 1].length()), cursorPosition(cursorPos).y - 1));
 						}
 						startSelect = endSelect = cursorPos;
 					}
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-					String[] splittext = text.split("\n"); //to get the total number of lines
-					if(shiftDown) { // selecting text downward
-						if(cursorPosition(cursorPos).y < splittext.length - 1){//don't go past end
+					String[] splittext = text.split("\n"); 				//to get the total number of lines
+					if(shiftDown) { 									// selecting text downward
+						if(cursorPosition(cursorPos).y < splittext.length - 1){		//don't go past end
 							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y + 1].length()), cursorPosition(cursorPos).y + 1));
 							endSelect = cursorPos;
 						}
-					} else { // moving cursor upward
-						if(cursorPosition(cursorPos).y < splittext.length - 1){//don't go past end
+					} else { 														// moving cursor upward
+						if(cursorPosition(cursorPos).y < splittext.length - 1){		//don't go past end
 							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y + 1].length()), cursorPosition(cursorPos).y + 1));
 						}
 						startSelect = endSelect = cursorPos;
 					}
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_DELETE) {
-					deleteChar(); //delete the character to the right
+					deleteChar(); 										//delete the character to the right
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					appendToRightOfCursor("\n"); //add linefeed to right of cursor
+					appendToRightOfCursor("\n"); 						//add linefeed to right of cursor
 					eventType = ENTERED;
 					fireEvent();
 				}
 				else{
-					if((e.getModifiers() & shortcutMask) == shortcutMask) {//shortcut handling
+					if((e.getModifiers() & shortcutMask) == shortcutMask){	//shortcut handling
 						switch (e.getKeyCode()) {
 						case KeyEvent.VK_C:
-							if(startSelect != endSelect) { //only copy if there is selected text
-								copySubstring(startSelect, endSelect); //copy text code
+							if(startSelect != endSelect) { 				//only copy if there is selected text
+								copySubstring(startSelect, endSelect); 	//copy text code
 							}
 							break;
 						case KeyEvent.VK_V:
-							appendToRightOfCursor(GClip.paste()); //paste copied code at cursor position
+							appendToRightOfCursor(GClip.paste()); 		//paste copied code at cursor position
 							break;
 						case KeyEvent.VK_X:
-							if(startSelect != endSelect) { //only cut if there is selected text
-								copySubstring(startSelect, endSelect); //copy selection
-								deleteSubstring(startSelect, endSelect); //delete selection
+							if(startSelect != endSelect) { 					//only cut if there is selected text
+								copySubstring(startSelect, endSelect); 		//copy selection
+								deleteSubstring(startSelect, endSelect); 	//delete selection
 							}
 							break;
 						case KeyEvent.VK_A:
@@ -575,36 +566,37 @@ System.out.println("setStartY:  < "+this);
 					}
 				}
 			}
-			else if(e.getID() == KeyEvent.KEY_TYPED) { //key entered was typed rather than a special code?
-				if((e.getModifiers() & shortcutMask) == shortcutMask) {} //don't do anything for shortcuts?
+			else if(e.getID() == KeyEvent.KEY_TYPED) { 						//key entered was typed rather than a special code?
+				if((e.getModifiers() & shortcutMask) == shortcutMask) {} 	//don't do anything for shortcuts?
 				else if(e.getKeyChar() == '\b') {
 					backspaceChar(); //call backspace function
 				}
-				else if(e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) { //if entered character is not undefined (i.e. it is defined)
-					if(validUnicode(e.getKeyChar())) //if valid unicode character
-						appendToRightOfCursor(e.getKeyChar()); //add typed character at cursor
+				else if(e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) { 	//if entered character is not undefined (i.e. it is defined)
+					if(validUnicode(e.getKeyChar())) 					//if valid unicode character
+						appendToRightOfCursor(e.getKeyChar());			//add typed character at cursor
 				}
 			}
 		}
 	}
 
 	/**
-	 * draws the text field, contents, selection, and cursor
+	 * Draws the text field, contents, selection, and cursor
 	 * to the screen.
 	 */
 	public void draw () {
-		if(!visible) return; // don't draw if visible is false
+		if(!visible) return;
 
-		winApp.pushStyle(); //guessing this is like pushmatrix but for style
-		winApp.style(G4P.g4pStyle); //set the style
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
 
-		winApp.textFont(localFont, localFont.getFont().getSize()); //set the font
+		winApp.textFont(localFont, localFont.getFont().getSize());
 
 		// Get the absolute coordinates of box.
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 
-		// Draw the surrounding box
+		// ########################################
+		// Draw the surrounding box and background
 		if(border > 0){
 			winApp.strokeWeight(border);
 			winApp.stroke(localColor.txfBorder);
@@ -615,35 +607,38 @@ System.out.println("setStartY:  < "+this);
 		winApp.fill(localColor.txfBack);
 		winApp.rect(pos.x, pos.y, width, height);
 
-		//draw separating lines if specified
+		// ########################################
+		// Draw separating lines if specified
 		if(drawSepLines){
-			winApp.stroke(winApp.blendColor(localColor.txfBorder, winApp.color(100), ADD));
+			winApp.stroke(PApplet.blendColor(localColor.txfBorder, winApp.color(100), ADD));
 			winApp.strokeWeight(1);
 			for(int i = 1; i <= endY - startY; i++){
 				winApp.line(pos.x + 4, pos.y + i * leading, pos.x + width - 4, pos.y + i*leading);
 			}
 		}
-
-		winApp.noStroke();
+		// ########################################
 		// Draw the selection rectangles
-		if(startSelect != endSelect){ //if something is selected
+		winApp.noStroke();
+		if(startSelect != endSelect){ 		// if something is selected
 			winApp.fill(localColor.txfSelBack);
 
 			for(int i = Math.min(startSelect, endSelect); i < Math.max(startSelect, endSelect); i++){
 				if(cursorPosition(i).x >= startX && cursorPixPosition(i).x < (width - 8) &&
-						cursorPosition(i).y >= startY && cursorPosition(i).y < endY - 1){
+						cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
 					winApp.rect(pos.x + 4 + cursorPixPosition(i).x, pos.y + 2 + cursorPixPosition(i).y,
 							Math.min(winApp.textWidth(text.substring(i, i+1)),
 							width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
 				}
 			}
 		}
-
+		
+		// ########################################
 		// Draw the string
 		winApp.fill(localColor.txfFont);
 		winApp.textLeading(leading); //set the leading
-		winApp.text (viewText(), pos.x + 4, pos.y , width - 8, height - 4);
-
+		winApp.text (viewText(), pos.x + 4, pos.y + 1, width - 8, height - 1);
+		
+		// ########################################
 		// Draw the insertion point (it blinks!)
 		if(focusIsWith == this && (winApp.millis() % 1000) > 500) {
 			Point cursorPix = cursorPixPosition(cursorPos);
@@ -656,7 +651,7 @@ System.out.println("setStartY:  < "+this);
 					pos.y + cursorPix.y + localFont.getFont().getSize()+2);
 			winApp.fill(localColor.txfFont);
 		}
-		winApp.popStyle(); //pop the push we did earlier
+		winApp.popStyle();
 	}
 
 	/**
@@ -796,6 +791,12 @@ System.out.println("setStartY:  < "+this);
 				(c >= 0xF81F && c <= 0xF820) ||
 				(c >= 0xF81F && c <= 0xF820) ||
 				(c == 0xF833));
+	}
+
+	
+	public String toString(){
+		return  ("Cursor pos " +cursorPos + "   sX " + startX+"   sY "+startY+"   eY "
+				+ endY+ "    startSelect "+startSelect+"     endSelect "+endSelect);
 	}
 
 

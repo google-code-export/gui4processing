@@ -115,7 +115,7 @@ public class GTextFieldNew extends GComponent {
 	/**
 	 * When the textfield loses focus it also loses any text selection.
 	 */
-	protected void looseFocus(GComponent toThis){ //spelling, but don't know if I can change
+	protected void loseFocus(GComponent toThis){ //spelling, but don't know if I can change
 		startSelect = endSelect = -1; //reset text selection to nothing
 		focusIsWith = null; //reset focus to nothing
 	}

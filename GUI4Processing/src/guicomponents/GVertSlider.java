@@ -93,7 +93,7 @@ public class GVertSlider extends GSlider {
 	 * If this slider is part of a combo box then hand focus back to
 	 * the combo box 
 	 */
-	protected void looseFocus(GComponent grabber){
+	protected void loseFocus(GComponent grabber){
 		if(cursorIsOver == this)
 			cursorIsOver = null;
 		String pname = (parent == null) ? "" : parent.getClass().getSimpleName();
@@ -126,13 +126,13 @@ public class GVertSlider extends GSlider {
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
-				looseFocus(null);
+				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
-				looseFocus(null);
+				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
