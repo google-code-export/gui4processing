@@ -112,8 +112,12 @@ public class GTextArea extends GComponent {
 	 */
 	public void setFont(String fontname, int fontSize, float fontLeading){
 		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
-		leading = Math.max(fontSize, fontLeading); 				//update the line leading (can't be less than font height
-		endY = (int) Math.floor(this.height / fontLeading); 	//change the number of lines that can be displayed fully
+		// Ensure that the box height is large enough to display at least 1 line of text
+		height = Math.max(height, (int)(1.5f * localFont.getFont().getSize() + 0.5f));
+		//update the line leading (can't be less than font height
+		leading = Math.max(fontSize, fontLeading);
+		//change the number of lines that can be displayed fully
+		endY = (int) Math.floor(this.height / fontLeading);
 
 		setText(text);
 		winApp.textFont(localFont, localFont.getFont().getSize());
@@ -123,9 +127,9 @@ public class GTextArea extends GComponent {
 	/**
 	 * When the textfield loses focus it also loses any text selection.
 	 */
-	protected void loseFocus(GComponent toThis){ 		//spelling, but don't know if I can change
-		startSelect = endSelect = -1; 					//reset text selection to nothing
-		focusIsWith = null; 							//reset focus to nothing
+	protected void loseFocus(GComponent toThis){
+		startSelect = endSelect = -1; 	// reset text selection to nothing
+		focusIsWith = null; 			// remove focus
 	}
 
 	/**
@@ -159,8 +163,6 @@ public class GTextArea extends GComponent {
 		text = t1 + s + t2; 					//appended text
 		cursorPos += s.length(); 				//set cursor position to end of appended text
 		startSelect = endSelect = cursorPos; 	//reset any selection but put start and end select at cursor
-
-		// refresh view to include cursor
 
 		eventType = CHANGED;
 		fireEvent();
@@ -386,10 +388,21 @@ public class GTextArea extends GComponent {
 //		return endY;
 //	}
 
+	/**
+	 * Whether or not to display separator lines
+	 */
 	public void showLines(boolean drawlines){
 		drawSepLines = drawlines;
 	}
 
+	/**
+	 * Are we showing separator lines
+	 * @return
+	 */
+	public boolean getShowLines(){
+		return drawSepLines;
+	}
+	
 	/**
 	 * Mouse event handler - the focus cannot be lost by anything
 	 * we do here - it has to be taken away when the mouse is pressed
