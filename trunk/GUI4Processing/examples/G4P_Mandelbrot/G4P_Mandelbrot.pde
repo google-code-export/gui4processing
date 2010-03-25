@@ -7,6 +7,7 @@
  */
  
 import guicomponents.*;
+import java.awt.Color;
 
 final int MAX_ITERATE = 128;
 
