@@ -57,11 +57,14 @@ import processing.core.PApplet;
  */
 public class GTextArea extends GComponent {
 
+	private static float heightFactor = 1.5f;
+	private static int fontLeadPad = 2;
+
 	//Define all the private variables needed to keep track of view window and selection and etc.
 	private int cursorPos = 0; 						//stores the cursor's position in the 1D string
 	private int startSelect = -1, endSelect = -1; 	//stores where the selection start/end are
 	public int startX = 0, startY = 0, endY = 1; 	//stores where to begin showing text and end showing text
-	private float leading;							//space between lines
+	private int leading;							//space between lines
 
 	private boolean drawSepLines = true; 			//whether or not to draw separating lines between each line
 	
@@ -98,7 +101,7 @@ public class GTextArea extends GComponent {
 		setText(text);
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextArea.class });
 		registerAutos_DMPK(true, true, false, true);
-		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.textFont(localFont);
 	}
 
 	/**
@@ -110,17 +113,23 @@ public class GTextArea extends GComponent {
 	 * @param fontSize
 	 * @param fontLeading
 	 */
-	public void setFont(String fontname, int fontSize, float fontLeading){
+	public void setFont(String fontname, int fontSize, int fontLeading){
 		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
 		// Ensure that the box height is large enough to display at least 1 line of text
 		height = Math.max(height, (int)(1.5f * localFont.getFont().getSize() + 0.5f));
 		//update the line leading (can't be less than font height
-		leading = Math.max(fontSize, fontLeading);
+		leading = Math.max(fontSize + fontLeadPad, fontLeading);
 		//change the number of lines that can be displayed fully
 		endY = (int) Math.floor(this.height / fontLeading);
 
 		setText(text);
-		winApp.textFont(localFont, localFont.getFont().getSize());
+	}
+
+	/**
+	 * 
+	 */
+	public void setFont(String fontname, int fontsize){
+		setFont(fontname, fontsize, leading);
 	}
 
 	
@@ -409,6 +418,7 @@ public class GTextArea extends GComponent {
 	public void mouseEvent(MouseEvent e) {
 		if(!visible || !enabled) return; //don't do anything if invisible or disabled
 
+		winApp.textFont(localFont);
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY); //sets whether or not the mouse is even over the textbox
 		if(mouseOver || focusIsWith == this) //if the mouse is over or the textbox has focus
 			cursorIsOver = this; //set that the cursor is over the textbox
@@ -446,7 +456,7 @@ public class GTextArea extends GComponent {
 		if(!enabled) return;
 		if(focusIsWith == this){ 			//if the textbox has focus
 			// Set the textFont so we can use 
-			winApp.textFont(localFont, localFont.getFont().getSize());
+			winApp.textFont(localFont);
 
 			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
@@ -597,7 +607,7 @@ public class GTextArea extends GComponent {
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
 
-		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.textFont(localFont);
 
 		// Get the absolute coordinates of box.
 		Point pos = new Point(0,0);
