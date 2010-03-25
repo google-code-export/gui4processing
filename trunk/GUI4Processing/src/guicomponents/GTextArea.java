@@ -60,7 +60,7 @@ public class GTextArea extends GComponent {
 	//Define all the private variables needed to keep track of view window and selection and etc.
 	private int cursorPos = 0; 						//stores the cursor's position in the 1D string
 	private int startSelect = -1, endSelect = -1; 	//stores where the selection start/end are
-	public int startX = 0, startY = 0, endY = 0; 	//stores where to begin showing text and end showing text
+	public int startX = 0, startY = 0, endY = 1; 	//stores where to begin showing text and end showing text
 	private float leading;							//space between lines
 
 	private boolean drawSepLines = true; 			//whether or not to draw separating lines between each line
@@ -89,11 +89,11 @@ public class GTextArea extends GComponent {
 		//set to either the spec. width or the width of the box plus horz. padding
 		this.width = Math.max(width, textWidth + PADH * 2); 
 		// Ensure that the box height is large enough to display at least 1 line of text
-		this.height = Math.max(height, (int)(1.5f * localFont.getFont().getSize() + 0.5f)); 	//set to either the spec. height or the height of font plus vert. padding
+		this.height = Math.max(height, (int)(1.5f * localFont.getFont().getSize())); 	//set to either the spec. height or the height of font plus vert. padding
 		border = 1;
 		// default line leading is 1.5 times the font height
-		leading = (int)(2.0f * localFont.getFont().getSize());
-		endY = (int)Math.floor(this.height / leading); 								//calculate the number of lines that can be displayed fully
+		leading = (int)(1.2f * localFont.getFont().getSize());
+		endY = Math.max(1,  (int)Math.floor(this.height / leading)); 								//calculate the number of lines that can be displayed fully
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextArea.class });
@@ -321,30 +321,25 @@ public class GTextArea extends GComponent {
 
 	private void showCursor(){
 		// cursor went out to the left move the text until inside
-		if(cursorPosition(cursorPos).x < startX){
-			while (cursorPosition(cursorPos).x < startX){
-				startX --;
-			}
+		while (cursorPosition(cursorPos).x < startX){
+			startX --;
 		}
+
 		//cursor went out to the right move the text until inside
-		if(cursorPixPosition(cursorPos).x > width - 8){
-			while (cursorPixPosition(cursorPos).x > width - 8){
-				startX ++;
-			}
-		}
-		// cursor went out at the top move the text until inside
-		if(cursorPosition(cursorPos).y < startY){ 	
-			while (cursorPosition(cursorPos).y < startY){ 
-				startY --;
-				endY --;
-			}
+		while (cursorPixPosition(cursorPos).x > width - 8){
+			startX ++;
 		}
 		// cursor went out past the bottom move the text until inside
-		if(cursorPosition(cursorPos).y > endY - 1){ 		
-			while (cursorPosition(cursorPos).y > endY - 1){
-				startY ++;
-				endY ++;
-			}
+		while (/* cursorPosition(cursorPos).y > 0 && */ cursorPosition(cursorPos).y > endY - 1){
+			System.out.println(tag + "   Y++\t"+this);
+			startY ++;
+			endY ++;
+		}
+		// cursor went out at the top move the text until inside
+		while ( /* endY > 1 && */ cursorPosition(cursorPos).y < startY){ 
+			System.out.println(tag + "   Y--\t"+this);
+			startY --;
+			endY --;
 		}
 	}
 
@@ -649,7 +644,7 @@ public class GTextArea extends GComponent {
 		// Draw the string
 		winApp.fill(localColor.txfFont);
 		winApp.textLeading(leading); //set the leading
-		winApp.text (viewText(), pos.x + 4, pos.y + 1, width - 8, height - 1);
+		winApp.text (viewText(), pos.x + 4, pos.y + 1, width + 8, height -2);
 		
 		// ########################################
 		// Draw the insertion point (it blinks!)
