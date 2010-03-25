@@ -78,6 +78,55 @@ public class GFont {
 		}
 		return pfont;
 	}
+
+
+	/**
+	 * A quick way to get the default Sans Serif font (11pt)
+	 * @param theApplet
+	 * @return
+	 */
+	public static PFont getDefaultFont(PApplet theApplet){
+		return getFont(theApplet, "SansSerif", 11);
+	}
+
+	
+	/**
+	 * This is a private class and is only used by the GFont class.
+	 * It defines a key to uniquely identify fonts created based on
+	 * their system font name and size. The purpose is to prevent
+	 * multiple PFont objects that represent the same font/size.
+	 * 
+	 * @author Peter Lager
+	 *
+	 */
+	@SuppressWarnings("unchecked")
+	private static class GFontKey implements Comparable{
+
+		private final String fontKey;
+
+		public GFontKey(String fontname, int fontsize){
+			fontKey = fontname + "-" + fontsize;
+		}
+
+		public boolean equals(Object o){
+			GFontKey fkey = (GFontKey) o;
+			if(fkey == null)
+				return false;
+			return fontKey.equals(fkey.fontKey);
+		}
+	
+		public int hashCode(){
+			return fontKey.hashCode();
+		}
+		
+		public int compareTo(Object obj) {
+			GFontKey fkey = (GFontKey) obj;
+			if(fkey == null)
+				return 1;
+			return fontKey.compareTo(fkey.fontKey );
+		}
+
+	}
 	
 //	/**
 //	 * Get the system default Serif font
@@ -135,52 +184,5 @@ public class GFont {
 //		}
 //		return pfont;
 //	}
-
-	/**
-	 * A quick way to get the default Sans Serif font (11pt)
-	 * @param theApplet
-	 * @return
-	 */
-	public static PFont getDefaultFont(PApplet theApplet){
-		return getFont(theApplet, "SansSerif", 11);
-	}
-
 	
-	/**
-	 * This is a private class and is only used by the GFont class.
-	 * It defines a key to uniquely identify fonts created based on
-	 * their system font name and size. The purpose is to prevent
-	 * multiple PFont objects that represent the same font/size.
-	 * 
-	 * @author Peter Lager
-	 *
-	 */
-	@SuppressWarnings("unchecked")
-	private static class GFontKey implements Comparable{
-
-		private final String fontKey;
-
-		public GFontKey(String fontname, int fontsize){
-			fontKey = fontname + "-" + fontsize;
-		}
-
-		public boolean equals(Object o){
-			GFontKey fkey = (GFontKey) o;
-			if(fkey == null)
-				return false;
-			return fontKey.equals(fkey.fontKey);
-		}
-	
-		public int hashCode(){
-			return fontKey.hashCode();
-		}
-		
-		public int compareTo(Object obj) {
-			GFontKey fkey = (GFontKey) obj;
-			if(fkey == null)
-				return 1;
-			return fontKey.compareTo(fkey.fontKey );
-		}
-
-	}
 }
