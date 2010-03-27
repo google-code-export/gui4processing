@@ -66,7 +66,7 @@ public class GTextField extends GComponent {
 	// Define all the private variables needed to keep track of view window and selection and etc.
 	private int cursorPos = 0; 						//stores the cursor's position in the 1D string
 	private int startSelect = -1, endSelect = -1; 	//stores where the selection start/end are
-	public int startX = 0, startY = 0, endY = 1; 	//stores where to begin showing text and end showing text
+	private int startX = 0, startY = 0, endY = 1; 	//stores where to begin showing text and end showing text
 	private int leading;							//space between lines
 
 	// whether or not to draw separating lines between each line
