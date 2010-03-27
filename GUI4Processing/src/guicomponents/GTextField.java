@@ -388,13 +388,11 @@ public class GTextField extends GComponent {
 		}
 		// cursor went out past the bottom move the text until inside
 		while (/* cursorPosition(cursorPos).y > 0 && */ cursorPosition(cursorPos).y > endY - 1){
-			System.out.println(tag + "   Y++\t"+this);
 			startY ++;
 			endY ++;
 		}
 		// cursor went out at the top move the text until inside
 		while ( /* endY > 1 && */ cursorPosition(cursorPos).y < startY){ 
-			System.out.println(tag + "   Y--\t"+this);
 			startY --;
 			endY --;
 		}
