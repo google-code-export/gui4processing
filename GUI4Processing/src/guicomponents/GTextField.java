@@ -1,13 +1,13 @@
 /*
-  Part of the GUI for Processing library 
-   	http://www.lagers.org.uk/g4p/index.html
-	http://gui4processing.googlecode.com/svn/trunk/
+  Part of the GUI for Processing library
+  http://gui4processing.lagers.org.uk
+  http://gui4processing.googlecode.com/svn/trunk/
 
   Copyright (c) 2008-09 Peter Lager
 
   The string handling and clipboard logic has been taken from a similar
-  GUI library Interfascia ALPHA 002 -- http://superstable.net/interfascia/ 
-  produced by Brenden Berg 
+  GUI library Interfascia ALPHA 002 -- http://superstable.net/interfascia/
+  produced by Brenden Berg
   This code had to be modified to correct some logic errors in selecting text
   using the mouse and the shift+cursor keys. The biggest change is in the
   usage of startSelect and endSelect variables. In the original code if either
@@ -15,8 +15,10 @@
   value i.e. startSelect == endSelect then no text is selected. Also both will
   equal the cursorPos UNLESS we are selecting text. This has simplified the code.
 
-  Other modifications have been made in the way it handles events, draws itself 
+  Other modifications have been made in the way it handles events, draws itself
   and focus handling to fit in with my library which supports floating panels.
+
+  Final modifications made by Brendan Nichols, March 15, 2010 to support multi-line text.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -44,25 +46,32 @@ import processing.core.PApplet;
 
 /**
  * The text field component.
- * 
+ *
  * Enables user text input at runtime. Text can be selected using the mouse
  * or keyboard shortcuts and then copied or cut to the clipboard. Text
- * can also be pasted in. It supports text that is longer than the dispalayable
+ * can also be pasted in. It supports text that is longer than the displayable
  * area
- * 
- * @author Peter Lager
+ *
+ * @author Brendan Nichols  & Peter Lager
  *
  */
 public class GTextField extends GComponent {
 
-	// Measured in characters
-	private int cursorPos = 0;
-	private int visiblePortionStart = 0, visiblePortionEnd = 0;
-	private int startSelect = -1, endSelect = -1;
-	// Measured in pixels
-	private float cursorXPos = 0, startSelectXPos = 0, endSelectXPos = 0;
+	private static float heightFactor = 1.5f;
+	private static int fontLeadPad = 2;
 
+	// Define all the private variables needed to keep track of view window and selection and etc.
+	private int cursorPos = 0; 						//stores the cursor's position in the 1D string
+	private int startSelect = -1, endSelect = -1; 	//stores where the selection start/end are
+	public int startX = 0, startY = 0, endY = 1; 	//stores where to begin showing text and end showing text
+	private int leading;							//space between lines
 
+	// whether or not to draw separating lines between each line
+	private boolean drawSepLines = false;
+	// Determines whether this component is multi-line or not can only 
+	// be set in the constructor
+	private boolean multiLine = false;
+	
 	/**
 	 * Creates a GTextField object
 	 * @param theApplet
@@ -74,60 +83,97 @@ public class GTextField extends GComponent {
 	 */
 	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		textFieldCtorCore(text, width, height);
+		this.multiLine = false;
+		textAreaCtorCore(text, width, height);
 	}
 
 	/**
-	 * Common code required by ctors
+	 * Creates a GTextField object
+	 * @param theApplet
+	 * @param text initial text to display
+	 * @param x horizontal position relative to PApplet or PPanel
+	 * @param y vertical position relative to PApplet or PPanel
+	 * @param width width of text field
+	 * @param height height of text field
+	 * @param multiLine set to true if multi-line option available
+	 */
+	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, boolean multiLine){
+		super(theApplet, x, y);
+		this.multiLine = multiLine;
+		textAreaCtorCore(text, width, height);
+	}
+
+	/**
+	 * Common code required by constructors
 	 * @param text initial text to display
 	 * @param width width of text field
 	 * @param height height of text field
 	 */
-
-	private void textFieldCtorCore(String text, int width, int height) {
-		this.width = Math.max(width, textWidth + PADH * 2);
-		this.height = Math.max(height, localFont.getFont().getSize() + PADV * 2);
+	private void textAreaCtorCore(String text, int width, int height) {
+//		System.out.println("#\n"+text);
+//		if(!multiLine)
+//			text.replace('e', 'E');
+//		System.out.println("#\n"+text);
+		//set to either the spec. width or the width of the box plus horz. padding
+		this.width = Math.max(width, textWidth + PADH * 2); 
+		// Ensure that the box height is large enough to display at least 1 line of text
+		this.height = Math.max(height, (int)(1.5f * localFont.getFont().getSize())); 	//set to either the spec. height or the height of font plus vert. padding
 		border = 1;
+		// default line leading is 1.5 times the font height
+		leading = (int)(1.2f * localFont.getFont().getSize());
+		endY = Math.max(1,  (int)Math.floor(this.height / leading)); 								//calculate the number of lines that can be displayed fully
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextField.class });
 		registerAutos_DMPK(true, true, false, true);
-		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.textFont(localFont);
 	}
 
 	/**
-	 * Set the font & size for the textfield changing the height (+/-) 
-	 * and width(+/-) of the textfield if necessary to display text.
+	 * Set the font, size and leading for the textfield. <br>
+	 * This will not alter the size of the textfield so use with caution
+	 * if the font is too tall it may not be possible to see anything
+	 * ADDED: font leading input which will change the spacing between lines
+	 * @param fontname
+	 * @param fontSize
+	 * @param fontLeading
+	 */
+	public void setFont(String fontname, int fontSize, int fontLeading){
+		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
+		// Ensure that the box height is large enough to display at least 1 line of text
+		height = Math.max(height, (int)(1.5f * localFont.getFont().getSize() + 0.5f));
+		//update the line leading (can't be less than font height
+		leading = Math.max(fontSize + fontLeadPad, fontLeading);
+		//change the number of lines that can be displayed fully
+		endY = (int) Math.floor(this.height / fontLeading);
+
+		setText(text);
+	}
+
+	/**
+	 * 
 	 */
 	public void setFont(String fontname, int fontsize){
-		int tw = textWidth;
-		int fs = (int) localFont.getFont().getSize();
-		localFont = GFont.getFont(winApp, fontname, fontsize);
-		if(fontsize != fs)
-			height += (fontsize - fs);
-		setText(text);
-		if(textWidth != tw)
-			width += (textWidth - tw);
-		winApp.textFont(localFont, localFont.getFont().getSize());
-		adjustVisiblePortionEnd();
+		setFont(fontname, fontsize, leading);
 	}
 
+	
 	/**
-	 * When the textfield looses focus it also looses any text selection.
+	 * When the textfield loses focus it also loses any text selection.
 	 */
 	protected void loseFocus(GComponent toThis){
-		startSelect = endSelect = -1;
-		focusIsWith = null;
+		startSelect = endSelect = -1; 	// reset text selection to nothing
+		focusIsWith = null; 			// remove focus
 	}
 
 	/**
-	 * adds a character to the immediate right of the insertion point or replaces the selected 
-	 * group of characters. This method is called by <pre>public void MouseEvent</pre> if a unicode 
+	 * adds a character to the immediate right of the insertion point or replaces the selected
+	 * group of characters. This method is called by <pre>public void MouseEvent</pre> if a unicode
 	 * character is entered via the keyboard.
 	 * @param c the character to be added
 	 */
 	private void appendToRightOfCursor(char c) {
-		appendToRightOfCursor("" + c);
+		appendToRightOfCursor("" + c); 			//just converts a character to string and passes to function below
 	}
 
 	/**
@@ -137,86 +183,57 @@ public class GTextField extends GComponent {
 	 */
 	private void appendToRightOfCursor(String s) {
 		String t1, t2;
-		winApp.textFont(localFont, localFont.getFont().getSize());
-		if(startSelect != endSelect) {
-			int start = Math.min(startSelect, endSelect);
-			int end = Math.max(startSelect, endSelect);
-			t1 = text.substring(0, start);
-			t2 = text.substring(end);
-			startSelect = endSelect = cursorPos = start;
+		if(startSelect != endSelect) { //if bunch of text is selected
+			int start = Math.min(startSelect, endSelect); 	//make sure start < end
+			int end = Math.max(startSelect, endSelect); 	//make sure end > start
+			t1 = text.substring(0, start); 					//take text up until start of selection
+			t2 = text.substring(end); 						//take text past end of selection
+			startSelect = endSelect = cursorPos = start; 	//put cursor at start of added text, then later we add the length of text
 		} else {
-			t1 = text.substring(0, cursorPos);
-			t2 = text.substring(cursorPos);
+			t1 = text.substring(0, cursorPos); 	//take text up until cursor position
+			t2 = text.substring(cursorPos); 	//take text past cursor position
 		}
 
-		text = t1 + s + t2;
-		cursorPos += s.length();
+		text = t1 + s + t2; 					//appended text
+		cursorPos += s.length(); 				//set cursor position to end of appended text
+		startSelect = endSelect = cursorPos; 	//reset any selection but put start and end select at cursor
 
-		// Adjust the start and end positions of the visible portion of the string
-		if(winApp.textWidth(text) < width - 12) {
-			visiblePortionStart = 0;
-			visiblePortionEnd = text.length();
-		} else {
-			if(cursorPos == text.length()) {
-				visiblePortionEnd = cursorPos;
-				adjustVisiblePortionStart();
-			} else {
-				if(cursorPos >= visiblePortionEnd)
-					centerCursor();
-				else {
-					adjustVisiblePortionEnd();
-				}
-			}
-		}
 		eventType = CHANGED;
 		fireEvent();
 	}
 
 	/**
-	 * deletes either the character directly to the left of the insertion point 
-	 * or the selected group of characters. It automatically handles cases where 
-	 * there is no character to the left of the insertion point (when the 
-	 * insertion point is at the beginning of the string). It is called by 
+	 * deletes either the character directly to the left of the insertion point
+	 * or the selected group of characters. It automatically handles cases where
+	 * there is no character to the left of the insertion point (when the
+	 * insertion point is at the beginning of the string). It is called by
 	 * <pre>public void keyEvent</pre> when the delete key is pressed.
 	 */
 	protected void backspaceChar() {
-		if(startSelect != endSelect) {
-			deleteSubstring(startSelect, endSelect);
-		} else if(cursorPos > 0){
-			deleteSubstring(cursorPos - 1, cursorPos);
+		if(startSelect != endSelect) {					//if a bunch of text is selected
+			deleteSubstring(startSelect, endSelect); 	//delete substring function with range of selected text
+		} else if(cursorPos > 0){						//no selection and can't be at the beginning of the text
+			deleteSubstring(cursorPos - 1, cursorPos);	//delete one character to the left of cursor
 		}
 	}
 
+	/**
+	 * 
+	 */
 	private void deleteChar() {
-		if(startSelect != endSelect) {
-			deleteSubstring(startSelect, endSelect);
-		} else if(cursorPos < text.length()){
-			deleteSubstring(cursorPos, cursorPos + 1);
+		if(startSelect != endSelect) { 					//if a bunch of text is selected
+			deleteSubstring(startSelect, endSelect); 	//delete substring function with range of selected text
+		} else if(cursorPos < text.length()){ 			//no selection and can't be at the end of the text
+			deleteSubstring(cursorPos, cursorPos + 1); 	//delete one character to right of cursor
 		}
 	}
 
 	private void deleteSubstring(int startString, int endString) {
-		int start = Math.min(startString, endString);
-		int end = Math.max(startString, endString);
-		text = text.substring(0, start) + text.substring(end);
-		cursorPos = start;
+		int start = Math.min(startString, endString); 			//make sure start < end
+		int end = Math.max(startString, endString); 			//make sure end > start
+		text = text.substring(0, start) + text.substring(end); 	//replace text with subsets of surrounding text
 
-		if(winApp.textWidth(text) < width - 12) {
-			visiblePortionStart = 0;
-			visiblePortionEnd = text.length();
-		} else {
-			if(cursorPos == text.length()) {
-				visiblePortionEnd = cursorPos;
-				adjustVisiblePortionStart();
-			} else {
-				if(cursorPos <= visiblePortionStart) {
-					centerCursor();
-				} else {
-					adjustVisiblePortionEnd();
-				}
-			}
-		}
-		startSelect = endSelect = cursorPos;
+		startSelect = endSelect = cursorPos = start; 			//reset cursor position to start of string
 
 		eventType = CHANGED;
 		fireEvent();
@@ -228,312 +245,393 @@ public class GTextField extends GComponent {
 	 * @param end
 	 */
 	private void copySubstring(int start, int end) {
-		int s = Math.min(start, end);
-		int e = Math.max(start, end);
-		GClip.copy(text.substring(s, e));
+		int s = Math.min(start, end); //make sure start is less than end
+		int e = Math.max(start, end); //make sure end is greater than start
+		GClip.copy(text.substring(s, e)); //copy selected text to clipboard
 	}
 
 	/**
-	 * 	calculate the pixel positions for the start and end
-	 * of selected text.
+	 * Returns the x and y position of the cursor (measured in characters)
 	 */
-	private void updateXPos() {
-		winApp.textFont(localFont, localFont.getFont().getSize());
-		int tempStart = startSelect;
-		int tempEnd = endSelect;
-		cursorXPos = winApp.textWidth(text.substring(visiblePortionStart, cursorPos));
-		if(startSelect != endSelect){
-			if(endSelect < startSelect) {
-				tempStart = endSelect;
-				tempEnd = startSelect;
-			}
-			if(tempStart < visiblePortionStart)
-				startSelectXPos = 0;
-			else
-				startSelectXPos = winApp.textWidth(text.substring(visiblePortionStart, tempStart));
-
-			if(tempEnd > visiblePortionEnd)
-				endSelectXPos = width - 12;
-			else
-				endSelectXPos = winApp.textWidth(text.substring(visiblePortionStart, tempEnd));
-		}
-	}
-
-	private void adjustVisiblePortionStart() {
-		if(winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-				if(visiblePortionStart == 0)
-					break;
-				else
-					visiblePortionStart--;
-			}
-		} else {
-			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) > width - 12) {
-				visiblePortionStart++;
-			}
-		}
-	}
-
-	private void adjustVisiblePortionEnd() {
-		if(visiblePortionEnd > text.length()) visiblePortionEnd = text.length(); // pkl
-		if(winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-				if(visiblePortionEnd == text.length())
-					break;
-				else
-					visiblePortionEnd++;
-			}
-		} else {
-			while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) > width - 12) {
-				visiblePortionEnd--;
-			}
-		}
-	}
-
-	private void centerCursor() {
-		visiblePortionStart = visiblePortionEnd = cursorPos;
-
-		while (winApp.textWidth(text.substring(visiblePortionStart, visiblePortionEnd)) < width - 12) {
-			if(visiblePortionStart != 0)
-				visiblePortionStart--;
-
-			if(visiblePortionEnd != text.length())
-				visiblePortionEnd++;
-
-			if(visiblePortionEnd == text.length() && visiblePortionStart == 0)
-				break;
-		}
+	private Point cursorPosition(int pos){
+		String preCursor = text.substring(0, pos); //take text up until the cursor position
+		int cursorPosY = (preCursor.length() - preCursor.replaceAll("\n", "").length()); //quick code for counting occurrence of "\n"'s;
+		int cursorPosX = preCursor.length() - preCursor.lastIndexOf("\n") - 1; //number of characters to the cursor on this line
+		return new Point(cursorPosX, cursorPosY);
 	}
 
 	/**
-	 * Given the X position of the mouse in relation to the X
-	 * position of the text field, findClosestGap(int x) will
-	 * return the index of the closest letter boundary in the 
-	 * letterWidths array.
-	 * If the second parameter is true then the visible portion
-	 * of the string is constrained to the to the text field size.
-	 * Set to false to allow scrolling of the string when selecting text. 
-	 * @param x
-	 * @param constrain 
-	 * @return
+	 * Returns the x and y position of the cursor relative to upper corner of textbox (measured in pixels)
 	 */
-	private int findClosestGap(int x, boolean constrain) {
-		float prev = 0, cur;
-		if(constrain){
-			if(x < 0) {
-				return visiblePortionStart;
-			} else if(x > width) {
-				return visiblePortionEnd;
-			}
+	private Point cursorPixPosition(int pos){
+		String preCursor = text.substring(0, pos); //take text up until the cursor position
+		String thisline = preCursor.substring(Math.max(preCursor.lastIndexOf("\n")+1, 0), preCursor.length()); //text of the current line
+
+		int cursorPixX = (int)winApp.textWidth(thisline.substring(startX, thisline.length())); //pixel width of characters on this line
+		int cursorPixY = (int) ((preCursor.length() - preCursor.replaceAll("\n", "").length() - startY) * leading); //pixel position is integer line number times line height
+		return new Point(cursorPixX, cursorPixY);
+	}
+
+	/**
+	 * Converts an x, y position(characters) of the cursor to its position in the 1D text
+	 */
+	private int cursorPos1D(Point c){
+		String[] splittext = text.split("\n"); //split the text into lines
+
+		int sumLinesBefore = 0; //will add up to the number of characters in previous lines
+		for(int i = 0; i < c.y; i++){
+			sumLinesBefore += splittext[i].length() + 1; //sum all characters in the line plus the \n character which got dropped in split
 		}
-		for (int i = visiblePortionStart; i < text.length(); i++) {
-			cur = winApp.textWidth(text.substring(visiblePortionStart, i));
-			if(cur > x) {
-				if(cur - x < x - prev)
-					return i;
-				else
-					return Math.max(0, i - 1);
+		return sumLinesBefore + c.x; //add the characters in current line to all ones in previous lines
+	}
+
+	/**
+	 * Converts an x, y position(pixels) relative to corner of textbox to an x,y cursor index
+	 */
+	private Point cursorPos2D(int x, int y){
+		x -= 4; y -= 4; 						//subtract the padding from the cursor position
+		String[] splittext = text.split("\n"); 	//split the text into lines
+		int cursorY = (int) ((int) y / leading + startY); //take nearest integer multiple of line height and add to starting line number
+
+		//if the click was out of the range, return the current cursor pos.
+		if(cursorY >= splittext.length){
+			return cursorPosition(cursorPos);
+		} 
+		//return 0,0 if outside the lowest range.
+		if(cursorY < 0){
+			return new Point(0,0);
+		} 
+
+		float prev = 0, cur; //measures of line widths
+		for(int i = startX; i < splittext[cursorY].length(); i++){ //loop from visible start to end of line
+			cur = winApp.textWidth(splittext[cursorY].substring(startX, i)); //set current width of line
+			if(cur > x){ //if current width exceeds the location of the mouse
+				if(cur - x < x - prev){ //decide whether it's closer to stay or go back one character
+					return new Point (i, cursorY);
+				} else{
+					return new Point (Math.max(0, i-1), cursorY);
+				}
 			}
 			prev = cur;
 		}
-		// Don't know what else to return
-		return text.length();
+		return new Point(splittext[cursorY].length(), cursorY); //if the x was out of bounds, return the end of the line
+	}
+
+	/**
+	 * Returns the string of text that the text box can display
+	 */
+	public String viewText() {
+		showCursor();
+		String[] splittext = PApplet.split(text, "\n"); //split the text into its separate lines
+		String[] cuttext = new String[endY - startY]; //start a new array that will hold just the visible lines
+
+		for(int i = startY; i < endY; i++){ //take from startY line to endY line
+			if(i < splittext.length){
+				float twidth = winApp.textWidth(splittext[i].substring(Math.min(startX, splittext[i].length())));
+				int charWidth = splittext[i].length()-1; //initialize for the loop, which will determine how many characters can fit on one line
+				while(twidth > width - 8){
+					float w = winApp.textWidth(splittext[i].substring(charWidth, charWidth+1));
+					charWidth--;
+					twidth -= w;
+				}
+				charWidth++;
+				// take the viewable text on the current line
+				cuttext[i-startY] = splittext[i].substring(Math.min(startX, splittext[i].length()), 
+						Math.min(charWidth, splittext[i].length()));
+			}
+			else {
+				cuttext[i-startY] = "";
+			}
+		}
+		// Join lines together again with line breaks
+		String jointext = PApplet.join(cuttext, "\n"); 
+		return jointext;
+	}
+
+	/**
+	 * Places the cursor within the textbox view.
+	 * Do as little moving as possible to keep it in.
+	 */
+
+	private void showCursor(){
+		// cursor went out to the left move the text until inside
+		while (cursorPosition(cursorPos).x < startX){
+			startX --;
+		}
+
+		//cursor went out to the right move the text until inside
+		while (cursorPixPosition(cursorPos).x > width - 8){
+			startX ++;
+		}
+		// cursor went out past the bottom move the text until inside
+		while (/* cursorPosition(cursorPos).y > 0 && */ cursorPosition(cursorPos).y > endY - 1){
+			System.out.println(tag + "   Y++\t"+this);
+			startY ++;
+			endY ++;
+		}
+		// cursor went out at the top move the text until inside
+		while ( /* endY > 1 && */ cursorPosition(cursorPos).y < startY){ 
+			System.out.println(tag + "   Y--\t"+this);
+			startY --;
+			endY --;
+		}
 	}
 
 	/**
 	 * Sets the contents of the text box and displays the
-	 * specified string in the text box widget.
+	 * specified string in the text box widget. <br>
+	 * Fires SET event.
 	 * @param val the string to become the text field's contents
 	 */
 	public void setText(String newValue) {
-		winApp.textFont(localFont, localFont.getFont().getSize());
-		text = newValue;
-		cursorPos = text.length();
+		text = newValue; 
+		// remove all line breaks and replace with spaces
+		if(!multiLine)
+			text = stripEOLs(text, ' ');
+		//reset the selection and cursor positions
 		startSelect = endSelect = -1;
-
-		visiblePortionStart = 0;
-		visiblePortionEnd = text.length();
-		winApp.textFont(localFont);
-		textWidth = (int) winApp.textWidth(text);
-		if(textWidth > width - 12) {
-			adjustVisiblePortionEnd();
-		}
+		cursorPos = 0;
+		
 		eventType = SET;
 		fireEvent();
 	}
 
+//	public void setStartX(int newx) {
+//		startX = newx;
+//	}
+
+//	public void setStartY(int newy) {
+//		int diff = endY - startY; 						//the difference in the start and end
+//		startY = newy; 									//change the start
+//		cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
+//		endY = startY + diff; 							//update the end accordingly
+//	}
+
+//	public int getStartX() {
+//		return startX;
+//	}
+//
+//	public int getStartY() {
+//		return startY;
+//	}
+//
+//	public int getEndY() {
+//		return endY;
+//	}
+
+	/**
+	 * Whether or not to display separator lines
+	 */
+	public void showLines(boolean drawlines){
+		drawSepLines = drawlines;
+	}
+
+	/**
+	 * Are we showing separator lines
+	 * @return
+	 */
+	public boolean getShowLines(){
+		return drawSepLines;
+	}
+	
 	/**
 	 * Mouse event handler - the focus cannot be lost by anything
 	 * we do here - it has to be taken away when the mouse is pressed
 	 * somewhere else.
-	 * 
+	 *
 	 * @param e the MouseEvent to handle
 	 */
+
 	public void mouseEvent(MouseEvent e) {
-		if(!visible  || !enabled) return;
+		if(!visible || !enabled) return; //don't do anything if invisible or disabled
 
-		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
-		if(mouseOver || focusIsWith == this) 
-			cursorIsOver = this;
-		else if(cursorIsOver == this)
-			cursorIsOver = null;
+		winApp.textFont(localFont);
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY); //sets whether or not the mouse is even over the textbox
+		if(mouseOver || focusIsWith == this) //if the mouse is over or the textbox has focus
+			cursorIsOver = this; //set that the cursor is over the textbox
+		else if(cursorIsOver == this) //if the cursor is over the box
+			cursorIsOver = null; //set the cursor over to nothing
 
-		Point p = new Point(0,0);
-		calcAbsPosition(p);
+		Point p = new Point(0,0); //set the top-left point?
+		calcAbsPosition(p); //find its absolute position in the parent window?
 
-		winApp.textFont(localFont, localFont.getFont().getSize());
-
-		switch(e.getID()){
+		switch(e.getID()){//select for mouse event
 		case MouseEvent.MOUSE_PRESSED:
-			if(isOver(winApp.mouseX, winApp.mouseY)){
-				if(focusIsWith != this)
-					this.takeFocus();
-				startSelect = endSelect = cursorPos = findClosestGap(e.getX() - p.x, true);
-			}
-			break;
-		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == this){
-				startSelect = endSelect = cursorPos = findClosestGap(e.getX() - p.x, true);
+			if(isOver(winApp.mouseX, winApp.mouseY)){ //if actually over textbox
+				if(focusIsWith != this){ //if focus is not on box
+					this.takeFocus(); //give focus to the box
+				}
+				startSelect = endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y));//set the cursor position to the nearest location to where the user clicked
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			// Nothing to do
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this /*&& app.millis() % 200 > 100*/){
-				int oldEndSelect = endSelect;
-				endSelect = cursorPos = findClosestGap(e.getX() - p.x, false);
-				if(endSelect < oldEndSelect) {  // dragging left
-					while(endSelect < visiblePortionStart && visiblePortionStart > 0){
-						visiblePortionStart--;
-					}
-					adjustVisiblePortionEnd();
-				}
-				else if(endSelect > oldEndSelect) {  // dragging right
-					while(endSelect > visiblePortionEnd && visiblePortionEnd < text.length()) {
-						visiblePortionEnd++;
-					}
-					adjustVisiblePortionStart();
-				}
+			if(focusIsWith == this){ //if text has focus
+				endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y)); //put the selection end at the closest gap
 			}
-		} // end of switch
-		updateXPos();
+		}
 	}
 
 	/**
-	 * Receives KeyEvents forwarded to it by the GUIController
+	 * receives KeyEvents forwarded to it by the GUIController
 	 * if the current instance is currently in focus.
 	 * @param e the KeyEvent to be handled
 	 */
 	public void keyEvent(KeyEvent e) {
 		if(!enabled) return;
-		if(focusIsWith == this){
-			winApp.textFont(localFont, localFont.getFont().getSize());
+		if(focusIsWith == this){ 			//if the textbox has focus
+			// Set the textFont so we can use 
+			winApp.textFont(localFont);
 
 			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 
-			if(e.getID() == KeyEvent.KEY_PRESSED) {
+			if(e.getID() == KeyEvent.KEY_PRESSED) {						//if a key is pressed
 				if(e.getKeyCode() == KeyEvent.VK_END) {
-					if(shiftDown) { // Select to end of text
-						endSelect = text.length();
-						cursorPos = endSelect;
-					} else { // Move cursor to end of text
-						startSelect = endSelect = cursorPos = text.length();
+					if(shiftDown) { 									// Select to end of text
+						if(text.indexOf("\n", cursorPos) != -1){
+							cursorPos = text.indexOf("\n", cursorPos);
+						} else{
+							cursorPos = text.length();
+						}
+						endSelect = cursorPos;
+					} else { 											// Move cursor to end of text
+						if(text.indexOf("\n", cursorPos) != -1){
+							cursorPos = text.indexOf("\n", cursorPos);
+						} else{
+							cursorPos = text.length();
+						}
+						startSelect = endSelect = cursorPos;
 					}
-					visiblePortionEnd = cursorPos;
-					if(cursorPos > visiblePortionEnd)
-						visiblePortionEnd = cursorPos;
-					adjustVisiblePortionStart();
-				} 
+				}
 				else if(e.getKeyCode() == KeyEvent.VK_HOME) {
-					if(shiftDown) { // select to start of text
-						startSelect = 0;
-						cursorPos = startSelect;
-					} else { //Move cursor to start of text
-						startSelect = endSelect = cursorPos = visiblePortionStart = 0;
+					if(shiftDown) { 									// select to start of text
+						if(text.lastIndexOf("\n", cursorPos) != cursorPos){
+							cursorPos = text.lastIndexOf("\n", cursorPos) + 1;
+						} else{
+							cursorPos = text.lastIndexOf("\n", cursorPos-1) + 1;
+						}
+						startSelect = cursorPos;
+					} else { 											//Move cursor to start of text
+						if(text.lastIndexOf("\n", cursorPos) != cursorPos){
+							cursorPos = text.lastIndexOf("\n", cursorPos) + 1;
+						} else{
+							cursorPos = text.lastIndexOf("\n", cursorPos-1) + 1;
+						}
+						startSelect = endSelect = cursorPos;
 					}
-					if(cursorPos < visiblePortionStart)
-						visiblePortionStart = cursorPos;
-					adjustVisiblePortionEnd();
-				} 
+				}
 				else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-					if(shiftDown) {	// selecting text to left
-						if(cursorPos > 0) {
-							cursorPos--;
+					if(shiftDown) { 									// selecting text to left
+						if(cursorPos > 0) { 							//don't go past the beginning
+							cursorPos --;
 							endSelect = cursorPos;
 						}
-					} else { // moving cursor left
-						if(cursorPos > 0){
-							cursorPos--;
-							startSelect = endSelect = cursorPos;
+					} else { 											// moving cursor left
+						if(cursorPos > 0){ 								//don't go past the beginning
+							cursorPos --;
 						}
+						startSelect = endSelect = cursorPos;
 					}
-					centerCursor();
-				} 
+				}
 				else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					if(shiftDown) { // selecting text to right
-						if(cursorPos < text.length()) {
-							cursorPos++;
+					if(shiftDown) { 									// selecting text to right
+						if(cursorPos < text.length()) { 				//don't go past the end
+							cursorPos ++;
 							endSelect = cursorPos;
 						}
-					} else { // moving cursor right
-						if(cursorPos < text.length()){
-							cursorPos++;
-							startSelect = endSelect = cursorPos;
+					} else { 											// moving cursor right
+						if(cursorPos < text.length()){ 					//don't go past the end
+							cursorPos ++;
 						}
+						startSelect = endSelect = cursorPos;
 					}
-					centerCursor();
-				} 
+				}
+				else if(multiLine && e.getKeyCode() == KeyEvent.VK_UP) {
+					String[] splittext = text.split("\n"); 				//to get the total number of lines
+					if(shiftDown) { 									// selecting text upward
+						if(cursorPosition(cursorPos).y > 0){			//don't go past beginning
+							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y - 1].length()), cursorPosition(cursorPos).y - 1));
+							startSelect = cursorPos;
+						}
+					} else { 											// moving cursor upward
+						if(cursorPosition(cursorPos).y > 0){			//don't go past beginning
+							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y - 1].length()), cursorPosition(cursorPos).y - 1));
+						}
+						startSelect = endSelect = cursorPos;
+					}
+				}
+				else if(multiLine && e.getKeyCode() == KeyEvent.VK_DOWN) {
+					String[] splittext = text.split("\n"); 				//to get the total number of lines
+					if(shiftDown) { 									// selecting text downward
+						if(cursorPosition(cursorPos).y < splittext.length - 1){		//don't go past end
+							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y + 1].length()), cursorPosition(cursorPos).y + 1));
+							endSelect = cursorPos;
+						}
+					} else { 														// moving cursor upward
+						if(cursorPosition(cursorPos).y < splittext.length - 1){		//don't go past end
+							cursorPos = cursorPos1D(new Point(Math.min(cursorPosition(cursorPos).x,splittext[cursorPosition(cursorPos).y + 1].length()), cursorPosition(cursorPos).y + 1));
+						}
+						startSelect = endSelect = cursorPos;
+					}
+				}
 				else if(e.getKeyCode() == KeyEvent.VK_DELETE) {
-					deleteChar();
+					deleteChar(); 										//delete the character to the right
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					// If multiline component add linefeed to right of cursor
+					if(multiLine)
+						appendToRightOfCursor("\n"); 						
 					eventType = ENTERED;
 					fireEvent();
 				}
 				else{
-					if((e.getModifiers() & shortcutMask) == shortcutMask) {
+					if((e.getModifiers() & shortcutMask) == shortcutMask){	//shortcut handling
 						switch (e.getKeyCode()) {
 						case KeyEvent.VK_C:
-							if(startSelect != endSelect) {
-								copySubstring(startSelect, endSelect);
+							if(startSelect != endSelect) { 				//only copy if there is selected text
+								copySubstring(startSelect, endSelect); 	//copy text code
 							}
 							break;
 						case KeyEvent.VK_V:
-							appendToRightOfCursor(GClip.paste());
+							// paste from clipboard removeing EOLs if not multiline
+							if(multiLine)
+								appendToRightOfCursor(GClip.paste());
+							else
+								appendToRightOfCursor(stripEOLs(GClip.paste(), ' '));
 							break;
 						case KeyEvent.VK_X:
-							if(startSelect != endSelect) {
-								copySubstring(startSelect, endSelect);
-								deleteSubstring(startSelect, endSelect);
+							if(startSelect != endSelect) { 					//only cut if there is selected text
+								copySubstring(startSelect, endSelect); 		//copy selection
+								deleteSubstring(startSelect, endSelect); 	//delete selection
 							}
 							break;
 						case KeyEvent.VK_A:
+							//set selection limits to beginning and end of text
 							startSelect = 0;
 							endSelect = text.length();
 							break;
 						}
-					} 
+					}
 				}
 			}
-			else if(e.getID() == KeyEvent.KEY_TYPED) {
-				if((e.getModifiers() & shortcutMask) == shortcutMask) {
-				}
+			else if(e.getID() == KeyEvent.KEY_TYPED) { 						//key entered was typed rather than a special code?
+				if((e.getModifiers() & shortcutMask) == shortcutMask) {} 	//don't do anything for shortcuts?
 				else if(e.getKeyChar() == '\b') {
-					backspaceChar();
-				} 
-				else if(e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
-					if(validUnicode(e.getKeyChar()))
-						appendToRightOfCursor(e.getKeyChar());
+					backspaceChar(); //call backspace function
+				}
+				else if(e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) { 	//if entered character is not undefined (i.e. it is defined)
+					if(validUnicode(e.getKeyChar())) 					//if valid unicode character
+						appendToRightOfCursor(e.getKeyChar());			//add typed character at cursor
 				}
 			}
-			updateXPos();
 		}
 	}
 
 	/**
-	 * draws the text field, contents, selection, and cursor
+	 * Draws the text field, contents, selection, and cursor
 	 * to the screen.
 	 */
 	public void draw () {
@@ -542,46 +640,79 @@ public class GTextField extends GComponent {
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
 
-		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.textFont(localFont);
 
+		// Get the absolute coordinates of box.
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 
-		// Draw the surrounding box
-		winApp.strokeWeight(border);
-		winApp.stroke(localColor.txfBorder);
+		// ########################################
+		// Draw the surrounding box and background
+		if(border > 0){
+			winApp.strokeWeight(border);
+			winApp.stroke(localColor.txfBorder);
+		}
+		else {
+			winApp.noStroke();
+		}
 		winApp.fill(localColor.txfBack);
 		winApp.rect(pos.x, pos.y, width, height);
-		winApp.noStroke();
 
-		// Draw the selection rectangle
-		if(startSelect != endSelect) {
-			winApp.fill(localColor.txfSelBack);
-			winApp.rect(pos.x + startSelectXPos + 4, pos.y + PADV, endSelectXPos - startSelectXPos + 1, height - 2 * PADV + 1);
+		// ########################################
+		// Draw separating lines if specified
+		if(drawSepLines){
+			winApp.stroke(PApplet.blendColor(localColor.txfBorder, winApp.color(100), ADD));
+			winApp.strokeWeight(1);
+			for(int i = 1; i <= endY - startY; i++){
+				winApp.line(pos.x + 4, pos.y + i * leading, pos.x + width - 4, pos.y + i*leading);
+			}
 		}
-
-		// Draw the string (using fixed offset = 4)
+		// ########################################
+		// Draw the selection rectangles
 		winApp.noStroke();
-		winApp.fill(localColor.txfFont);
-		winApp.text (text.substring(visiblePortionStart, visiblePortionEnd), pos.x + 4, 
-				pos.y + (height - localFont.getFont().getSize())/2 - PADV , width - 8, height);
+		if(startSelect != endSelect){ 		// if something is selected
+			winApp.fill(localColor.txfSelBack);
 
+			for(int i = Math.min(startSelect, endSelect); i < Math.max(startSelect, endSelect); i++){
+				if(cursorPosition(i).x >= startX && cursorPixPosition(i).x < (width - 8) &&
+						cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
+					winApp.rect(pos.x + 4 + cursorPixPosition(i).x, pos.y + 2 + cursorPixPosition(i).y,
+							Math.min(winApp.textWidth(text.substring(i, i+1)),
+							width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+				}
+			}
+		}
+		
+		// ########################################
+		// Draw the string
+		winApp.fill(localColor.txfFont);
+		winApp.textLeading(leading); //set the leading
+		winApp.text (viewText(), pos.x + 4, pos.y + 1, width + 8, height -2);
+		
+		// ########################################
 		// Draw the insertion point (it blinks!)
-		if(focusIsWith == this	&& ((winApp.millis() % 1000) > 500)
-				&& (cursorPos >= visiblePortionStart)
-				&& cursorPos <= visiblePortionEnd) {
+		if(focusIsWith == this && (winApp.millis() % 1000) > 500) {
+			Point cursorPix = cursorPixPosition(cursorPos);
+
 			winApp.noFill();
-			winApp.stroke(64);
+			winApp.stroke(localColor.txfBorder);
 			winApp.strokeWeight(2);
-			winApp.line(pos.x + (int) cursorXPos + 4, pos.y + PADV, pos.x + (int) cursorXPos + 4, pos.y + height - 2 * PADV);
+			winApp.line(pos.x + 4 + cursorPix.x, pos.y + cursorPix.y + 2, 
+					pos.x + 4 + cursorPix.x, 
+					pos.y + cursorPix.y + localFont.getFont().getSize()+2);
+			winApp.fill(localColor.txfFont);
 		}
 		winApp.popStyle();
-
 	}
 
+	private String stripEOLs(String oldText, char replacement){
+		String newText = oldText.replace('\n',replacement);
+		return newText;
+	}
+	
 	/**
 	 * Returns true if b has a valid unicode value
-	 * 
+	 *
 	 * @param b
 	 * @return
 	 */
@@ -718,4 +849,11 @@ public class GTextField extends GComponent {
 				(c == 0xF833));
 	}
 
-}
+	
+	public String toString(){
+		return  ("Cursor pos " +cursorPos + "   sX " + startX+"   sY "+startY+"   eY "
+				+ endY+ "    startSelect "+startSelect+"     endSelect "+endSelect);
+	}
+
+
+} //end class bracket
