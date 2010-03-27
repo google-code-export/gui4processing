@@ -72,9 +72,10 @@ public class G4P implements PConstants, GConstants {
 	public static int mouseOff = ARROW;
 	public static int mouseOver = HAND;
 
-	private final static int PCAM_UNINITIALISED = 0;
-	private final static int PCAM_AVAILABLE = 1;
-	private final static int PCAM_UNAVAILABLE = 2;
+	private final static int PCAM_AVAILABLE = 0;
+	private final static int PCAM_UNAVAILABLE = 1;
+	private final static int PCAM_UNINITIALISED = 2;
+
 	private static Object peasyCam;
 	private static Method beginHud, endHud;
 	private static int camStatus = PCAM_UNINITIALISED;
@@ -245,77 +246,63 @@ public class G4P implements PConstants, GConstants {
 	 * @param pcam
 	 * @return
 	 */
-	private static int initPeasyCamHUD(Object pcam){
+	public static boolean setPeasyCam(Object pcam){
+		camStatus = PCAM_UNAVAILABLE;
 		if(!pcam.getClass().getSimpleName().equals("PeasyCam")){
 			GMessenger.message(NOT_PEASYCAM, pcam, null);
-			return PCAM_UNAVAILABLE;
+			return false;
 		}
 		try {
 			beginHud = pcam.getClass().getMethod("beginHUD", (Class[]) null);
 			endHud = pcam.getClass().getMethod("endHUD", (Class[])null);
 			peasyCam = pcam;
-			return PCAM_AVAILABLE;
+			camStatus =  PCAM_AVAILABLE;
+			return true;
 		}
 		catch(Exception excp){
 			GMessenger.message(HUD_UNSUPPORTED, null, null);
-		}		
-		return PCAM_UNAVAILABLE;
+			camStatus = PCAM_UNAVAILABLE;
+			return false;
+		}
 	}
 
 	/**
 	 * This method is provided to simplify using G4P with PeasyCam. <br>
-	 * Simply call this method passing the PeasyCam object you created as
-	 * a parameter and it will automatically call the beginHUD and endHUD
-	 * methods for you so if your PeasyCam is called <b><pre>pcam</pre></b> then
+	 * If the PeasyCam object has been set then a parameter and it will 
+	 * automatically call the beginHUD and endHUD methods for you.
 	 * <pre>
 	 * pcam.beginHUD();
 	 * G4P.draw();
 	 * pcam.endHUD(); </pre>
 	 * becomes
 	 * <pre>
-	 * G4P.draw(pcam);
+	 * G4P.draw();
 	 * </pre>
 	 * 
 	 * @param pcam
 	 */
-	public static void draw(Object pcam){
-		switch(camStatus){
-		case PCAM_AVAILABLE:
+	public static void draw(){
+		if(camStatus != PCAM_AVAILABLE){
+			draw(mainWinApp);			
+		}
+		else {
 			try {
 				beginHud.invoke(peasyCam, (Object[])null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
-			draw();
+			draw(mainWinApp);
 			try {
 				endHud.invoke(peasyCam, (Object[])null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			break;
-		case PCAM_UNAVAILABLE: 
-			draw();
-			break;
-		case PCAM_UNINITIALISED:
-			camStatus = initPeasyCamHUD(pcam);
-			break;
-		default:
-			GMessenger.message(INVALID_STATUS, null, null);
 		}
 	}
 
 	/**
-	 * When you first use G4P() it switches off auto draw for the 
-	 * main PApplet
-	 * 
-	 */
-	public static void draw(){
-		draw(mainWinApp);
-	}
-
-	/**
 	 * When you first use G4P(app) it switches off auto draw for the 
-	 * PApplet app
+	 * PApplet app.
 	 * 
 	 */
 	public static void draw(PApplet app){
@@ -360,8 +347,8 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * Once disabled you need to call G4P.draw() from the draw() method if you
-	 * wish to see the GUI
+	 * Once disabled you need to call G4P.draw() from the draw()
+	 *  method if you wish to see the GUI ever again!
 	 */
 	public static void disableAutoDraw(){
 		unregisterFromPAppletDraw(mainWinApp);
@@ -378,7 +365,6 @@ public class G4P implements PConstants, GConstants {
 
 	/**
 	 * Is autodraw on for the PApplet app?
-	 * 
 	 */
 	public static boolean isAutoDrawOn(PApplet app){
 		return !autoDrawDisabled.contains(app);
