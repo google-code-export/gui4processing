@@ -127,17 +127,15 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/** Simple tag that can be used by the user */
 	public String tag;
 	
-	/**
-	 * Is the component visible or not
-	 */
+	/** Allows user to specify a number for this component */
+	public int tagNo;
+	
+	/** Is the component visible or not */
 	protected boolean visible = true;
 
-	/**
-	 * Is the component enabled to generate mouse and keyboard events
-	 */
+	/** Is the component enabled to generate mouse and keyboard events */
 	protected boolean enabled = true;
 
-	
 	/** The border width for this component : default value is 0 */
 	protected int border = 0;
 

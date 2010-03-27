@@ -1,13 +1,13 @@
 /*
-  Part of the GUI for Processing library
-  http://gui4processing.lagers.org.uk
-  http://gui4processing.googlecode.com/svn/trunk/
+  Part of the GUI for Processing library 
+   	http://www.lagers.org.uk/g4p/index.html
+	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-09 Peter Lager
+  Copyright (c) 2008-10 Peter Lager
 
   The string handling and clipboard logic has been taken from a similar
-  GUI library Interfascia ALPHA 002 -- http://superstable.net/interfascia/
-  produced by Brenden Berg
+  GUI library Interfascia ALPHA 002 -- http://superstable.net/interfascia/ 
+  produced by Brenden Berg 
   This code had to be modified to correct some logic errors in selecting text
   using the mouse and the shift+cursor keys. The biggest change is in the
   usage of startSelect and endSelect variables. In the original code if either
@@ -15,10 +15,8 @@
   value i.e. startSelect == endSelect then no text is selected. Also both will
   equal the cursorPos UNLESS we are selecting text. This has simplified the code.
 
-  Other modifications have been made in the way it handles events, draws itself
+  Other modifications have been made in the way it handles events, draws itself 
   and focus handling to fit in with my library which supports floating panels.
-
-  Final modifications made by Brendan Nichols, March 15, 2010 to support multi-line text.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -45,14 +43,19 @@ import java.awt.event.MouseEvent;
 import processing.core.PApplet;
 
 /**
- * The text field component.
+ * The text field component. <br>
+ * This component can be created to manage either a single line of text or
+ * multiple lines of text. <br>
+ * 
+ * If height of the component is too small to show a line of text because of
+ * the font size then it is increased. <br>
  *
  * Enables user text input at runtime. Text can be selected using the mouse
  * or keyboard shortcuts and then copied or cut to the clipboard. Text
  * can also be pasted in. It supports text that is longer than the displayable
  * area
  *
- * @author Brendan Nichols  & Peter Lager
+ * @author Brendan Nichols & Peter Lager
  *
  */
 public class GTextField extends GComponent {
@@ -73,7 +76,8 @@ public class GTextField extends GComponent {
 	private boolean multiLine = false;
 	
 	/**
-	 * Creates a GTextField object
+	 * Creates a single line GTextField object
+	 * 
 	 * @param theApplet
 	 * @param text initial text to display
 	 * @param x horizontal position relative to PApplet or PPanel
@@ -84,23 +88,24 @@ public class GTextField extends GComponent {
 	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		this.multiLine = false;
-		textAreaCtorCore(text, width, height);
+		textFieldCtorCore(text, width, height);
 	}
 
 	/**
-	 * Creates a GTextField object
+	 * Creates a single or multiple text line GTextField object
+	 * 
 	 * @param theApplet
 	 * @param text initial text to display
 	 * @param x horizontal position relative to PApplet or PPanel
 	 * @param y vertical position relative to PApplet or PPanel
 	 * @param width width of text field
 	 * @param height height of text field
-	 * @param multiLine set to true if multi-line option available
+	 * @param multiLine set to true for multi-line component
 	 */
 	public GTextField(PApplet theApplet, String text, int x, int y, int width, int height, boolean multiLine){
 		super(theApplet, x, y);
 		this.multiLine = multiLine;
-		textAreaCtorCore(text, width, height);
+		textFieldCtorCore(text, width, height);
 	}
 
 	/**
@@ -109,19 +114,16 @@ public class GTextField extends GComponent {
 	 * @param width width of text field
 	 * @param height height of text field
 	 */
-	private void textAreaCtorCore(String text, int width, int height) {
-//		System.out.println("#\n"+text);
-//		if(!multiLine)
-//			text.replace('e', 'E');
-//		System.out.println("#\n"+text);
+	private void textFieldCtorCore(String text, int width, int height) {
 		//set to either the spec. width or the width of the box plus horz. padding
 		this.width = Math.max(width, textWidth + PADH * 2); 
 		// Ensure that the box height is large enough to display at least 1 line of text
-		this.height = Math.max(height, (int)(1.5f * localFont.getFont().getSize())); 	//set to either the spec. height or the height of font plus vert. padding
+		this.height = Math.max(height, (int)(1.5f * localFont.getFont().getSize()));
 		border = 1;
 		// default line leading is 1.5 times the font height
 		leading = (int)(1.2f * localFont.getFont().getSize());
-		endY = Math.max(1,  (int)Math.floor(this.height / leading)); 								//calculate the number of lines that can be displayed fully
+		//calculate the number of lines that can be displayed fully
+		endY = Math.max(1,  (int)Math.floor(this.height / leading));
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextField.class });
@@ -131,12 +133,12 @@ public class GTextField extends GComponent {
 
 	/**
 	 * Set the font, size and leading for the textfield. <br>
-	 * This will not alter the size of the textfield so use with caution
-	 * if the font is too tall it may not be possible to see anything
-	 * ADDED: font leading input which will change the spacing between lines
+	 * The height of the textfield will be increased if it is
+	 * not possible to show a line of text due to the font size.
+	 * 
 	 * @param fontname
 	 * @param fontSize
-	 * @param fontLeading
+	 * @param fontLeading line spacing
 	 */
 	public void setFont(String fontname, int fontSize, int fontLeading){
 		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
@@ -151,7 +153,13 @@ public class GTextField extends GComponent {
 	}
 
 	/**
+	 * Set the font type and size for the textfield. <br>
+	 * The height of the textfield will be increased if it is
+	 * not possible to show a line of text due to the font size.
+	 * Use the existing line spacing value (textLeading). <br>
 	 * 
+	 * @param fontname
+	 * @param fontSize
 	 */
 	public void setFont(String fontname, int fontsize){
 		setFont(fontname, fontsize, leading);
@@ -173,7 +181,7 @@ public class GTextField extends GComponent {
 	 * @param c the character to be added
 	 */
 	private void appendToRightOfCursor(char c) {
-		appendToRightOfCursor("" + c); 			//just converts a character to string and passes to function below
+		appendToRightOfCursor("" + c);
 	}
 
 	/**
@@ -183,20 +191,20 @@ public class GTextField extends GComponent {
 	 */
 	private void appendToRightOfCursor(String s) {
 		String t1, t2;
-		if(startSelect != endSelect) { //if bunch of text is selected
-			int start = Math.min(startSelect, endSelect); 	//make sure start < end
-			int end = Math.max(startSelect, endSelect); 	//make sure end > start
-			t1 = text.substring(0, start); 					//take text up until start of selection
-			t2 = text.substring(end); 						//take text past end of selection
-			startSelect = endSelect = cursorPos = start; 	//put cursor at start of added text, then later we add the length of text
+		if(startSelect != endSelect) { 						// if some text is selected
+			int start = Math.min(startSelect, endSelect); 	// make sure start < end
+			int end = Math.max(startSelect, endSelect); 	// make sure end > start
+			t1 = text.substring(0, start); 					// take text up until start of selection
+			t2 = text.substring(end); 						// take text past end of selection
+			startSelect = endSelect = cursorPos = start; 	// put cursor at start of added text, then later we add the length of text
 		} else {
-			t1 = text.substring(0, cursorPos); 	//take text up until cursor position
-			t2 = text.substring(cursorPos); 	//take text past cursor position
+			t1 = text.substring(0, cursorPos); 	// take text up until cursor position
+			t2 = text.substring(cursorPos); 	// take text past cursor position
 		}
 
-		text = t1 + s + t2; 					//appended text
-		cursorPos += s.length(); 				//set cursor position to end of appended text
-		startSelect = endSelect = cursorPos; 	//reset any selection but put start and end select at cursor
+		text = t1 + s + t2; 					// appended text
+		cursorPos += s.length(); 				// set cursor position to end of appended text
+		startSelect = endSelect = cursorPos; 	// reset any selection but put start and end select at cursor
 
 		eventType = CHANGED;
 		fireEvent();
@@ -210,10 +218,10 @@ public class GTextField extends GComponent {
 	 * <pre>public void keyEvent</pre> when the delete key is pressed.
 	 */
 	protected void backspaceChar() {
-		if(startSelect != endSelect) {					//if a bunch of text is selected
-			deleteSubstring(startSelect, endSelect); 	//delete substring function with range of selected text
-		} else if(cursorPos > 0){						//no selection and can't be at the beginning of the text
-			deleteSubstring(cursorPos - 1, cursorPos);	//delete one character to the left of cursor
+		if(startSelect != endSelect) {					// if a bunch of text is selected
+			deleteSubstring(startSelect, endSelect); 	// delete substring function with range of selected text
+		} else if(cursorPos > 0){						// no selection and can't be at the beginning of the text
+			deleteSubstring(cursorPos - 1, cursorPos);	// delete one character to the left of cursor
 		}
 	}
 
@@ -221,19 +229,18 @@ public class GTextField extends GComponent {
 	 * 
 	 */
 	private void deleteChar() {
-		if(startSelect != endSelect) { 					//if a bunch of text is selected
-			deleteSubstring(startSelect, endSelect); 	//delete substring function with range of selected text
-		} else if(cursorPos < text.length()){ 			//no selection and can't be at the end of the text
-			deleteSubstring(cursorPos, cursorPos + 1); 	//delete one character to right of cursor
+		if(startSelect != endSelect) { 					// if a bunch of text is selected
+			deleteSubstring(startSelect, endSelect); 	// delete substring function with range of selected text
+		} else if(cursorPos < text.length()){ 			// no selection and can't be at the end of the text
+			deleteSubstring(cursorPos, cursorPos + 1); 	// delete one character to right of cursor
 		}
 	}
 
 	private void deleteSubstring(int startString, int endString) {
-		int start = Math.min(startString, endString); 			//make sure start < end
-		int end = Math.max(startString, endString); 			//make sure end > start
-		text = text.substring(0, start) + text.substring(end); 	//replace text with subsets of surrounding text
-
-		startSelect = endSelect = cursorPos = start; 			//reset cursor position to start of string
+		int start = Math.min(startString, endString); 			// make sure start < end
+		int end = Math.max(startString, endString); 			// make sure end > start
+		text = text.substring(0, start) + text.substring(end); 	// replace text with subsets of surrounding text
+		startSelect = endSelect = cursorPos = start; 			// reset cursor position to start of string
 
 		eventType = CHANGED;
 		fireEvent();
@@ -245,18 +252,21 @@ public class GTextField extends GComponent {
 	 * @param end
 	 */
 	private void copySubstring(int start, int end) {
-		int s = Math.min(start, end); //make sure start is less than end
-		int e = Math.max(start, end); //make sure end is greater than start
-		GClip.copy(text.substring(s, e)); //copy selected text to clipboard
+		int s = Math.min(start, end); 		//make sure start is less than end
+		int e = Math.max(start, end); 		// make sure end is greater than start
+		GClip.copy(text.substring(s, e)); 	// copy selected text to clipboard
 	}
 
 	/**
 	 * Returns the x and y position of the cursor (measured in characters)
 	 */
 	private Point cursorPosition(int pos){
-		String preCursor = text.substring(0, pos); //take text up until the cursor position
-		int cursorPosY = (preCursor.length() - preCursor.replaceAll("\n", "").length()); //quick code for counting occurrence of "\n"'s;
-		int cursorPosX = preCursor.length() - preCursor.lastIndexOf("\n") - 1; //number of characters to the cursor on this line
+		// take text up until the cursor position
+		String preCursor = text.substring(0, pos); 
+		// quick code for counting occurrence of "\n"'s;
+		int cursorPosY = (preCursor.length() - preCursor.replaceAll("\n", "").length());
+		// number of characters to the cursor on this line
+		int cursorPosX = preCursor.length() - preCursor.lastIndexOf("\n") - 1;
 		return new Point(cursorPosX, cursorPosY);
 	}
 
@@ -264,11 +274,14 @@ public class GTextField extends GComponent {
 	 * Returns the x and y position of the cursor relative to upper corner of textbox (measured in pixels)
 	 */
 	private Point cursorPixPosition(int pos){
-		String preCursor = text.substring(0, pos); //take text up until the cursor position
-		String thisline = preCursor.substring(Math.max(preCursor.lastIndexOf("\n")+1, 0), preCursor.length()); //text of the current line
-
-		int cursorPixX = (int)winApp.textWidth(thisline.substring(startX, thisline.length())); //pixel width of characters on this line
-		int cursorPixY = (int) ((preCursor.length() - preCursor.replaceAll("\n", "").length() - startY) * leading); //pixel position is integer line number times line height
+		// take text up until the cursor position
+		String preCursor = text.substring(0, pos);
+		 // text of the current line
+		String thisline = preCursor.substring(Math.max(preCursor.lastIndexOf("\n")+1, 0), preCursor.length());
+		 //pixel width of characters on this line
+		int cursorPixX = (int)winApp.textWidth(thisline.substring(startX, thisline.length()));
+		 //pixel position is integer line number times line height
+		int cursorPixY = (int) ((preCursor.length() - preCursor.replaceAll("\n", "").length() - startY) * leading);
 		return new Point(cursorPixX, cursorPixY);
 	}
 
@@ -278,20 +291,24 @@ public class GTextField extends GComponent {
 	private int cursorPos1D(Point c){
 		String[] splittext = text.split("\n"); //split the text into lines
 
-		int sumLinesBefore = 0; //will add up to the number of characters in previous lines
+		int sumLinesBefore = 0; 	// will add up to the number of characters in previous lines
 		for(int i = 0; i < c.y; i++){
-			sumLinesBefore += splittext[i].length() + 1; //sum all characters in the line plus the \n character which got dropped in split
+			// sum all characters in the line plus the \n character which got dropped in split
+			sumLinesBefore += splittext[i].length() + 1;
 		}
-		return sumLinesBefore + c.x; //add the characters in current line to all ones in previous lines
+		// add the characters in current line to all ones in previous lines
+		return sumLinesBefore + c.x;
 	}
 
 	/**
 	 * Converts an x, y position(pixels) relative to corner of textbox to an x,y cursor index
 	 */
 	private Point cursorPos2D(int x, int y){
-		x -= 4; y -= 4; 						//subtract the padding from the cursor position
-		String[] splittext = text.split("\n"); 	//split the text into lines
-		int cursorY = (int) ((int) y / leading + startY); //take nearest integer multiple of line height and add to starting line number
+		
+		x -= 4; y -= 4;		// subtract the padding from the cursor position					
+		String[] splittext = text.split("\n");
+	 	// take nearest integer multiple of line height and add to starting line number
+		int cursorY = (int) ((int) y / leading + startY);
 
 		//if the click was out of the range, return the current cursor pos.
 		if(cursorY >= splittext.length){
@@ -303,10 +320,14 @@ public class GTextField extends GComponent {
 		} 
 
 		float prev = 0, cur; //measures of line widths
-		for(int i = startX; i < splittext[cursorY].length(); i++){ //loop from visible start to end of line
-			cur = winApp.textWidth(splittext[cursorY].substring(startX, i)); //set current width of line
-			if(cur > x){ //if current width exceeds the location of the mouse
-				if(cur - x < x - prev){ //decide whether it's closer to stay or go back one character
+		// loop from visible start to end of line
+		for(int i = startX; i < splittext[cursorY].length(); i++){
+			// get current width of line
+			cur = winApp.textWidth(splittext[cursorY].substring(startX, i));
+			// if current width exceeds the location of the mouse
+			// decide whether it's closer to stay or go back one character
+			if(cur > x){ 
+				if(cur - x < x - prev){
 					return new Point (i, cursorY);
 				} else{
 					return new Point (Math.max(0, i-1), cursorY);
@@ -314,7 +335,8 @@ public class GTextField extends GComponent {
 			}
 			prev = cur;
 		}
-		return new Point(splittext[cursorY].length(), cursorY); //if the x was out of bounds, return the end of the line
+		// if the x was out of bounds, return the end of the line
+		return new Point(splittext[cursorY].length(), cursorY);
 	}
 
 	/**
@@ -322,8 +344,9 @@ public class GTextField extends GComponent {
 	 */
 	public String viewText() {
 		showCursor();
-		String[] splittext = PApplet.split(text, "\n"); //split the text into its separate lines
-		String[] cuttext = new String[endY - startY]; //start a new array that will hold just the visible lines
+		String[] splittext = PApplet.split(text, "\n");
+		// start a new array that will hold just the visible lines
+		String[] cuttext = new String[endY - startY];
 
 		for(int i = startY; i < endY; i++){ //take from startY line to endY line
 			if(i < splittext.length){
@@ -396,29 +419,6 @@ public class GTextField extends GComponent {
 		fireEvent();
 	}
 
-//	public void setStartX(int newx) {
-//		startX = newx;
-//	}
-
-//	public void setStartY(int newy) {
-//		int diff = endY - startY; 						//the difference in the start and end
-//		startY = newy; 									//change the start
-//		cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
-//		endY = startY + diff; 							//update the end accordingly
-//	}
-
-//	public int getStartX() {
-//		return startX;
-//	}
-//
-//	public int getStartY() {
-//		return startY;
-//	}
-//
-//	public int getEndY() {
-//		return endY;
-//	}
-
 	/**
 	 * Whether or not to display separator lines
 	 */
@@ -452,24 +452,26 @@ public class GTextField extends GComponent {
 		else if(cursorIsOver == this) //if the cursor is over the box
 			cursorIsOver = null; //set the cursor over to nothing
 
-		Point p = new Point(0,0); //set the top-left point?
-		calcAbsPosition(p); //find its absolute position in the parent window?
+		Point p = new Point(0,0); 		// set the top-left point?
+		calcAbsPosition(p); 			// find its absolute position in the parent window?
 
-		switch(e.getID()){//select for mouse event
+		switch(e.getID()){								//select for mouse event
 		case MouseEvent.MOUSE_PRESSED:
-			if(isOver(winApp.mouseX, winApp.mouseY)){ //if actually over textbox
-				if(focusIsWith != this){ //if focus is not on box
-					this.takeFocus(); //give focus to the box
+			if(isOver(winApp.mouseX, winApp.mouseY)){ 	// if actually over textbox
+				if(focusIsWith != this){ 				// if focus is not on box
+					this.takeFocus(); 					// give focus to the box
 				}
-				startSelect = endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y));//set the cursor position to the nearest location to where the user clicked
+				// set the cursor position to the nearest location to where the user clicked
+				startSelect = endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y));
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			// Nothing to do
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this){ //if text has focus
-				endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y)); //put the selection end at the closest gap
+			if(focusIsWith == this){ 					//if text has focus
+				//put the selection end at the closest gap
+				endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y));
 			}
 		}
 	}
@@ -482,7 +484,7 @@ public class GTextField extends GComponent {
 	public void keyEvent(KeyEvent e) {
 		if(!enabled) return;
 		if(focusIsWith == this){ 			//if the textbox has focus
-			// Set the textFont so we can use 
+			// Set the textFont so we can use it
 			winApp.textFont(localFont);
 
 			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -854,6 +856,31 @@ public class GTextField extends GComponent {
 		return  ("Cursor pos " +cursorPos + "   sX " + startX+"   sY "+startY+"   eY "
 				+ endY+ "    startSelect "+startSelect+"     endSelect "+endSelect);
 	}
+
+	// Have removed these methods because they are not being used internally
+	
+//	public void setStartX(int newx) {
+//	startX = newx;
+//}
+
+//public void setStartY(int newy) {
+//	int diff = endY - startY; 						//the difference in the start and end
+//	startY = newy; 									//change the start
+//	cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
+//	endY = startY + diff; 							//update the end accordingly
+//}
+
+//public int getStartX() {
+//	return startX;
+//}
+//
+//public int getStartY() {
+//	return startY;
+//}
+//
+//public int getEndY() {
+//	return endY;
+//}
 
 
 } //end class bracket
