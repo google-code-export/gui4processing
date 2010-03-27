@@ -51,6 +51,15 @@ void setup() {
   cam.setMinimumDistance(50);
   cam.setMaximumDistance(500);
 
+  // This command was introduced in version 1.5.1 and 
+  // simplifies using G4P and PeasyCam together.
+  // If the PeasyCam object is successfully initiallised 
+  // then calls to G4P.draw() will automatically call
+  // the begin(HUD) and endHUD() methods for toy.
+  // This method returns true if initialisation of the
+  // PeasyCam object was successful.
+  G4P.setPeasyCam(cam);
+
   // Sets the colour scheme for the GUI components 
   // Schemes available are 
   // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
@@ -130,12 +139,9 @@ void draw() {
   // Synchronise the actual rotations and slider positions
   syncSliders();
   
-  // This version of the draw command was introduced in
-  // version 1.5.1 and simplifies combining the use of
-  // the G4P and the PeasyCam library.
-  // It effectively wraps up the G4P.draw(0 call with the
-  // calls to beginHUD() and endHUD()
-  G4P.draw(cam);
+  // Methods beginHUD() and endHUD() are automatically 
+  // called for you.
+  G4P.draw();
 }
 
 
