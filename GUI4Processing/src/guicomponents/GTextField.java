@@ -144,7 +144,7 @@ public class GTextField extends GComponent {
 		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
 		// Ensure that the box height is large enough to display at least 1 line of text
 		height = Math.max(height, (int)(1.5f * localFont.getFont().getSize() + 0.5f));
-		//update the line leading (can't be less than font height
+		// update the line leading (can't be less than font height
 		leading = Math.max(fontSize + fontLeadPad, fontLeading);
 		//change the number of lines that can be displayed fully
 		endY = (int) Math.floor(this.height / fontLeading);
@@ -226,7 +226,7 @@ public class GTextField extends GComponent {
 	}
 
 	/**
-	 * 
+	 * Delete a single character
 	 */
 	private void deleteChar() {
 		if(startSelect != endSelect) { 					// if a bunch of text is selected
@@ -489,7 +489,7 @@ public class GTextField extends GComponent {
 	private boolean scrollDown(){
 		if(multiLine){
 			int nbrLines = text.split("\n").length;
-			if(endY < nbrLines){
+			if(endY <= nbrLines){
 				startY++;
 				endY++;
 				return true;
@@ -753,7 +753,7 @@ public class GTextField extends GComponent {
 		// Draw the string
 		winApp.fill(localColor.txfFont);
 		winApp.textLeading(leading); //set the leading
-		winApp.text(viewText(), pos.x + 4, pos.y + 1, width + 8, height -2);
+		winApp.text(viewText(), pos.x + 4, pos.y + 1, width + 8, height - 2);
 		
 		// ########################################
 		// Draw the insertion point (it blinks!)
