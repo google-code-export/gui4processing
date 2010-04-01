@@ -74,5 +74,10 @@ public interface GConstants {
 	public final static int NOT_PEASYCAM =		0x82000001; // Not a PeasyCam object
 	public final static int HUD_UNSUPPORTED = 	0x82000002; // HUD not supported
 	public final static int INVALID_STATUS = 	0x82000003; // HUD not supported
+	// GTextField text scroll constants
+	public final static int SCROLL_UP =			0x00000111;	// Scroll text up
+	public final static int SCROLL_DOWN =		0x00000112;	// Scroll text down
+	public final static int SCROLL_LEFT =		0x00000113;	// Scroll text left
+	public final static int SCROLL_RIGHT =		0x00000114;	// Scroll text right
 	
 }
