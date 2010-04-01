@@ -490,7 +490,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		_currTickStuck = PApplet.constrain(index, 0,  _numTicks);
 		thumbTargetPos = _tickPositions[_currTickStuck];
 
-		value = _currTickStuck * dTick;
+		value = minValue +_currTickStuck * dTick;
 	}
 
 	/**
