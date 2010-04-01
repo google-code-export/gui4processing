@@ -439,7 +439,7 @@ public class GTextField extends GComponent {
 	 * @param dir
 	 * @return
 	 */
-	public boolean scrollText(int dir){
+	public boolean scroll(int dir){
 		boolean result = false;
 		switch(dir){
 		case SCROLL_UP:
