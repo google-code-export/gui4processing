@@ -372,29 +372,31 @@ public class GTextField extends GComponent {
 	}
 
 	/**
-	 * Places the cursor within the textbox view.
+	 * Move the text so that the cursor remain within the textbox view.
 	 * Do as little moving as possible to keep it in.
 	 */
 
 	private void showCursor(){
-		// cursor went out to the left move the text until inside
-		while (cursorPosition(cursorPos).x < startX){
-			startX --;
-		}
+		if(focusIsWith == this){
+			// cursor went out to the left move the text until inside
+			while (cursorPosition(cursorPos).x < startX){
+				startX --;
+			}
 
-		//cursor went out to the right move the text until inside
-		while (cursorPixPosition(cursorPos).x > width - 8){
-			startX ++;
-		}
-		// cursor went out past the bottom move the text until inside
-		while (/* cursorPosition(cursorPos).y > 0 && */ cursorPosition(cursorPos).y > endY - 1){
-			startY ++;
-			endY ++;
-		}
-		// cursor went out at the top move the text until inside
-		while ( /* endY > 1 && */ cursorPosition(cursorPos).y < startY){ 
-			startY --;
-			endY --;
+			//cursor went out to the right move the text until inside
+			while (cursorPixPosition(cursorPos).x > width - 8){
+				startX ++;
+			}
+			// cursor went out past the bottom move the text until inside
+			while (/* cursorPosition(cursorPos).y > 0 && */ cursorPosition(cursorPos).y > endY - 1){
+				startY ++;
+				endY ++;
+			}
+			// cursor went out at the top move the text until inside
+			while ( /* endY > 1 && */ cursorPosition(cursorPos).y < startY){ 
+				startY --;
+				endY --;
+			}
 		}
 	}
 
@@ -420,7 +422,7 @@ public class GTextField extends GComponent {
 	/**
 	 * Whether or not to display separator lines
 	 */
-	public void showLines(boolean drawlines){
+	public void setShowLines(boolean drawlines){
 		drawSepLines = drawlines;
 	}
 
@@ -430,6 +432,70 @@ public class GTextField extends GComponent {
 	 */
 	public boolean getShowLines(){
 		return drawSepLines;
+	}
+	
+	/**
+	 * 
+	 * @param dir
+	 * @return
+	 */
+	public boolean scrollText(int dir){
+		boolean result = false;
+		switch(dir){
+		case SCROLL_UP:
+			return scrollUp();			
+		case SCROLL_DOWN:
+			return  scrollDown();
+		case SCROLL_LEFT:
+			return scrollLeft();
+		case SCROLL_RIGHT:
+			return scrollRight();
+		}
+		return result;
+	}
+	
+	private boolean scrollRight(){
+		String[] splitText = PApplet.split(text, "\n");
+		winApp.textFont(localFont);
+		for(int i = startY; i < endY; i++){
+			if(startX < splitText[i].length()){
+				float tw = winApp.textWidth(splitText[i].substring(startX));
+				if(tw > width - 2 * PADH){
+					startX ++;
+					return true;
+				}			
+			}
+		}
+		return false;
+	}
+	
+	private boolean scrollLeft(){
+		if(startX > 0){
+			startX--;
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean scrollUp(){
+		if(multiLine && startY > 0){
+			startY--;
+			endY--;
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean scrollDown(){
+		if(multiLine){
+			int nbrLines = text.split("\n").length;
+			if(endY < nbrLines){
+				startY++;
+				endY++;
+				return true;
+			}
+		}		
+		return false;
 	}
 	
 	/**
@@ -687,7 +753,7 @@ public class GTextField extends GComponent {
 		// Draw the string
 		winApp.fill(localColor.txfFont);
 		winApp.textLeading(leading); //set the leading
-		winApp.text (viewText(), pos.x + 4, pos.y + 1, width + 8, height -2);
+		winApp.text(viewText(), pos.x + 4, pos.y + 1, width + 8, height -2);
 		
 		// ########################################
 		// Draw the insertion point (it blinks!)
