@@ -11,6 +11,8 @@
  * 	http://www.lagers.org.uk/g4p/index.html
  *	http://gui4processing.googlecode.com/svn/trunk/
  *
+ *  Copyright (C) 2010 onwards Peter Lager
+ *	
  *  This library is free software; you can redistribute it and/or modify it under 
  *  the terms of the GNU Lesser General Public License version 2.1 as published 
  *  by the Free Software Foundation.
