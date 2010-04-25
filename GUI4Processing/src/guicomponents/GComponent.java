@@ -210,7 +210,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/**
 	 * Attempt to create the default event handler for the component class. 
 	 * The default event handler is a method that returns void and has a single
-	 * parameter of the same type as the componment class generating the
+	 * parameter of the same type as the component class generating the
 	 * event and a method name specific for that class. 
 	 * 
 	 * @param handlerObj the object to handle the event
