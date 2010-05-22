@@ -521,6 +521,8 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	 */
 	@Override
 	public void mouseEvent(MouseEvent event){
+		if(!visible || !enabled) return;
+
 		Point p = new Point();
 		calcAbsPosition(p);
 
