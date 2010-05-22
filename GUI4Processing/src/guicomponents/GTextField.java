@@ -507,17 +507,17 @@ public class GTextField extends GComponent {
 	 */
 
 	public void mouseEvent(MouseEvent e) {
-		if(!visible || !enabled) return; //don't do anything if invisible or disabled
+		if(!visible || !enabled) return;
 
 		winApp.textFont(localFont);
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY); //sets whether or not the mouse is even over the textbox
-		if(mouseOver || focusIsWith == this) //if the mouse is over or the textbox has focus
-			cursorIsOver = this; //set that the cursor is over the textbox
-		else if(cursorIsOver == this) //if the cursor is over the box
-			cursorIsOver = null; //set the cursor over to nothing
+		if(mouseOver || focusIsWith == this) 	//if the mouse is over or the textbox has focus
+			cursorIsOver = this; 				//set that the cursor is over the textbox
+		else if(cursorIsOver == this) 			//if the cursor is over the box
+			cursorIsOver = null; 				//set the cursor over to nothing
 
-		Point p = new Point(0,0); 		// set the top-left point?
-		calcAbsPosition(p); 			// find its absolute position in the parent window?
+		Point p = new Point(0,0);
+		calcAbsPosition(p);
 
 		switch(e.getID()){								//select for mouse event
 		case MouseEvent.MOUSE_PRESSED:
