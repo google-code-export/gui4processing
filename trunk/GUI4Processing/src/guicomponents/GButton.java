@@ -273,7 +273,6 @@ public class GButton extends GComponent {
 	public void setImages(PImage img, int nbrImages){
 		if(img != null && nbrImages > 0){
 			int iw = img.width / nbrImages;
-			System.out.println("Width "+iw);
 			for(int i = 0; i < nbrImages;  i++){
 				bimage[i] = new PImage(iw, img.height, ARGB);
 				bimage[i].copy(img, 
