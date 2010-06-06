@@ -33,15 +33,22 @@ import processing.core.PImage;
  * state. This means that buttons can have an irregular and/or discontinuous
  * shape. <br>
  * 
- * The image button needs up to 3 image files to represent the button states <br>
+ * The image button needs 1 to 3 image files to represent the button states <br>
  * OFF mouse is not over button <br>
  * OVER mouse is over the button <br>
  * DOWN the mouse is over the button and a mouse button is being pressed. <br>
  * 
- * Only the OFF image is absolutely required
+ * If you only provide one image then this will be used for all states, if you
+ * provide two then the second image is used for both  OVER and DOWN states. <br><br>
  * 
- * The GImageButton has 2 constructors depending on how you create the images. <br>
+ * Rather than separate files for the different image states you can provide a 
+ * single image file which is a composite of 1-3 images (tiled horizontally)
+ * which are used for the different button states OFF, OVER and DOWN <br><br>
  * 
+ * 
+ * If you don't provide a mask file then the button 'hotspot' is represented by any
+ * non-transparent pixels in the OFF image. If you do provide a mask file then the 
+ * hotspot is defined by any white pixels. <br><br>
  * 
  * 
  * Three types of event can be generated :-  <br>
@@ -57,13 +64,6 @@ import processing.core.PImage;
  * if the mouse button is released over the button face. Releasing the 
  * button off the button face creates a RELEASED event. <br>
  * 
- * The image file can either be a single image which is used for 
- * all button states, or be a composite of 3 images (tiled horizontally)
- * which are used for the different button states OFF, OVER and DOWN 
- * in which case the image width should be divisible by 3. <br>
- * A number of setImages(...) methods exist to set button state images, these
- * can be used once the button is created.<br>
- * 
  * 
  * @author Peter Lager
  *
@@ -75,6 +75,8 @@ public class GImageButton extends GComponent {
 	public static final int OVER	= 1;
 	public static final int DOWN	= 2;
 
+	protected static PImage noImage[] = null;
+	
 	protected int status;
 
 	protected PImage[] bimage = new PImage[3];
@@ -82,83 +84,61 @@ public class GImageButton extends GComponent {
 	
 	protected boolean reportAllButtonEvents = false;
 	
+	/**
+	 * Create an image button based on a composite image for the button states.
+	 * 
+	 * @param theApplet
+	 * @param maskFile null if none is to be provided
+	 * @param imgFile composite image file for button sates
+	 * @param nbrImages number of images in composite image
+	 * @param x top-left horizontal distance for the buttun
+	 * @param y top left vertical position for the buttun
+	 */
 	public GImageButton(PApplet theApplet, String maskFile, String imgFile, int nbrImages, int x, int y){
 		super(theApplet, x, y);
-		setImages(maskFile, imgFile, nbrImages);
+		mask = getMask(maskFile);
+		bimage = getImages(imgFile, nbrImages);
 		width = bimage[0].width;
 		height = bimage[0].height;
-		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
+		createEventHandler(winApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 
+	/**
+	 * 
+	 * @param theApplet
+	 * @param maskFile null if none is to be provided
+	 * @param imgFiles an array of filenames for button state images
+	 * @param x top-left horizontal distance for the buttun
+	 * @param y top left vertical position for the buttun
+	 */
 	public GImageButton(PApplet theApplet, String maskFile, String imgFiles[], int x, int y){
 		super(theApplet, x, y);
-		setImages(maskFile, imgFiles);
+		mask = getMask(maskFile);
+		bimage = getImages(imgFiles);
 		width = bimage[0].width;
 		height = bimage[0].height;
-		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
+		createEventHandler(winApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
 		registerAutos_DMPK(true, true, false, false);
-	}
-		
-	protected void setImages(String maskFile, String imgFile, int nbrImages){
-		nbrImages = PApplet.constrain(nbrImages, 1, 3);
-		if(maskFile != null)
-			mask = winApp.loadImage(maskFile);
-		if(imgFile != null && nbrImages > 0){
-			PImage img = winApp.loadImage(imgFile);
-			if(img != null)
-				bimage = splitImages(img, nbrImages);
-			else
-				if(G4P.messages) System.out.println("Can't find button image file");
-		}
-	}
-	
-	protected void setImages(String maskFile, String[] imgFiles){
-		int imgCount;
-		if(maskFile != null)
-			mask = winApp.loadImage(maskFile);
-		if(imgFiles != null){
-			for(imgCount = 0; imgCount < imgFiles.length;  imgCount++)
-				bimage[imgCount] = winApp.loadImage(imgFiles[imgCount]);
-			// Make sure we got an 'over' image if not create one
-			if(bimage[0] == null){
-				if(G4P.messages)
-					System.out.println("Can't find image files for GImageButton");
-				bimage[0] = getBlankImage();
-				imgCount = 1;
-			}	
-		}
-		else {
-			if(G4P.messages) System.out.println("No image file listfor image button!");
-			bimage[0] = getBlankImage();
-			imgCount = 1;
-		}
-		//Make sure we have 3 images to work with
-		for(int j = imgCount; j < 3; j++)
-			bimage[j] = bimage[j - 1];
-	}
-	
-	protected PImage getBlankImage(){
-		PImage img = new PImage(21,21, RGB);
-		int[] c = new int[] {winApp.color(255,0,0), winApp.color(255)};
-		img.loadPixels();
-		for(int i = 0; i < img.pixels.length; i++){
-			if(i % 2 == 0)
-				img.pixels[i] = c[i % 2];
-		}
-		img.updatePixels();
-		return img;
 	}
 	
 	/**
-	 * Specify the PImage that contains the image{s} to be used for the button's state. <br>
-	 * This image may be a composite of 1 to 3 images tiled horizontally. 
-	 * @param img
-	 * @param nbrImages in the range 1 - 3
+	 * Get the images from a composite image file.
+	 * 
+	 * @param imgFile
+	 * @param nbrImages
+	 * @return
 	 */
-	protected PImage[] splitImages(PImage img, int nbrImages){
+	protected PImage[] getImages(String imgFile, int nbrImages){
+		nbrImages = PApplet.constrain(nbrImages, 1, 3);
+
 		PImage[] imgs = new PImage[3];
-		if(img != null){
+		PImage img = winApp.loadImage(imgFile);
+
+		if(imgFile == null || img == null){
+			missingFile(imgFile);
+		}
+		else {
 			int iw = img.width / nbrImages;
 			for(int i = 0; i < nbrImages;  i++){
 				imgs[i] = new PImage(iw, img.height, ARGB);
@@ -166,22 +146,79 @@ public class GImageButton extends GComponent {
 						i * iw, 0, iw, img.height,
 						0, 0, iw, img.height);
 			}
-		}
-		else {
-			if(G4P.messages) System.out.println("No image file listfor image button!");
-			imgs[0] = getBlankImage();
-			nbrImages = 1;
-		}
-		//Make sure we have 3 images to work with
-		for(int i = nbrImages; i < 3; i++){
-			imgs[i] = imgs[nbrImages - 1];
+			// Re use images if less than 3 were provided
+			for(int i = nbrImages; i < 3; i++){
+				imgs[i] = imgs[nbrImages - 1];
+			}
 		}
 		return imgs;
 	}
 
 	/**
+	 * Get the images specified in the file list
+	 * @param imgFiles
+	 * @return
+	 */
+	protected PImage[] getImages(String[] imgFiles){
+		PImage[] imgs = new PImage[3];
+		int imgCount = 0;
+		if(imgFiles == null || imgFiles.length < 1){
+			if(G4P.messages)
+				System.out.println("Error: you have not provided a list of image files for GImageButton");
+		}
+		else {
+			for(imgCount = 0; imgCount < imgFiles.length;  imgCount++){
+				imgs[imgCount] = winApp.loadImage(imgFiles[imgCount]);
+				if(imgs[imgCount] == null)
+					missingFile(imgFiles[imgCount]);
+			}
+			//Make sure we have 3 images to work with
+			for(int j = imgCount; j < 3; j++)
+				imgs[j] = imgs[j - 1];
+		}
+		if(imgs[0] == null)
+			imgs = getErrorImage();
+		return imgs;
+	}
+	
+	/**
+	 * Get the mask file. Report an error if the file cannot be found.
+	 * @param mfile
+	 * @return
+	 */
+	protected PImage getMask(String mfile){
+		PImage img = null;
+		if(mfile != null){			
+			img = winApp.loadImage(mfile);
+			if(img == null)
+				missingFile(mfile);
+		}
+		return img;
+	}
+	
+	/**
+	 * Report a missing file
+	 * @param fname
+	 */
+	protected void missingFile(String fname){
+		if(G4P.messages)
+			System.out.println("\nUnable to locate file '"+ fname+"' for GImageButton");
+	}
+	
+	/**
+	 * Get the the error button images
+	 * @return
+	 */
+	protected PImage[] getErrorImage(){
+		if(noImage == null)
+			noImage = getImages("noimage3.png",3);
+		return noImage;
+	}
+
+	/**
 	 * Determines whether the position ax, ay is over this component.
-	 * If it has a mask 
+	 * It will use a mask image if one has been provided otherwise
+	 * it will look for non-transparent pixels. 
 	 * @param ax mouse x position
 	 * @param ay mouse y position
 	 * @return true if mouse is over the component else false
@@ -190,21 +227,18 @@ public class GImageButton extends GComponent {
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		if(ax >= p.x && ax <= p.x + width && ay >= p.y && ay <= p.y + height){
-			int dx, dy, pxl;
+			int dx, dy, pixel;
 			dx = ax - p.x;
 			dy = ay - p.y;
 			if(mask != null){	// we have a mask file
-				pxl = mask.get(dx, dy);
-				if(winApp.red(pxl) > 250)
+				pixel = mask.get(dx, dy);
+				if(pixel == -1)
 					return true;
-				else
-					return false;
 			}
 			else { // no mask use transparency of off image
-				pxl = bimage[0].get(dx, dy);
-				if(winApp.alpha(pxl) < 5)
-					return false;
-				else
+				pixel = bimage[0].get(dx, dy);
+				// Not transparent?
+				if(winApp.alpha(pixel) != 0)
 					return true;
 			}
 		}
