@@ -232,9 +232,9 @@ public class GImageButton extends GComponent {
 			dx = ax - p.x;
 			dy = ay - p.y;
 			if(mask != null){	// we have a mask file
-				pixel = mask.get(dx, dy);
-				// test for white and transparent white
-				if(pixel == -1 || pixel == -16777216)
+				pixel = mask.get(dx, dy) & 0x00ffffff;
+				// test for white (ignoring alpha value)
+				if(pixel == 0x00ffffff)
 					return true;
 			}
 			else { // no mask use transparency of off image
