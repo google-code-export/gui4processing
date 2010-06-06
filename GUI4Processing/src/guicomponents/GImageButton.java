@@ -48,7 +48,7 @@ import processing.core.PImage;
  * 
  * If you don't provide a mask file then the button 'hotspot' is represented by any
  * non-transparent pixels in the OFF image. If you do provide a mask file then the 
- * hotspot is defined by any white pixels. <br><br>
+ * hotspot is defined by any white pixels in the mask image. <br><br>
  * 
  * 
  * Three types of event can be generated :-  <br>
