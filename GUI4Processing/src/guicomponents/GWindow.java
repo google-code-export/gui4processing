@@ -259,7 +259,7 @@ public class GWindow extends Frame implements GConstants {
 	 * Always make this window appear on top of other windows (or not). <br>
 	 * This will not work when run from a remote server (ie Applet over the web)
 	 * for security reasons. In this situation a call to this method is ignored
-	 * and no error is generated. 
+	 * and a warning is generated. 
 	 * 
 	 * @param onTop
 	 */
@@ -267,7 +267,8 @@ public class GWindow extends Frame implements GConstants {
 		try{
 			setAlwaysOnTop(onTop);
 		} catch (Exception e){
-			e.printStackTrace();
+			if(G4P.messages)
+				System.out.println("Warning: setOnTop() method will not work when the sketch is run from a remote location.");
 		}
 	}
 	
