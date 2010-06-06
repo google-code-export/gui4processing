@@ -233,7 +233,8 @@ public class GImageButton extends GComponent {
 			dy = ay - p.y;
 			if(mask != null){	// we have a mask file
 				pixel = mask.get(dx, dy);
-				if(pixel == -1)
+				// test for white and transparent white
+				if(pixel == -1 || pixel == -16777216)
 					return true;
 			}
 			else { // no mask use transparency of off image
