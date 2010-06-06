@@ -137,6 +137,7 @@ public class GImageButton extends GComponent {
 
 		if(imgFile == null || img == null){
 			missingFile(imgFile);
+			imgs = getErrorImage();
 		}
 		else {
 			int iw = img.width / nbrImages;
