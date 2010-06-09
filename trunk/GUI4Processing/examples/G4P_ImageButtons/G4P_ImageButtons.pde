@@ -20,7 +20,7 @@ void setup(){
     "tjoff.jpg", "tjover.jpg", "tjdown.jpg"      };
   btnTJ = new GImageButton(this, "tjmask.png", files, 150,10);
 
-  btnCoins = new GImageButton(this, "coinsmask.png", "coins.png", 3, 400 ,20);
+  btnCoins = new GImageButton(this, null, "coins.png", 3, 400 ,20);
 
   lblOut = new GLabel(this, "", 10, 190, 560, 20);
   lblOut.setTextAlign(GAlign.CENTER);
@@ -40,7 +40,7 @@ void handleImageButtonEvents(GImageButton imagebutton) {
   if(imagebutton == btnGhost)
     lblOut.setText("Ghosts - composite image using transparency");
   else if(imagebutton == btnCoins)
-    lblOut.setText("Coins - composite image using mask");  
+    lblOut.setText("Coins - composite image using transparency");  
   else if(imagebutton == btnTJ)
     lblOut.setText("Tom & Jerry - multiple images using mask");
   else if(imagebutton == btnInfo)
