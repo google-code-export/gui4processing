@@ -97,7 +97,7 @@ public class GCheckbox extends GComponent {
 	 * Calculate text X position based on text alignment
 	 */
 	protected void calcAlignX(){
-		switch(textAlign){
+		switch(textAlignHorz){
 		case GAlign.LEFT:
 			alignX = imgSelected.width + 2 * border + PADH;
 			break;

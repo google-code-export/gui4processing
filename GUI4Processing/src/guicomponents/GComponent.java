@@ -109,8 +109,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/** Text value associated with component */
 	protected String text = "";
 	protected int textWidth;
-	protected int textAlign = GAlign.LEFT;
+	protected int textAlignHorz = GAlign.LEFT;
+	protected int textAlignVert = GAlign.MIDDLE;
 	protected int alignX = 0;
+	protected int alignY = 0;
 
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
 	protected int x, y;
@@ -551,7 +553,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public void setText(String text, int align) {
 		this.text = text;
-		textAlign = align;
+		textAlignHorz = align;
 		winApp.textFont(localFont, localFont.getFont().getSize());
 		textWidth = (int) winApp.textWidth(text);
 		calcAlignX();
@@ -562,8 +564,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * @param align
 	 */
 	public void setTextAlign(int align){
-		textAlign = align;
+		textAlignHorz = align;
 		calcAlignX();
+	}
+
+	public void setTextAlignV(int align){
+		textAlignVert = align;
+		calcAlignY();
 	}
 
 	/**
@@ -575,10 +582,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	}
 	
 	/**
-	 * Calculate text X position based on text alignment
+	 * Calculate text X & Y position based on text alignment
 	 */
 	protected void calcAlignX(){
-		switch(textAlign){
+		switch(textAlignHorz){
 		case GAlign.LEFT:
 			alignX = border + PADH;
 			break;
@@ -587,6 +594,20 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 			break;
 		case GAlign.CENTER:
 			alignX = (width - textWidth)/2;
+			break;
+		}
+	}
+
+	protected void calcAlignY(){
+		switch(textAlignVert){
+		case GAlign.TOP:
+			alignY = PADV;
+			break;
+		case GAlign.BOTTOM:
+			alignY = height - localFont.getFont().getSize()- PADV;
+			break;
+		case GAlign.MIDDLE:
+			alignY = (height - localFont.getFont().getSize() - PADV)/2;
 			break;
 		}
 	}
