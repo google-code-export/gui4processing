@@ -201,6 +201,16 @@ public class G4P implements PConstants, GConstants {
 		g4pStyle.colorModeZ = 255.0f;
 	}
 
+	public static void setTextMode(int mode){
+		if(mode == MODEL || mode == SCREEN || mode == SHAPE){
+		if(g4pStyle == null){
+			PGraphics temp = new PGraphics();
+			g4pStyle = temp.getStyle();			
+		}
+		g4pStyle.textMode = mode;
+		}
+	}
+	
 	/**
 	 * Set the color scheme to be used by G4P<br>
 	 * Only reqd if different from the default blue scheme to be

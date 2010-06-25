@@ -71,6 +71,8 @@ public class GButton extends GComponent {
 	protected PImage[] bimage = new PImage[3];
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
+//	protected int imageAlignX = 0;
+	
 	protected boolean useImages = false;
 	
 	protected boolean reportAllButtonEvents = false;
@@ -112,7 +114,6 @@ public class GButton extends GComponent {
 		super(theApplet, x, y);
 		setImages(imgFile, nbrImages);
 		btnImgWidth = this.getMaxButtonImageWidth();
-		useImages = (btnImgWidth > 0);
 		buttonCtorCore(width, height);
 	}
 
@@ -135,7 +136,6 @@ public class GButton extends GComponent {
 		super(theApplet, x, y);
 		setImages(imgFile, nbrImages);
 		btnImgWidth = this.getMaxButtonImageWidth();
-		useImages = (btnImgWidth > 0);
 		setText(text);
 		buttonCtorCore(width, height);
 	}
@@ -151,7 +151,9 @@ public class GButton extends GComponent {
 		this.height = Math.max(height, localFont.getFont().getSize() + 2 * PADV);
 		border = 1;
 		// and now update for image/text combined
+		setImageAlign(imageAlign);
 		calcAlignX();
+		calcAlignY();
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
@@ -179,6 +181,7 @@ public class GButton extends GComponent {
 		int bw = 0;
 		for(int i = 0; i < 3; i++)
 			bw = Math.max(bw, ((bimage[i] == null) ? 0 : bimage[i].width));
+		useImages = (bw > 0);
 		return bw;		
 	}
 	
@@ -210,6 +213,7 @@ public class GButton extends GComponent {
 		bimage[2] = winApp.loadImage(ifilePressed);
 		if(bimage[2] == null)
 			if(G4P.messages) System.out.println("Can't find pressed button image file");
+		getMaxButtonImageWidth();
 	}
 	
 	/**
@@ -217,8 +221,10 @@ public class GButton extends GComponent {
 	 * @param imgFiles an array of filenames
 	 */
 	public void setImages(String[] imgFiles){
-		if(imgFiles != null && imgFiles.length > 1)
+		if(imgFiles != null && imgFiles.length > 1){
 			setImages(imgFiles[0], imgFiles[1 % imgFiles.length], imgFiles[2 % imgFiles.length]);
+			getMaxButtonImageWidth();
+		}
 	}
 	
 	/**
@@ -236,6 +242,7 @@ public class GButton extends GComponent {
 			}
 			else
 				setImages(img, nbrImages);
+			getMaxButtonImageWidth();
 		}
 	}
 	
@@ -249,6 +256,7 @@ public class GButton extends GComponent {
 		bimage[0] = imgNormal;
 		bimage[1] = imgOver;
 		bimage[2] = imgPressed;
+		getMaxButtonImageWidth();
 	}
 	
 	/**
@@ -261,6 +269,7 @@ public class GButton extends GComponent {
 				bimage[i] = images[i];
 			for(int i = images.length; i < 3; i++)
 				bimage[i] = bimage[images.length - 1];
+			getMaxButtonImageWidth();
 		}
 	}
 	
@@ -282,6 +291,7 @@ public class GButton extends GComponent {
 			for(int i = nbrImages; i < 3; i++){
 				bimage[i] = bimage[nbrImages - 1];
 			}
+			getMaxButtonImageWidth();
 		}
 	}
 	
@@ -290,9 +300,9 @@ public class GButton extends GComponent {
 	 * 
 	 * @param use
 	 */
-	public void setUseImages(boolean use){
-		useImages = use;
-	}
+//	public void setUseImages(boolean use){
+//		useImages = use;
+//	}
 	
 	/**
 	 * Set the color scheme for this button
@@ -309,6 +319,7 @@ public class GButton extends GComponent {
 		winApp.textFont(localFont, localFont.getFont().getSize());
 		textWidth = Math.round(winApp.textWidth(text));
 		calcAlignX();
+		calcAlignY();
 	}
 
 	/**
@@ -325,54 +336,88 @@ public class GButton extends GComponent {
 		setText(text);
 		if(textWidth > tw)
 			width += (textWidth - tw);
+		calcAlignX();
+		calcAlignY();
 	}
 
 	/**
 	 * Set the text alignment inside the box
 	 * @param align
 	 */
-	public void setTextAlign(int align){
-		// Ignore text alignment
-	}
+//	public void setTextAlign(int align){
+//		// Ignore text alignment
+//	}
 
 	/**
 	 * Sets the position of the image in relation to the button text
-	 * @param align either GAlign.LEFT or GAlign.RIGHT
+	 * provided the text horizontal alignment is GAlign.LEFT or 
+	 * GAlign.RIGHT
+	 * @param imgAlign either GAlign.LEFT or GAlign.RIGHT
 	 */
-	public void setImageAlign(int align){
-		if(align == GAlign.LEFT || align == GAlign.RIGHT){			
-			imageAlign = align;
-			calcAlignX();
+	public void setImageAlign(int imgAlign){
+		if(useImages){
+			switch(imgAlign){
+			case GAlign.LEFT:
+				imageAlign = imgAlign;
+				imgAlignX = PADH;
+				break;
+			case GAlign.RIGHT:
+				imageAlign = imgAlign;
+				imgAlignX = width - btnImgWidth - PADH;
+				break;
+			case GAlign.CENTER:
+				if(text.length() == 0){
+					imageAlign = imgAlign;
+					imgAlignX = (width - btnImgWidth)/2;
+				}
+				else {
+					imageAlign = GAlign.LEFT;
+					imgAlignX = PADH;
+				}
+				break;
+			}
 		}
+		calcAlignX();
 	}
+
 	/**
 	 * Calculate text and image X alignment position
 	 */
 	protected void calcAlignX(){
-		if(bimage[0] == null){
-			// text only, centre it
-			alignX = (width - textWidth)/2;
-		}
-		else if(bimage[0] != null && text.length() == 0){
-			// Image only, centre it
-			imageAlign = GAlign.CENTER;
-			imgAlignX = (width - btnImgWidth)/2;
-		}
-		else {
-			// text and image
-			alignX = (width - btnImgWidth - textWidth)/2;
+		super.calcAlignX();
+		if(useImages){
 			switch(imageAlign){
-			case GAlign.CENTER:
-				imageAlign = GAlign.LEFT;
 			case GAlign.LEFT:
-				imgAlignX = PADH;
-				alignX += btnImgWidth + PADH;
+				alignX += btnImgWidth;
 				break;
 			case GAlign.RIGHT:
-				imgAlignX = width - btnImgWidth - PADH;
-				alignX += PADH;				
+				if(textAlignHorz != GAlign.LEFT)
+					alignX -= btnImgWidth;
+				break;
 			}
+				
 		}
+//		if(bimage[0] != null && text.length() == 0){
+//			// Image only, centre it
+//			imageAlign = GAlign.CENTER;
+//			imgAlignX = (width - btnImgWidth)/2;
+//		}
+//		else {
+//			// text and image
+//			super.calcAlignX();
+//			//alignX = (width - btnImgWidth - textWidth)/2;
+//			switch(imageAlign){
+//			case GAlign.CENTER:
+//				imageAlign = GAlign.LEFT;
+//			case GAlign.LEFT:
+//				imgAlignX = PADH;
+//				//alignX += btnImgWidth;
+//				break;
+//			case GAlign.RIGHT:
+////				imgAlignX = width - btnImgWidth - PADH;
+////				alignX += PADH;				
+//			}
+//		}
 	}
 
 	/**
@@ -383,6 +428,7 @@ public class GButton extends GComponent {
 		
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
+
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
 		
@@ -416,7 +462,8 @@ public class GButton extends GComponent {
 		winApp.noStroke();
 		winApp.fill(localColor.btnFont);
 		winApp.textFont(localFont, localFont.getFont().getSize());
-		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width, height);
+		winApp.text(text, pos.x + alignX, pos.y + alignY, width, height);
+//		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width, height);
 		winApp.popStyle();
 	}
 

@@ -65,7 +65,7 @@ public class GClip implements ClipboardOwner {
 	/**
 	 * Static reference to enforce singleton pattern
 	 */
-	private static GClip gclipboard = null;
+	private static GClip gclip = null;
 
 	/**
 	 * Class attribute to reference the programs clipboard
@@ -78,9 +78,9 @@ public class GClip implements ClipboardOwner {
 	 * @param chars
 	 */
 	public static void copy(String chars){
-		if(gclipboard == null)
-			gclipboard = new GClip();
-		gclipboard.copyString(chars);
+		if(gclip == null)
+			gclip = new GClip();
+		gclip.copyString(chars);
 	}
 
 	/**
@@ -88,9 +88,9 @@ public class GClip implements ClipboardOwner {
 	 * @return
 	 */
 	public static String paste(){
-		if(gclipboard == null)
-			gclipboard = new GClip();
-		return gclipboard.pasteString();
+		if(gclip == null)
+			gclip = new GClip();
+		return gclip.pasteString();
 	}
 
 	/**
