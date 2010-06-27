@@ -36,9 +36,9 @@ public interface GAlign {
 	public static final int CENTER	= 0x00000004;
 	public static final int H_ALIGN	= 0x00000007;
 
-	public static final int TOP		= 0x00000101;
-	public static final int BOTTOM	= 0x00000102;
-	public static final int MIDDLE	= 0x00000104;
-	public static final int V_ALIGN	= 0x00000107;
+	public static final int TOP		= 0x00000010;
+	public static final int BOTTOM	= 0x00000020;
+	public static final int MIDDLE	= 0x00000040;
+	public static final int V_ALIGN	= 0x00000070;
 	
 }

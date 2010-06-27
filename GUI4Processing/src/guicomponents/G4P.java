@@ -53,7 +53,7 @@ public class G4P implements PConstants, GConstants {
 	private static HashSet<GWindow> allWinApps = new HashSet<GWindow>();
 
 	/**
-	 * Set of PApplet windos disabled
+	 * Set of PApplet windows disabled
 	 */
 	private static HashSet<PApplet> autoDrawDisabled = new HashSet<PApplet>();
 

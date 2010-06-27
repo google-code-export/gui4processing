@@ -92,6 +92,9 @@ public class GLabel extends GComponent {
 		setText(text);
 		if(textWidth != tw)
 			width += (textWidth - tw);
+		calcAlignX();
+		calcAlignY();
+		
 	}
 
 	/**
@@ -119,7 +122,8 @@ public class GLabel extends GComponent {
 		winApp.noStroke();
 		winApp.fill(localColor.lblFont);
 		winApp.textFont(localFont, localFont.getFont().getSize());
-		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width - PADH - 2* border, height);
+		winApp.text(text, pos.x + alignX, pos.y + alignY, width, height);
+//		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width - PADH - 2* border, height);
 		winApp.popStyle();
 	}
 }

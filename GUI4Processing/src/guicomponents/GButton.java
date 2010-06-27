@@ -71,12 +71,13 @@ public class GButton extends GComponent {
 	protected PImage[] bimage = new PImage[3];
 	protected int btnImgWidth = 0;
 	protected int imageAlign = GAlign.CENTER;
-//	protected int imageAlignX = 0;
 	
 	protected boolean useImages = false;
 	
+	// Only report CLICKED events
 	protected boolean reportAllButtonEvents = false;
 	
+	// Defines position of image if any
 	protected int imgAlignX;
 	
 	/**
@@ -135,7 +136,7 @@ public class GButton extends GComponent {
 	public GButton(PApplet theApplet, String text, String imgFile, int nbrImages, int x, int y, int width, int height){
 		super(theApplet, x, y);
 		setImages(imgFile, nbrImages);
-		btnImgWidth = this.getMaxButtonImageWidth();
+		btnImgWidth = getMaxButtonImageWidth();
 		setText(text);
 		buttonCtorCore(width, height);
 	}
@@ -152,6 +153,8 @@ public class GButton extends GComponent {
 		border = 1;
 		// and now update for image/text combined
 		setImageAlign(imageAlign);
+		textAlignHorz = GAlign.CENTER;
+		textAlignVert = GAlign.MIDDLE;
 		calcAlignX();
 		calcAlignY();
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
@@ -214,6 +217,8 @@ public class GButton extends GComponent {
 		if(bimage[2] == null)
 			if(G4P.messages) System.out.println("Can't find pressed button image file");
 		getMaxButtonImageWidth();
+		if(useImages && imageAlign == GAlign.CENTER && text.length() > 0)
+			imageAlign = GAlign.LEFT;
 	}
 	
 	/**
@@ -224,6 +229,8 @@ public class GButton extends GComponent {
 		if(imgFiles != null && imgFiles.length > 1){
 			setImages(imgFiles[0], imgFiles[1 % imgFiles.length], imgFiles[2 % imgFiles.length]);
 			getMaxButtonImageWidth();
+			if(useImages && imageAlign == GAlign.CENTER && text.length() > 0)
+				imageAlign = GAlign.LEFT;
 		}
 	}
 	
@@ -243,6 +250,8 @@ public class GButton extends GComponent {
 			else
 				setImages(img, nbrImages);
 			getMaxButtonImageWidth();
+			if(useImages && imageAlign == GAlign.CENTER && text.length() > 0)
+				imageAlign = GAlign.LEFT;
 		}
 	}
 	
@@ -257,6 +266,8 @@ public class GButton extends GComponent {
 		bimage[1] = imgOver;
 		bimage[2] = imgPressed;
 		getMaxButtonImageWidth();
+		if(useImages && imageAlign == GAlign.CENTER && text.length() > 0)
+			imageAlign = GAlign.LEFT;
 	}
 	
 	/**
@@ -270,6 +281,8 @@ public class GButton extends GComponent {
 			for(int i = images.length; i < 3; i++)
 				bimage[i] = bimage[images.length - 1];
 			getMaxButtonImageWidth();
+			if(useImages && imageAlign == GAlign.CENTER && text.length() > 0)
+				imageAlign = GAlign.LEFT;
 		}
 	}
 	
@@ -292,17 +305,10 @@ public class GButton extends GComponent {
 				bimage[i] = bimage[nbrImages - 1];
 			}
 			getMaxButtonImageWidth();
+			if(useImages && imageAlign == GAlign.CENTER && text.length() > 0)
+				imageAlign = GAlign.LEFT;
 		}
 	}
-	
-	/** 
-	 * Whether or not to display the button images.
-	 * 
-	 * @param use
-	 */
-//	public void setUseImages(boolean use){
-//		useImages = use;
-//	}
 	
 	/**
 	 * Set the color scheme for this button
@@ -312,14 +318,22 @@ public class GButton extends GComponent {
 	}
 
 	/**
+	 * Set the text to appear on the button. This does nothing
+	 * if the parameter is null or an empty string. <br>
+	 * If the button has an image with CENTER allignment it is 
+	 * made LEFT alligment.
 	 * @param text the text to set with alignment
 	 */
 	public void setText(String text) {
-		this.text = text;
-		winApp.textFont(localFont, localFont.getFont().getSize());
-		textWidth = Math.round(winApp.textWidth(text));
-		calcAlignX();
-		calcAlignY();
+		if(text != null && text != ""){
+			if(useImages && imageAlign == GAlign.CENTER)
+				setImageAlign(GAlign.LEFT);
+			this.text = text;
+			winApp.textFont(localFont, localFont.getFont().getSize());
+			textWidth = Math.round(winApp.textWidth(text));
+			calcAlignX();
+			calcAlignY();
+		}
 	}
 
 	/**
@@ -339,14 +353,6 @@ public class GButton extends GComponent {
 		calcAlignX();
 		calcAlignY();
 	}
-
-	/**
-	 * Set the text alignment inside the box
-	 * @param align
-	 */
-//	public void setTextAlign(int align){
-//		// Ignore text alignment
-//	}
 
 	/**
 	 * Sets the position of the image in relation to the button text
@@ -384,40 +390,24 @@ public class GButton extends GComponent {
 	 * Calculate text and image X alignment position
 	 */
 	protected void calcAlignX(){
-		super.calcAlignX();
+		int areaWidth = width;
+		int imgX = 0;
 		if(useImages){
-			switch(imageAlign){
-			case GAlign.LEFT:
-				alignX += btnImgWidth;
-				break;
-			case GAlign.RIGHT:
-				if(textAlignHorz != GAlign.LEFT)
-					alignX -= btnImgWidth;
-				break;
-			}
-				
+			areaWidth -= btnImgWidth;
+			if(imageAlign == GAlign.LEFT)
+				imgX = btnImgWidth;
 		}
-//		if(bimage[0] != null && text.length() == 0){
-//			// Image only, centre it
-//			imageAlign = GAlign.CENTER;
-//			imgAlignX = (width - btnImgWidth)/2;
-//		}
-//		else {
-//			// text and image
-//			super.calcAlignX();
-//			//alignX = (width - btnImgWidth - textWidth)/2;
-//			switch(imageAlign){
-//			case GAlign.CENTER:
-//				imageAlign = GAlign.LEFT;
-//			case GAlign.LEFT:
-//				imgAlignX = PADH;
-//				//alignX += btnImgWidth;
-//				break;
-//			case GAlign.RIGHT:
-////				imgAlignX = width - btnImgWidth - PADH;
-////				alignX += PADH;				
-//			}
-//		}
+		switch(textAlignHorz){
+		case GAlign.LEFT:
+			alignX = imgX + border+  PADH;
+			break;
+		case GAlign.RIGHT:
+			alignX = imgX + areaWidth - textWidth - border - PADH;
+			break;
+		case GAlign.CENTER:
+			alignX = imgX + border + PADH + (areaWidth - textWidth)/2;
+			break;
+		}
 	}
 
 	/**
