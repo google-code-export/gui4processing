@@ -546,6 +546,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		winApp.textFont(localFont, localFont.getFont().getSize());
 		textWidth = (int) winApp.textWidth(text); 
 		calcAlignX();
+		calcAlignY();
 	}
 
 	/**
@@ -553,24 +554,32 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public void setText(String text, int align) {
 		this.text = text;
-		textAlignHorz = align;
 		winApp.textFont(localFont, localFont.getFont().getSize());
 		textWidth = (int) winApp.textWidth(text);
-		calcAlignX();
+		setTextAlign(align);
 	}
 
 	/**
-	 * Set the text alignment inside the box
-	 * @param align
+	 * Set the text alignment inside the box. <br>
+	 * Horizontal must be one of the following
+	 * GAlign.LEFT or GAlign.CENTER or GAlign.RIGHT <br>
+	 * Vertical must be one of the following
+	 * GAlign.TOP or GAlign.MIDDLE or GAlign.BOTTOM <br>
+	 * Both horizontal and vertical allignment can be set in one call using
+	 * bitwise OR e.g. GAlign.BOTTOM | GAlign.CENTER 
+	 * @param align the allignment flag
 	 */
 	public void setTextAlign(int align){
-		textAlignHorz = align;
-		calcAlignX();
-	}
-
-	public void setTextAlignV(int align){
-		textAlignVert = align;
-		calcAlignY();
+		int ha = align & GAlign.H_ALIGN;
+		int va = align & GAlign.V_ALIGN;
+		if(ha == GAlign.LEFT || ha == GAlign.CENTER || ha == GAlign.RIGHT){
+			textAlignHorz = ha;
+			calcAlignX();
+		}
+		if(va == GAlign.TOP || va == GAlign.MIDDLE || va == GAlign.BOTTOM){
+			textAlignVert = va;
+			calcAlignY();
+		}
 	}
 
 	/**
@@ -601,13 +610,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	protected void calcAlignY(){
 		switch(textAlignVert){
 		case GAlign.TOP:
-			alignY = PADV;
+			alignY = border + PADV;
 			break;
 		case GAlign.BOTTOM:
-			alignY = height - localFont.getFont().getSize()- PADV;
+			alignY = height - localFont.getFont().getSize() - border - PADV;
 			break;
 		case GAlign.MIDDLE:
-			alignY = (height - localFont.getFont().getSize() - PADV)/2;
+			alignY = (height - localFont.getFont().getSize() - border - PADV)/2;
 			break;
 		}
 	}
