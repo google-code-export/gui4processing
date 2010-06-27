@@ -215,7 +215,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * parameter of the same type as the component class generating the
 	 * event and a method name specific for that class. 
 	 * 
-	 * @param handlerObj the object to handle the event
+	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
 	 */
 	public void addEventHandler(Object obj, String methodName){
@@ -236,7 +236,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * parameter of the same type as the componment class generating the
 	 * event and a method name specific for that class. 
 	 * 
-	 * @param handlerObj the object to handle the event
+	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
 	 * @param parameters the parameter classes.
 	 */
@@ -276,7 +276,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * Get the PApplet object
-	 * @return
+	 * @return the PApplet this component is drawn on
 	 */
 	public PApplet getPApplet(){
 		return winApp;
@@ -641,7 +641,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * Sets the x position of a component
-	 * @param x
+	 * @param y
  	 */
 	public void setY(int y) {
 		this.y = y;
@@ -707,7 +707,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	
 	/**
 	 * Is this component enabled
-	 * @return
+	 * @return true if the component is enabled
 	 */
 	public boolean isEnabled(){
 		return enabled;
@@ -734,7 +734,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * Get the border width
-	 * @return
+	 * @return the border width
 	 */
 	public int getBorder(){
 		return border;
@@ -751,7 +751,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * Find out if the component is opaque
-	 * @return
+	 * @return true if the background is visible
 	 */
 	public boolean getOpaque(){
 		return opaque;

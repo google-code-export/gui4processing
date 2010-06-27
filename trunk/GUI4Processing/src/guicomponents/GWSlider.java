@@ -156,8 +156,8 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	}
 
 	/**
-	 * Sets the type of slider that this should be.
-	 * @see ValueType
+	 * Sets the type of slider that this should be. <br>
+	 * INTEGER or DECIMAL or EXPONENT	 
 	 */
 	public void setValueType(int type){
 		_valueType = type;
@@ -324,7 +324,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	/**
 	 * basic constructor that applies the default library skin to the slider. Accepts  
 	 * the x and y position of the slider, the PApplet theApplet where the slider is  
-	 * renderedand the length of the slider.
+	 * rendered and the length of the slider.
 	 * 
 	 * @param theApplet
 	 * @param x
@@ -344,7 +344,6 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	 * @param x
 	 * @param y
 	 * @param length
-	 * @see GUIException
 	 */
 	public GWSlider(PApplet theApplet, String skin, int x, int y, int length) {
 		super(theApplet, x, y, length, 1); //we reset the height later when we get the image heights
@@ -627,7 +626,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	 * handle_mouseover image
 	 * @param ax
 	 * @param ay
-	 * @return
+	 * @return true if the position ax,ay is over the thumb
 	 */
 	public boolean isOverThumb(int ax, int ay){		
 		Point p = new Point(0,0);
@@ -745,69 +744,4 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		winApp.popStyle();
 	}
 	
-	
-	// Removed
-	/*
-	 * Pre is called before each draw call and should not be used by the end user.
-	 * It checks to see if the thumb and value positions match up correctly.
-	 */
-//	public void pre(){
-//		int change, inertia = thumbInertia;
-//		if(thumbPos == thumbTargetPos){
-//			isValueChanging = false;
-//		}
-//		else {
-//			// Make sure we get a change value by repeatedly decreasing the inertia value
-//			do {
-//				change = (thumbTargetPos - thumbPos)/inertia;
-//				inertia--;
-//			} while (change == 0 && inertia > 0);
-//			// If there is a change update the current value and generate an event
-//			if(change == 0){
-//				isValueChanging = false;
-//				
-//			}
-//			else {
-//				thumbPos += change;
-//				float newValue = 0.0f;
-//				float upperVal, lowerVal;
-//
-//				//Here we need to do opposite of what _stickToTickByValue() does and
-//				//relate a position to a value to make sure the value does change
-//				//gradually but in steps
-//				if(_stickToTicks){
-//
-//					float tickDist = (_centre.width)/(float)_numTicks;
-//					float relPos = (float) (thumbPos - x + _thumb.width * 0.5f);
-//					int num = Math.round(relPos/tickDist);
-//					newValue = _tickValues[num];
-//				}else{
-//					//To deal with the situation when a user sets a value that can't
-//					//be fully represented on the slider due to there not being enough
-//					//pixels(not long enough). I have taken the next highest and lowest
-//					//pixels and found the values they represent on the slider.
-//					upperVal = PApplet.map(thumbPos + 1, thumbMin, thumbMax, minValue, maxValue);
-//					newValue = PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
-//					lowerVal = PApplet.map(thumbPos -1, thumbMin, thumbMax, minValue, maxValue);
-//
-//					//now if our value is between these bounds then we want to keep the value that
-//					//the user set but not to change the position of the slider and its true position
-//					//is in fractions of pixels. if that makes sense.
-//					if(value > lowerVal && value < upperVal){
-//						//set the new value to the old so that we preserve user set value.
-//						newValue = value;
-//					}
-//				}
-//
-//				boolean valueChanged = (newValue != value);
-//
-//				value = newValue;
-//				if(valueChanged){
-//					eventType = CHANGED;
-//					fireEvent();
-//				}
-//			}
-//		}			
-//	}
-
 }

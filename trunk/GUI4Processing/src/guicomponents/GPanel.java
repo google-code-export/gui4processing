@@ -296,8 +296,6 @@ public class GPanel extends GComponent {
 	 * Determines whether the position ax, ay is over the panel, takimg
 	 * into account whether the panel is collapsed or not. <br>
 	 * 
-	 * @param ax
-	 * @param ay
 	 * @param ax x position
 	 * @param ay y position
 	 * @return true if mouse is over the panel surface else false

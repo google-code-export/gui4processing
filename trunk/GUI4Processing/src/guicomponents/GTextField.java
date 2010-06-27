@@ -159,7 +159,7 @@ public class GTextField extends GComponent {
 	 * Use the existing line spacing value (textLeading). <br>
 	 * 
 	 * @param fontname
-	 * @param fontSize
+	 * @param fontsize
 	 */
 	public void setFont(String fontname, int fontsize){
 		setFont(fontname, fontsize, leading);
@@ -404,7 +404,7 @@ public class GTextField extends GComponent {
 	 * Sets the contents of the text box and displays the
 	 * specified string in the text box widget. <br>
 	 * Fires SET event.
-	 * @param val the string to become the text field's contents
+	 * @param newValue the string to become the text field's contents
 	 */
 	public void setText(String newValue) {
 		text = newValue; 
@@ -428,16 +428,16 @@ public class GTextField extends GComponent {
 
 	/**
 	 * Are we showing separator lines
-	 * @return
+	 * @return true if using separator lines else false.
 	 */
 	public boolean getShowLines(){
 		return drawSepLines;
 	}
 	
 	/**
-	 * 
+	 * SCroll the text within the field
 	 * @param dir
-	 * @return
+	 * @return true if successful else false
 	 */
 	public boolean scroll(int dir){
 		boolean result = false;
