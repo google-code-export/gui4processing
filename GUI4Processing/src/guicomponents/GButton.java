@@ -340,20 +340,36 @@ public class GButton extends GComponent {
 	 * Set the font & size for the button increasing height and
 	 * width of the button if necessary to display text. <br>
 	 * It will not shrink if the font size is decreased.  
+	 * @param fontname the name of the font to use (if not available use default font)
+	 * @param fontsize the font size to use
 	 */
 	public void setFont(String fontname, int fontsize){
+		setFont(fontname, fontsize, true);
+	}
+
+	/**
+	 * Set the font and size for the button. If resize is true then
+	 * the button size will be increased if necessary to display text.
+	 * @param fontname the name of the font to use (if not available use default font)
+	 * @param fontsize the font size to use
+	 * @param resize
+	 */
+	public void setFont(String fontname, int fontsize, boolean resize){
 		int tw = textWidth;
 		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
-		if(fontsize > fs)
-			height += (fontsize - fs);
-		setText(text);
-		if(textWidth > tw)
-			width += (textWidth - tw);
+		if(resize){
+			if(fontsize > fs)
+				height += (fontsize - fs);
+			setText(text);
+			if(textWidth > tw)
+				width += (textWidth - tw);
+		}
 		calcAlignX();
 		calcAlignY();
 	}
 
+	
 	/**
 	 * Sets the position of the image in relation to the button text
 	 * provided the text horizontal alignment is GAlign.LEFT or 
