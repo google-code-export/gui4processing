@@ -67,7 +67,7 @@ public class GCScheme implements GConstants {
 	 * Set the default color scheme
 	 * 
 	 * @param theApplet
-	 * @return
+	 * @return the applets color scheme
 	 */
 	public static GCScheme getColor(PApplet theApplet){
 		return getColor(theApplet, 0);
@@ -82,7 +82,7 @@ public class GCScheme implements GConstants {
 	 * 
 	 * @param theApplet
 	 * @param schemeNo
-	 * @return
+	 * @return the color scheme based on the scheme number
 	 */
 	public static GCScheme getColor(PApplet theApplet, int schemeNo){
 		app = theApplet;
@@ -200,7 +200,7 @@ public class GCScheme implements GConstants {
 	/**
 	 * Changes the alpha level for all elements of the scheme.
 	 * 
-	 * @param a in the range 0 (fully transparent) to 255 (fully opaque)
+	 * @param alpha in the range 0 (fully transparent) to 255 (fully opaque)
 	 */
 	public void setAlpha(int alpha){
 		this.alpha = (alpha & 0xff);
@@ -238,7 +238,7 @@ public class GCScheme implements GConstants {
 
 	/**
 	 * Get the transparency level
-	 * @return
+	 * @return 0 - transparent;  255 - opaque
 	 */
 	public int getAlpha(){
 		return alpha;

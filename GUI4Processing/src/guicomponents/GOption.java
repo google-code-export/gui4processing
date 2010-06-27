@@ -88,7 +88,7 @@ public class GOption extends GComponent {
 	 * parameter of the same type as the componment class generating the
 	 * event and a method name specific for that class. 
 	 * 
-	 * @param handlerObj the object to handle the event
+	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
 	 */
 	public void addEventHandler(Object obj, String methodName){
@@ -237,7 +237,7 @@ public class GOption extends GComponent {
 
 	/**
 	 * Find out if this option is selected
-	 * @return
+	 * @return true if option is selected else false
 	 */
 	public boolean isSelected(){
 		return (ownerGroup != null && ownerGroup.selectedOption() == this);
@@ -245,7 +245,7 @@ public class GOption extends GComponent {
 
 	/**
 	 * Find out if this object is deselected
-	 * @return
+	 * @return true if option is not selected else false
 	 */
 	public boolean isNotSelected(){
 		return !(ownerGroup != null && ownerGroup.selectedOption() == this);		
@@ -266,7 +266,7 @@ public class GOption extends GComponent {
 	/**
 	 * Get the option group that owns this option
 	 * 
-	 * @return
+	 * @return a reference to this option's GOptionGroup
 	 */
 	public GOptionGroup getGroup(){
 		return ownerGroup;

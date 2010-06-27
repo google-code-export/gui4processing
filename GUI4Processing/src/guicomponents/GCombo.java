@@ -115,10 +115,10 @@ public class GCombo extends GComponent {
 	}
 
 	/**
-	 * Add a new option for the text optText
+	 * Make a new option for the text optText
 	 * 
-	 * @param optText
-	 * @return
+	 * @param optText the text to appear on the option.
+	 * @return reference to option created and added else null
 	 */
 	public GOption makeOption(String optText){
 		GOption opt = null;
@@ -166,10 +166,11 @@ public class GCombo extends GComponent {
 
 
 	/**
-	 * Handle vertical slider events by changing the number of the first
-	 * one to be displayed.
+	 * INTERNAL USE ONLY <br>
+	 * This will handle the vertical slider events by changing the starting 
+	 * value of thefirst option to be shown. <br>
 	 * 
-	 * @param slider
+	 * @param vertslider 
 	 */
 	public void processSliderMotion(GVertSlider vertslider){
 		startRow = slider.getValue();
@@ -212,7 +213,7 @@ public class GCombo extends GComponent {
 	 * Add an option to the end of the list
 	 * 
 	 * @param optText
-	 * @return
+	 * @return true if option successfully added
 	 */
 	public boolean addOption(String optText){
 		GOption option = makeOption(optText);
@@ -227,7 +228,7 @@ public class GCombo extends GComponent {
 	 * 
 	 * @param pos
 	 * @param optText
-	 * @return
+	 * @return true if option successfully added
 	 */
 	public boolean addOption(int pos, String optText){
 		GOption option = makeOption(optText);
@@ -307,7 +308,7 @@ public class GCombo extends GComponent {
 
 	/**
 	 * Is the drop down list visible
-	 * @return
+	 * @return true if the combo list is visible (ie down) else false
 	 */
 	public boolean isExpanded(){
 		return expanded;

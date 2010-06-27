@@ -48,7 +48,7 @@ public class GFont {
 	 * @param theApplet
 	 * @param fontname system name for font
 	 * @param fsize size of font to create (8 - 144 incl)
-	 * @return
+	 * @return the matching PFont object
 	 */
 	public static PFont getFont(PApplet theApplet, String fontname, int fsize){
 		fsize = PApplet.constrain(fsize, 8, 144);
@@ -83,7 +83,7 @@ public class GFont {
 	/**
 	 * A quick way to get the default Sans Serif font (11pt)
 	 * @param theApplet
-	 * @return
+	 * @return the applet's default color scheme
 	 */
 	public static PFont getDefaultFont(PApplet theApplet){
 		return getFont(theApplet, "SansSerif", 11);

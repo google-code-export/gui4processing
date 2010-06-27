@@ -119,18 +119,15 @@ public abstract class GSlider extends GComponent {
 	/**
 	 * Sets the limits of the slider as float values. Converted to floats or integer depending
 	 * on the type of the slider.
-	 * @see setValueType 
 	 */
 	public void setLimits(float init, float min, float max){
 		minValue = Math.min(min, max);
 		maxValue = Math.max(min, max);
 		this.init = PApplet.constrain(init, minValue, maxValue);
-//		PApplet.println("Init " + this.init + "  ( " + minValue + " <-> " + maxValue + " )");
 
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
 		setValue(this.init, true);
-//		PApplet.println("Init " + value + "  ( " + minValue + " <-> " + maxValue + " )");
 	}
 
 	/**

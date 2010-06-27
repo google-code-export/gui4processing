@@ -175,7 +175,7 @@ public class G4P implements PConstants, GConstants {
 	/**
 	 * Determines whether a window is still open or has been closed
 	 * @param window
-	 * @return
+	 * @return true if the window is still open
 	 */
 	public static boolean isWindowActive(GWindow window){
 		return allWinApps.contains(window);
@@ -253,8 +253,8 @@ public class G4P implements PConstants, GConstants {
 	/**
 	 * This method is called once to initialise a PeasyCam object.
 	 * 
-	 * @param pcam
-	 * @return
+	 * @param pcam a previously created PeasyCam object.
+	 * @return true if it can initialise a PeasyCam object else false.
 	 */
 	public static boolean setPeasyCam(Object pcam){
 		camStatus = PCAM_UNAVAILABLE;
@@ -288,8 +288,6 @@ public class G4P implements PConstants, GConstants {
 	 * <pre>
 	 * G4P.draw();
 	 * </pre>
-	 * 
-	 * @param pcam
 	 */
 	public static void draw(){
 		if(camStatus != PCAM_AVAILABLE){

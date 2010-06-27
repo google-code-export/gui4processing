@@ -85,7 +85,7 @@ public class GClip implements ClipboardOwner {
 
 	/**
 	 * Get a string from the clipboard
-	 * @return
+	 * @return the string on the clipboard
 	 */
 	public static String paste(){
 		if(gclip == null)

@@ -116,7 +116,8 @@ public class GWindow extends Frame implements GConstants {
 	 * @param y initial position on the screen
 	 * @param w width of the drawing area (the frame will be bigger to accommodate border)
 	 * @param h height of the drawing area (the frame will be bigger to accommodate border and title bar)
-	 * @param background background color to use
+	 * @param noFrame if true then the frame has no border
+	 * @param mode JAVA2D / P2D / P3D / OPENGL
 	 */
 	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, boolean noFrame, String mode) {
 		super(name);
@@ -345,7 +346,7 @@ public class GWindow extends Frame implements GConstants {
 	}
 
 	/**
-	 * @see setExitBehaviour
+	 * Get the exit behaiour flag
 	 * @return the exitBehaviour
 	 */
 	public int getExitBehaviour() {
