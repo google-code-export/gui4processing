@@ -1,33 +1,73 @@
 import guicomponents.*;
 
-GButton b1,b2,b3;
+
+private int[] ha = new int[]{
+  GAlign.LEFT, GAlign.CENTER, GAlign.RIGHT   };
+private int[] va = new int[]{
+  GAlign.TOP, GAlign.MIDDLE, GAlign.BOTTOM   };
+
+private GButton[] btnsA = new GButton[9];
+private GButton[] btnsB = new GButton[9];
+private GButton btnSmile0, btnSmile1;
+
+private GOptionGroup optGroup;
+private GOption optLeft, optRight;
+private GLabel label;
 
 void setup(){
-  size(340,260);
+  size(480, 540);
 
   G4P.setColorScheme(this, GCScheme.BLUE_SCHEME);
-  G4P.setFont(this, "Verdana", 38);
+  G4P.setFont(this, "Verdana", 12);
 
-  // A text only button that generates all event types
-  b1= new GButton(this, "Text Only", 20,20,300,50);
-  b1.setBorder(2);
-  b1.fireAllEvents(true);
+  int count = 0;
+  for( int v = 0; v < 3; v++){
+    for(int h = 0; h < 3; h++){
+      btnsA[count] = new GButton(this, "BUG " + count , "bugs/bug"+count+".png", 1, 10 + h*160, 10 + v*80, 140,60);
+      btnsA[count].tag = "Bug Image " + count;
+      btnsA[count].setTextAlign(ha[h] | va[v]);
 
-  // Image only button : CLICKED events only
-  b2= new GButton(this, "smile01.png",3, 100,100,66,66);
-  b2.setBorder(0);
+      btnsB[count] = new GButton(this, "BUG " + count , 10 + h*160, 370 + v*60, 140, 40);
+      btnsB[count].tag = "Bug Text  " + count;
+      btnsB[count].setTextAlign(ha[h] | va[v]);
+      btnsB[count].fireAllEvents(true);
 
-  // Image & text button : CLICKED events only
-  b3= new GButton(this, "pic001.png",1, 60,190,220,50);
-  b3.setText("Pictures");
-  b3.setImageAlign(GAlign.LEFT);
+      count++;
+    }
+  }
 
-  // Enable mouse over image change
+  btnSmile0 = new GButton(this,"smile.png",3,20,270,70,70);
+  btnSmile0.tag = "Smile image only";
+  btnSmile1 = new GButton(this,"Smile please", "smile.png",3,150,270,300,70);
+  btnSmile1.setFont("Verdana", 20, false);
+  btnSmile1.tag = "Smile image with text";
+
+  label = new GLabel(this, "Image alignment on button", 10, 240, 220);
+  label.setTextAlign(GAlign.RIGHT);
+
+  optGroup = new GOptionGroup();
+  optLeft = new GOption(this, "Left", 240, 240, 50);
+  optRight = new GOption(this, "Right", 300, 240, 50);
+  optGroup.addOption(optLeft);
+  optGroup.addOption(optRight);
+  optGroup.setSelected(optLeft);
+
   G4P.setMouseOverEnabled(true);
 }
 
+void handleOptionEvents(GOption selected, GOption deselected){
+  int align = GAlign.LEFT;
+  if(selected == optRight){
+    align = GAlign.RIGHT;
+  }
+  for(int i = 0; i < 9; i++){
+    btnsA[i].setImageAlign(align);		
+  }
+  btnSmile1.setImageAlign(align);
+}
+
 void handleButtonEvents(GButton button) {
-  print(button.getText()+"\t\t");
+  System.out.print(button.tag+"\t\t");
   switch(button.eventType){
   case GButton.PRESSED:
     System.out.println("PRESSED");
@@ -39,10 +79,10 @@ void handleButtonEvents(GButton button) {
     System.out.println("CLICKED");
     break;
   default:
-    println("Unknown mouse event");
+    System.out.println("Unknown mouse event");
   }
 }	
 
 void draw(){
-  background(180,220,180);
+  background(200);
 }
