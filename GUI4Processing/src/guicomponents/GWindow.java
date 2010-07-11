@@ -66,7 +66,9 @@ public class GWindow extends Frame implements GConstants {
 
 	public GWinData data;
 	
-	protected int exitBehaviour = CLOSE_ON_EXIT;
+	protected WindowAdapter winAdapt = null;
+	
+	protected int actionOnClose = KEEP_OPEN;
 	
 	
 	/**
@@ -199,21 +201,6 @@ public class GWindow extends Frame implements GConstants {
 		// that other internal variables are properly set.
 		papplet.init();
 
-		// add an exit on close listener
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent evt) {
-				switch(exitBehaviour){
-				case CLOSE_ON_EXIT:
-					removeFromG4P();
-					// close this frame
-					dispose();
-					break;
-				case SHUTDOWN_ON_EXIT:
-					System.exit(0);
-					break;
-					}
-			}
-		});
 		// Pack the window, position it and make visible
 		setUndecorated(noFrame);
 		pack();
@@ -234,6 +221,7 @@ public class GWindow extends Frame implements GConstants {
 		// Make sure G4P knows about this window
 		G4P.addWindow(this);
 	}
+	
 	
 	/**
 	 * Add a G4P component onto the window.
@@ -334,25 +322,52 @@ public class GWindow extends Frame implements GConstants {
 	}
 
 	/**
-	 * Determines what happens when the Frame is closed by the user.
-	 * <br>
-	 * GWindow.CLOSE_ON_EXIT  - closes/hides the window <br>
-	 * GWindow.SHUTDOWN_ON_EXIT  - ends the application if the window is closed
-	 * 
-	 * @param exitBehaviour the exitBehaviour to set
+	 * This sets what happens when the users attempts to close the window. <br>
+	 * There are 3 possible actions depending on the value passed. <br>
+	 * GWindow.KEEP_OPEN - ignore attempt to close window (default action)
+	 * GWindow.CLOSE_WINDOW - close this window, if it is the main window it causes the app to exit <br>
+	 * GWindow.EXIT_APP - exit the app, this will cause all windows to close. <br>
+	 * @param action
 	 */
-	public void setExitBehaviour(int exitBehaviour) {
-		this.exitBehaviour = exitBehaviour;
+	public void setActionOnClose(int action){
+		switch(action){
+		case KEEP_OPEN:
+			removeWindowListener(winAdapt);
+			winAdapt = null;
+			actionOnClose = action;
+			break;
+		case CLOSE_WINDOW:
+		case EXIT_APP:
+			if(winAdapt == null){
+				winAdapt = new WindowAdapter() {
+					public void windowClosing(WindowEvent evt) {
+						switch(actionOnClose){
+						case CLOSE_WINDOW:
+							removeFromG4P();
+							dispose();	// close this frame
+							break;
+						case EXIT_APP:
+							System.exit(0);
+							break;
+							}
+					}
+				};
+				addWindowListener(winAdapt);
+			} // end if
+			actionOnClose = action;
+			break;
+		} // end switch
 	}
-
+	
 	/**
-	 * Get the exit behaiour flag
-	 * @return the exitBehaviour
+	 * Get the action to be performed when the user attempts to close
+	 * the window.
+	 * @return actionOnClose
 	 */
-	public int getExitBehaviour() {
-		return exitBehaviour;
+	public int getActionOnClose(){
+		return actionOnClose;
 	}
-
+	
 	/**
 	 * Used to remove from G4P when the Frame is disposed.
 	 */

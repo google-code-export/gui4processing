@@ -54,8 +54,9 @@ public interface GConstants {
 	public final static int DESELECTED = 		0x00000402;
 	
 	// GWindow
-	public final static int SHUTDOWN_ON_EXIT = 	0x00000f01;
-	public final static int CLOSE_ON_EXIT = 	0x00000f02;
+	public final static int EXIT_APP = 			0x00000f01;
+	public final static int CLOSE_WINDOW = 		0x00000f02;
+	public final static int KEEP_OPEN = 		0x00000f03;
 	
 	
 	// ### GUI build constants ###
@@ -74,6 +75,7 @@ public interface GConstants {
 	public final static int NOT_PEASYCAM =		0x82000001; // Not a PeasyCam object
 	public final static int HUD_UNSUPPORTED = 	0x82000002; // HUD not supported
 	public final static int INVALID_STATUS = 	0x82000003; // HUD not supported
+	
 	// GTextField text scroll constants
 	public final static int SCROLL_UP =			0x00000111;	// Scroll text up
 	public final static int SCROLL_DOWN =		0x00000112;	// Scroll text down
