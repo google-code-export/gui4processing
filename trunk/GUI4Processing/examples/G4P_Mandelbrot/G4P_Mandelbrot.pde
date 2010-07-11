@@ -36,10 +36,6 @@ class Complex {
     real = img = 0.0f;
   }
 
-  /**
-   * 		 * @param r
-   * 		 * @param i
-   		 */
   public Complex(float r, float i) {
     super();
     this.real = r;
@@ -172,7 +168,7 @@ public void calcMandlebrot(MyWinData data){
  * @param ney
  * @return
  */
-public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney){
+public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney, int action){
   MyWinData mydata = new MyWinData();
   GWindow window = null;
   float ratio = (float) ((nex-nsx)/(ney-nsy));
@@ -199,6 +195,7 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney)
     window.addData(mydata);
     window.addDrawHandler(this, "windowDraw");
     window.addMouseHandler(this, "windowMouse");
+    window.setActionOnClose(action);
     calcMandlebrot(mydata);
     return true;
   }
@@ -212,7 +209,7 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney)
  */
 public void handleButtonEvents(GButton button){
   if(btnStart == button){
-    makeNewBrotWindow(-2.0f,0.5f,-1.25f,1.25f);
+    makeNewBrotWindow(-2.0f,0.5f,-1.25f,1.25f, GWindow.KEEP_OPEN);
     btnStart.setVisible(false);
   }
 }
@@ -270,7 +267,7 @@ public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event){
     nex = dmap((double)d.mex, (double)0, (double)d.w, d.sx, d.ex);
     nsy = dmap((double)d.msy, (double)0, (double)d.h, d.sy, d.ey);
     ney = dmap((double)d.mey, (double)0, (double)d.h, d.sy, d.ey);
-    makeNewBrotWindow(nsx, nex, nsy, ney);
+    makeNewBrotWindow(nsx, nex, nsy, ney, GWindow.CLOSE_WINDOW);
     d.msx = d.mex = d.msy = d.mey = 0;
     appc.noLoop();
     break;
