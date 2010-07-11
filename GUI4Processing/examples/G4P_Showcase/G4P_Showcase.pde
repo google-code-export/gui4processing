@@ -258,7 +258,6 @@ public void createControlWindow(){
   windControl.addData(new GWinData());
 
   windControl.addDrawHandler(this, "drawController");
-  windControl.setExitBehaviour(GWindow.SHUTDOWN_ON_EXIT);
 }
 
 void draw(){
