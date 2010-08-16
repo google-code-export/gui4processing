@@ -568,6 +568,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 			case MouseEvent.MOUSE_DRAGGED:
 				if((focusIsWith == this) && _mousePressedOverThumb){
 					thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
+					isValueChanging = true;
 				}
 				break;
 
