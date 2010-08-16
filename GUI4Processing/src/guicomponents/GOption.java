@@ -183,7 +183,6 @@ public class GOption extends GComponent {
 			winApp.noStroke();
 			winApp.fill(localColor.optFont);
 			winApp.textFont(localFont, localFont.getFont().getSize());
-//				app.text(text, pos.x + alignX, pos.y + (height - localFont.size)/2, textWidth, height);
 			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width - imgSelected.width, height);
 		}
 		winApp.fill(winApp.color(255,255));

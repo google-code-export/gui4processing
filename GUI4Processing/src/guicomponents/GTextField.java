@@ -60,7 +60,7 @@ import processing.core.PApplet;
  */
 public class GTextField extends GComponent {
 
-	private static float heightFactor = 1.5f;
+//	private static float heightFactor = 1.5f;
 	private static int fontLeadPad = 2;
 
 	// Define all the private variables needed to keep track of view window and selection and etc.
