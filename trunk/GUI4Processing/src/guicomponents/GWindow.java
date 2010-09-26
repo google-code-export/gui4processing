@@ -369,6 +369,14 @@ public class GWindow extends Frame implements GConstants {
 	}
 	
 	/**
+	 * Allows the program to close this window and release its resources.
+	 */
+	public void close(){
+		removeFromG4P();
+		dispose();	// close this frame
+	}
+	
+	/**
 	 * Used to remove from G4P when the Frame is disposed.
 	 */
 	private void removeFromG4P(){
