@@ -761,7 +761,7 @@ public class GTextField extends GComponent {
 			Point cursorPix = cursorPixPosition(cursorPos);
 
 			winApp.noFill();
-			winApp.stroke(localColor.txfBorder);
+			winApp.stroke(localColor.txfCursor);
 			winApp.strokeWeight(2);
 			winApp.line(pos.x + 4 + cursorPix.x, pos.y + cursorPix.y + 2, 
 					pos.x + 4 + cursorPix.x, 

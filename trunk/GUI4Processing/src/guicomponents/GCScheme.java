@@ -129,7 +129,8 @@ public class GCScheme implements GConstants {
 		s.txfBack = image.get(16, schemeNo) | ALPHA_MASK;
 		s.txfSelBack = image.get(17, schemeNo)  | ALPHA_MASK;
 		s.txfBorder = image.get(18, schemeNo)  | ALPHA_MASK;
-
+		s.txfCursor = s.txfBorder;
+		
 		s.lblFont = image.get(20, schemeNo) | ALPHA_MASK;
 		s.lblBack = image.get(21, schemeNo) | ALPHA_MASK;
 		s.lblBorder = image.get(22, schemeNo) | ALPHA_MASK;
@@ -159,7 +160,7 @@ public class GCScheme implements GConstants {
 	// Sliders
 	public int sdrTrack, sdrThumb, sdrBorder;
 	// TextFields
-	public int txfFont, txfBack, txfSelBack, txfBorder;
+	public int txfFont, txfBack, txfSelBack, txfBorder, txfCursor;
 	// Label
 	public int lblFont, lblBack, lblBorder;
 	// Option
@@ -221,6 +222,7 @@ public class GCScheme implements GConstants {
 		txfBack = (txfBack & 0x00ffffff) | a;
 		txfSelBack = (txfSelBack & 0x00ffffff) | a;
 		txfBorder = (txfBorder & 0x00ffffff) | a;
+		txfCursor = (txfCursor & 0x00ffffff) | a;
 		lblFont = (lblFont & 0x00ffffff) | a;
 		lblBack = (lblBack & 0x00ffffff) | a;
 		lblBorder = (lblBorder & 0x00ffffff) | a;
