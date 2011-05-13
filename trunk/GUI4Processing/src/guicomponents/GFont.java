@@ -99,8 +99,7 @@ public class GFont {
 	 * @author Peter Lager
 	 *
 	 */
-	@SuppressWarnings("unchecked")
-	private static class GFontKey implements Comparable{
+	private static class GFontKey implements Comparable<GFontKey>{
 
 		private final String fontKey;
 
@@ -119,7 +118,7 @@ public class GFont {
 			return fontKey.hashCode();
 		}
 		
-		public int compareTo(Object obj) {
+		public int compareTo(GFontKey obj) {
 			GFontKey fkey = (GFontKey) obj;
 			if(fkey == null)
 				return 1;
