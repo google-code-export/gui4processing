@@ -41,6 +41,9 @@ public class GOptionGroup {
 
 	protected ArrayList<GOption> options = new ArrayList<GOption>();;
 
+	/**
+	 * Use this constructor to create an option group.
+	 */
 	public GOptionGroup(){
 	}
 

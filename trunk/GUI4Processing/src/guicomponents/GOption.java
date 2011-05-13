@@ -203,7 +203,7 @@ public class GOption extends GComponent {
 		if(!visible || !enabled || ownerGroup == null) return;
 
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
-		if(mouseOver) 
+		if(mouseOver)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
 				cursorIsOver = null;
