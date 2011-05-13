@@ -100,7 +100,7 @@ public class GPanel extends GComponent {
 	 * of the tab if necessary to display text.  
 	 */
 	public void setFont(String fontname, int fontsize){
-		int fs = (int) localFont.getFont().getSize();
+//		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 
 		tabHeight = (int) (1.2f * localFont.getFont().getSize() + 2 * PADV);
