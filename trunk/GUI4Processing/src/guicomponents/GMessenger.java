@@ -99,6 +99,7 @@ public class GMessenger implements GConstants {
 	 * @param obj2 the method name
 	 * @param obj3 parameter types (Class[])
 	 */
+	@SuppressWarnings("rawtypes")
 	private static void missingEventHandler(Object caller, Object[] info) {
 		String className = caller.getClass().getSimpleName();
 		String methodName = (String) info[0];
@@ -130,6 +131,7 @@ public class GMessenger implements GConstants {
 	 * @param obj2 the method name
 	 * @param obj3 parameter types (Class[])
 	 */
+	@SuppressWarnings("rawtypes")
 	private static void nonexistantEventHandler(Object handler, Object[] info) {
 		String className = handler.getClass().getSimpleName();
 		String methodName = (String) info[0];
