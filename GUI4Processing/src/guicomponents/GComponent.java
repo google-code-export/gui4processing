@@ -43,6 +43,7 @@ import processing.core.PFont;
  * @author Peter Lager
  *
  */
+@SuppressWarnings("rawtypes")
 abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
