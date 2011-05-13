@@ -43,15 +43,14 @@ import processing.core.PFont;
  * @author Peter Lager
  *
  */
-@SuppressWarnings("unchecked")
 abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * INTERNAL USE ONLY
 	 * This holds a reference to the GComponent that currently has the
 	 * focus.
-	 * A component looses focus when another component takes focus with the
-	 * takeFocus() method. The takeFocus method should use focusIsWith.looseFocus()
+	 * A component loses focus when another component takes focus with the
+	 * takeFocus() method. The takeFocus method should use focusIsWith.loseFocus()
 	 * before setting its value to the new component 
 	 */
 	protected static GComponent focusIsWith; // READ ONLY
@@ -370,7 +369,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	public boolean add(GComponent component){
 		if(component == null || children.contains(component)){
 			if(G4P.messages)
-				System.out.println("Either the component doesn't exist or has already been added to this panel");
+				System.out.println("Either the component doesn't exist or has already been added to this component");
 			return false;
 		} else {
 			component.parent = this;
