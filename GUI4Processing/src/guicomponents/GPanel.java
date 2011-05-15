@@ -72,6 +72,7 @@ public class GPanel extends GComponent {
 	 */
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
+		z = 1;
 		panelCtorCore(text, width, height);
 	}
 
@@ -100,13 +101,9 @@ public class GPanel extends GComponent {
 	 * of the tab if necessary to display text.  
 	 */
 	public void setFont(String fontname, int fontsize){
-//		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 
 		tabHeight = (int) (1.2f * localFont.getFont().getSize() + 2 * PADV);
-		
-//		if(fontsize != fs)
-//			tabHeight += (fontsize - fs);
 		setText(text);
 	}
 
@@ -116,19 +113,6 @@ public class GPanel extends GComponent {
 	protected void loseFocus(GComponent grabber){
 		focusIsWith = null;
 		beingDragged = false;
-	}
-
-	/**
-	 * Setting to false will prevent the panel being moved/collapsed/expanded and
-	 * disable all existing components on the panel.
-	 * Setting to true eanbles these features.
-	 */
-	public void setEnabled(boolean enable){
-		enabled = enable;
-		Iterator<GComponent> iter = children.iterator();
-		while(iter.hasNext()){
-			iter.next().setEnabled(enable);
-		}
 	}
 
 	/**
@@ -186,7 +170,7 @@ public class GPanel extends GComponent {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver){
+			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				takeFocus();

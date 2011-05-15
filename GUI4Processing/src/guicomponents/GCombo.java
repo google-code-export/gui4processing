@@ -340,13 +340,15 @@ public class GCombo extends GComponent {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver)
+			if(focusIsWith != this && mouseOver && z > focusObjectZ())
 				takeFocus();
-			else if(focusIsWith == this && !isOver(winApp.mouseX, winApp.mouseY))
+			else if(focusIsWith == this && !mouseOver)
+//			else if(focusIsWith == this && !isOver(winApp.mouseX, winApp.mouseY))
 				loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this && isOver(winApp.mouseX, winApp.mouseY)){
+//			if(focusIsWith == this && mouseOver){
 				if(expanded)
 					shrink();
 				else

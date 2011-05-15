@@ -62,7 +62,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * cursor can be changed if we wish.
 	 */
 	protected static GComponent cursorIsOver;
-	
+
 	/*
 	 * INTERNAL USE ONLY
 	 * Used to track mouse required by GButton, GCheckbox, GHorzSlider
@@ -75,6 +75,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	public static PFont globalFont;
 	public PFont localFont;
+
+	protected static int componentNo = 0;
 
 	/*
 	 * Padding around fonts
@@ -89,7 +91,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * It must be set by the constructor 
 	 */
 	protected PApplet winApp;
-	
+
 	/** Link to the parent panel (if null then it is topmost panel) */
 	protected GComponent parent = null;
 
@@ -105,7 +107,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	protected Method eventHandlerMethod = null;
 	/** the name of the method to handle the event */ 
 	protected String eventHandlerMethodName;
-	
+
 	/** Text value associated with component */
 	protected String text = "";
 	protected int textWidth;
@@ -116,6 +118,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
 	protected int x, y;
+	/** Used to when components overlap */
+	public int z = 0;
 
 	/** Width and height of component in pixels for drawing background */
 	protected int width, height;
@@ -128,10 +132,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/** Simple tag that can be used by the user */
 	public String tag;
-	
+
 	/** Allows user to specify a number for this component */
 	public int tagNo;
-	
+
 	/** Is the component visible or not */
 	protected boolean visible = true;
 
@@ -154,11 +158,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	protected boolean regMouse = false;
 	protected boolean regPre = false;
 	protected boolean regKey = false;
-	
+
 	/**
 	 * Prevent uninitialised instantiation
 	 */
-	protected GComponent() { }
+	@SuppressWarnings("unused")
+	private GComponent() { }
 
 	/**
 	 * INTERNAL USE ONLY
@@ -176,6 +181,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public GComponent(PApplet theApplet, int x, int y){
 		winApp = theApplet;
+		tag = "#" + PApplet.nf(componentNo++, 5) + " " + this.getClass().getSimpleName();
+		z = 0;
 		if(globalColor == null)
 			globalColor = GCScheme.getColor(theApplet);
 		localColor = new GCScheme(globalColor);
@@ -260,7 +267,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * The method called must have a single parameter which is the object 
 	 * firing the event.
 	 * If the method to be called is to have different parameters then it should
-	 * be overridden in the childclass
+	 * be overridden in the child class
 	 * The method 
 	 */
 	protected void fireEvent(){
@@ -338,6 +345,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	public static GComponent getFocusObject(){
 		return focusIsWith;
 	}
+
+	
+	protected static int focusObjectZ(){
+		return (focusIsWith == null) ? -1 : focusIsWith.z;
+	}
+
 	
 	/**
 	 * This can be used to detect the type of event
@@ -375,11 +388,21 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		} else {
 			component.parent = this;
 			children.add(component);
+			setZ(component, z + 1);
 			winApp.unregisterDraw(component);
 			component.regDraw = false;
 			if(localColor.getAlpha() < 255)
 				component.setAlpha(localColor.getAlpha());
 			return true;
+		}
+	}
+
+	protected void setZ(GComponent component, int level){
+		component.z = level;
+		if(component.children != null){
+			for(GComponent c : component.children){
+				c.setZ(c, level + 1);
+			}
 		}
 	}
 
@@ -390,27 +413,34 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public void remove(GComponent component){
 		children.remove(component);
+		unsetZ(component, component.z);
 	}
-	
-	/**
-	 * Override in child classes
-	 */
-	public void pre(){
+
+	protected void unsetZ(GComponent component, int level){
+		component.z -= level;
+		if(component.children != null){
+			for(GComponent c : component.children){
+				c.unsetZ(c, level);
+			}
+		}
 	}
 
 	/**
 	 * Override in child classes
 	 */
-	public void draw(){
-	}
+	public void pre(){	}
+
+	/**
+	 * Override in child classes
+	 */
+	public void draw(){	}
 
 	/**
 	 * Override in child classes.
 	 * Every object will execute this method when an event
 	 * is to be processed.
 	 */
-	public void mouseEvent(MouseEvent event){
-	}
+	public void mouseEvent(MouseEvent event){	}
 
 	/**
 	 * Override in child classes
@@ -448,7 +478,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 			regKey = true;
 		}
 	}
-	
+
 	/**
 	 * Called when we add a component to another window. Transfers autos
 	 * to new window for this component and all it's children.
@@ -473,15 +503,15 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 			newWindowApp.registerKeyEvent(this);
 		}
 		winApp = newWindowApp;
-		
+
 		if(children != null && !children.isEmpty()){
 			Iterator<GComponent> iter = children.iterator();
 			while(iter.hasNext())
 				iter.next().changeWindow(newWindowApp);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Determines whether the position ax, ay is over this component.
 	 * This is the default implementation and assumes the component
@@ -529,7 +559,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	public void setColorScheme(int schemeNo){
 		localColor = GCScheme.getColor(winApp, schemeNo);
 	}
-	
+
 	/**
 	 * @return the text
 	 */
@@ -589,7 +619,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public void setFont(String fontname, int fontsize){
 	}
-	
+
 	/**
 	 * Calculate text X & Y position based on text alignment
 	 */
@@ -634,7 +664,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/**
 	 * Sets the x position of a component
 	 * @param x
- 	 */
+	 */
 	public void setX(int x) {
 		this.x = x;
 	}
@@ -642,7 +672,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	/**
 	 * Sets the x position of a component
 	 * @param y
- 	 */
+	 */
 	public void setY(int y) {
 		this.y = y;
 	}
@@ -698,13 +728,18 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * Enable or disable the ability of the component to generate mouse events.<br>
-	 * This will also disable key press events in GTextField <br>
+	 * GTextField - it also controls key press events <br>
+	 * GPanel - controls whether the panel can be moved/collapsed/expanded <br>
 	 * @param enable true to enable else false
 	 */
 	public void setEnabled(boolean enable){
 		enabled = enable;
+		if(children != null){
+			for(GComponent c : children)
+				c.setEnabled(enable);
+		}
 	}
-	
+
 	/**
 	 * Is this component enabled
 	 * @return true if the component is enabled
@@ -776,10 +811,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		return localColor.getAlpha();
 	}
 
+	public String toString(){
+		return tag + "   ("+z+")";
+	}
 
 	public int compareTo(Object o) {
 		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
 	}
-
 
 } // end of class
