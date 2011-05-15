@@ -121,6 +121,7 @@ import processing.core.PImage;
  */
 public class GWSlider extends GSlider { //implements IRenderable {
 
+	// Unit of measurement e.g. amp, metre etc.
 	public String unit;
 
 	protected PImage _leftEnd;
@@ -371,8 +372,8 @@ public class GWSlider extends GSlider { //implements IRenderable {
 
 		unit = "";
 
-		//Look for the skin images, if these dont exist the variable come out null
-		// no excetpions are thrown
+		// Look for the skin images, if these don't exist the variable come out null
+		// no exceptions are thrown
 		_leftEnd = theApplet.loadImage(_skin + "/end_left.png");
 		_rightEnd = theApplet.loadImage(_skin + "/end_right.png");
 		_thumb = theApplet.loadImage(_skin +"/handle.png");
@@ -532,7 +533,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 
 			switch (event.getID()) {
 			case MouseEvent.MOUSE_PRESSED:
-				if(isMouseOver){
+				if(focusIsWith != this && isMouseOver && z > focusObjectZ()){
 					this.takeFocus();
 					if(isOverThumb(event.getX(), event.getY()))
 						_mousePressedOverThumb = true;
@@ -563,6 +564,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 					_isMouseOverThumb = false;
 					_mousePressedOverThumb = false;
 				}
+				loseFocus(null);
 				break;	 
 
 			case MouseEvent.MOUSE_DRAGGED:
@@ -675,12 +677,12 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		Point p = new Point(); 
 		calcAbsPosition(p);
 
+		winApp.pushStyle();
+
 		//draw each of the slider skin images
 		winApp.image(_leftEnd, p.x, p.y);
 		winApp.image(_centre, p.x + _leftEnd.width, p.y);
 		winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
-
-		winApp.pushStyle();
 
 		winApp.textFont(localFont);
 		winApp.textAlign(PConstants.CENTER);

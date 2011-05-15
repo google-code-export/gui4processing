@@ -210,7 +210,7 @@ public class GOption extends GComponent {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver){
+			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				this.takeFocus();

@@ -60,7 +60,6 @@ import processing.core.PApplet;
  */
 public class GTextField extends GComponent {
 
-//	private static float heightFactor = 1.5f;
 	private static int fontLeadPad = 2;
 
 	// Define all the private variables needed to keep track of view window and selection and etc.
@@ -400,6 +399,17 @@ public class GTextField extends GComponent {
 		}
 	}
 
+	/**
+	 * Get the highlighted (selected text)
+	 * @return
+	 */
+	public String getSelectedText(){
+		if(startSelect == endSelect)
+			return "";
+		else 
+			return text.substring(Math.min(startSelect, endSelect),Math.max(startSelect, endSelect));
+	}
+	
 	/**
 	 * Sets the contents of the text box and displays the
 	 * specified string in the text box widget. <br>
@@ -914,37 +924,6 @@ public class GTextField extends GComponent {
 				(c >= 0xF81F && c <= 0xF820) ||
 				(c == 0xF833));
 	}
-
-	
-	public String toString(){
-		return  ("Cursor pos " +cursorPos + "   sX " + startX+"   sY "+startY+"   eY "
-				+ endY+ "    startSelect "+startSelect+"     endSelect "+endSelect);
-	}
-
-	// Have removed these methods because they are not being used internally
-	
-//	public void setStartX(int newx) {
-//	startX = newx;
-//}
-
-//public void setStartY(int newy) {
-//	int diff = endY - startY; 						//the difference in the start and end
-//	startY = newy; 									//change the start
-//	cursorPos = cursorPos1D(new Point(0, startY)); 	//put the cursor at the start of the new line so showCursor doesn't move the view back
-//	endY = startY + diff; 							//update the end accordingly
-//}
-
-//public int getStartX() {
-//	return startX;
-//}
-//
-//public int getStartY() {
-//	return startY;
-//}
-//
-//public int getEndY() {
-//	return endY;
-//}
 
 
 } //end class bracket
