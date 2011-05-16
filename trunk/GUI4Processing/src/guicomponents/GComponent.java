@@ -347,7 +347,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	}
 
 	
-	protected static int focusObjectZ(){
+	public static int focusObjectZ(){
 		return (focusIsWith == null) ? -1 : focusIsWith.z;
 	}
 

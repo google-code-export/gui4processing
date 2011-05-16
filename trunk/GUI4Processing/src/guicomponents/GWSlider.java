@@ -523,26 +523,33 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled) return;
 
+//		boolean mouseOver = isOverThumb(winApp.mouseX, winApp.mouseY);
+//		if(mouseOver || focusIsWith == this)
+//			cursorIsOver = this;
+//		else if(cursorIsOver == this)
+//				cursorIsOver = null;
+
 		Point p = new Point();
 		calcAbsPosition(p);
 
-		float sliderRange = maxValue - minValue;
-
-		if(isVisible() && sliderRange > 0.0f){
-			boolean isMouseOver = this.isOver(event.getX(), event.getY());
+//		float sliderRange = maxValue - minValue;
+//
+//		if(isVisible() && sliderRange > 0.0f){
+			boolean isMouseOver = this.isOverThumb(event.getX(), event.getY());
 
 			switch (event.getID()) {
 			case MouseEvent.MOUSE_PRESSED:
 				if(focusIsWith != this && isMouseOver && z > focusObjectZ()){
 					this.takeFocus();
-					if(isOverThumb(event.getX(), event.getY()))
-						_mousePressedOverThumb = true;
-					else
-						_mousePressedOverThumb = false;
+					_mousePressedOverThumb = isOverThumb(event.getX(), event.getY());
+//					if(isOverThumb(event.getX(), event.getY()))
+//						_mousePressedOverThumb = true;
+//					else
+//						_mousePressedOverThumb = false;
 				}
 				break;
 
-			case MouseEvent.MOUSE_RELEASED:
+			case MouseEvent.MOUSE_RELEASED: // OK as long as we have focus
 				if(focusIsWith == this && isMouseOver || (_mousePressedOverThumb == true)){
 					if(_stickToTicks){
 						_stickToTickByPosition(winApp.mouseX - p.x);
@@ -574,15 +581,15 @@ public class GWSlider extends GSlider { //implements IRenderable {
 				}
 				break;
 
-			case MouseEvent.MOUSE_MOVED:
-				if(isOverThumb(event.getX(), event.getY())){
-					_isMouseOverThumb = true;
-				}
-				else
-					_isMouseOverThumb = false;
-				break;
-			}
-		}
+//			case MouseEvent.MOUSE_MOVED:
+//				if(isOverThumb(event.getX(), event.getY())){
+//					_isMouseOverThumb = true;
+//				}
+//				else
+//					_isMouseOverThumb = false;
+//				break;
+			} // end of switch
+		// } end of commented if
 	}
 
 	/**

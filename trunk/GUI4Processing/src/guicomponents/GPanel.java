@@ -180,6 +180,7 @@ public class GPanel extends GComponent {
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
+			System.out.println("PANEL CLICKED " + GComponent.getFocusObject());
 			if(focusIsWith == this){
 				tabOnly = !tabOnly;
 				if(tabOnly)
