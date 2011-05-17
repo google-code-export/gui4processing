@@ -54,7 +54,7 @@ import processing.core.PImage;
  * <li>Left end cap of the slider(end_left.png)</li>
  * <li>Right end cap of the slider(end_right.png)</li>
  * <li>An extendible centre segment(centre.png)</li>
- * <li>Draggable thumb(handle.png and handle_mouseover.png)</li>
+ * <li>Draggable thumb (handle.png and handle_mouseover.png)</li>
  * </ul>
  * 
  * <p>
@@ -119,7 +119,7 @@ import processing.core.PImage;
  * @author Daniel Brown 21/6/09
  *
  */
-public class GWSlider extends GSlider { //implements IRenderable {
+public class GWSlider extends GSlider {
 
 	// Unit of measurement e.g. amp, metre etc.
 	public String unit;
@@ -417,7 +417,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		_centre = new PImage(cWidth,cTemp.height);
 
 		//now copy over the data from cTemp to main centre image
-		//the standard pimage stretch method is no good in this case 
+		//the standard PImage stretch method is no good in this case 
 		//appears better to do it manually.
 		cTemp.loadPixels();
 		_centre.loadPixels();
@@ -441,6 +441,14 @@ public class GWSlider extends GSlider { //implements IRenderable {
 		_calcTickPositions();
 		winApp.registerKeyEvent(this);
 	}
+
+	protected void takeFocus(){
+		if(focusIsWith != null && focusIsWith != this)
+			focusIsWith.loseFocus(this);
+		focusIsWith = this;
+		keyFocusIsWith = this;
+	}
+
 
 	/**
 	 * the width of the control and height, is determined by the length and also 
@@ -523,72 +531,39 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled) return;
 
-//		boolean mouseOver = isOverThumb(winApp.mouseX, winApp.mouseY);
-//		if(mouseOver || focusIsWith == this)
-//			cursorIsOver = this;
-//		else if(cursorIsOver == this)
-//				cursorIsOver = null;
+		boolean isMouseOverThumb = this.isOverThumb(event.getX(), event.getY());
 
 		Point p = new Point();
 		calcAbsPosition(p);
 
-//		float sliderRange = maxValue - minValue;
-//
-//		if(isVisible() && sliderRange > 0.0f){
-			boolean isMouseOver = this.isOverThumb(event.getX(), event.getY());
+		switch (event.getID()) {
+		case MouseEvent.MOUSE_PRESSED:
+			if(focusIsWith != this && isMouseOverThumb && z > focusObjectZ()){
+				this.takeFocus();
+				_mousePressedOverThumb = true;
+			}
+			break;
 
-			switch (event.getID()) {
-			case MouseEvent.MOUSE_PRESSED:
-				if(focusIsWith != this && isMouseOver && z > focusObjectZ()){
-					this.takeFocus();
-					_mousePressedOverThumb = isOverThumb(event.getX(), event.getY());
-//					if(isOverThumb(event.getX(), event.getY()))
-//						_mousePressedOverThumb = true;
-//					else
-//						_mousePressedOverThumb = false;
-				}
-				break;
-
-			case MouseEvent.MOUSE_RELEASED: // OK as long as we have focus
-				if(focusIsWith == this && isMouseOver || (_mousePressedOverThumb == true)){
-					if(_stickToTicks){
-						_stickToTickByPosition(winApp.mouseX - p.x);
-					}else{
-						thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x, thumbMin, thumbMax);
-					}
-
-					if(isOverThumb(event.getX(), event.getY())){
-						_isMouseOverThumb = true;
-					}else{
-						_isMouseOverThumb = false;
-					}
-
-					_mousePressedOverThumb = false;					  
-
-					eventType = RELEASED;
-					fireEvent();
-				}else{
-					_isMouseOverThumb = false;
-					_mousePressedOverThumb = false;
+		case MouseEvent.MOUSE_RELEASED: // OK as long as we have focus
+			if(focusIsWith == this){  // && isMouseOverThumb || (_mousePressedOverThumb == true)){
+				if(_stickToTicks){
+					_stickToTickByPosition(winApp.mouseX - p.x);
 				}
 				loseFocus(null);
-				break;	 
 
-			case MouseEvent.MOUSE_DRAGGED:
-				if((focusIsWith == this) && _mousePressedOverThumb){
-					thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
-					isValueChanging = true;
-				}
-				break;
-
-//			case MouseEvent.MOUSE_MOVED:
-//				if(isOverThumb(event.getX(), event.getY())){
-//					_isMouseOverThumb = true;
-//				}
-//				else
-//					_isMouseOverThumb = false;
-//				break;
-			} // end of switch
+				eventType = RELEASED;
+				fireEvent();
+			}
+			_isMouseOverThumb = false;
+			_mousePressedOverThumb = false;
+			break;
+		case MouseEvent.MOUSE_DRAGGED:
+			if((focusIsWith == this) && _mousePressedOverThumb){
+				thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
+				isValueChanging = true;
+			}
+			break;
+		} // end of switch
 		// } end of commented if
 	}
 
@@ -597,7 +572,7 @@ public class GWSlider extends GSlider { //implements IRenderable {
 	 * if so the thumb is moved one pixel.
 	 */
 	public void keyEvent(KeyEvent e){
-		if(e.getID() == KeyEvent.KEY_PRESSED && this.hasFocus()){
+		if(e.getID() == KeyEvent.KEY_PRESSED && this.hasKeyFocus()){
 			if(e.getKeyCode()== 37){ //left arrow
 				if(_stickToTicks){			
 					_currTickStuck = PApplet.constrain(_currTickStuck - 1, 0, _tickPositions.length-1);
@@ -612,7 +587,6 @@ public class GWSlider extends GSlider { //implements IRenderable {
 				}else
 					thumbTargetPos = PApplet.constrain(thumbTargetPos + 1,thumbMin,thumbMax);			
 			}
-
 		}
 	}
 
@@ -753,5 +727,5 @@ public class GWSlider extends GSlider { //implements IRenderable {
 
 		winApp.popStyle();
 	}
-	
+
 }

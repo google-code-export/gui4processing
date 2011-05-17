@@ -49,7 +49,7 @@ public abstract class GSlider extends GComponent {
 	protected float value;
 
 	// Indicates the type of value used in the display
-	protected int _valueType;
+	protected int _valueType = INTEGER;
 
 	/** 
 	 * Pixel values relative to slider top left
@@ -100,16 +100,16 @@ public abstract class GSlider extends GComponent {
 		maxValue = Math.max(min, max);
 		this.init = Math.round(PApplet.constrain((float)init, minValue, maxValue));
 		
-		if(thumbMax - thumbMin < maxValue - minValue && G4P.messages){
-			System.out.println(this.getClass().getSimpleName()+".setLimits");
-			System.out.println("  not all values in the range "+min+" - "+max+" can be returned");
-			System.out.print("  either reduce the range or make the slider ");
-			if(this.getClass().getSimpleName().equals("GHorzSlider")) 
-				System.out.print("width");
-			else
-				System.out.print("height");
-			System.out.println(" at least " + (max-min+thumbSize));
-		}
+//		if(thumbMax - thumbMin < maxValue - minValue && G4P.messages){
+//			System.out.println(this.getClass().getSimpleName()+".setLimits");
+//			System.out.println("  not all values in the range "+min+" - "+max+" can be returned");
+//			System.out.print("  either reduce the range or make the slider ");
+//			if(this.getClass().getSimpleName().equals("GHorzSlider")) 
+//				System.out.print("width");
+//			else
+//				System.out.print("height");
+//			System.out.println(" at least " + (max-min+thumbSize));
+//		}
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
 		setValue(init, true);
