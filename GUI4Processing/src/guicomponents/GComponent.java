@@ -43,8 +43,7 @@ import processing.core.PFont;
  * @author Peter Lager
  *
  */
-@SuppressWarnings("rawtypes")
-abstract public class GComponent implements PConstants, GConstants, Comparable {
+abstract public class GComponent implements PConstants, GConstants, Comparable<Object> {
 
 	/**
 	 * INTERNAL USE ONLY
@@ -54,8 +53,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 * takeFocus() method. The takeFocus method should use focusIsWith.loseFocus()
 	 * before setting its value to the new component 
 	 */
-	protected static GComponent focusIsWith; // READ ONLY
+	protected static GComponent focusIsWith = null; // READ ONLY
 
+	protected static GComponent keyFocusIsWith = null;
+	
 	/**
 	 * INTERNAL USE ONLY
 	 * Keeps track of the component the mouse is over so the mouse
@@ -300,12 +301,16 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 
 	/**
 	 * Give the focus to this component but only after allowing the 
-	 * current component with focus to release it gracefully
+	 * current component with focus to release it gracefully. <br>
+	 * Always cancel the keyFocusIsWith irrespective of the component
+	 * type. If the component needs to retain keyFocus then override this
+	 * method in that class e.g. GCombo
 	 */
 	protected void takeFocus(){
 		if(focusIsWith != null && focusIsWith != this)
 			focusIsWith.loseFocus(this);
 		focusIsWith = this;
+		keyFocusIsWith = null;
 	}
 
 	/**
@@ -336,6 +341,14 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 	 */
 	public boolean hasFocus(){
 		return (this == focusIsWith);
+	}
+
+	/**
+	 * Does this component have key focus
+	 * @return true if this component has key focus else false
+	 */
+	public boolean hasKeyFocus(){
+		return (this == keyFocusIsWith);
 	}
 
 	/**
@@ -397,6 +410,16 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		}
 	}
 
+	/**
+	 * Recursive function to set the priority of a component. This
+	 * is used to determine who gets focus when components overlap
+	 * on the screen e.g. when a combobo expands it might cover a button. <br>
+	 * It is used where components have childen e.g. GCombo and
+	 * GPaneln
+	 * It is used when a child component is added.
+	 * @param component
+	 * @param level
+	 */
 	protected void setZ(GComponent component, int level){
 		component.z = level;
 		if(component.children != null){
@@ -416,6 +439,16 @@ abstract public class GComponent implements PConstants, GConstants, Comparable {
 		unsetZ(component, component.z);
 	}
 
+	/**
+	 * Recursive function to set the priority of a component. This
+	 * is used to determine who gets focus when components overlap
+	 * on the screen e.g. when a combobo expands it might cover a button. <br>
+	 * It is used where components have childen e.g. GCombo and
+	 * GPaneln <br>
+	 * It is used when a child component is removed.
+	 * @param component
+	 * @param level
+	 */
 	protected void unsetZ(GComponent component, int level){
 		component.z -= level;
 		if(component.children != null){
