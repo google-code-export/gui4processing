@@ -59,9 +59,9 @@ public class GHorzSlider extends GSlider {
 	 */
 	protected void initThumbDetails(){
 		thumbSize = Math.max(20, width / 20);
-		thumb0 = thumbSize/2;
-		thumb1 = width - thumbSize/2;
-		thumbTargetValue = thumbValue;
+		thumbMin = thumbSize/2;
+		thumbMax = width - thumbSize/2;
+		thumbTargetPos = thumbPos;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class GHorzSlider extends GSlider {
 		winApp.fill(localColor.sdrTrack);
 		winApp.rect(pos.x, pos.y, width, height);
 		winApp.fill(localColor.sdrThumb);
-		winApp.rect(pos.x + thumbValue - thumbSize/2, pos.y, thumbSize, height);
+		winApp.rect(pos.x + thumbPos - thumbSize/2, pos.y, thumbSize, height);
 		if(border != 0){
 			winApp.strokeWeight(border);
 			winApp.noFill();
@@ -103,7 +103,7 @@ public class GHorzSlider extends GSlider {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
+			if(focusIsWith != this && mouseOver){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				takeFocus();
@@ -126,7 +126,7 @@ public class GHorzSlider extends GSlider {
 				isValueChanging = true;
 				Point p = new Point(0,0);
 				calcAbsPosition(p);
-				thumbTargetValue = PApplet.constrain(winApp.mouseX - offset - p.x, thumb0, thumb1);
+				thumbTargetPos = PApplet.constrain(winApp.mouseX - offset - p.x, thumbMin, thumbMax);
 			}
 			break;
 		}
@@ -141,8 +141,8 @@ public class GHorzSlider extends GSlider {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x + thumbValue - thumbSize/2 && ax <= p.x + thumbValue + thumbSize/2 && ay >= p.y && ay <= p.y + height){
-			offset = ax - (p.x + thumbValue);
+		if(ax >= p.x + thumbPos - thumbSize/2 && ax <= p.x + thumbPos + thumbSize/2 && ay >= p.y && ay <= p.y + height){
+			offset = ax - (p.x + thumbPos);
 			return true;
 		}
 		else 

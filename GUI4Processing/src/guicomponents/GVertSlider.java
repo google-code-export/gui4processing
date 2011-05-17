@@ -59,9 +59,9 @@ public class GVertSlider extends GSlider {
 	 */
 	protected void initThumbDetails(){
 		thumbSize = Math.max(20, height / 20);
-		thumb0 = thumbSize/2;
-		thumb1 = height - thumbSize/2;
-		thumbTargetValue = thumbValue;
+		thumbMin = thumbSize/2;
+		thumbMax = height - thumbSize/2;
+		thumbTargetPos = thumbPos;
 	}
 
 	/**
@@ -72,15 +72,13 @@ public class GVertSlider extends GSlider {
 
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
-		
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
-		
 		winApp.noStroke();
 		winApp.fill(localColor.sdrTrack);
 		winApp.rect(pos.x, pos.y, width, height);
 		winApp.fill(localColor.sdrThumb);
-		winApp.rect(pos.x, pos.y + thumbValue - thumbSize/2, width, thumbSize);
+		winApp.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);
 		if(border != 0){
 			winApp.strokeWeight(border);
 			winApp.noFill();
@@ -98,9 +96,10 @@ public class GVertSlider extends GSlider {
 	protected void loseFocus(GComponent grabber){
 		if(cursorIsOver == this)
 			cursorIsOver = null;
-		// Handle slider in combo-box
-		if(parent != null && parent instanceof guicomponents.GCombo)
-			focusIsWith = parent;	
+		String pname = (parent == null) ? "" : parent.getClass().getSimpleName();
+		if(pname.equalsIgnoreCase("GCombo")){
+			focusIsWith = parent;
+		}
 		else
 			focusIsWith = null;
 	}
@@ -119,7 +118,7 @@ public class GVertSlider extends GSlider {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
+			if(focusIsWith != this && mouseOver){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				takeFocus();
@@ -142,7 +141,7 @@ public class GVertSlider extends GSlider {
 				isValueChanging = true;
 				Point p = new Point(0,0);
 				calcAbsPosition(p);
-				thumbTargetValue = PApplet.constrain(winApp.mouseY - offset - p.y, thumb0, thumb1);
+				thumbTargetPos = PApplet.constrain(winApp.mouseY - offset - p.y, thumbMin, thumbMax);
 			}
 			break;
 		}
@@ -157,8 +156,8 @@ public class GVertSlider extends GSlider {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + width && ay >= p.y + thumbValue - thumbSize/2 && ay <= p.y + thumbValue + thumbSize/2){
-			offset = ay - (p.y + thumbValue);
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y + thumbPos - thumbSize/2 && ay <= p.y + thumbPos + thumbSize/2){
+			offset = ay - (p.y + thumbPos);
 			return true;
 		}
 		else 
