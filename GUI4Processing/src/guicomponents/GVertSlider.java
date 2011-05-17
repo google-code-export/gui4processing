@@ -72,8 +72,10 @@ public class GVertSlider extends GSlider {
 
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
+		
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
+		
 		winApp.noStroke();
 		winApp.fill(localColor.sdrTrack);
 		winApp.rect(pos.x, pos.y, width, height);
@@ -96,10 +98,9 @@ public class GVertSlider extends GSlider {
 	protected void loseFocus(GComponent grabber){
 		if(cursorIsOver == this)
 			cursorIsOver = null;
-		String pname = (parent == null) ? "" : parent.getClass().getSimpleName();
-		if(pname.equalsIgnoreCase("GCombo")){
-			focusIsWith = parent;
-		}
+		// Handle slider in combo-box
+		if(parent != null && parent instanceof guicomponents.GCombo)
+			focusIsWith = parent;	
 		else
 			focusIsWith = null;
 	}
