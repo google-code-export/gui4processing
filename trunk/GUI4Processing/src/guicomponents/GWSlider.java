@@ -175,10 +175,10 @@ public class GWSlider extends GSlider {
 	 * @param newValue the value we wish the slider to become
 	 */
 	public void setValue(int newValue){
-		value = PApplet.constrain(newValue, minValue, maxValue);
-		thumbTargetPos = (int) PApplet.map(value, minValue, maxValue, thumbMin, thumbMax);
+		sValue = PApplet.constrain(newValue, sValue0, sValue1);
+		thumbTargetValue = (int) PApplet.map(sValue, sValue0, sValue1, thumb0, thumb1);
 		if(_stickToTicks)
-			_stickToTickByValue(value);
+			_stickToTickByValue(sValue);
 	}
 
 	/**
@@ -192,10 +192,10 @@ public class GWSlider extends GSlider {
 	 * @param newValue the value we wish the slider to become
 	 */
 	public void setValue(float newValue){
-		value = PApplet.constrain(newValue, minValue, maxValue);
-		thumbTargetPos = (int) PApplet.map(value, minValue, maxValue, thumbMin, thumbMax);
+		sValue = PApplet.constrain(newValue, sValue0, sValue1);
+		thumbTargetValue = (int) PApplet.map(sValue, sValue0, sValue1, thumb0, thumb1);
 		if(_stickToTicks)
-			_stickToTickByValue(value);
+			_stickToTickByValue(sValue);
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class GWSlider extends GSlider {
 	public void setValueToTickNumber(int tickNo){
 		if(_stickToTicks){
 			tickNo = PApplet.constrain(tickNo, 0, _numTicks);
-			float newValue = PApplet.map((float)tickNo, 0.0f, (float)_numTicks, minValue, maxValue);
+			float newValue = PApplet.map((float)tickNo, 0.0f, (float)_numTicks, sValue0, sValue1);
 			_stickToTickByValue(newValue);
 		}		
 	}
@@ -227,7 +227,7 @@ public class GWSlider extends GSlider {
 		_calcTickPositions();
 		// ***********************************************************
 		if(_stickToTicks)
-			_stickToTickByValue(value);
+			_stickToTickByValue(sValue);
 	}
 
 	/**
@@ -242,7 +242,7 @@ public class GWSlider extends GSlider {
 		_calcTickPositions();
 		// **********************************************************************
 		if(_stickToTicks)
-			_stickToTickByValue(value);
+			_stickToTickByValue(sValue);
 	}
 
 	/**
@@ -252,7 +252,7 @@ public class GWSlider extends GSlider {
 	public void setStickToTicks(boolean stick){
 		_stickToTicks = stick;
 		if(stick){
-			_stickToTickByValue(value);
+			_stickToTickByValue(sValue);
 			//			_stickToTickByValue(PApplet.map(winApp.mouseX, thumbMin, thumbMax, minValue, maxValue));
 		}
 		_calcTickPositions();
@@ -429,8 +429,8 @@ public class GWSlider extends GSlider {
 		}
 
 		//the thumb only moves along the centre section
-		thumbMin = _leftEnd.width;
-		thumbMax = _leftEnd.width + _centre.width;
+		thumb0 = _leftEnd.width;
+		thumb1 = _leftEnd.width + _centre.width;
 		this.setLimits(50.0f, 0.0f, 100.0f);
 
 		localFont = globalFont;
@@ -474,15 +474,15 @@ public class GWSlider extends GSlider {
 		Point p = new Point();
 		calcAbsPosition(p);
 
-		float sliderRange = maxValue - minValue;
+		float sliderRange = sValue1 - sValue0;
 		float dTick = sliderRange / _numTicks; //distance in terms of value
 
 		_tickPositions = new int[_numTicks + 1];
 		_tickValues = new float[_numTicks + 1];
 
 		for(int i = 0; i <= _numTicks;i++){
-			_tickPositions[i] = Math.round(PApplet.map(minValue + i * dTick, minValue, maxValue, thumbMin, thumbMax));
-			_tickValues[i] = minValue + i * dTick;
+			_tickPositions[i] = Math.round(PApplet.map(sValue0 + i * dTick, sValue0, sValue1, thumb0, thumb1));
+			_tickValues[i] = sValue0 + i * dTick;
 		}
 	}
 
@@ -492,15 +492,15 @@ public class GWSlider extends GSlider {
 	 * @param v
 	 */
 	protected void _stickToTickByValue(float v){
-		float sliderRange = maxValue - minValue;
+		float sliderRange = sValue1 - sValue0;
 		float dTick = sliderRange / _numTicks; //distance in terms of value
 
-		int index = Math.round(PApplet.constrain(v - minValue, 0, sliderRange) / dTick);
+		int index = Math.round(PApplet.constrain(v - sValue0, 0, sliderRange) / dTick);
 
 		_currTickStuck = PApplet.constrain(index, 0,  _numTicks);
-		thumbTargetPos = _tickPositions[_currTickStuck];
+		thumbTargetValue = _tickPositions[_currTickStuck];
 
-		value = minValue +_currTickStuck * dTick;
+		sValue = sValue0 +_currTickStuck * dTick;
 	}
 
 	/**
@@ -512,14 +512,14 @@ public class GWSlider extends GSlider {
 		Point p = new Point();
 		calcAbsPosition(p);
 
-		float sliderRange = maxValue - minValue;
+		float sliderRange = sValue1 - sValue0;
 		float dTick = sliderRange / _numTicks; //distance in terms of value
-		float v = PApplet.map(pos, thumbMin, thumbMax, minValue, maxValue);
+		float v = PApplet.map(pos, thumb0, thumb1, sValue0, sValue1);
 
-		int index = Math.round((v - minValue) / dTick);
+		int index = Math.round((v - sValue0) / dTick);
 
 		_currTickStuck = PApplet.constrain(index, 0, _tickPositions.length-1);
-		thumbTargetPos = _tickPositions[_currTickStuck];
+		thumbTargetValue = _tickPositions[_currTickStuck];
 	}
 
 
@@ -559,7 +559,7 @@ public class GWSlider extends GSlider {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if((focusIsWith == this) && _mousePressedOverThumb){
-				thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
+				thumbTargetValue  = PApplet.constrain(winApp.mouseX - p.x , thumb0, thumb1);
 				isValueChanging = true;
 			}
 			break;
@@ -576,16 +576,16 @@ public class GWSlider extends GSlider {
 			if(e.getKeyCode()== 37){ //left arrow
 				if(_stickToTicks){			
 					_currTickStuck = PApplet.constrain(_currTickStuck - 1, 0, _tickPositions.length-1);
-					thumbTargetPos = _tickPositions[_currTickStuck];
+					thumbTargetValue = _tickPositions[_currTickStuck];
 				}else
-					thumbTargetPos = PApplet.constrain(thumbTargetPos - 1,thumbMin,thumbMax);
+					thumbTargetValue = PApplet.constrain(thumbTargetValue - 1,thumb0,thumb1);
 
 			}else if(e.getKeyCode()== 39){ //right arrow
 				if(_stickToTicks){
 					_currTickStuck = PApplet.constrain(_currTickStuck + 1, 0, _tickPositions.length-1);
-					thumbTargetPos = _tickPositions[_currTickStuck];
+					thumbTargetValue = _tickPositions[_currTickStuck];
 				}else
-					thumbTargetPos = PApplet.constrain(thumbTargetPos + 1,thumbMin,thumbMax);			
+					thumbTargetValue = PApplet.constrain(thumbTargetValue + 1,thumb0,thumb1);			
 			}
 		}
 	}
@@ -615,7 +615,7 @@ public class GWSlider extends GSlider {
 	public boolean isOverThumb(int ax, int ay){		
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		Rectangle r = new Rectangle((int)(p.x + thumbPos - 0.5*_thumb.width - 1),
+		Rectangle r = new Rectangle((int)(p.x + thumbValue - 0.5*_thumb.width - 1),
 				(int)(p.y + 0.5*_centre.height -  0.5*_thumb.height -1),
 				(int)(_thumb.width + 1),
 				(int)(_thumb.height + 1));
@@ -684,17 +684,17 @@ public class GWSlider extends GSlider {
 				//Draw in the min value
 				Point pos = new Point(p.x + _leftEnd.width + Math.round(i * tickDist),p.y + _centre.height + _tickOffset + _tickLength + localFont.getFont().getSize()) ;
 				if(_valueType == INTEGER)
-					winApp.text(String.format(format,Math.round(minValue),unit),pos.x,pos.y);
+					winApp.text(String.format(format,Math.round(sValue0),unit),pos.x,pos.y);
 				else
-					winApp.text(String.format(format,minValue,unit),pos.x,pos.y);
+					winApp.text(String.format(format,sValue0,unit),pos.x,pos.y);
 
 			}else if(i == _numTicks && _renderMaxMinLabel){	
 				//Draw in the max value			
 				Point pos = new Point(p.x + _leftEnd.width + Math.round(i * tickDist),p.y + _centre.height + _tickOffset + _tickLength + localFont.getFont().getSize()) ;
 				if(_valueType == INTEGER)
-					winApp.text(String.format(format,Math.round(maxValue),unit),pos.x,pos.y);
+					winApp.text(String.format(format,Math.round(sValue1),unit),pos.x,pos.y);
 				else
-					winApp.text(String.format(format,maxValue,unit),pos.x,pos.y);
+					winApp.text(String.format(format,sValue1,unit),pos.x,pos.y);
 			}
 
 			winApp.beginShape(LINE);
@@ -713,15 +713,15 @@ public class GWSlider extends GSlider {
 			winApp.popStyle();
 
 			if(!_isMouseOverThumb)
-				winApp.image(_thumb, p.x + thumbPos - Math.round(_thumb.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb.height));
+				winApp.image(_thumb, p.x + thumbValue - Math.round(_thumb.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb.height));
 			else
-				winApp.image(_thumb_mouseover, p.x + thumbPos - Math.round(_thumb_mouseover.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb_mouseover.height));
+				winApp.image(_thumb_mouseover, p.x + thumbValue - Math.round(_thumb_mouseover.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb_mouseover.height));
 
 			if(_renderValueLabel){
 				if(_valueType == INTEGER)
-					winApp.text(String.format(format,Math.round(value),unit),p.x + thumbPos, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
+					winApp.text(String.format(format,Math.round(sValue),unit),p.x + thumbValue, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
 				else
-					winApp.text(String.format(format,value,unit),p.x + thumbPos, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
+					winApp.text(String.format(format,sValue,unit),p.x + thumbValue, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
 			}			
 		}			
 

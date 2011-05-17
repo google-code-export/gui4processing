@@ -59,9 +59,9 @@ public class GVertSlider extends GSlider {
 	 */
 	protected void initThumbDetails(){
 		thumbSize = Math.max(20, height / 20);
-		thumbMin = thumbSize/2;
-		thumbMax = height - thumbSize/2;
-		thumbTargetPos = thumbPos;
+		thumb0 = thumbSize/2;
+		thumb1 = height - thumbSize/2;
+		thumbTargetValue = thumbValue;
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class GVertSlider extends GSlider {
 		winApp.fill(localColor.sdrTrack);
 		winApp.rect(pos.x, pos.y, width, height);
 		winApp.fill(localColor.sdrThumb);
-		winApp.rect(pos.x, pos.y + thumbPos - thumbSize/2, width, thumbSize);
+		winApp.rect(pos.x, pos.y + thumbValue - thumbSize/2, width, thumbSize);
 		if(border != 0){
 			winApp.strokeWeight(border);
 			winApp.noFill();
@@ -142,7 +142,7 @@ public class GVertSlider extends GSlider {
 				isValueChanging = true;
 				Point p = new Point(0,0);
 				calcAbsPosition(p);
-				thumbTargetPos = PApplet.constrain(winApp.mouseY - offset - p.y, thumbMin, thumbMax);
+				thumbTargetValue = PApplet.constrain(winApp.mouseY - offset - p.y, thumb0, thumb1);
 			}
 			break;
 		}
@@ -157,8 +157,8 @@ public class GVertSlider extends GSlider {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		if(ax >= p.x && ax <= p.x + width && ay >= p.y + thumbPos - thumbSize/2 && ay <= p.y + thumbPos + thumbSize/2){
-			offset = ay - (p.y + thumbPos);
+		if(ax >= p.x && ax <= p.x + width && ay >= p.y + thumbValue - thumbSize/2 && ay <= p.y + thumbValue + thumbSize/2){
+			offset = ay - (p.y + thumbValue);
 			return true;
 		}
 		else 
