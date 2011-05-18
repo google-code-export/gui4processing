@@ -532,7 +532,20 @@ public class GWSlider extends GSlider {
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled) return;
 
-		boolean isMouseOverThumb = this.isOverThumb(event.getX(), event.getY());
+		boolean isMouseOver = false, isMouseOverThumb = false;
+		// Is mouse over the slider?
+		isMouseOver = this.isOver(event.getX(), event.getY());
+		// If it is over slider then check to see if it is over thumb
+		if(isMouseOver){
+			isMouseOverThumb = isOverThumb(event.getX(), event.getY());
+			if(isMouseOverThumb || focusIsWith == this) 
+				cursorIsOver = this;
+			else if(cursorIsOver == this)
+				cursorIsOver = null;
+		}
+		else {
+			cursorIsOver = (cursorIsOver == this) ? null : cursorIsOver;
+		}
 
 		Point p = new Point();
 		calcAbsPosition(p);
@@ -551,7 +564,6 @@ public class GWSlider extends GSlider {
 					_stickToTickByPosition(winApp.mouseX - p.x);
 				}
 				loseFocus(null);
-
 				eventType = RELEASED;
 				fireEvent();
 			}
@@ -729,5 +741,5 @@ public class GWSlider extends GSlider {
 
 		winApp.popStyle();
 	}
-	
+
 }
