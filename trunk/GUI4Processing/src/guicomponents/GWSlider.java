@@ -557,7 +557,6 @@ public class GWSlider extends GSlider {
 				_mousePressedOverThumb = true;
 			}
 			break;
-
 		case MouseEvent.MOUSE_RELEASED: // OK as long as we have focus
 			if(focusIsWith == this){  // && isMouseOverThumb || (_mousePressedOverThumb == true)){
 				if(_stickToTicks){
@@ -577,7 +576,6 @@ public class GWSlider extends GSlider {
 			}
 			break;
 		} // end of switch
-		// } end of commented if
 	}
 
 	/**
