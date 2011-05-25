@@ -46,19 +46,20 @@ public class GWinApplet extends PApplet implements GConstants {
 	public int appWidth, appHeight;
 	// applet graphics mode e.g. JAVA2D, P3D etc.
 	public String mode;
-	
+
 	// background color
 	public int bkColor;
-	
+
 	// backgroundimage if any
 	public PImage bkImage;
-	
-	
+
+	public boolean autoClear = true;
+
 	public GWinApplet(String mode){
 		super();
 		this.mode = mode;
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY <br>
 	 * The PApplet setup method to intialise the drawing surface
@@ -75,8 +76,9 @@ public class GWinApplet extends PApplet implements GConstants {
 	 */
 	public void setBackground(int col){
 		bkColor = col;
+		background(col);
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY <br>
 	 * Use addPreHandler in GWindow to activate this method
@@ -92,16 +94,18 @@ public class GWinApplet extends PApplet implements GConstants {
 			}
 		}
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY <br>
 	 * Use addDrawHandler in GWindow to activate this method
 	 */
 	public void draw() {
-		if(bkImage != null)
-			background(bkImage);
-		else
-			background(bkColor);
+		if(autoClear){
+			if(bkImage != null)
+				background(bkImage);
+			else
+				background(bkColor);
+		}
 		if(owner.drawHandlerObject != null){
 			try {
 				owner.drawHandlerMethod.invoke(owner.drawHandlerObject, new Object[] { this, owner.data });
