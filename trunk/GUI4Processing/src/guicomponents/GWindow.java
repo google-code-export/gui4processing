@@ -322,6 +322,16 @@ public class GWindow extends Frame implements GConstants {
 	}
 
 	/**
+	 * By default the background() method is called to set the background image/colour
+	 * every frame. You can switch this off by calling this method with a parametr 
+	 * value = false.
+	 * @param auto_clear whether to call the background method() or not
+	 */
+	public void setAutoClear(boolean auto_clear){
+		papplet.autoClear = auto_clear;
+	}
+	
+	/**
 	 * This sets what happens when the users attempts to close the window. <br>
 	 * There are 3 possible actions depending on the value passed. <br>
 	 * GWindow.KEEP_OPEN - ignore attempt to close window (default action)
