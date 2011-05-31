@@ -125,9 +125,10 @@ public class GTextField extends GComponent {
 		endY = Math.max(1,  (int)Math.floor(this.height / leading));
 		// Set text AFTER the width of the textfield has been set
 		setText(text);
+		winApp.textFont(localFont);
+		z = Z_STICKY;
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ GTextField.class });
 		registerAutos_DMPK(true, true, false, true);
-		winApp.textFont(localFont);
 	}
 
 	/**
@@ -531,16 +532,17 @@ public class GTextField extends GComponent {
 
 		switch(e.getID()){								//select for mouse event
 		case MouseEvent.MOUSE_PRESSED:
-			if(isOver(winApp.mouseX, winApp.mouseY)){ 	// if actually over textbox
-				if(focusIsWith != this){ 				// if focus is not on box
-					this.takeFocus(); 					// give focus to the box
+			if(isOver(winApp.mouseX, winApp.mouseY)){ 				// if actually over textbox
+				if(focusIsWith != this  && z >= focusObjectZ()){	// if focus is not on box
+					this.takeFocus(); 								// give focus to the box
 				}
 				// set the cursor position to the nearest location to where the user clicked
 				startSelect = endSelect = cursorPos = cursorPos1D(cursorPos2D(e.getX() - p.x, e.getY() - p.y));
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			// Nothing to do
+			// We do not release focus because we want to keep highlighted text
+			// and process keyboard events
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){ 					//if text has focus
@@ -713,14 +715,88 @@ public class GTextField extends GComponent {
 	public void draw () {
 		if(!visible) return;
 
+		// Get the absolute coordinates of box.
+		Point pos = new Point(0,0);
+		calcAbsPosition(pos);
+
+		winApp.pushMatrix();
+		winApp.translate(pos.x, pos.y);
+		
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
 
 		winApp.textFont(localFont);
 
+		// ########################################
+		// Draw the surrounding box and background
+		if(border > 0){
+			winApp.strokeWeight(border);
+			winApp.stroke(localColor.txfBorder);
+		}
+		else {
+			winApp.noStroke();
+		}
+		winApp.fill(localColor.txfBack);
+		winApp.rect(0, 0, width, height);
+
+		// ########################################
+		// Draw separating lines if specified
+		if(drawSepLines){
+			winApp.stroke(PApplet.blendColor(localColor.txfBorder, winApp.color(100), ADD));
+			winApp.strokeWeight(1);
+			for(int i = 1; i <= endY - startY; i++){
+				winApp.line(4, i * leading, width - 4, i * leading);
+			}
+		}
+		// ########################################
+		// Draw the selection rectangles
+		winApp.noStroke();
+		if(startSelect != endSelect){ 		// if something is selected
+			winApp.fill(localColor.txfSelBack);
+
+			for(int i = Math.min(startSelect, endSelect); i < Math.max(startSelect, endSelect); i++){
+				if(cursorPosition(i).x >= startX && cursorPixPosition(i).x < (width - 8) &&
+						cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
+					winApp.rect(4 + cursorPixPosition(i).x, 2 + cursorPixPosition(i).y,
+							Math.min(winApp.textWidth(text.substring(i, i+1)),
+							width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+				}
+			}
+		}
+		
+		// ########################################
+		// Draw the string
+		winApp.fill(localColor.txfFont);
+		winApp.textLeading(leading); //set the leading
+		winApp.text(viewText(), 4, 1, width + 8, height - 2);
+		
+		// ########################################
+		// Draw the insertion point (it blinks!)
+		if(focusIsWith == this && (winApp.millis() % 1000) > 500) {
+			Point cursorPix = cursorPixPosition(cursorPos);
+
+			winApp.noFill();
+			winApp.stroke(localColor.txfCursor);
+			winApp.strokeWeight(2);
+			winApp.line(4 + cursorPix.x, cursorPix.y + 2, 
+					4 + cursorPix.x, cursorPix.y + localFont.getFont().getSize()+2);
+			winApp.fill(localColor.txfFont);
+		}
+		winApp.popStyle();
+		winApp.popMatrix();
+	}
+	
+	public void drawORG() {
+		if(!visible) return;
+
 		// Get the absolute coordinates of box.
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
+
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
+
+		winApp.textFont(localFont);
 
 		// ########################################
 		// Draw the surrounding box and background

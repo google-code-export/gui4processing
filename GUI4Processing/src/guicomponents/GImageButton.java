@@ -100,6 +100,7 @@ public class GImageButton extends GComponent {
 		bimage = getImages(imgFile, nbrImages);
 		width = bimage[0].width;
 		height = bimage[0].height;
+		z = Z_SLIPPY;
 		createEventHandler(winApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
@@ -118,6 +119,7 @@ public class GImageButton extends GComponent {
 		bimage = getImages(imgFiles);
 		width = bimage[0].width;
 		height = bimage[0].height;
+		z = 24;
 		createEventHandler(winApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
@@ -300,7 +302,7 @@ public class GImageButton extends GComponent {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver){
+			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				status = DOWN;

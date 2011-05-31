@@ -81,6 +81,7 @@ public abstract class GSlider extends GComponent {
 		super(theApplet, x, y);
 		this.width = width;
 		this.height = height;
+		z = Z_SLIPPY;
 		registerAutos_DMPK(true, true, true, false);
 		createEventHandler(winApp, "handleSliderEvents", new Class[]{ GSlider.class });
 	}
@@ -219,7 +220,7 @@ public abstract class GSlider extends GComponent {
 
 
 	/**
-	 * Is the value changing as a results of the slider thumb being 
+	 * Is the value changing as a result of the slider thumb being 
 	 * dragged with the mouse.
 	 * 
 	 * @return true if value being changed at GUI

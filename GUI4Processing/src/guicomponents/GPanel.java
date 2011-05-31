@@ -72,7 +72,6 @@ public class GPanel extends GComponent {
 	 */
 	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		z = 1;
 		panelCtorCore(text, width, height);
 	}
 
@@ -92,6 +91,7 @@ public class GPanel extends GComponent {
 		dockY = y;
 		this.width = width;
 		this.height = height;
+		z = Z_PANEL;
 		createEventHandler(winApp, "handlePanelEvents", new Class[]{ GPanel.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
@@ -125,10 +125,16 @@ public class GPanel extends GComponent {
 	public void draw(){
 		if(!visible) return;
 
-		winApp.pushStyle();
-		winApp.style(G4P.g4pStyle);
+
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
+
+		winApp.pushMatrix();
+		winApp.translate(pos.x, pos.y);
+		
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
+		
 		winApp.noStroke();
 		if(border > 0){
 			winApp.strokeWeight(border);
@@ -137,22 +143,28 @@ public class GPanel extends GComponent {
 		winApp.fill(localColor.pnlTabBack);
 		// Display tab (length depends on whether panel is open or closed
 		int w = (tabOnly)? textWidth + PADH * 4 : width;
-		winApp.rect(pos.x, pos.y - tabHeight, w, tabHeight);
+		winApp.rect(0, - tabHeight, w, tabHeight);
+//		winApp.rect(pos.x, pos.y - tabHeight, w, tabHeight);
 		// Display tab text
 		winApp.fill(localColor.pnlFont);
 		winApp.textFont(localFont, localFont.getFont().getSize());
-		winApp.text(text, pos.x + PADH, pos.y - (tabHeight + localFont.getFont().getSize())/2 - PADV , textWidth, tabHeight);
+//		winApp.text(text, pos.x + PADH, pos.y - (tabHeight + localFont.getFont().getSize())/2 - PADV , textWidth, tabHeight);
+		winApp.text(text, PADH, - (tabHeight + localFont.getFont().getSize())/2 - PADV , textWidth, tabHeight);
 		if(!tabOnly){
 			if(opaque){
 				winApp.fill(localColor.pnlBack);
-				winApp.rect(pos.x, pos.y, width, height);
+//				winApp.rect(pos.x, pos.y, width, height);
+				winApp.rect(0, 0, width, height);
 			}
+		}
+		winApp.popStyle();
+		winApp.popMatrix();
+		if(!tabOnly){
 			Iterator<GComponent> iter = children.iterator();
 			while(iter.hasNext()){
 				iter.next().draw();
 			}
 		}
-		winApp.popStyle();
 	}
 
 
@@ -180,7 +192,6 @@ public class GPanel extends GComponent {
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			System.out.println("PANEL CLICKED " + GComponent.getFocusObject());
 			if(focusIsWith == this){
 				tabOnly = !tabOnly;
 				if(tabOnly)

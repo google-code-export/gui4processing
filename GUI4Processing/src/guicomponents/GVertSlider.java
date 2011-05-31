@@ -52,6 +52,7 @@ public class GVertSlider extends GSlider {
 	public GVertSlider(PApplet theApplet, int x, int y, int width, int height){
 		super(theApplet, x, y, width, height);
 		initThumbDetails();
+		z = Z_SLIPPY;
 	}
 
 	/**
@@ -72,8 +73,10 @@ public class GVertSlider extends GSlider {
 
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
+		
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
+		
 		winApp.noStroke();
 		winApp.fill(localColor.sdrTrack);
 		winApp.rect(pos.x, pos.y, width, height);
@@ -118,7 +121,7 @@ public class GVertSlider extends GSlider {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver){
+			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				takeFocus();

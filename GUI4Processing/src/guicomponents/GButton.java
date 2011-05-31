@@ -159,6 +159,7 @@ public class GButton extends GComponent {
 		calcAlignY();
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
 		registerAutos_DMPK(true, true, false, false);
+		z = Z_SLIPPY;
 	}
 
 	/**
