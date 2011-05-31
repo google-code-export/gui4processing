@@ -1,0 +1,265 @@
+/*
+  Part of the GUI for Processing library 
+  	http://www.lagers.org.uk/g4p/index.html
+	http://gui4processing.googlecode.com/svn/trunk/
+
+  Copyright (c) 2011 Peter Lager
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
+
+package guicomponents;
+
+import java.awt.Point;
+
+import processing.core.PApplet;
+
+/**
+ * The provides an extremely configurable GUI knob controller. GKnob
+ * inherits from GRoundControl so you should read the documentation 
+ * for that class as it also applies to GKnob. <br><br>
+ * 
+ * Configurable options <br>
+ *  Knob height and width (can be oval) <br>
+ *  Start and end of rotation arc. <br>
+ *  Bezel width with tick marks <br>
+ *  <br>
+ *  Documentation for the following can be found in GRoundControl <br>
+ *  Range of values associated with rotating the knob <br>
+ *  Rotation is controlled by mouse movement -  3 modes available <br>
+ *  (a) angular -  drag round knob center <br>
+ *  (b) horizontal - drag left or right <br>
+ *  (c) vertical - drag up or down <br>
+ *  User can specify mouse sensitivity for modes (b) and (c)
+ *  Use can specify level of inertia to give smoother rotation
+ *  
+ * 	<b>Note</b>: Angles are measured clockwise starting in the positive x direction i.e.
+ * <pre>
+ *         270
+ *          |
+ *    180 --+-- 0
+ *          |
+ *          90
+ * </pre>
+ * 
+ * @author Peter Lager
+ *
+ */
+public class GKnob extends GRoundControl {
+
+	protected int nbrTickMarks = 2;
+	protected Point[][] mark;
+	protected int bezelWidth;
+
+	protected int knobRadX, knobRadY, barRadX, barRadY, bezelRadX, bezelRadY;
+
+	/**
+	 * Create a GKnob control <br><br>
+	 * 
+	 * Will ensure that width and height are >= 20 pixels <br>
+	 * 
+	 * The arcStart and arcEnd represent the limits of rotation expressed in 
+	 * degrees as shown above. For instance if you want a knob that rotates
+	 * from 7 o'clock to 5 o'clock (via 12 o'clock) then arcStart = 120 and
+	 * arcEnd = 60 degrees.
+	 * 
+	 * @param theApplet
+	 * @param x left position of knob
+	 * @param y top position of knob
+	 * @param width width of knob
+	 * @param height height of knob (if different from width - oval knob)
+	 * @param arcStart start of rotation arc (in degrees)
+	 * @param arcEnd end of rotation arc (in degrees)
+	 */
+	public GKnob(PApplet theApplet, int x, int y, int width, int height,
+			int arcStart, int arcEnd) {
+		super(theApplet, x, y, width, height, arcStart, arcEnd);
+		// Calculate an acceptable bezel width based on initial size
+		bezelWidth = Math.max(Math.min(this.width, this.height)/6, 4);
+		calculateSizes(bezelWidth);
+		z = Z_SLIPPY;
+		// Calculate ticks
+		calcTickMarkerPositions(nbrTickMarks);
+		createEventHandler(winApp, "handleKnobEvents", new Class[]{ GKnob.class });
+	}
+
+	/**
+	 * Create a GKnob control <br><br>
+	 * 
+	 * Will ensure that width and height are >= 20 pixels <br>
+	 * 
+	 * The arcStart and arcEnd represent the limits of rotation expressed in 
+	 * degrees as shown above. For instance if you want a knob that rotates
+	 * from 7 o'clock to 5 o'clock (via 12 o'clock) then arcStart = 120 and
+	 * arcEnd = 60 degrees.
+	 * 
+	 * @param theApplet
+	 * @param x left position of knob
+	 * @param y top position of knob
+	 * @param size size of knob (will be round)
+	 * @param arcStart start of rotation arc (in degrees)
+	 * @param arcEnd end of rotation arc (in degrees)
+	 */
+	public GKnob(PApplet theApplet, int x, int y, int size,
+			int arcStart, int arcEnd) {
+		this(theApplet, x, y, size, size, arcStart, arcEnd);	
+	}
+
+	/**
+	 * Used internally to calculate various radii based on the specified bezel width that
+	 * will be used in drawing the knob. <br>
+	 * 
+	 * The supplied bezel width will be constrained between 0 and half the smaller of
+	 * width and height. <br>
+	 * 
+	 * @param bw the width of the bezel
+	 */
+	protected void calculateSizes(int bw){
+		bezelWidth = PApplet.constrain(bw, 0, Math.min(width, height)/2);
+		bezelRadX = width/2;
+		bezelRadY = height/2;
+		knobRadX = bezelRadX - bezelWidth;
+		knobRadY = bezelRadY - bezelWidth;
+		if(knobRadX <=0 || knobRadY <= 0){
+			knobRadX = knobRadY = 0;
+			int inset = Math.min(Math.round(0.2f * bezelWidth), 10);
+			barRadX = bezelRadX - inset;
+			barRadY = bezelRadY - inset;
+		}
+		else {
+			barRadX = Math.round(0.5f * (bezelRadX + knobRadX));
+			barRadY = Math.round(0.5f * (bezelRadY + knobRadY));			
+		}
+	}
+
+	/**
+	 * Used to calculate the tick markk positions 
+	 * @param nticks
+	 */
+	protected void calcTickMarkerPositions(int nticks){
+		mark = new Point[nticks][2];
+		for(int i = 0; i < nticks ; i++){
+			mark[i][0] = new Point();
+			mark[i][1] = new Point();
+		}
+		float deltaAng = (aHigh - aLow) / ((float)(nticks-1));
+		float cosine, sine;
+		for(int i = 0; i < nticks ; i++){
+			cosine = (float) Math.cos(PApplet.radians(aLow + i * deltaAng));
+			sine = (float) Math.sin(PApplet.radians(aLow + i * deltaAng));
+			mark[i][0].x = (int) Math.round(knobRadX * cosine);
+			mark[i][0].y = (int) Math.round(knobRadY * sine);
+			if(i == 0 || i == nticks - 1){
+				mark[i][1].x = (int) Math.round(bezelRadX * cosine);
+				mark[i][1].y = (int) Math.round(bezelRadY * sine);
+			}
+			else {
+				mark[i][1].x = (int) Math.round(barRadX * cosine);
+				mark[i][1].y = (int) Math.round(barRadY * sine);
+			}
+		}
+		nbrTickMarks = nticks;
+	}
+
+	/**
+	 * Set the width of the bezel.
+	 * @param bw desired bezel width in pixels.
+	 */
+	public void setBezelWidth(int bw){
+		calculateSizes(bw);
+		calcTickMarkerPositions(nbrTickMarks);
+	}
+
+	/**
+	 * Set the number of tick spaces for the bezel. <br>
+	 * 
+	 * @param nbr_spaces number of spaces between ticks
+	 */
+	public void setNbrTickSpaces(int nbr_spaces){
+		setNbrTickMarks(nbr_spaces + 1);
+	}
+
+	/**
+	 * Set the number of tick markers
+	 * @param nbr_ticks
+	 */
+	public void setNbrTickMarks(int nbr_ticks){
+		nbr_ticks = (nbr_ticks < 2) ? 2 : nbr_ticks;
+		calcTickMarkerPositions(nbr_ticks);
+	}
+
+	/**
+	 * Draw the knob
+	 */
+	public void draw(){
+		if(!visible) return;
+
+		Point p = new Point(0,0);
+		calcAbsPosition(p);
+		p.x += cx;
+		p.y += cy;
+
+		float rad = PApplet.radians(needleAngle);
+
+		winApp.pushMatrix();
+		winApp.translate(p.x, p.y);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
+
+		// Draw bezel
+		if(bezelWidth > 0){
+			winApp.fill(winApp.color(128,48));
+			winApp.noStroke();
+			winApp.ellipse(0, 0, width, height);
+			// draw darker arc for rotation range
+			winApp.fill(winApp.color(128,80));
+			winApp.arc(0, 0, width, height, start, end);
+
+			// Draw active track
+			winApp.fill(localColor.sdrTrack);
+			winApp.noStroke();
+			winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, rad);
+
+			// Draw ticks
+			winApp.stroke(localColor.sdrBorder);
+			winApp.stroke(2);
+			for(int i = 0; i < mark.length; i++){
+				if(i == 0 || i == mark.length-1)
+					winApp.strokeWeight(2.0f);
+				else
+					winApp.strokeWeight(1.2f);
+				winApp.line(mark[i][0].x, mark[i][0].y,mark[i][1].x, mark[i][1].y);
+			}
+		}
+		if(knobRadX > 0 ){
+			// Draw knob centre
+			winApp.stroke(localColor.sdrBorder);
+			winApp.strokeWeight(1.0f);
+			winApp.fill(localColor.sdrThumb);
+			winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
+
+			// Draw needle
+			winApp.stroke(localColor.btnDown);
+			winApp.strokeWeight(2.0f);
+			winApp.line(0, 0,
+					Math.round((width - 2 * bezelWidth) * 0.5 * Math.cos(rad)),
+					Math.round((height - 2 * bezelWidth) * 0.5 * Math.sin(rad)) );
+		}
+		winApp.popStyle();
+		winApp.popMatrix();
+	}
+
+}

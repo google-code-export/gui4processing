@@ -75,7 +75,7 @@ public class GCScheme implements GConstants {
 
 	/**
 	 * Set the color scheme to one of the preset schemes
-	 * BLUE / GREEN / RED /  PURPLE / YELLOW / CYAN /GREY
+	 * BLUE / GREEN / RED /  PURPLE / YELLOW / CYAN / GREY
 	 * or if you have created your own schemes following the instructions
 	 * at gui4processing.lagers.org.uk/colorscheme.html then you can enter
 	 * the appropriate numeric value of the scheme.

@@ -52,6 +52,7 @@ public class GHorzSlider extends GSlider {
 	public GHorzSlider(PApplet theApplet, int x, int y, int width, int height){
 		super(theApplet, x, y, width, height);
 		initThumbDetails();
+		z = Z_SLIPPY;
 	}
 
 	/**
@@ -103,7 +104,7 @@ public class GHorzSlider extends GSlider {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver){
+			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				takeFocus();

@@ -74,6 +74,7 @@ public class GCheckbox extends GComponent {
 		height = Math.max((int)localFont.getFont().getSize() + 2 * PADV, imgCleared.height);
 		opaque = false;
 		setText(text);
+		z = Z_SLIPPY;
 		createEventHandler(winApp, "handleCheckboxEvents", new Class[]{ GCheckbox.class });
 		registerAutos_DMPK(true, true, false, false);
 	}

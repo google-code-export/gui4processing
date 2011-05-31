@@ -78,6 +78,7 @@ public class GCombo extends GComponent {
 		height = Math.max((int)localFont.getFont().getSize() + 2 * PADV, imgArrow.height);
 		opaque = true;
 		border = 1;
+		z = Z_SLIPPY;
 		createEventHandler(winApp, "handleComboEvents", new Class[]{ GCombo.class });
 		registerAutos_DMPK(true, true, false, false);
 	}

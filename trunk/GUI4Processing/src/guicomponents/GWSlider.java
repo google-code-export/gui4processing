@@ -253,7 +253,6 @@ public class GWSlider extends GSlider {
 		_stickToTicks = stick;
 		if(stick){
 			_stickToTickByValue(value);
-			//			_stickToTickByValue(PApplet.map(winApp.mouseX, thumbMin, thumbMax, minValue, maxValue));
 		}
 		_calcTickPositions();
 	}
@@ -439,6 +438,7 @@ public class GWSlider extends GSlider {
 
 		_calcControlWidthHeight();
 		_calcTickPositions();
+		z = Z_SLIPPY;
 		winApp.registerKeyEvent(this);
 	}
 
@@ -532,7 +532,8 @@ public class GWSlider extends GSlider {
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled) return;
 
-		boolean isMouseOver = false, isMouseOverThumb = false;
+		boolean isMouseOver = false;
+		boolean isMouseOverThumb = false;
 		// Is mouse over the slider?
 		isMouseOver = this.isOver(event.getX(), event.getY());
 		// If it is over slider then check to see if it is over thumb
@@ -590,7 +591,6 @@ public class GWSlider extends GSlider {
 					thumbTargetPos = _tickPositions[_currTickStuck];
 				}else
 					thumbTargetPos = PApplet.constrain(thumbTargetPos - 1,thumbMin,thumbMax);
-
 			}else if(e.getKeyCode()== 39){ //right arrow
 				if(_stickToTicks){
 					_currTickStuck = PApplet.constrain(_currTickStuck + 1, 0, _tickPositions.length-1);

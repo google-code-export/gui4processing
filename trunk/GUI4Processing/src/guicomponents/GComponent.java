@@ -85,6 +85,17 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected final static int PADH = 4;
 	protected final static int PADV = 2;
 
+	// Increment to be used if on a GPanel
+	protected final static int Z_PANEL = 32;
+	
+	// Components that don't release focus automatically
+	// i.e. GTextField
+	protected final static int Z_STICKY = 16;
+	
+	// Components that automatically releases focus when appropriate
+	// .e. GButton
+	protected final static int Z_SLIPPY = 24;
+	
 	/** 
 	 * This is a reference the the PApplet that was used to create the 
 	 * component - in all cases this should be launching or main PApplet.
@@ -401,7 +412,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		} else {
 			component.parent = this;
 			children.add(component);
-			setZ(component, z + 1);
+			component.setZ(z);
 			winApp.unregisterDraw(component);
 			component.regDraw = false;
 			if(localColor.getAlpha() < 255)
@@ -418,13 +429,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * GPaneln
 	 * It is used when a child component is added.
 	 * @param component
-	 * @param level
+	 * @param parentZ
 	 */
-	protected void setZ(GComponent component, int level){
-		component.z = level;
-		if(component.children != null){
-			for(GComponent c : component.children){
-				c.setZ(c, level + 1);
+	protected void setZ(int parentZ){
+		z += parentZ;
+		if(children != null){
+			for(GComponent c : children){
+				c.setZ(z);
 			}
 		}
 	}
@@ -436,7 +447,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	public void remove(GComponent component){
 		children.remove(component);
-		unsetZ(component, component.z);
+		component.unsetZ(z);
 	}
 
 	/**
@@ -447,13 +458,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * GPaneln <br>
 	 * It is used when a child component is removed.
 	 * @param component
-	 * @param level
+	 * @param parentZ
 	 */
-	protected void unsetZ(GComponent component, int level){
-		component.z -= level;
-		if(component.children != null){
-			for(GComponent c : component.children){
-				c.unsetZ(c, level);
+	protected void unsetZ(int parentZ){
+		z -= parentZ;
+		if(children != null){
+			for(GComponent c : children){
+				c.unsetZ(parentZ);
 			}
 		}
 	}

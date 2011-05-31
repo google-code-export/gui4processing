@@ -52,6 +52,11 @@ public interface GConstants {
 	// GCheckbox & GOption
 	public final static int SELECTED = 			0x00000401;
 	public final static int DESELECTED = 		0x00000402;
+
+	// GRoundControl
+	public final static int CTRL_ANGULAR = 		0x00000501;
+	public final static int CTRL_HORIZONTAL = 	0x00000502;
+	public final static int CTRL_VERTICAL = 	0x00000503;
 	
 	// GWindow
 	public final static int EXIT_APP = 			0x00000f01;
