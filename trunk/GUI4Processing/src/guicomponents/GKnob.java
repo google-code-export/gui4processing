@@ -33,7 +33,7 @@ import processing.core.PApplet;
  * for that class as it also applies to GKnob. <br><br>
  * 
  * Configurable options <br>
- *  Knob height and width (can be oval) <br>
+ *  Knob size must be circular <br>
  *  Start and end of rotation arc. <br>
  *  Bezel width with tick marks <br>
  *  <br>
@@ -84,13 +84,14 @@ public class GKnob extends GRoundControl {
 	 * @param arcStart start of rotation arc (in degrees)
 	 * @param arcEnd end of rotation arc (in degrees)
 	 */
-	public GKnob(PApplet theApplet, int x, int y, int width, int height,
+	protected GKnob(PApplet theApplet, int x, int y, int width, int height,
 			int arcStart, int arcEnd) {
 		super(theApplet, x, y, width, height, arcStart, arcEnd);
+
 		// Calculate an acceptable bezel width based on initial size
-		bezelWidth = Math.max(Math.min(this.width, this.height)/6, 4);
+		bezelWidth = Math.max(Math.min(halfWidth, halfHeight)/3, 4);
 		calculateSizes(bezelWidth);
-		z = Z_SLIPPY;
+
 		// Calculate ticks
 		calcTickMarkerPositions(nbrTickMarks);
 		createEventHandler(winApp, "handleKnobEvents", new Class[]{ GKnob.class });
@@ -115,7 +116,7 @@ public class GKnob extends GRoundControl {
 	 */
 	public GKnob(PApplet theApplet, int x, int y, int size,
 			int arcStart, int arcEnd) {
-		this(theApplet, x, y, size, size, arcStart, arcEnd);	
+		this(theApplet, x, y, size, size, arcStart, arcEnd);
 	}
 
 	/**
@@ -128,9 +129,9 @@ public class GKnob extends GRoundControl {
 	 * @param bw the width of the bezel
 	 */
 	protected void calculateSizes(int bw){
-		bezelWidth = PApplet.constrain(bw, 0, Math.min(width, height)/2);
-		bezelRadX = width/2;
-		bezelRadY = height/2;
+		bezelWidth = PApplet.constrain(bw, 0, Math.min(halfWidth, halfHeight));
+		bezelRadX = halfWidth;
+		bezelRadY = halfHeight;
 		knobRadX = bezelRadX - bezelWidth;
 		knobRadY = bezelRadY - bezelWidth;
 		if(knobRadX <=0 || knobRadY <= 0){
@@ -146,7 +147,7 @@ public class GKnob extends GRoundControl {
 	}
 
 	/**
-	 * Used to calculate the tick markk positions 
+	 * Used to calculate the tick mark positions 
 	 * @param nticks
 	 */
 	protected void calcTickMarkerPositions(int nticks){
@@ -255,8 +256,8 @@ public class GKnob extends GRoundControl {
 			winApp.stroke(localColor.btnDown);
 			winApp.strokeWeight(2.0f);
 			winApp.line(0, 0,
-					Math.round((width - 2 * bezelWidth) * 0.5 * Math.cos(rad)),
-					Math.round((height - 2 * bezelWidth) * 0.5 * Math.sin(rad)) );
+					Math.round((halfWidth - bezelWidth) * Math.cos(rad)),
+					Math.round((halfHeight - bezelWidth) * Math.sin(rad)) );
 		}
 		winApp.popStyle();
 		winApp.popMatrix();

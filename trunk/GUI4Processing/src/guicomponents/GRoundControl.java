@@ -39,34 +39,28 @@ import processing.core.PApplet;
  */
 public abstract class GRoundControl extends GComponent {
 
-	protected float cx,cy;
+	protected int cx,cy;
+
 	protected float start,end;
+	protected int halfWidth, halfHeight;
 
-	/*
-	These are the values used to construct the control.
-	 These represent the start and end angles of the 'pie segment'
-	 which constrains the rotation.
-	 These  angles MUST be expressed in a clockwise direction so 
-	 arcStart maybe greater than arcEnd.
-	 */
-	protected int arcStart;
-	protected int arcEnd;
-	// Used to indicate if the arc goes over the 0 (esat) position
-	protected boolean wrap0;
-
-	/*
-	These are the adjusted values of arcStart and arcEnd and are
-	 such that aLow < aHigh. If arcSstart > arcEnd then aLow is 
-	 calculated as the equivalent negative rotation i.e.
-	 arcStart = 110 and arcEnd = 70 then 
-	 aLow = 360 - arcStart = 360 - 110 = -250
-	 */
+	/*	 
+	 * These are the values of the start angle and end angle used to define
+	 *  the limits of the clockwise rotation range. They are adjusted such 
+	 *  that aLow < aHigh. If start angle > end angle then aLow is calculated as 
+	 *  the equivalent negative rotation i.e. 
+	 *  start angle = 110 and end angle = 70 then 
+	 *  aLow = 360 - start angle = 360 - 110 = -250
+	 */	 
 	protected int aLow, aHigh;
+
+	// Used to indicate if the arc goes over the 0 (east) position
+	public boolean wrap0;
 
 	// These angles are adjusted to be in range aLow to aHigh
 	// this is updated in pre() and is used to calculate the current value
 	// These angle can be in the range -360 - +360
-	protected int needleAngle, lastTargetNeedleAngle, targetNeedleAngle;
+	public int needleAngle, lastTargetNeedleAngle, targetNeedleAngle;
 	protected int needleDir;
 
 	// These angles are adjusted to be in the range 0-360
@@ -101,7 +95,7 @@ public abstract class GRoundControl extends GComponent {
 	protected int needleInertia = 1;
 
 	protected int mode = CTRL_ANGULAR;
-	protected float sensitivity = 1.5f;
+	protected float sensitivity = 1.0f;
 	protected int startMouseX, startMouseY;
 
 	/**
@@ -109,24 +103,21 @@ public abstract class GRoundControl extends GComponent {
 	 */
 	public GRoundControl(PApplet theApplet, int x, int y, int width, int height, int arcStart, int arcEnd) {
 		super(theApplet, x, y);
+		PApplet.println("CTOR GRoundControl");
 		this.width = (width < 20) ? 20 : width;
 		this.height = (height < 20) ? 20 : height;
-		// This stuff needs to be done in the constructor
-		aLow = arcStart = getValidArcAngle(arcStart);
-		aHigh = arcEnd = getValidArcAngle(arcEnd);
+		halfWidth = cx =this.width/2;
+		halfHeight = cy = this.height/2;
+
+		aLow = getValidArcAngle(arcStart);
+		aHigh = getValidArcAngle(arcEnd);
 		wrap0 = (arcStart > arcEnd);
 
 		aLow = (aLow >= aHigh) ? aLow - 360 : aLow;
-		// Set the range of values that are to be returned by 
-		// this control
-		setLimits(value, valueStart, valueEnd);
 
 		start = PApplet.radians(aLow);
 		end = PApplet.radians(aHigh);
 
-		cx = width/2;
-		cy = height/2;
-		
 		z= Z_SLIPPY;
 
 		registerAutos_DMPK(true, true, true, false);
@@ -149,14 +140,17 @@ public abstract class GRoundControl extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		ax -= (p.x);
-		ay -= (p.y);
-		float dx = ax - cx;
-		float dy = ay - cy;
-		if(dx * dx < width * width /4 &&  dy * dy < height * height/4)
-			return true;
-		else 
-			return false;
+		boolean inside;
+		int dx = ax - p.x - cx;
+		int dy = ay - p.y - cy;
+		if(width == height)
+			inside = (dx * dx  + dy * dy < width * width /4);
+		else {	// Elliptical knob
+			float ratioX = (2.0f * dx)/ width;
+			float ratioY = (2.0f * dy)/ height;
+			inside = (ratioX * ratioX + ratioY * ratioY < 1.0f);
+		}
+		return inside;
 	}
 
 	/**
@@ -280,7 +274,7 @@ public abstract class GRoundControl extends GComponent {
 	public boolean isValueChanging(){
 		return this.isValueChanging;
 	}
-	
+
 	/**
 	 * Get the current mouse controller mode possible values are <br>
 	 * GKnob.CTRL_ANGULAR or GKnob.CTRL_HORIZONTAL) orGKnob.CTRL_VERTICAL
@@ -329,7 +323,7 @@ public abstract class GRoundControl extends GComponent {
 
 	/**
 	 * Get the current value represented by the control as an integer value.
-	 * @return current interger value
+	 * @return current integer value
 	 */
 	public int getValue(){
 		return Math.round(getValuef());
@@ -405,7 +399,7 @@ public abstract class GRoundControl extends GComponent {
 	 * @return
 	 */
 	public boolean isInValidArc(int angle){
-		return (wrap0) ? (angle < arcEnd || angle > arcStart) : (angle >= arcStart && angle<= arcEnd);
+		return (aLow < 0) ? (angle >= 360 + aLow || angle <= aHigh) : (angle >= aLow && angle <= aHigh);
 	}
 
 	/**
@@ -414,7 +408,7 @@ public abstract class GRoundControl extends GComponent {
 	 * Only used to validate initial values
 	 * @param angle must be in range 0-360 
 	 */
-	protected int getValidArcAngle(int angle){
+	public int getValidArcAngle(int angle){
 		while(angle < 0) angle+=360;
 		while(angle > 360) angle-=360;
 		return angle;
@@ -427,8 +421,39 @@ public abstract class GRoundControl extends GComponent {
 	 * @param n
 	 * @return 
 	 */
-	private int signInt(int n){
+	protected int signInt(int n){
 		return (n == 0) ? 0 : (n < 0) ? -1 : +1;
 	}
 
+	
+	/**
+	 * For a given circular angle measured in radians get the equivalent angle for
+	 * the oval. Both angles are in radians
+	 * 
+	 * @param ca
+	 * @param hWidth
+	 * @param hHeight
+	 * @return
+	 */
+	protected float getOvalAngleFromCicleAngle(float ca, float hWidth, float hHeight){
+		float x,y;
+		float xp, yp;
+		float numer, denom;
+		PApplet.println("=======================");
+		xp = (float) Math.cos(ca);
+		yp = (float) Math.sin(ca);
+		numer = hWidth * hHeight;
+		denom = (float) Math.sqrt(hWidth*hWidth*yp*yp + hHeight*hHeight*xp*xp);
+		x = xp * numer / denom;
+		y = yp * numer / denom;
+		
+		float r = Math.min(hWidth, hHeight);
+		
+		PApplet.println(xp*r+"  " +yp*r+"  "+x + "  "+ y + "          " + (numer/denom));
+		PApplet.println("=======================");
+		
+		return (float) Math.atan2(y, x);
+	}
+	
+	
 }
