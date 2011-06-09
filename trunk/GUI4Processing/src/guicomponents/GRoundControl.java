@@ -31,8 +31,8 @@ import processing.core.PApplet;
 /**
  * This is an abstract class that provides the basic functionality for 'round controls'
  * such as knobs. <br>
- * 
- * At present the only class that inherits from this is GKnob.
+ * Round components include both circular and oval components. This class provides basic 
+ * functionality (including mouse event handling) for circular components. <br>
  *  
  * @author Peter Lager
  *
@@ -45,7 +45,7 @@ public abstract class GRoundControl extends GComponent {
 	protected int halfWidth, halfHeight;
 
 	protected boolean strictOver = false;
-	
+
 	/*	 
 	 * These are the values of the start angle and end angle used to define
 	 *  the limits of the clockwise rotation range. They are adjusted such 
@@ -105,7 +105,6 @@ public abstract class GRoundControl extends GComponent {
 	 */
 	public GRoundControl(PApplet theApplet, int x, int y, int width, int height, int arcStart, int arcEnd) {
 		super(theApplet, x, y);
-		PApplet.println("CTOR GRoundControl");
 		this.width = (width < 20) ? 20 : width;
 		this.height = (height < 20) ? 20 : height;
 		halfWidth = cx =this.width/2;
@@ -155,6 +154,29 @@ public abstract class GRoundControl extends GComponent {
 		return inside;
 	}
 
+	public boolean isOverStrict(int ax, int ay){
+		Point p = new Point(0,0);
+		calcAbsPosition(p);
+		p.x += cx;
+		p.y += cx;
+		boolean inside = false;
+		int dx = ax - p.x;
+		int dy = ay - p.y;
+		if(width == height)
+			inside = (dx * dx  + dy * dy < width * width /4);
+		else {	// Elliptical knob
+			float ratioX = (2.0f * dx)/ width;
+			float ratioY = (2.0f * dy)/ height;
+			inside = (ratioX * ratioX + ratioY * ratioY < 1.0f);
+		}
+		if(inside){
+			int degs = getAngleFromXY(p, ax, ay);
+			degs = (degs < 0) ? degs + 360 : degs;
+			inside = isInValidArc(degs);
+		}
+		return inside;
+	}
+
 	/**
 	 * Used to implement inertia
 	 */
@@ -183,19 +205,10 @@ public abstract class GRoundControl extends GComponent {
 	}
 
 	/**
-	 * 
+	 * Basic mouse event handler for circular components.
 	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible  || !enabled) return;
-
-		int degs = 0;
-
-		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
-			
-		if(mouseOver || focusIsWith == this)
-			cursorIsOver = this;
-		else if(cursorIsOver == this)
-			cursorIsOver = null;
 
 		// Calculate absolute position of centre of rotation
 		Point p = new Point(0,0);
@@ -203,17 +216,30 @@ public abstract class GRoundControl extends GComponent {
 		p.x += cx;
 		p.y += cy;
 
+		int degs = 0;
+
+		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
+		if(mouseOver && strictOver){
+			degs = getAngleFromUser(p);
+			mouseOver &= isInValidArc(degs);
+		}
+
+		if(mouseOver || focusIsWith == this)
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+			cursorIsOver = null;
+
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				startMouseX = winApp.mouseX - p.x;
 				startMouseY = winApp.mouseY - p.y;
 				degs = getAngleFromUser(p);
-				if(strictOver && isInValidArc(degs)){
-				lastMouseAngle = mouseAngle = (degs < 0) ? degs + 360 : degs;
-				offset = targetNeedleAngle - mouseAngle;
-				takeFocus();
-				}
+					lastMouseAngle = mouseAngle = (degs < 0) ? degs + 360 : degs;
+					offset = targetNeedleAngle - mouseAngle;
+					takeFocus();
+
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
@@ -251,7 +277,7 @@ public abstract class GRoundControl extends GComponent {
 	/**
 	 * Calculates the 'angle' from the current mouse position based on the type
 	 * of 'controller' set.
-	 * @param p the absolute pixel position for the knob centre
+	 * @param p the absolute pixel position for the control centre
 	 * @return the unconstrained angle
 	 */
 	protected int getAngleFromUser(Point p){
@@ -259,6 +285,7 @@ public abstract class GRoundControl extends GComponent {
 		switch(mode){
 		case CTRL_ANGULAR:
 			degs = Math.round(PApplet.degrees((float)Math.atan2(winApp.mouseY - p.y, winApp.mouseX - p.x)));
+//			degs = (degs < 0) ? degs + 360 : degs;
 			break;
 		case CTRL_HORIZONTAL:
 			degs = (int) (sensitivity * (winApp.mouseX - p.x - startMouseX));
@@ -268,6 +295,17 @@ public abstract class GRoundControl extends GComponent {
 			break;
 		}
 		return degs;
+	}
+
+	/**
+	 * Get the angle from a position
+	 * @param p the absolute pixel position for the control centre
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	protected int getAngleFromXY(Point p, float x, float y){
+		return Math.round(PApplet.degrees((float)Math.atan2(y - p.y, x - p.x)));
 	}
 
 	/**
@@ -424,6 +462,7 @@ public abstract class GRoundControl extends GComponent {
 	 * @return true if angle is within rotation angle range
 	 */
 	public boolean isInValidArc(int angle){
+		System.out.println(aLow + "  >>  "+ aHigh + "      " + angle);
 		return (aLow < 0) ? (angle >= 360 + aLow || angle <= aHigh) : (angle >= aLow && angle <= aHigh);
 	}
 
@@ -433,7 +472,7 @@ public abstract class GRoundControl extends GComponent {
 	 * Only used to validate initial values
 	 * @param angle must be in range 0-360 
 	 */
-	public int getValidArcAngle(int angle){
+	protected int getValidArcAngle(int angle){
 		while(angle < 0) angle+=360;
 		while(angle > 360) angle-=360;
 		return angle;
@@ -450,35 +489,4 @@ public abstract class GRoundControl extends GComponent {
 		return (n == 0) ? 0 : (n < 0) ? -1 : +1;
 	}
 
-	
-	/**
-	 * For a given circular angle measured in radians get the equivalent angle for
-	 * the oval. Both angles are in radians
-	 * 
-	 * @param ca
-	 * @param hWidth
-	 * @param hHeight
-	 * @return
-	 */
-	protected float getOvalAngleFromCicleAngle(float ca, float hWidth, float hHeight){
-		float x,y;
-		float xp, yp;
-		float numer, denom;
-		PApplet.println("=======================");
-		xp = (float) Math.cos(ca);
-		yp = (float) Math.sin(ca);
-		numer = hWidth * hHeight;
-		denom = (float) Math.sqrt(hWidth*hWidth*yp*yp + hHeight*hHeight*xp*xp);
-		x = xp * numer / denom;
-		y = yp * numer / denom;
-		
-		float r = Math.min(hWidth, hHeight);
-		
-		PApplet.println(xp*r+"  " +yp*r+"  "+x + "  "+ y + "          " + (numer/denom));
-		PApplet.println("=======================");
-		
-		return (float) Math.atan2(y, x);
-	}
-	
-	
 }
