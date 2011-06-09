@@ -31,9 +31,12 @@ import processing.core.PApplet;
  * The provides an extremely configurable GUI knob controller. GKnobOval
  * inherits from GKnob which inherits from GRoundControl so you should 
  * read the documentation for those classes as it also applies to 
- * GKnobOval. <br><br>
+ * GKnobOval.<br>
+ * <br>
  * 
  * For circular knobs use GKnob rather than this class. <br>
+ * To avoid inaccuracies with drawing the bezel arcs it is recommended that
+ * the length of the major axis should not exceed 1.5 x the minor axis. <br><br>
  * 
  * Configurable options <br>
  *  Knob height and width (should be oval) <br>
@@ -118,12 +121,15 @@ public class GKnobOval extends GKnob {
 			// draw darker arc for rotation range
 			winApp.fill(winApp.color(128,80));
 			winApp.arc(0, 0, width, height, start, end);
-			// Draw active track
-			winApp.fill(localColor.sdrTrack);
-			winApp.noStroke();
-			nrad = getDisplayAngle(rad);
-			winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
 
+			// Draw active value arc
+			if(valueTrackVisible){
+				winApp.fill(localColor.sdrTrack);
+				winApp.noStroke();
+				nrad = getDisplayAngle(rad);
+				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
+			}
+			
 			// Draw ticks
 			winApp.stroke(localColor.sdrBorder);
 			winApp.stroke(2);
@@ -179,16 +185,16 @@ public class GKnobOval extends GKnob {
 	 */
 	protected float getDisplayAngle(double ra){
 		double cosA = Math.cos(ra), sinA = Math.sin(ra);
-		double diff = Math.abs(bezelRadX - bezelRadY);
+		double h = Math.abs(bezelRadX - bezelRadY);
 		double eX = bezelRadX * cosA, eY = bezelRadY * sinA;
 
 		if(bezelRadX > bezelRadY){
-			eX -= diff * cosA;
-			eY += diff * sinA;
+			eX -= h * cosA;
+			eY += h * sinA;
 		}
 		else {
-			eX += diff * cosA;
-			eY -= diff * sinA;
+			eX += h * cosA;
+			eY -= h * sinA;
 		}
 		float angle = (float) Math.atan2(eY, eX);
 		while(ra - angle >= PI)
