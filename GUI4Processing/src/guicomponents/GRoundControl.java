@@ -44,6 +44,8 @@ public abstract class GRoundControl extends GComponent {
 	protected float start,end;
 	protected int halfWidth, halfHeight;
 
+	protected boolean strictOver = false;
+	
 	/*	 
 	 * These are the values of the start angle and end angle used to define
 	 *  the limits of the clockwise rotation range. They are adjusted such 
@@ -189,6 +191,7 @@ public abstract class GRoundControl extends GComponent {
 		int degs = 0;
 
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
+			
 		if(mouseOver || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -206,9 +209,11 @@ public abstract class GRoundControl extends GComponent {
 				startMouseX = winApp.mouseX - p.x;
 				startMouseY = winApp.mouseY - p.y;
 				degs = getAngleFromUser(p);
+				if(strictOver && isInValidArc(degs)){
 				lastMouseAngle = mouseAngle = (degs < 0) ? degs + 360 : degs;
 				offset = targetNeedleAngle - mouseAngle;
 				takeFocus();
+				}
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
@@ -311,6 +316,26 @@ public abstract class GRoundControl extends GComponent {
 	}
 
 	/**
+	 * See if the 'strict over' option is set
+	 * @return the strictOver
+	 */
+	public boolean isStrictOver() {
+		return strictOver;
+	}
+
+	/**
+	 * If this is set to false (the default value) then the mouse button 
+	 * can be pressed over any part of the knob and bzeel  to start rotating
+	 * the knob. If it is true then only that portion of the knob within
+	 * the rotation arc.
+	 * 
+	 * param strict the strictOver to set
+	 */
+	public void setStrictOver(boolean strict) {
+		this.strictOver = strict;
+	}
+
+	/**
 	 * Get the current value represented by the control as a floating point value.
 	 * @return current float value
 	 */
@@ -379,7 +404,7 @@ public abstract class GRoundControl extends GComponent {
 	 * Calculate the equivalent needle angle for a given value.
 	 * 
 	 * @param value a valid value for the knob range
-	 * @return
+	 * @return the angle that is equivalent to the given vale;
 	 */
 	public int getAngleFromValue(float value){
 		int angle;
@@ -396,7 +421,7 @@ public abstract class GRoundControl extends GComponent {
 	 * Confirm if the angle is within the limits of rotation. <br>
 	 * 
 	 * @param angle must be in range 0-360 
-	 * @return
+	 * @return true if angle is within rotation angle range
 	 */
 	public boolean isInValidArc(int angle){
 		return (aLow < 0) ? (angle >= 360 + aLow || angle <= aHigh) : (angle >= aLow && angle <= aHigh);

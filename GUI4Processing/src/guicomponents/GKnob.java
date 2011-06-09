@@ -63,9 +63,9 @@ public class GKnob extends GRoundControl {
 	protected int nbrTickMarks = 2;
 	protected Point[][] mark;
 	protected int bezelWidth;
-	protected boolean valueTrackVisible = false;
-
 	protected int knobRadX, knobRadY, barRadX, barRadY, bezelRadX, bezelRadY;
+
+	protected boolean valueTrackVisible = true;
 
 	/**
 	 * Create a GKnob control <br><br>

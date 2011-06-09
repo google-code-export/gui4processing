@@ -402,7 +402,7 @@ public class GTextField extends GComponent {
 
 	/**
 	 * Get the highlighted (selected text)
-	 * @return
+	 * @return return the selected text
 	 */
 	public String getSelectedText(){
 		if(startSelect == endSelect)
