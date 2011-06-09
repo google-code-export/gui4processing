@@ -63,6 +63,7 @@ public class GKnob extends GRoundControl {
 	protected int nbrTickMarks = 2;
 	protected Point[][] mark;
 	protected int bezelWidth;
+	protected boolean valueTrackVisible = false;
 
 	protected int knobRadX, knobRadY, barRadX, barRadY, bezelRadX, bezelRadY;
 
@@ -185,6 +186,21 @@ public class GKnob extends GRoundControl {
 	}
 
 	/**
+	 * Determines whether the value track is shown or not
+	 * @param visible true or false
+	 */
+	public void setValueTrackVisible(boolean visible){
+		valueTrackVisible = visible;
+	}
+
+	/**
+	 * See if the value track is visible
+	 */
+	public boolean isValueTrackVisible(){
+		return valueTrackVisible;
+	}
+
+	/**
 	 * Set the number of tick spaces for the bezel. <br>
 	 * 
 	 * @param nbr_spaces number of spaces between ticks
@@ -230,10 +246,12 @@ public class GKnob extends GRoundControl {
 			winApp.arc(0, 0, width, height, start, end);
 
 			// Draw active track
-			winApp.fill(localColor.sdrTrack);
-			winApp.noStroke();
-			winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, rad);
-
+			if(valueTrackVisible){
+				winApp.fill(localColor.sdrTrack);
+				winApp.noStroke();
+				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, rad);
+			}
+			
 			// Draw ticks
 			winApp.stroke(localColor.sdrBorder);
 			winApp.stroke(2);
