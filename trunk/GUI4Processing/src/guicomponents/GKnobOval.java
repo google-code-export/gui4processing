@@ -211,20 +211,24 @@ public class GKnobOval extends GKnob {
 	protected void calcTickMarkerPositions(int nticks){
 		mark = new Point[nticks][2];
 		float cosine, sine;
-		float ang = start, deltaAng = (end - start)/(nticks-1);
+		float ang = PApplet.radians(aLow), deltaAng = PApplet.radians(aHigh - aLow)/(nticks-1);
+		System.out.println("GKnobOval calcTicks start");
 		for(int i = 0; i < nticks ; i++){
 			mark[i][0] = new Point();
 			mark[i][1] = new Point();
-			cosine = (float) Math.cos(ang);
-			sine = (float) Math.sin(ang);
+			float dang = getDisplayAngle(ang);
+			System.out.println("Actual "+PApplet.degrees(ang) + "       display " +PApplet.degrees(dang));
+			cosine = (float) Math.cos(dang);
+			sine = (float) Math.sin(dang);
 			mark[i][0].x = Math.round(knobRadX * cosine);
 			mark[i][0].y = Math.round(knobRadY * sine);
 			if(i == 0 || i == nticks - 1)
-				calcCircumferencePosition(mark[i][0], mark[i][0].x, mark[i][0].y, bezelRadX, bezelRadY);
+				calcCircumferencePosition(mark[i][1], mark[i][0].x, mark[i][0].y, bezelRadX, bezelRadY);
 			else 
-				calcCircumferencePosition(mark[i][0], mark[i][0].x, mark[i][0].y, barRadX, barRadY);
+				calcCircumferencePosition(mark[i][1], mark[i][0].x, mark[i][0].y, barRadX, barRadY);
 			ang += deltaAng;
 		}
+		System.out.println("GKnobOval calcTicks end");
 		nbrTickMarks = nticks;
 	}
 
