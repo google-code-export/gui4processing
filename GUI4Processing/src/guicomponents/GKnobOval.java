@@ -91,14 +91,16 @@ public class GKnobOval extends GKnob {
 		super(theApplet, x, y, width, height, arcStart, arcEnd);
 
 		// Calculate the display angle
-		start = getDisplayAngle(PApplet.radians(aLow));
-		end = getDisplayAngle(PApplet.radians(aHigh));
+		start = convertRealAngleToOval(PApplet.radians(aLow));
+		end = convertRealAngleToOval(PApplet.radians(aHigh));
 
+		//System.out.println(start+ "  >>>   " + end);
 		// Calculate ticks
 		calcTickMarkerPositions(nbrTickMarks);
 	}
 
 	public void draw(){
+//		System.out.println(start+ "  >>>   " + end);
 		if(!visible) return;
 
 		Point p = new Point(0,0);
@@ -126,7 +128,7 @@ public class GKnobOval extends GKnob {
 			if(valueTrackVisible){
 				winApp.fill(localColor.sdrTrack);
 				winApp.noStroke();
-				nrad = getDisplayAngle(rad);
+				nrad = convertRealAngleToOval(rad);
 				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
 			}
 			
@@ -151,7 +153,7 @@ public class GKnobOval extends GKnob {
 			// Draw needle
 			winApp.stroke(localColor.btnDown);
 			winApp.strokeWeight(2.0f);
-			nrad = getDisplayAngle(rad);
+			nrad = convertRealAngleToOval(rad);
 			winApp.line(0, 0,
 					Math.round((knobRadX) * Math.cos(nrad)),
 					Math.round((knobRadY) * Math.sin(nrad)) );
@@ -183,9 +185,9 @@ public class GKnobOval extends GKnob {
 	 * @param ra the real world amgle
 	 * @return the angle for the arc method.
 	 */
-	protected float getDisplayAngle(double ra){
+	public float convertRealAngleToOval(double ra){
 		double cosA = Math.cos(ra), sinA = Math.sin(ra);
-		double h = Math.abs(bezelRadX - bezelRadY);
+		double h = Math.abs(bezelRadX - bezelRadY)/2.0;
 		double eX = bezelRadX * cosA, eY = bezelRadY * sinA;
 
 		if(bezelRadX > bezelRadY){
@@ -204,6 +206,35 @@ public class GKnobOval extends GKnob {
 		return angle;
 	}
 
+//	public float convertOvalAngleToReal(double da){
+//		double cosA = Math.cos(da), sinA = Math.sin(da);
+//		double h = Math.abs(bezelRadX - bezelRadY)/2.0;
+//		double r = (bezelRadX + bezelRadY)/2.0;
+//		double rX = r * cosA, rY = r * sinA;
+//
+//		if(bezelRadX > bezelRadY){
+//			rX += h * cosA;
+//			rY -= h * sinA;
+//		}
+//		else {
+//			rX -= h * cosA;
+//			rY += h * sinA;
+//		}
+//		float angle = (float) Math.atan2(rY, rX);
+//		while(da - angle >= PI)
+//			angle += TWO_PI;
+//		while(angle - da >= PI)
+//			angle -= TWO_PI;
+//		return angle;
+//	}
+
+	public boolean isInValidArc(int angle){
+		float a = PApplet.radians(angle);
+		System.out.println(start+ "  >>>   " + end + "    " + a);
+		return (aLow < 0) ? (a >= TWO_PI + start || a <= end) : (a >= start && a <= end);
+//		return (aLow < 0) ? (angle >= 360 + aLow || angle <= aHigh) : (angle >= aLow && angle <= aHigh);
+	}
+
 	/**
 	 * Used to calculate the tick mark positions 
 	 * @param nticks the number of actual markers
@@ -212,12 +243,10 @@ public class GKnobOval extends GKnob {
 		mark = new Point[nticks][2];
 		float cosine, sine;
 		float ang = PApplet.radians(aLow), deltaAng = PApplet.radians(aHigh - aLow)/(nticks-1);
-		System.out.println("GKnobOval calcTicks start");
 		for(int i = 0; i < nticks ; i++){
 			mark[i][0] = new Point();
 			mark[i][1] = new Point();
-			float dang = getDisplayAngle(ang);
-			System.out.println("Actual "+PApplet.degrees(ang) + "       display " +PApplet.degrees(dang));
+			float dang = convertRealAngleToOval(ang);
 			cosine = (float) Math.cos(dang);
 			sine = (float) Math.sin(dang);
 			mark[i][0].x = Math.round(knobRadX * cosine);
@@ -228,7 +257,6 @@ public class GKnobOval extends GKnob {
 				calcCircumferencePosition(mark[i][1], mark[i][0].x, mark[i][0].y, barRadX, barRadY);
 			ang += deltaAng;
 		}
-		System.out.println("GKnobOval calcTicks end");
 		nbrTickMarks = nticks;
 	}
 
