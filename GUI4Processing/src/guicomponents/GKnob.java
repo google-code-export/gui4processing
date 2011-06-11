@@ -219,6 +219,39 @@ public class GKnob extends GRoundControl {
 	}
 
 	/**
+	 * Determines whether the position ax, ay is over the round control
+	 * of this Slider.
+	 * 
+	 * @return true if mouse is over the slider thumb else false
+	 */
+	public boolean isOver(int ax, int ay){
+		Point p = new Point(0,0);
+		calcAbsPosition(p);
+		boolean inside;
+		int dx = ax - p.x - cx;
+		int dy = ay - p.y - cy;
+		inside = (dx * dx  + dy * dy < width * width/4);
+		return inside;
+	}
+
+	public boolean isOverStrict(int ax, int ay){
+		Point p = new Point(0,0);
+		calcAbsPosition(p);
+		p.x += cx;
+		p.y += cx;
+		boolean inside = false;
+		int dx = ax - p.x;
+		int dy = ay - p.y;
+		inside = (dx * dx  + dy * dy < width * width /4);
+		if(inside){
+			int degs = getAngleFromXY(p, ax, ay);
+			degs = (degs < 0) ? degs + 360 : degs;
+			inside = isInValidArc(degs);
+		}
+		return inside;
+	}
+
+	/**
 	 * Draw the knob
 	 */
 	public void draw(){
