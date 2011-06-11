@@ -29,10 +29,10 @@ import java.awt.event.MouseEvent;
 import processing.core.PApplet;
 
 /**
- * This is an abstract class that provides the basic functionality for 'round controls'
- * such as knobs. <br>
- * Round components include both circular and oval components. This class provides basic 
- * functionality (including mouse event handling) for circular components. <br>
+ * This is an abstract class that provides the core functionality including mouse event
+ * handling for 'round controls' such as knobs. <br>
+ * Round components include both circular and oval components.  <br><br>
+ * 
  *  
  * @author Peter Lager
  *
@@ -42,7 +42,7 @@ public abstract class GRoundControl extends GComponent {
 	protected int cx,cy;
 
 	protected float start,end;
-	protected int halfWidth, halfHeight;
+	protected int sizeRadX, sizeRadY;
 
 	protected boolean strictOver = false;
 
@@ -107,8 +107,8 @@ public abstract class GRoundControl extends GComponent {
 		super(theApplet, x, y);
 		this.width = (width < 20) ? 20 : width;
 		this.height = (height < 20) ? 20 : height;
-		halfWidth = cx =this.width/2;
-		halfHeight = cy = this.height/2;
+		sizeRadX = cx =this.width/2;
+		sizeRadY = cy = this.height/2;
 
 		aLow = getValidArcAngle(arcStart);
 		aHigh = getValidArcAngle(arcEnd);
@@ -131,51 +131,6 @@ public abstract class GRoundControl extends GComponent {
 	public GRoundControl(PApplet theApplet, int x, int y, int size, int arcStart, int arcEnd) {
 		this(theApplet, x, y, size, size, arcStart, arcEnd);
 	}
-
-//	/**
-//	 * Determines whether the position ax, ay is over the round control
-//	 * of this Slider.
-//	 * 
-//	 * @return true if mouse is over the slider thumb else false
-//	 */
-//	public boolean isOver(int ax, int ay){
-//		Point p = new Point(0,0);
-//		calcAbsPosition(p);
-//		boolean inside;
-//		int dx = ax - p.x - cx;
-//		int dy = ay - p.y - cy;
-//		if(width == height)
-//			inside = (dx * dx  + dy * dy < width * width /4);
-//		else {	// Elliptical knob
-//			float ratioX = (2.0f * dx)/ width;
-//			float ratioY = (2.0f * dy)/ height;
-//			inside = (ratioX * ratioX + ratioY * ratioY < 1.0f);
-//		}
-//		return inside;
-//	}
-//
-//	public boolean isOverStrict(int ax, int ay){
-//		Point p = new Point(0,0);
-//		calcAbsPosition(p);
-//		p.x += cx;
-//		p.y += cx;
-//		boolean inside = false;
-//		int dx = ax - p.x;
-//		int dy = ay - p.y;
-//		if(width == height)
-//			inside = (dx * dx  + dy * dy < width * width /4);
-//		else {	// Elliptical knob
-//			float ratioX = (2.0f * dx)/ width;
-//			float ratioY = (2.0f * dy)/ height;
-//			inside = (ratioX * ratioX + ratioY * ratioY < 1.0f);
-//		}
-//		if(inside){
-//			int degs = getAngleFromXY(p, ax, ay);
-//			degs = (degs < 0) ? degs + 360 : degs;
-//			inside = isInValidArc(degs);
-//		}
-//		return inside;
-//	}
 
 	/**
 	 * Used to implement inertia
@@ -205,12 +160,12 @@ public abstract class GRoundControl extends GComponent {
 	}
 
 	/**
-	 * Basic mouse event handler for circular components.
+	 * Basic mouse event handler for all round components.
 	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible  || !enabled) return;
 
-		// Calculate absolute position of centre of rotation
+		// Calculate absolute position of the centre of rotation
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		p.x += cx;
@@ -224,28 +179,21 @@ public abstract class GRoundControl extends GComponent {
 		else
 			mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 
-//s		System.out.println("Strict "+strictOver + "    " + mouseOver);
-//		if(mouseOver && strictOver){
-//			degs = getAngleFromUser(p);
-//			mouseOver &= isInValidArc(degs);
-//		}
-
 		if(mouseOver || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-
+		// Handle events
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				startMouseX = winApp.mouseX - p.x;
 				startMouseY = winApp.mouseY - p.y;
 				degs = getAngleFromUser(p);
-					lastMouseAngle = mouseAngle = (degs < 0) ? degs + 360 : degs;
-					offset = targetNeedleAngle - mouseAngle;
-					takeFocus();
-
+				lastMouseAngle = mouseAngle = (degs < 0) ? degs + 360 : degs;
+				offset = targetNeedleAngle - mouseAngle;
+				takeFocus();
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
@@ -280,6 +228,12 @@ public abstract class GRoundControl extends GComponent {
 		}
 	}
 
+	/**
+	 * Override this method in child classes
+	 * @param mouseX
+	 * @param mouseY
+	 * @return
+	 */
 	public abstract boolean isOverStrict(int mouseX, int mouseY);
 
 	/**
@@ -292,8 +246,7 @@ public abstract class GRoundControl extends GComponent {
 		int degs = 0;
 		switch(mode){
 		case CTRL_ANGULAR:
-			degs = Math.round(PApplet.degrees((float)Math.atan2(winApp.mouseY - p.y, winApp.mouseX - p.x)));
-			degs = (degs < 0) ? degs + 360 : degs;
+			degs = getAngleFromXY(p, winApp.mouseX, winApp.mouseY);
 			break;
 		case CTRL_HORIZONTAL:
 			degs = (int) (sensitivity * (winApp.mouseX - p.x - startMouseX));
@@ -306,14 +259,16 @@ public abstract class GRoundControl extends GComponent {
 	}
 
 	/**
-	 * Get the angle from a position
+	 * Get the real angle from an X/Y position
 	 * @param p the absolute pixel position for the control centre
-	 * @param x
-	 * @param y
+	 * @param x x coordinate
+	 * @param y y coordinate
 	 * @return
 	 */
 	protected int getAngleFromXY(Point p, float x, float y){
-		return Math.round(PApplet.degrees((float)Math.atan2(y - p.y, x - p.x)));
+		int degs = Math.round(PApplet.degrees((float)Math.atan2(y - p.y, x - p.x)));
+		degs = (degs < 0) ? degs + 360 : degs;
+		return degs;
 	}
 
 	/**
@@ -323,7 +278,7 @@ public abstract class GRoundControl extends GComponent {
 	 * @return true if value being changed at GUI
 	 */
 	public boolean isValueChanging(){
-		return this.isValueChanging;
+		return isValueChanging;
 	}
 
 	/**
@@ -421,12 +376,10 @@ public abstract class GRoundControl extends GComponent {
 	 * @param newValue the value to use will be constrained to legal vales.
 	 */
 	public void setValue(float newValue){
-		if(clockwiseValues){
+		if(clockwiseValues)
 			newValue = PApplet.constrain(newValue, valueStart, valueEnd);
-		}
-		else {
+		else 
 			newValue = PApplet.constrain(newValue, valueEnd, valueStart);
-		}
 		targetNeedleAngle = getAngleFromValue(newValue);
 	}
 
@@ -441,9 +394,8 @@ public abstract class GRoundControl extends GComponent {
 	 */
 	public void setValue(float newValue,  boolean ignoreInteria){
 		setValue(newValue);
-		if(ignoreInteria){
+		if(ignoreInteria)
 			needleAngle = targetNeedleAngle;
-		}
 	}
 
 	/**
@@ -452,14 +404,12 @@ public abstract class GRoundControl extends GComponent {
 	 * @param value a valid value for the knob range
 	 * @return the angle that is equivalent to the given vale;
 	 */
-	public int getAngleFromValue(float value){
+	protected int getAngleFromValue(float value){
 		int angle;
-		if(clockwiseValues){
+		if(clockwiseValues)
 			angle = (int) PApplet.map(value, valueStart, valueEnd, aLow, aHigh);
-		}
-		else {
+		else
 			angle = (int) PApplet.map(-value, -valueStart, -valueEnd, aLow, aHigh);
-		}
 		return angle;
 	}
 
@@ -469,8 +419,7 @@ public abstract class GRoundControl extends GComponent {
 	 * @param angle must be in range 0-360 
 	 * @return true if angle is within rotation angle range
 	 */
-	public boolean isInValidArc(int angle){
-		System.out.println(aLow + "  >>  "+ aHigh + "      " + angle);
+	protected boolean isInValidArc(int angle){
 		return (aLow < 0) ? (angle >= 360 + aLow || angle <= aHigh) : (angle >= aLow && angle <= aHigh);
 	}
 
@@ -496,14 +445,14 @@ public abstract class GRoundControl extends GComponent {
 	protected int signInt(int n){
 		return (n == 0) ? 0 : (n < 0) ? -1 : +1;
 	}
-	
+
 	/**
 	 * Takes a real angle and calculates the angle to be used when
 	 * drawing an arc so that they match up.
 	 * @param ra the real world angle
 	 * @return the angle for the arc method.
 	 */
-	public float convertRealAngleToOval(double ra, float rX, float rY){
+	protected float convertRealAngleToOval(double ra, float rX, float rY){
 		double cosA = Math.cos(ra), sinA = Math.sin(ra);
 		double h = Math.abs(rX - rY)/2.0;
 		double eX = rX * cosA, eY = rY * sinA;
@@ -526,7 +475,8 @@ public abstract class GRoundControl extends GComponent {
 
 	/**
 	 * Calculates the point of intersection between the circumference of an ellipse and a line from
-	 * position xp,yp to the geometric centre of the ellipse.
+	 * position xp, yp to the geometric centre of the ellipse.
+	 * 
 	 * @param circPos the returned intersection point
 	 * @param xp x coordinate of point
 	 * @param yp y coordinate of point
@@ -540,33 +490,5 @@ public abstract class GRoundControl extends GComponent {
 		circPos.x = (int) Math.round(xp * numer / denom);
 		circPos.y = (int) Math.round(yp * numer / denom);
 	}
-	
-	
-	public float getRealAngleFromOvalPosition(float ox, float oy, float rX, float rY){
-//		double cosA = Math.cos(da), sinA = Math.sin(da);
-		float h = Math.abs(rX - rY)/2.0f;
-//		double r = (bezelRadX + bezelRadY)/2.0;
-//		double rX = r * cosA, rY = r * sinA;
 
-		Point p = new Point();
-		calcCircumferencePosition(p, ox, oy, rX, rY);
-		
-		float roX = p.x, roY = p.y;
-		float da = (float) Math.atan2(roY, roX);
-		float cosA = (float) Math.cos(da), sinA = (float) Math.sin(da);
-		if(rX > rY){
-			roX += h * cosA;
-			roY -= h * sinA;
-		}
-		else {
-			roX -= h * cosA;
-			roY += h * sinA;
-		}
-		float angle = (float) Math.atan2(roY, roX);
-		while(da - angle >= PI)
-			angle += TWO_PI;
-		while(angle - da >= PI)
-			angle -= TWO_PI;
-		return angle;
-	}
 }
