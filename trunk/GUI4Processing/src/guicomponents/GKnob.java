@@ -33,9 +33,10 @@ import processing.core.PApplet;
  * for that class as it also applies to GKnob. <br><br>
  * 
  * Configurable options <br>
- *  Knob size must be circular <br>
+ *  Knob size but it must be circular <br>
  *  Start and end of rotation arc. <br>
  *  Bezel width with tick marks <br>
+ *  User defined value limits (i.e. the range of values returned <br>
  *  <br>
  *  Documentation for the following can be found in GRoundControl <br>
  *  Range of values associated with rotating the knob <br>
@@ -63,7 +64,7 @@ public class GKnob extends GRoundControl {
 	protected int nbrTickMarks = 2;
 	protected Point[][] mark;
 	protected int bezelWidth;
-	protected int knobRadX, knobRadY, barRadX, barRadY, bezelRadX, bezelRadY;
+	protected int knobRadX, knobRadY, barRadX, barRadY;
 
 	protected boolean valueTrackVisible = true;
 
@@ -90,7 +91,7 @@ public class GKnob extends GRoundControl {
 		super(theApplet, x, y, width, height, arcStart, arcEnd);
 
 		// Calculate an acceptable bezel width based on initial size
-		bezelWidth = Math.max(Math.min(halfWidth, halfHeight)/3, 4);
+		bezelWidth = Math.max(Math.min(sizeRadX, sizeRadY)/3, 4);
 		calculateSizes(bezelWidth);
 
 		// Calculate ticks
@@ -130,20 +131,20 @@ public class GKnob extends GRoundControl {
 	 * @param bw the width of the bezel
 	 */
 	protected void calculateSizes(int bw){
-		bezelWidth = PApplet.constrain(bw, 0, Math.min(halfWidth, halfHeight));
-		bezelRadX = halfWidth;
-		bezelRadY = halfHeight;
-		knobRadX = bezelRadX - bezelWidth;
-		knobRadY = bezelRadY - bezelWidth;
+		bezelWidth = PApplet.constrain(bw, 0, Math.min(sizeRadX, sizeRadY));
+		sizeRadX = sizeRadX;
+		sizeRadY = sizeRadY;
+		knobRadX = sizeRadX - bezelWidth;
+		knobRadY = sizeRadY - bezelWidth;
 		if(knobRadX <=0 || knobRadY <= 0){
 			knobRadX = knobRadY = 0;
 			int inset = Math.min(Math.round(0.2f * bezelWidth), 10);
-			barRadX = bezelRadX - inset;
-			barRadY = bezelRadY - inset;
+			barRadX = sizeRadX - inset;
+			barRadY = sizeRadY - inset;
 		}
 		else {
-			barRadX = Math.round(0.5f * (bezelRadX + knobRadX));
-			barRadY = Math.round(0.5f * (bezelRadY + knobRadY));			
+			barRadX = Math.round(0.5f * (sizeRadX + knobRadX));
+			barRadY = Math.round(0.5f * (sizeRadY + knobRadY));			
 		}
 	}
 
@@ -165,8 +166,8 @@ public class GKnob extends GRoundControl {
 			mark[i][0].x = (int) Math.round(knobRadX * cosine);
 			mark[i][0].y = (int) Math.round(knobRadY * sine);
 			if(i == 0 || i == nticks - 1){
-				mark[i][1].x = (int) Math.round(bezelRadX * cosine);
-				mark[i][1].y = (int) Math.round(bezelRadY * sine);
+				mark[i][1].x = (int) Math.round(sizeRadX * cosine);
+				mark[i][1].y = (int) Math.round(sizeRadY * sine);
 			}
 			else {
 				mark[i][1].x = (int) Math.round(barRadX * cosine);
@@ -219,10 +220,11 @@ public class GKnob extends GRoundControl {
 	}
 
 	/**
-	 * Determines whether the position ax, ay is over the round control
-	 * of this Slider.
+	 * Determines whether the position ax, ay is over any part of the round control.
 	 * 
-	 * @return true if mouse is over the slider thumb else false
+	 * @param ax x coordinate
+	 * @param ay y coordinate
+	 * @return true if mouse is over the control else false
 	 */
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
@@ -234,18 +236,23 @@ public class GKnob extends GRoundControl {
 		return inside;
 	}
 
+	/**
+	 * Determines if the position is over the round control and within the rotation range.
+	 * @param ax x coordinate
+	 * @param ay y coordinate
+	 * @return true if mouse is over the rotation arc of the control else false
+	 */
 	public boolean isOverStrict(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		p.x += cx;
-		p.y += cx;
+		p.y += cy;
 		boolean inside = false;
 		int dx = ax - p.x;
 		int dy = ay - p.y;
 		inside = (dx * dx  + dy * dy < width * width /4);
 		if(inside){
 			int degs = getAngleFromXY(p, ax, ay);
-			degs = (degs < 0) ? degs + 360 : degs;
 			inside = isInValidArc(degs);
 		}
 		return inside;
@@ -307,8 +314,8 @@ public class GKnob extends GRoundControl {
 			winApp.stroke(localColor.btnDown);
 			winApp.strokeWeight(2.0f);
 			winApp.line(0, 0,
-					Math.round((halfWidth - bezelWidth) * Math.cos(rad)),
-					Math.round((halfHeight - bezelWidth) * Math.sin(rad)) );
+					Math.round((sizeRadX - bezelWidth) * Math.cos(rad)),
+					Math.round((sizeRadY - bezelWidth) * Math.sin(rad)) );
 		}
 		winApp.popStyle();
 		winApp.popMatrix();
