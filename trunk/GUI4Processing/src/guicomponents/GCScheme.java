@@ -147,6 +147,12 @@ public class GCScheme implements GConstants {
 		s.acbTrack = image.get(36, schemeNo) | ALPHA_MASK;
 		s.acbLast = image.get(37, schemeNo) | ALPHA_MASK;
 		s.acbFirst = image.get(38, schemeNo) | ALPHA_MASK;
+
+		s.knobBorder = image.get(40, schemeNo) | ALPHA_MASK;
+		s.knobFill = image.get(41, schemeNo) | ALPHA_MASK;
+		s.knobTrack = image.get(42, schemeNo) | ALPHA_MASK;
+		s.knobTicks = image.get(43, schemeNo) | ALPHA_MASK;
+		s.knobNeedle = image.get(44, schemeNo) | ALPHA_MASK;
 	}
 
 	// Class attributes and methods start here
@@ -169,6 +175,8 @@ public class GCScheme implements GConstants {
 	public int cbxFont, cbxBack, cbxBorder;
 	// ActivityBar
 	public int acbBorder, acbTrack, acbFirst, acbLast;
+	// Knobs
+	public int knobBorder, knobFill, knobTrack, knobTicks, knobNeedle;
 	
 	// Transparency level
 	private int alpha = 255;
@@ -236,6 +244,11 @@ public class GCScheme implements GConstants {
 		acbTrack = (acbTrack & 0x00ffffff | a);
 		acbLast = (acbLast & 0x00ffffff | a);
 		acbFirst = (acbFirst & 0x00ffffff | a);
+		knobBorder = (knobBorder & 0x00ffffff | a);
+		knobFill = (knobTrack & 0x00ffffff | a);
+		knobTrack = (knobTrack & 0x00ffffff | a);
+		knobTicks = (knobBorder & 0x00ffffff | a);
+		knobNeedle = (knobBorder & 0x00ffffff | a);
 	}
 
 	/**
