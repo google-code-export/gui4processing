@@ -124,14 +124,14 @@ public class GKnobOval extends GKnob {
 
 			// Draw active value arc
 			if(valueTrackVisible){
-				winApp.fill(localColor.sdrTrack);
+				winApp.fill(localColor.knobTrack);
 				winApp.noStroke();
 				nrad = convertRealAngleToOval(rad, sizeRadX, sizeRadY);
 				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
 			}
 
 			// Draw ticks
-			winApp.stroke(localColor.sdrBorder);
+			winApp.stroke(localColor.knobBorder);
 			winApp.stroke(2);
 			for(int i = 0; i < mark.length; i++){
 				if(i == 0 || i == mark.length-1)
@@ -143,13 +143,13 @@ public class GKnobOval extends GKnob {
 		}
 		if(knobRadX > 0 ){
 			// Draw knob centre
-			winApp.stroke(localColor.sdrBorder);
-			winApp.strokeWeight(1.0f);
-			winApp.fill(localColor.sdrThumb);
+			winApp.stroke(localColor.knobBorder);
+			winApp.strokeWeight(2.0f);
+			winApp.fill(localColor.knobFill);
 			winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
 
 			// Draw needle
-			winApp.stroke(localColor.btnDown);
+			winApp.stroke(localColor.knobNeedle);
 			winApp.strokeWeight(2.0f);
 			nrad = convertRealAngleToOval(rad, sizeRadX, sizeRadY);
 			winApp.line(0, 0,

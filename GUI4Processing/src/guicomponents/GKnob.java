@@ -287,13 +287,13 @@ public class GKnob extends GRoundControl {
 
 			// Draw active track
 			if(valueTrackVisible){
-				winApp.fill(localColor.sdrTrack);
+				winApp.fill(localColor.knobTrack);
 				winApp.noStroke();
 				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, rad);
 			}
 			
 			// Draw ticks
-			winApp.stroke(localColor.sdrBorder);
+			winApp.stroke(localColor.knobBorder);
 			winApp.stroke(2);
 			for(int i = 0; i < mark.length; i++){
 				if(i == 0 || i == mark.length-1)
@@ -305,13 +305,13 @@ public class GKnob extends GRoundControl {
 		}
 		if(knobRadX > 0 ){
 			// Draw knob centre
-			winApp.stroke(localColor.sdrBorder);
-			winApp.strokeWeight(1.0f);
-			winApp.fill(localColor.sdrThumb);
+			winApp.stroke(localColor.knobBorder);
+			winApp.strokeWeight(2.0f);
+			winApp.fill(localColor.knobFill);
 			winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
 
 			// Draw needle
-			winApp.stroke(localColor.btnDown);
+			winApp.stroke(localColor.knobNeedle);
 			winApp.strokeWeight(2.0f);
 			winApp.line(0, 0,
 					Math.round((sizeRadX - bezelWidth) * Math.cos(rad)),
