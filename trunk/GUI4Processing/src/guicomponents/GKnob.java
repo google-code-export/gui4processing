@@ -67,6 +67,7 @@ public class GKnob extends GRoundControl {
 	protected int knobRadX, knobRadY, barRadX, barRadY;
 
 	protected boolean valueTrackVisible = true;
+	protected boolean rotArcOnly = false;
 
 	/**
 	 * Create a GKnob control <br><br>
@@ -132,8 +133,6 @@ public class GKnob extends GRoundControl {
 	 */
 	protected void calculateSizes(int bw){
 		bezelWidth = PApplet.constrain(bw, 0, Math.min(sizeRadX, sizeRadY));
-		sizeRadX = sizeRadX;
-		sizeRadY = sizeRadY;
 		knobRadX = sizeRadX - bezelWidth;
 		knobRadY = sizeRadY - bezelWidth;
 		if(knobRadX <=0 || knobRadY <= 0){
@@ -259,6 +258,37 @@ public class GKnob extends GRoundControl {
 	}
 
 	/**
+	 * If this is set to false (the default value) then the mouse button 
+	 * can be pressed over any part of the knob and bezel  to start rotating
+	 * the knob. If it is true then only that portion of the knob within
+	 * the rotation arc. <br>
+	 * It can only be changed if 
+	 * param strict the strictOver to set
+	 */
+	public void setStrictOver(boolean strict) {
+		if(strict || (!strict && !rotArcOnly))
+			strictOver = strict;
+		//		else if(!rotArcOnly )
+		//			strictOver = strict;
+	}
+
+	/**
+	 * @return the rotArcOnly
+	 */
+	public boolean isRotArcOnly() {
+		return rotArcOnly;
+	}
+
+	/**
+	 * @param rotArcOnly the rotArcOnly to set
+	 */
+	public void setRotArcOnly(boolean rotArcOnly) {
+		this.rotArcOnly = rotArcOnly;
+		if(rotArcOnly)
+			strictOver = true;
+	}
+
+	/**
 	 * Draw the knob
 	 */
 	public void draw(){
@@ -278,11 +308,16 @@ public class GKnob extends GRoundControl {
 
 		// Draw bezel
 		if(bezelWidth > 0){
-			winApp.fill(winApp.color(128,48));
 			winApp.noStroke();
-			winApp.ellipse(0, 0, width, height);
+			if(rotArcOnly)
+				winApp.fill(winApp.color(128,128));
+			else
+			{
+				winApp.fill(winApp.color(128,48));
+				winApp.ellipse(0, 0, width, height);
+				winApp.fill(winApp.color(128,80));
+			}
 			// draw darker arc for rotation range
-			winApp.fill(winApp.color(128,80));
 			winApp.arc(0, 0, width, height, start, end);
 
 			// Draw active track
@@ -291,7 +326,7 @@ public class GKnob extends GRoundControl {
 				winApp.noStroke();
 				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, rad);
 			}
-			
+
 			// Draw ticks
 			winApp.stroke(localColor.knobBorder);
 			winApp.stroke(2);
@@ -308,7 +343,10 @@ public class GKnob extends GRoundControl {
 			winApp.stroke(localColor.knobBorder);
 			winApp.strokeWeight(2.0f);
 			winApp.fill(localColor.knobFill);
-			winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
+			if(rotArcOnly)
+				winApp.arc(0, 0, 2*knobRadX, 2*knobRadY, start, end);
+			else	
+				winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
 
 			// Draw needle
 			winApp.stroke(localColor.knobNeedle);
@@ -319,6 +357,10 @@ public class GKnob extends GRoundControl {
 		}
 		winApp.popStyle();
 		winApp.popMatrix();
+	}
+
+	private void drawBezel(){
+
 	}
 
 }

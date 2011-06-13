@@ -43,6 +43,7 @@ public abstract class GRoundControl extends GComponent {
 
 	protected float start,end;
 	protected int sizeRadX, sizeRadY;
+	protected int sizeX, sizeY;
 
 	protected boolean strictOver = false;
 
@@ -107,7 +108,7 @@ public abstract class GRoundControl extends GComponent {
 		super(theApplet, x, y);
 		this.width = (width < 20) ? 20 : width;
 		this.height = (height < 20) ? 20 : height;
-		sizeRadX = cx =this.width/2;
+		sizeRadX = cx = this.width/2;
 		sizeRadY = cy = this.height/2;
 
 		aLow = getValidArcAngle(arcStart);
@@ -333,7 +334,7 @@ public abstract class GRoundControl extends GComponent {
 	 * param strict the strictOver to set
 	 */
 	public void setStrictOver(boolean strict) {
-		this.strictOver = strict;
+		strictOver = strict;
 	}
 
 	/**
@@ -397,6 +398,17 @@ public abstract class GRoundControl extends GComponent {
 		if(ignoreInteria)
 			needleAngle = targetNeedleAngle;
 	}
+	
+	/**
+	 * Prevent width being changed
+	 */
+	public void setWidth(int width) {}
+
+	/**
+	 * Prevent height being changed
+	 */
+	public void setHeight(int height) {}
+
 
 	/**
 	 * Calculate the equivalent needle angle for a given value.
