@@ -343,8 +343,13 @@ public class GKnob extends GRoundControl {
 			winApp.stroke(localColor.knobBorder);
 			winApp.strokeWeight(2.0f);
 			winApp.fill(localColor.knobFill);
-			if(rotArcOnly)
+			if(rotArcOnly){
 				winApp.arc(0, 0, 2*knobRadX, 2*knobRadY, start, end);
+				winApp.stroke(localColor.knobBorder);
+				winApp.strokeWeight(2.0f);
+				winApp.line(0, 0, mark[0][0].x, mark[0][0].y);
+				winApp.line(0, 0, mark[mark.length-1][0].x, mark[mark.length-1][0].y);			
+			}
 			else	
 				winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
 
@@ -357,10 +362,6 @@ public class GKnob extends GRoundControl {
 		}
 		winApp.popStyle();
 		winApp.popMatrix();
-	}
-
-	private void drawBezel(){
-
 	}
 
 }
