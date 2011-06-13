@@ -115,11 +115,23 @@ public class GKnobOval extends GKnob {
 
 		// Draw bezel
 		if(bezelWidth > 0){
-			winApp.fill(winApp.color(128,48));
+//			winApp.fill(winApp.color(128,48));
+//			winApp.noStroke();
+//			winApp.ellipse(0, 0, width, height);
+//			// draw darker arc for rotation range
+//			winApp.fill(winApp.color(128,80));
+//			winApp.arc(0, 0, width, height, start, end);
 			winApp.noStroke();
-			winApp.ellipse(0, 0, width, height);
+			if(rotArcOnly)
+				winApp.fill(winApp.color(128,128));
+			else
+			{
+				winApp.fill(winApp.color(128,48));
+				winApp.ellipse(0, 0, width, height);
+				winApp.fill(winApp.color(128,80));
+			}
+
 			// draw darker arc for rotation range
-			winApp.fill(winApp.color(128,80));
 			winApp.arc(0, 0, width, height, start, end);
 
 			// Draw active value arc
