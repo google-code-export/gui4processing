@@ -98,80 +98,6 @@ public class GKnobOval extends GKnob {
 		calcTickMarkerPositions(nbrTickMarks);
 	}
 
-	public void draw(){
-		if(!visible) return;
-
-		Point p = new Point(0,0);
-		calcAbsPosition(p);
-		p.x += cx;
-		p.y += cy;
-
-		float rad = PApplet.radians(needleAngle), nrad;
-
-		winApp.pushMatrix();
-		winApp.translate(p.x, p.y);
-		winApp.pushStyle();
-		winApp.style(G4P.g4pStyle);
-
-		// Draw bezel
-		if(bezelWidth > 0){
-//			winApp.fill(winApp.color(128,48));
-//			winApp.noStroke();
-//			winApp.ellipse(0, 0, width, height);
-//			// draw darker arc for rotation range
-//			winApp.fill(winApp.color(128,80));
-//			winApp.arc(0, 0, width, height, start, end);
-			winApp.noStroke();
-			if(rotArcOnly)
-				winApp.fill(winApp.color(128,128));
-			else
-			{
-				winApp.fill(winApp.color(128,48));
-				winApp.ellipse(0, 0, width, height);
-				winApp.fill(winApp.color(128,80));
-			}
-
-			// draw darker arc for rotation range
-			winApp.arc(0, 0, width, height, start, end);
-
-			// Draw active value arc
-			if(valueTrackVisible){
-				winApp.fill(localColor.knobTrack);
-				winApp.noStroke();
-				nrad = convertRealAngleToOval(rad, sizeRadX, sizeRadY);
-				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
-			}
-
-			// Draw ticks
-			winApp.stroke(localColor.knobBorder);
-			winApp.stroke(2);
-			for(int i = 0; i < mark.length; i++){
-				if(i == 0 || i == mark.length-1)
-					winApp.strokeWeight(2.0f);
-				else
-					winApp.strokeWeight(1.2f);
-				winApp.line(mark[i][0].x, mark[i][0].y,mark[i][1].x, mark[i][1].y);
-			}
-		}
-		if(knobRadX > 0 ){
-			// Draw knob centre
-			winApp.stroke(localColor.knobBorder);
-			winApp.strokeWeight(2.0f);
-			winApp.fill(localColor.knobFill);
-			winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
-
-			// Draw needle
-			winApp.stroke(localColor.knobNeedle);
-			winApp.strokeWeight(2.0f);
-			nrad = convertRealAngleToOval(rad, sizeRadX, sizeRadY);
-			winApp.line(0, 0,
-					Math.round((knobRadX) * Math.cos(nrad)),
-					Math.round((knobRadY) * Math.sin(nrad)) );
-		}
-		winApp.popStyle();
-		winApp.popMatrix();
-	}
-
 	/**
 	 * Determines whether the position ax, ay is over any part of the round control.
 	 * 
@@ -253,6 +179,84 @@ public class GKnobOval extends GKnob {
 			ang += deltaAng;
 		}
 		nbrTickMarks = nticks;
+	}
+
+	/**
+	 * Draw the knob
+	 */
+	public void draw(){
+		if(!visible) return;
+
+		Point p = new Point(0,0);
+		calcAbsPosition(p);
+		p.x += cx;
+		p.y += cy;
+
+		float rad = PApplet.radians(needleAngle), nrad;
+
+		winApp.pushMatrix();
+		winApp.translate(p.x, p.y);
+		winApp.pushStyle();
+		winApp.style(G4P.g4pStyle);
+
+		// Draw bezel
+		if(bezelWidth > 0){
+			winApp.noStroke();
+			if(rotArcOnly)
+				winApp.fill(winApp.color(128,128));
+			else
+			{
+				winApp.fill(winApp.color(128,48));
+				winApp.ellipse(0, 0, width, height);
+				winApp.fill(winApp.color(128,80));
+			}
+
+			// draw darker arc for rotation range
+			winApp.arc(0, 0, width, height, start, end);
+
+			// Draw active value arc
+			if(valueTrackVisible){
+				winApp.fill(localColor.knobTrack);
+				winApp.noStroke();
+				nrad = convertRealAngleToOval(rad, sizeRadX, sizeRadY);
+				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
+			}
+
+			// Draw ticks
+			winApp.stroke(localColor.knobBorder);
+			winApp.stroke(2);
+			for(int i = 0; i < mark.length; i++){
+				if(i == 0 || i == mark.length-1)
+					winApp.strokeWeight(2.0f);
+				else
+					winApp.strokeWeight(1.2f);
+				winApp.line(mark[i][0].x, mark[i][0].y,mark[i][1].x, mark[i][1].y);
+			}
+		}
+		if(knobRadX > 0 ){	
+			// Draw knob centre
+			winApp.stroke(localColor.knobBorder);
+			winApp.strokeWeight(2.0f);
+			winApp.fill(localColor.knobFill);
+			if(rotArcOnly){
+				winApp.arc(0, 0, 2*knobRadX, 2*knobRadY, start, end);
+				winApp.stroke(localColor.knobBorder);
+				winApp.strokeWeight(2.0f);
+				winApp.line(0, 0, mark[0][0].x, mark[0][0].y);
+				winApp.line(0, 0, mark[mark.length-1][0].x, mark[mark.length-1][0].y);			
+			}
+			else	
+				winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
+
+			// Draw needle
+			winApp.stroke(localColor.knobNeedle);
+			winApp.strokeWeight(2.0f);
+			winApp.line(0, 0,
+					Math.round((sizeRadX - bezelWidth) * Math.cos(rad)),
+					Math.round((sizeRadY - bezelWidth) * Math.sin(rad)) );
+		}
+		winApp.popStyle();
+		winApp.popMatrix();
 	}
 
 }
