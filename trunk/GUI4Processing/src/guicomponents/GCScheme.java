@@ -245,10 +245,10 @@ public class GCScheme implements GConstants {
 		acbLast = (acbLast & 0x00ffffff | a);
 		acbFirst = (acbFirst & 0x00ffffff | a);
 		knobBorder = (knobBorder & 0x00ffffff | a);
-		knobFill = (knobTrack & 0x00ffffff | a);
+		knobFill = (knobFill & 0x00ffffff | a);
 		knobTrack = (knobTrack & 0x00ffffff | a);
-		knobTicks = (knobBorder & 0x00ffffff | a);
-		knobNeedle = (knobBorder & 0x00ffffff | a);
+		knobTicks = (knobTicks & 0x00ffffff | a);
+		knobNeedle = (knobNeedle & 0x00ffffff | a);
 	}
 
 	/**

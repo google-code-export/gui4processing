@@ -97,7 +97,7 @@ public abstract class GRoundControl extends GComponent {
 	// visual effect. A value of 1 means no inertia.s
 	protected int needleInertia = 1;
 
-	protected int mode = CTRL_ANGULAR;
+	protected int mode = CTRL_HORIZONTAL;
 	protected float sensitivity = 1.0f;
 	protected int startMouseX, startMouseY;
 
