@@ -6,6 +6,8 @@ GLabel lblSomeString, lblAlpha, lblAction, lblCursor;
 GTextField txfSomeText;
 GCombo cboColor, cboFont;
 GHorzSlider sdrAlpha;
+GKnob knob;
+GKnobOval knobOval;
 GActivityBar acyBar;
 GTimer tmrTimer;
 GButton btnTimer;
@@ -39,6 +41,7 @@ void setup(){
   // Create 2D GUI
   createPanelAndStatusBar();
   createCombos();
+  createKnobs();
   createTransparencySlider();
   createTextPlayArea();
   createMouseOverSection();
@@ -142,6 +145,18 @@ public void createCombos() {
   pnlControls.add(cboFont);
 }
 
+public void createKnobs(){
+  knob = new GKnob(this, 320,90,60,110, 70);
+  knob.setNbrTickMarks(11);
+  knob.setValue(67);
+  knobOval = new GKnobOval(this, 260, 160, 180, 80, 185, 355);
+  knobOval.setNbrTickMarks(6);
+  knobOval.setRotArcOnly(true);
+  knobOval.setValue(25);
+  pnlControls.add(knob);
+  pnlControls.add(knobOval);
+}
+
 public void handleComboEvents(GCombo combo){
   if(cboColor == combo){
     pnlControls.setColorScheme(cboColor.selectedIndex());
@@ -150,6 +165,8 @@ public void handleComboEvents(GCombo combo){
     acyBar.setColorScheme(cboColor.selectedIndex());
     btnTimer.setColorScheme(cboColor.selectedIndex());
     lblCursor.setColorScheme(cboColor.selectedIndex());
+    knob.setColorScheme(cboColor.selectedIndex());
+    knobOval.setColorScheme(cboColor.selectedIndex());
     btnControl.setColorScheme(cboColor.selectedIndex());
     cboFont.setColorScheme(cboColor.selectedIndex());
     cboColor.setColorScheme(cboColor.selectedIndex());
