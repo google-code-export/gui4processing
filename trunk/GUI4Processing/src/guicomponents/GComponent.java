@@ -136,12 +136,6 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/** Width and height of component in pixels for drawing background */
 	protected int width, height;
 
-	/** Minimum width and height of component in pixels based on child components */
-	protected int minWidth = 20, minHeight = 20;
-
-	/** Maximum width and height of component in pixels based on child components */
-	protected int maxWidth = 200, maxHeight = 200;
-
 	/** Simple tag that can be used by the user */
 	public String tag;
 

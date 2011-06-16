@@ -39,12 +39,15 @@ import processing.core.PApplet;
  */
 public abstract class GRoundControl extends GComponent {
 
+	// Centre of needle rotation
 	protected int cx,cy;
 
-	protected float start,end;
+	protected float start, end;
+	
+	// Size to out edge of bezel
 	protected int sizeRadX, sizeRadY;
-	protected int sizeX, sizeY;
 
+	// What is part of the knob
 	protected boolean strictOver = false;
 
 	/*	 
@@ -59,21 +62,6 @@ public abstract class GRoundControl extends GComponent {
 
 	// Used to indicate if the arc goes over the 0 (east) position
 	public boolean wrap0;
-
-	// These angles are adjusted to be in range aLow to aHigh
-	// this is updated in pre() and is used to calculate the current value
-	// These angle can be in the range -360 - +360
-	public int needleAngle, lastTargetNeedleAngle, targetNeedleAngle;
-	protected int needleDir;
-
-	// These angles are adjusted to be in the range 0-360
-	protected int mouseAngle, lastMouseAngle;
-	// When the mouse is pressed this measures the difference between
-	// mouseAngle and targetNeedleAngle preventing discontinuous jumps
-	// in the knob value. Offset is adjusted when the targetNeedleAngle
-	// is stopped at either end of the slider again to prevent
-	// discontinuous movement of the needle
-	protected int offset;
 
 	/*
 	These represent the range of values that will be returned by the
@@ -100,6 +88,21 @@ public abstract class GRoundControl extends GComponent {
 	protected int mode = CTRL_HORIZONTAL;
 	protected float sensitivity = 1.0f;
 	protected int startMouseX, startMouseY;
+
+	// These angles are adjusted to be in range aLow to aHigh
+	// this is updated in pre() and is used to calculate the current value
+	// These angle can be in the range -360 - +360
+	public int needleAngle, lastTargetNeedleAngle, targetNeedleAngle;
+	protected int needleDir;
+
+	// These angles are adjusted to be in the range 0-360
+	protected int mouseAngle, lastMouseAngle;
+	// When the mouse is pressed this measures the difference between
+	// mouseAngle and targetNeedleAngle preventing discontinuous jumps
+	// in the knob value. Offset is adjusted when the targetNeedleAngle
+	// is stopped at either end of the slider again to prevent
+	// discontinuous movement of the needle
+	protected int offset;
 
 	/**
 	 * This constructor should be called by the appropriate child class constructor
