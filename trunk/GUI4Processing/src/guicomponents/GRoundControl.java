@@ -321,6 +321,22 @@ public abstract class GRoundControl extends GComponent {
 	}
 
 	/**
+	 * Get the low rotation angle
+	 * @return the aLow
+	 */
+	public int getaLow() {
+		return aLow;
+	}
+
+	/**
+	 * Get the high rotation angle
+	 * @return the aHigh
+	 */
+	public int getaHigh() {
+		return aHigh;
+	}
+
+	/**
 	 * See if the 'strict over' option is set
 	 * @return the strictOver
 	 */
@@ -341,6 +357,22 @@ public abstract class GRoundControl extends GComponent {
 	}
 
 	/**
+	 * Set the range of values that are to be returned by this control. <br>
+	 * 
+	 * 
+	 * @param init initial value of control
+	 * @param start value matching the start rotation
+	 * @param end  value matching the start rotation (Values < start are acceptable)
+	 */
+	public void setLimits(float init, float start, float end)
+	{
+		valueStart = start;
+		valueEnd = end;
+		clockwiseValues = (start < end);
+		setValue(init, true);
+	}
+
+	/**
 	 * Get the current value represented by the control as a floating point value.
 	 * @return current float value
 	 */
@@ -357,22 +389,6 @@ public abstract class GRoundControl extends GComponent {
 	 */
 	public int getValue(){
 		return Math.round(getValuef());
-	}
-
-	/**
-	 * Set the range of values that are to be returned by this control. <br>
-	 * 
-	 * 
-	 * @param init initial value of control
-	 * @param start value matching the start rotation
-	 * @param end  value matching the start rotation (Values < start are acceptable)
-	 */
-	public void setLimits(float init, float start, float end)
-	{
-		valueStart = start;
-		valueEnd = end;
-		clockwiseValues = (start < end);
-		setValue(init, true);
 	}
 
 	/**

@@ -73,7 +73,7 @@ public class GTextField extends GComponent {
 	// Determines whether this component is multi-line or not can only 
 	// be set in the constructor
 	private boolean multiLine = false;
-	
+
 	/**
 	 * Creates a single line GTextField object
 	 * 
@@ -165,13 +165,16 @@ public class GTextField extends GComponent {
 		setFont(fontname, fontsize, leading);
 	}
 
-	
+
 	/**
 	 * When the textfield loses focus it also loses any text selection.
 	 */
 	protected void loseFocus(GComponent toThis){
 		startSelect = endSelect = -1; 	// reset text selection to nothing
 		focusIsWith = null; 			// remove focus
+		// Fire an event
+		eventType = ENTERED;
+		fireEvent();
 	}
 
 	/**
@@ -276,11 +279,11 @@ public class GTextField extends GComponent {
 	private Point cursorPixPosition(int pos){
 		// take text up until the cursor position
 		String preCursor = text.substring(0, pos);
-		 // text of the current line
+		// text of the current line
 		String thisline = preCursor.substring(Math.max(preCursor.lastIndexOf("\n")+1, 0), preCursor.length());
-		 //pixel width of characters on this line
+		//pixel width of characters on this line
 		int cursorPixX = (int)winApp.textWidth(thisline.substring(startX, thisline.length()));
-		 //pixel position is integer line number times line height
+		//pixel position is integer line number times line height
 		int cursorPixY = (int) ((preCursor.length() - preCursor.replaceAll("\n", "").length() - startY) * leading);
 		return new Point(cursorPixX, cursorPixY);
 	}
@@ -304,10 +307,10 @@ public class GTextField extends GComponent {
 	 * Converts an x, y position(pixels) relative to corner of textbox to an x,y cursor index
 	 */
 	private Point cursorPos2D(int x, int y){
-		
+
 		x -= 4; y -= 4;		// subtract the padding from the cursor position					
 		String[] splittext = text.split("\n");
-	 	// take nearest integer multiple of line height and add to starting line number
+		// take nearest integer multiple of line height and add to starting line number
 		int cursorY = (int) ((int) y / leading + startY);
 
 		//if the click was out of the range, return the current cursor pos.
@@ -410,7 +413,7 @@ public class GTextField extends GComponent {
 		else 
 			return text.substring(Math.min(startSelect, endSelect),Math.max(startSelect, endSelect));
 	}
-	
+
 	/**
 	 * Sets the contents of the text box and displays the
 	 * specified string in the text box widget. <br>
@@ -425,7 +428,7 @@ public class GTextField extends GComponent {
 		//reset the selection and cursor positions
 		startSelect = endSelect = -1;
 		cursorPos = 0;
-		
+
 		eventType = SET;
 		fireEvent();
 	}
@@ -444,7 +447,7 @@ public class GTextField extends GComponent {
 	public boolean getShowLines(){
 		return drawSepLines;
 	}
-	
+
 	/**
 	 * SCroll the text within the field
 	 * @param dir
@@ -464,7 +467,7 @@ public class GTextField extends GComponent {
 		}
 		return result;
 	}
-	
+
 	private boolean scrollRight(){
 		String[] splitText = PApplet.split(text, "\n");
 		winApp.textFont(localFont);
@@ -479,7 +482,7 @@ public class GTextField extends GComponent {
 		}
 		return false;
 	}
-	
+
 	private boolean scrollLeft(){
 		if(startX > 0){
 			startX--;
@@ -487,7 +490,7 @@ public class GTextField extends GComponent {
 		}
 		return false;
 	}
-	
+
 	private boolean scrollUp(){
 		if(multiLine && startY > 0){
 			startY--;
@@ -496,7 +499,7 @@ public class GTextField extends GComponent {
 		}
 		return false;
 	}
-	
+
 	private boolean scrollDown(){
 		if(multiLine){
 			int nbrLines = text.split("\n").length;
@@ -508,7 +511,7 @@ public class GTextField extends GComponent {
 		}		
 		return false;
 	}
-	
+
 	/**
 	 * Mouse event handler - the focus cannot be lost by anything
 	 * we do here - it has to be taken away when the mouse is pressed
@@ -661,9 +664,11 @@ public class GTextField extends GComponent {
 				else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					// If multiline component add linefeed to right of cursor
 					if(multiLine)
-						appendToRightOfCursor("\n"); 						
-					eventType = ENTERED;
-					fireEvent();
+						appendToRightOfCursor("\n"); 
+					else {
+						eventType = ENTERED;
+						fireEvent();
+					}
 				}
 				else{
 					if((e.getModifiers() & shortcutMask) == shortcutMask){	//shortcut handling
@@ -721,7 +726,7 @@ public class GTextField extends GComponent {
 
 		winApp.pushMatrix();
 		winApp.translate(pos.x, pos.y);
-		
+
 		winApp.pushStyle();
 		winApp.style(G4P.g4pStyle);
 
@@ -759,17 +764,17 @@ public class GTextField extends GComponent {
 						cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
 					winApp.rect(4 + cursorPixPosition(i).x, 2 + cursorPixPosition(i).y,
 							Math.min(winApp.textWidth(text.substring(i, i+1)),
-							width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+									width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
 				}
 			}
 		}
-		
+
 		// ########################################
 		// Draw the string
 		winApp.fill(localColor.txfFont);
 		winApp.textLeading(leading); //set the leading
 		winApp.text(viewText(), 4, 1, width + 8, height - 2);
-		
+
 		// ########################################
 		// Draw the insertion point (it blinks!)
 		if(focusIsWith == this && (winApp.millis() % 1000) > 500) {
@@ -785,7 +790,7 @@ public class GTextField extends GComponent {
 		winApp.popStyle();
 		winApp.popMatrix();
 	}
-	
+
 	public void drawORG() {
 		if(!visible) return;
 
@@ -830,17 +835,17 @@ public class GTextField extends GComponent {
 						cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
 					winApp.rect(pos.x + 4 + cursorPixPosition(i).x, pos.y + 2 + cursorPixPosition(i).y,
 							Math.min(winApp.textWidth(text.substring(i, i+1)),
-							width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+									width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
 				}
 			}
 		}
-		
+
 		// ########################################
 		// Draw the string
 		winApp.fill(localColor.txfFont);
 		winApp.textLeading(leading); //set the leading
 		winApp.text(viewText(), pos.x + 4, pos.y + 1, width + 8, height - 2);
-		
+
 		// ########################################
 		// Draw the insertion point (it blinks!)
 		if(focusIsWith == this && (winApp.millis() % 1000) > 500) {
@@ -861,7 +866,7 @@ public class GTextField extends GComponent {
 		String newText = oldText.replace('\n',replacement);
 		return newText;
 	}
-	
+
 	/**
 	 * Returns true if b has a valid unicode value
 	 *
@@ -1000,6 +1005,5 @@ public class GTextField extends GComponent {
 				(c >= 0xF81F && c <= 0xF820) ||
 				(c == 0xF833));
 	}
-
 
 } //end class bracket

@@ -128,13 +128,17 @@ public class GClip implements ClipboardOwner {
 	/**
 	 * Copy a string to the clipboard. If the Clipboard has not been created
 	 * then create it.
-	 * @return
+	 * @return true for a successful copy to clipboard
 	 */
-	private void copyString(String chars){
+	private boolean copyString(String chars){
 		if(clipboard == null)
 			makeClipboardObject();
-		StringSelection fieldContent = new StringSelection (chars);
-		clipboard.setContents (fieldContent, this);
+		if(clipboard != null){
+			StringSelection fieldContent = new StringSelection (chars);
+			clipboard.setContents (fieldContent, this);
+			return true;
+		}
+		return false;
 	}
 
 	/**
