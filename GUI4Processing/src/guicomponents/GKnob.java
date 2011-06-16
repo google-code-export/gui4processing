@@ -185,6 +185,14 @@ public class GKnob extends GRoundControl {
 		calcTickMarkerPositions(nbrTickMarks);
 	}
 
+	
+	/**
+	 * @return the bezelWidth
+	 */
+	public int getBezelWidth() {
+		return bezelWidth;
+	}
+
 	/**
 	 * Determines whether the value track is shown or not
 	 * @param visible true or false

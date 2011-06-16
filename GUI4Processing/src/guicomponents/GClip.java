@@ -77,10 +77,10 @@ public class GClip implements ClipboardOwner {
 	 * Copy a string to the clipboard
 	 * @param chars
 	 */
-	public static void copy(String chars){
+	public static boolean copy(String chars){
 		if(gclip == null)
 			gclip = new GClip();
-		gclip.copyString(chars);
+		return gclip.copyString(chars);
 	}
 
 	/**
