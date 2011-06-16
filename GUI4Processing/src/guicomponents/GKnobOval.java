@@ -141,7 +141,7 @@ public class GKnobOval extends GKnob {
 			double cosA = Math.cos(angle), sinA = Math.sin(angle);
 
 			double h = Math.abs(sizeRadX - sizeRadY)/2.0;
-			if(width > height){
+			if(sizeRadX > sizeRadY){
 				eX -= h * cosA;
 				eY += h * sinA;
 			}
@@ -207,12 +207,12 @@ public class GKnobOval extends GKnob {
 			else
 			{
 				winApp.fill(winApp.color(128,48));
-				winApp.ellipse(0, 0, width, height);
+				winApp.ellipse(0, 0, 2*sizeRadX, 2*sizeRadY);
 				winApp.fill(winApp.color(128,80));
 			}
 
 			// draw darker arc for rotation range
-			winApp.arc(0, 0, width, height, start, end);
+			winApp.arc(0, 0, 2*sizeRadX, 2*sizeRadY, start, end);
 
 			// Draw active value arc
 			if(valueTrackVisible){
@@ -224,10 +224,10 @@ public class GKnobOval extends GKnob {
 
 			// Draw ticks
 			winApp.stroke(localColor.knobBorder);
-			winApp.stroke(2);
+			winApp.strokeWeight(1.2f);
 			for(int i = 0; i < mark.length; i++){
 				if(i == 0 || i == mark.length-1)
-					winApp.strokeWeight(2.0f);
+					winApp.strokeWeight(1.5f);
 				else
 					winApp.strokeWeight(1.2f);
 				winApp.line(mark[i][0].x, mark[i][0].y,mark[i][1].x, mark[i][1].y);
@@ -236,12 +236,12 @@ public class GKnobOval extends GKnob {
 		if(knobRadX > 0 ){	
 			// Draw knob centre
 			winApp.stroke(localColor.knobBorder);
-			winApp.strokeWeight(2.0f);
+			winApp.strokeWeight(1.2f);
 			winApp.fill(localColor.knobFill);
 			if(rotArcOnly){
 				winApp.arc(0, 0, 2*knobRadX, 2*knobRadY, start, end);
 				winApp.stroke(localColor.knobBorder);
-				winApp.strokeWeight(2.0f);
+				winApp.strokeWeight(1.2f);
 				winApp.line(0, 0, mark[0][0].x, mark[0][0].y);
 				winApp.line(0, 0, mark[mark.length-1][0].x, mark[mark.length-1][0].y);			
 			}
@@ -250,7 +250,7 @@ public class GKnobOval extends GKnob {
 
 			// Draw needle
 			winApp.stroke(localColor.knobNeedle);
-			winApp.strokeWeight(2.0f);
+			winApp.strokeWeight(1.5f);
 			winApp.line(0, 0,
 					Math.round((sizeRadX - bezelWidth) * Math.cos(rad)),
 					Math.round((sizeRadY - bezelWidth) * Math.sin(rad)) );
