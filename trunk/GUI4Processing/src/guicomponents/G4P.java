@@ -155,7 +155,7 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * INTERNAL USE ONLY
+	 * INTERNAL USE ONLY <br>
 	 * This should be called by all ctors in GComponent and since all GUI 
 	 * components inherit from GComponent and are required to call a 
 	 * GComponent ctor then all GUI components will automatically be 
@@ -174,7 +174,19 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * INTERNAL USE ONLY
+	 * INTERNAL USE ONLY <br>
+	 * Remove a component so that it is permanently unavailable. <br>
+	 * Do not call this method directly otherwise your program will crash. <br>
+	 * Use the components dispose method instead.
+	 * 
+	 * @param c the component to remove
+	 */
+	public static void dumpComponent(GComponent c){
+		allComponents.remove(c);
+	}
+
+	/**
+	 * INTERNAL USE ONLY <br>
 	 * Used to register the main window for cursor over behaviour.
 	 * 
 	 */
@@ -186,7 +198,7 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * INTERNAL USE ONLY
+	 * INTERNAL USE ONLY <br>
 	 * Record a new control window
 	 * @param window
 	 */
@@ -195,7 +207,7 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * INTERNAL USE ONLY
+	 * INTERNAL USE ONLY <br>
 	 * Remove control window - called when a ControlWindow is closed
 	 * for good.
 	 *  

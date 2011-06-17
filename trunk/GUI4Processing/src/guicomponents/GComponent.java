@@ -517,6 +517,14 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		}
 	}
 
+	public void dispose(){
+		if(regDraw) winApp.unregisterDraw(this);
+		if(regMouse) winApp.unregisterMouseEvent(this);
+		if(regPre) winApp.unregisterPre(this);
+		if(regKey) winApp.unregisterKeyEvent(this);
+		G4P.dumpComponent(this);
+	}
+	
 	/**
 	 * Called when we add a component to another window. Transfers autos
 	 * to new window for this component and all it's children.
