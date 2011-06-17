@@ -320,6 +320,22 @@ public abstract class GRoundControl extends GComponent {
 		this.sensitivity = sensitivity;
 	}
 
+	
+	/**
+	 * @return the needleInertia
+	 */
+	public int getInertia() {
+		return needleInertia;
+	}
+
+	/**
+	 * @param needleInertia the needleInertia to set
+	 */
+	public void setInertia(int needleInertia) {
+		if(needleInertia < 1) needleInertia = 1;
+		this.needleInertia = needleInertia;
+	}
+
 	/**
 	 * Get the low rotation angle
 	 * @return the aLow
