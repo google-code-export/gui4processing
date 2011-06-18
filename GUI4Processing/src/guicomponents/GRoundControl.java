@@ -96,7 +96,7 @@ public abstract class GRoundControl extends GComponent {
 	// visual effect. A value of 1 means no inertia.s
 	protected int inertia = 1;
 
-	protected int mode = CTRL_ANGULAR;
+	protected int mode = CTRL_HORIZONTAL;
 	protected float sensitivity = 1.0f;
 	protected int startMouseX, startMouseY;
 
@@ -246,7 +246,8 @@ public abstract class GRoundControl extends GComponent {
 		int degs = 0;
 		switch(mode){
 		case CTRL_ANGULAR:
-			degs = getAngleFromXY(p, winApp.mouseX, winApp.mouseY);
+			degs =  Math.round(PApplet.degrees(getAngleFromXY(p,  winApp.mouseX, winApp.mouseY)));
+			//etAngleFromXY(p, winApp.mouseX, winApp.mouseY);
 			break;
 		case CTRL_HORIZONTAL:
 			degs = (int) (sensitivity * (winApp.mouseX - p.x - startMouseX));
@@ -265,9 +266,9 @@ public abstract class GRoundControl extends GComponent {
 	 * @param y y coordinate
 	 * @return
 	 */
-	protected int getAngleFromXY(Point p, float x, float y){
-		int degs = Math.round(PApplet.degrees((float)Math.atan2(y - p.y, x - p.x)));
-		degs = (degs < 0) ? degs + 360 : degs;
+	protected float getAngleFromXY(Point p, float x, float y){
+		float degs = (float)Math.atan2(y - p.y, x - p.x);
+		degs = (degs < 0) ? degs + PApplet.TWO_PI : degs;
 		return degs;
 	}
 

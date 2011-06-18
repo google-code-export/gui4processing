@@ -91,8 +91,8 @@ public class GKnobOval extends GKnob {
 		super(theApplet, x, y, width, height, arcStart, arcEnd);
 
 		// Calculate the display angle
-		start = convertRealAngleToOval(PApplet.radians(aLow), sizeRadX, sizeRadY);
-		end = convertRealAngleToOval(PApplet.radians(aHigh), sizeRadX, sizeRadY);
+		start = convertRealAngleToOvalAngle(PApplet.radians(aLow), sizeRadX, sizeRadY);
+		end = convertRealAngleToOvalAngle(PApplet.radians(aHigh), sizeRadX, sizeRadY);
 
 		// Calculate ticks
 		calcTickMarkerPositions(nbrTickMarks);
@@ -126,7 +126,7 @@ public class GKnobOval extends GKnob {
 			if(valueTrackVisible){
 				winApp.fill(localColor.sdrTrack);
 				winApp.noStroke();
-				nrad = convertRealAngleToOval(rad, sizeRadX, sizeRadY);
+				nrad = convertRealAngleToOvalAngle(rad, sizeRadX, sizeRadY);
 				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
 			}
 
@@ -151,7 +151,7 @@ public class GKnobOval extends GKnob {
 			// Draw needle
 			winApp.stroke(localColor.btnDown);
 			winApp.strokeWeight(2.0f);
-			nrad = convertRealAngleToOval(rad, sizeRadX, sizeRadY);
+			nrad = convertRealAngleToOvalAngle(rad, sizeRadX, sizeRadY);
 			winApp.line(0, 0,
 					Math.round((knobRadX) * Math.cos(nrad)),
 					Math.round((knobRadY) * Math.sin(nrad)) );
@@ -229,7 +229,7 @@ public class GKnobOval extends GKnob {
 		for(int i = 0; i < nticks ; i++){
 			mark[i][0] = new Point();
 			mark[i][1] = new Point();
-			float dang = convertRealAngleToOval(ang, sizeRadX, sizeRadY);
+			float dang = convertRealAngleToOvalAngle(ang, sizeRadX, sizeRadY);
 			cosine = (float) Math.cos(dang);
 			sine = (float) Math.sin(dang);
 			mark[i][0].x = Math.round(knobRadX * cosine);
