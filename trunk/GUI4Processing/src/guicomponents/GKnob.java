@@ -259,7 +259,7 @@ public class GKnob extends GRoundControl {
 		int dy = ay - p.y;
 		inside = (dx * dx  + dy * dy < sizeRadX * sizeRadY);
 		if(inside){
-			int degs = getAngleFromXY(p, ax, ay);
+			int degs = Math.round(PApplet.degrees(getAngleFromXY(p, ax, ay)));
 			inside = isInValidArc(degs);
 		}
 		return inside;
