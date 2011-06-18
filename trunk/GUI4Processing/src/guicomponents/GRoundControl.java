@@ -313,7 +313,7 @@ public abstract class GRoundControl extends GComponent {
 	 * @param sensitivity the sensitivity to set
 	 */
 	public void setSensitivity(float sensitivity) {
-		this.sensitivity = sensitivity;
+		this.sensitivity = (sensitivity < 0.1f) ? 0.1f : sensitivity;
 	}
 
 	

@@ -35,8 +35,9 @@ import processing.core.PApplet;
  * <br>
  * 
  * For circular knobs use GKnob rather than this class. <br>
- * To avoid inaccuracies with drawing the bezel arcs it is recommended that
- * the length of the major axis should not exceed 1.5 x the minor axis. <br><br>
+ * To avoid inaccuracies when drawing the bezel arcs it is recommended that
+ * the length of the major axis should not exceed 1.5 x the minor axis and/or
+ * the bezel width is kept small. <br><br>
  * 
  * Configurable options <br>
  *  Knob height and width (should be oval) <br>
