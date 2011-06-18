@@ -39,15 +39,11 @@ import processing.core.PApplet;
  */
 public abstract class GRoundControl extends GComponent {
 
-	// Centre of needle rotation
 	protected int cx,cy;
 
-	protected float start, end;
-	
-	// Size to out edge of bezel
+	protected float start,end;
 	protected int sizeRadX, sizeRadY;
 
-	// What is part of the knob
 	protected boolean strictOver = false;
 
 	/*	 
@@ -62,6 +58,21 @@ public abstract class GRoundControl extends GComponent {
 
 	// Used to indicate if the arc goes over the 0 (east) position
 	public boolean wrap0;
+
+	// These angles are adjusted to be in range aLow to aHigh
+	// this is updated in pre() and is used to calculate the current value
+	// These angle can be in the range -360 - +360
+	public int needleAngle, lastTargetNeedleAngle, targetNeedleAngle;
+	protected int needleDir;
+
+	// These angles are adjusted to be in the range 0-360
+	protected int mouseAngle, lastMouseAngle;
+	// When the mouse is pressed this measures the difference between
+	// mouseAngle and targetNeedleAngle preventing discontinuous jumps
+	// in the knob value. Offset is adjusted when the targetNeedleAngle
+	// is stopped at either end of the slider again to prevent
+	// discontinuous movement of the needle
+	protected int offset;
 
 	/*
 	These represent the range of values that will be returned by the
@@ -83,26 +94,11 @@ public abstract class GRoundControl extends GComponent {
 	// during rapid mouse movement. This value must be >= 1 although
 	// there is no maximum value, values over 20 do not increase the
 	// visual effect. A value of 1 means no inertia.s
-	protected int needleInertia = 1;
+	protected int inertia = 1;
 
-	protected int mode = CTRL_HORIZONTAL;
+	protected int mode = CTRL_ANGULAR;
 	protected float sensitivity = 1.0f;
 	protected int startMouseX, startMouseY;
-
-	// These angles are adjusted to be in range aLow to aHigh
-	// this is updated in pre() and is used to calculate the current value
-	// These angle can be in the range -360 - +360
-	public int needleAngle, lastTargetNeedleAngle, targetNeedleAngle;
-	protected int needleDir;
-
-	// These angles are adjusted to be in the range 0-360
-	protected int mouseAngle, lastMouseAngle;
-	// When the mouse is pressed this measures the difference between
-	// mouseAngle and targetNeedleAngle preventing discontinuous jumps
-	// in the knob value. Offset is adjusted when the targetNeedleAngle
-	// is stopped at either end of the slider again to prevent
-	// discontinuous movement of the needle
-	protected int offset;
 
 	/**
 	 * This constructor should be called by the appropriate child class constructor
@@ -111,7 +107,7 @@ public abstract class GRoundControl extends GComponent {
 		super(theApplet, x, y);
 		this.width = (width < 20) ? 20 : width;
 		this.height = (height < 20) ? 20 : height;
-		sizeRadX = cx = this.width/2;
+		sizeRadX = cx =this.width/2;
 		sizeRadY = cy = this.height/2;
 
 		aLow = getValidArcAngle(arcStart);
@@ -140,7 +136,7 @@ public abstract class GRoundControl extends GComponent {
 	 * Used to implement inertia
 	 */
 	public void pre(){
-		int change, inertia = needleInertia;
+		int change, nInertia = inertia;
 		if(needleAngle == targetNeedleAngle){
 			isValueChanging = false;
 			needleDir = 0;
@@ -148,9 +144,9 @@ public abstract class GRoundControl extends GComponent {
 		else {
 			// Make sure we get a change value by repeatedly decreasing the inertia value
 			do {
-				change = (targetNeedleAngle - needleAngle)/inertia;
-				inertia--;
-			} while (change == 0 && inertia > 0);
+				change = (targetNeedleAngle - needleAngle)/nInertia;
+				nInertia--;
+			} while (change == 0 && nInertia > 0);
 			// If there is a change update the current value and generate an event
 			needleDir = signInt(change);
 			if(change != 0){
@@ -322,34 +318,18 @@ public abstract class GRoundControl extends GComponent {
 
 	
 	/**
-	 * @return the needleInertia
+	 * @return the inertia
 	 */
 	public int getInertia() {
-		return needleInertia;
+		return inertia;
 	}
 
 	/**
-	 * @param needleInertia the needleInertia to set
+	 * @param inertia the inertia to set
 	 */
-	public void setInertia(int needleInertia) {
-		if(needleInertia < 1) needleInertia = 1;
-		this.needleInertia = needleInertia;
-	}
-
-	/**
-	 * Get the low rotation angle
-	 * @return the aLow
-	 */
-	public int getaLow() {
-		return aLow;
-	}
-
-	/**
-	 * Get the high rotation angle
-	 * @return the aHigh
-	 */
-	public int getaHigh() {
-		return aHigh;
+	public void setInertia(int inertia) {
+		if(inertia >= 1)
+			this.inertia = inertia;
 	}
 
 	/**
@@ -369,23 +349,7 @@ public abstract class GRoundControl extends GComponent {
 	 * param strict the strictOver to set
 	 */
 	public void setStrictOver(boolean strict) {
-		strictOver = strict;
-	}
-
-	/**
-	 * Set the range of values that are to be returned by this control. <br>
-	 * 
-	 * 
-	 * @param init initial value of control
-	 * @param start value matching the start rotation
-	 * @param end  value matching the start rotation (Values < start are acceptable)
-	 */
-	public void setLimits(float init, float start, float end)
-	{
-		valueStart = start;
-		valueEnd = end;
-		clockwiseValues = (start < end);
-		setValue(init, true);
+		this.strictOver = strict;
 	}
 
 	/**
@@ -405,6 +369,22 @@ public abstract class GRoundControl extends GComponent {
 	 */
 	public int getValue(){
 		return Math.round(getValuef());
+	}
+
+	/**
+	 * Set the range of values that are to be returned by this control. <br>
+	 * 
+	 * 
+	 * @param init initial value of control
+	 * @param start value matching the start rotation
+	 * @param end  value matching the start rotation (Values < start are acceptable)
+	 */
+	public void setLimits(float init, float start, float end)
+	{
+		valueStart = start;
+		valueEnd = end;
+		clockwiseValues = (start < end);
+		setValue(init, true);
 	}
 
 	/**
@@ -433,17 +413,6 @@ public abstract class GRoundControl extends GComponent {
 		if(ignoreInteria)
 			needleAngle = targetNeedleAngle;
 	}
-	
-	/**
-	 * Prevent width being changed
-	 */
-	public void setWidth(int width) {}
-
-	/**
-	 * Prevent height being changed
-	 */
-	public void setHeight(int height) {}
-
 
 	/**
 	 * Calculate the equivalent needle angle for a given value.
