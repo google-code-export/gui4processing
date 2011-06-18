@@ -468,7 +468,7 @@ public abstract class GRoundControl extends GComponent {
 	 * @param ra the real world angle
 	 * @return the angle for the arc method.
 	 */
-	protected float convertRealAngleToOval(double ra, float rX, float rY){
+	protected float convertRealAngleToOvalAngle(double ra, float rX, float rY){
 		double cosA = Math.cos(ra), sinA = Math.sin(ra);
 		double h = Math.abs(rX - rY)/2.0;
 		double eX = rX * cosA, eY = rY * sinA;
