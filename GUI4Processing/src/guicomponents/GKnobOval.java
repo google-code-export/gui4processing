@@ -66,7 +66,7 @@ import processing.core.PApplet;
  */
 public class GKnobOval extends GKnob {
 
-	protected Point pos = new Point();
+	protected Point p = new Point();
 
 	/**
 	 * Create a GKnobOval control <br><br>
@@ -93,7 +93,6 @@ public class GKnobOval extends GKnob {
 		// Calculate the display angle
 		start = convertRealAngleToOvalAngle(PApplet.radians(aLow), sizeRadX, sizeRadY);
 		end = convertRealAngleToOvalAngle(PApplet.radians(aHigh), sizeRadX, sizeRadY);
-
 		// Calculate ticks
 		calcTickMarkerPositions(nbrTickMarks);
 	}
@@ -101,7 +100,7 @@ public class GKnobOval extends GKnob {
 	public void draw(){
 		if(!visible) return;
 
-		Point p = new Point(0,0);
+		p.move(0,0);
 		calcAbsPosition(p);
 		p.x += cx;
 		p.y += cy;
@@ -115,27 +114,31 @@ public class GKnobOval extends GKnob {
 
 		// Draw bezel
 		if(bezelWidth > 0){
-			winApp.fill(winApp.color(128,48));
 			winApp.noStroke();
-			winApp.ellipse(0, 0, width, height);
+			if(rotArcOnly)
+				winApp.fill(winApp.color(128,128));
+			else {
+				winApp.fill(winApp.color(128,48));
+				winApp.ellipse(0, 0, 2*sizeRadX, 2*sizeRadY);
+				winApp.fill(winApp.color(128,80));
+			}
 			// draw darker arc for rotation range
-			winApp.fill(winApp.color(128,80));
-			winApp.arc(0, 0, width, height, start, end);
+			winApp.arc(0, 0, 2*sizeRadX, 2*sizeRadY, start, end);
 
 			// Draw active value arc
 			if(valueTrackVisible){
-				winApp.fill(localColor.sdrTrack);
+				winApp.fill(localColor.knobTrack);
 				winApp.noStroke();
 				nrad = convertRealAngleToOvalAngle(rad, sizeRadX, sizeRadY);
 				winApp.arc(0, 0, 2*barRadX, 2*barRadY, start, nrad);
 			}
 
 			// Draw ticks
-			winApp.stroke(localColor.sdrBorder);
-			winApp.stroke(2);
+			winApp.stroke(localColor.knobBorder);
+			winApp.stroke(1.2f);
 			for(int i = 0; i < mark.length; i++){
 				if(i == 0 || i == mark.length-1)
-					winApp.strokeWeight(2.0f);
+					winApp.strokeWeight(1.5f);
 				else
 					winApp.strokeWeight(1.2f);
 				winApp.line(mark[i][0].x, mark[i][0].y,mark[i][1].x, mark[i][1].y);
@@ -143,18 +146,27 @@ public class GKnobOval extends GKnob {
 		}
 		if(knobRadX > 0 ){
 			// Draw knob centre
-			winApp.stroke(localColor.sdrBorder);
-			winApp.strokeWeight(1.0f);
-			winApp.fill(localColor.sdrThumb);
-			winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
+			winApp.stroke(localColor.knobBorder);
+			winApp.strokeWeight(1.2f);
+			winApp.fill(localColor.knobFill);
+			if(rotArcOnly){
+				winApp.arc(0, 0, 2*knobRadX, 2*knobRadY, start, end);
+				winApp.stroke(localColor.knobBorder);
+				winApp.strokeWeight(1.2f);
+				winApp.line(0, 0, mark[0][0].x, mark[0][0].y);
+				winApp.line(0, 0, mark[mark.length-1][0].x, mark[mark.length-1][0].y);			
+			}
+			else 
+				winApp.ellipse(0, 0, 2*knobRadX, 2*knobRadY);
 
 			// Draw needle
-			winApp.stroke(localColor.btnDown);
+			winApp.stroke(localColor.knobNeedle);
 			winApp.strokeWeight(2.0f);
 			nrad = convertRealAngleToOvalAngle(rad, sizeRadX, sizeRadY);
-			winApp.line(0, 0,
-					Math.round((knobRadX) * Math.cos(nrad)),
-					Math.round((knobRadY) * Math.sin(nrad)) );
+			float ox = (float) (sizeRadX * Math.cos(nrad));
+			float oy = (float) (sizeRadY * Math.sin(nrad));	
+			calcCircumferencePosition(p, ox, oy, knobRadX, knobRadY);
+			winApp.line(0, 0, p.x, p.y);
 		}
 		winApp.popStyle();
 		winApp.popMatrix();
@@ -168,7 +180,8 @@ public class GKnobOval extends GKnob {
 	 * @return true if mouse is over the control else false
 	 */
 	public boolean isOver(int ax, int ay){
-		Point p = new Point(0,0);
+		//		Point p = new Point(0,0);
+		p.move(0,0);
 		calcAbsPosition(p);
 		boolean inside;
 		int dx = ax - p.x - cx;
@@ -186,7 +199,7 @@ public class GKnobOval extends GKnob {
 	 * @return true if mouse is over the rotation arc of the control else false
 	 */
 	public boolean isOverStrict(int ax, int ay){
-		Point p = new Point(0,0);
+		p.move(0,0);
 		calcAbsPosition(p);
 		boolean inside;
 		int dx = ax - p.x - cx;
@@ -224,20 +237,21 @@ public class GKnobOval extends GKnob {
 	 */
 	protected void calcTickMarkerPositions(int nticks){
 		mark = new Point[nticks][2];
-		float cosine, sine;
+		float ox, oy;
 		float ang = PApplet.radians(aLow), deltaAng = PApplet.radians(aHigh - aLow)/(nticks-1);
 		for(int i = 0; i < nticks ; i++){
 			mark[i][0] = new Point();
 			mark[i][1] = new Point();
 			float dang = convertRealAngleToOvalAngle(ang, sizeRadX, sizeRadY);
-			cosine = (float) Math.cos(dang);
-			sine = (float) Math.sin(dang);
-			mark[i][0].x = Math.round(knobRadX * cosine);
-			mark[i][0].y = Math.round(knobRadY * sine);
-			if(i == 0 || i == nticks - 1)
-				calcCircumferencePosition(mark[i][1], mark[i][0].x, mark[i][0].y, sizeRadX, sizeRadY);
+			ox = (float) (sizeRadX * Math.cos(dang));
+			oy = (float) (sizeRadY * Math.sin(dang));	
+			calcCircumferencePosition(mark[i][0], ox, oy, knobRadX, knobRadY);
+			if(i == 0 || i == nticks - 1){
+				mark[i][1].x = Math.round(ox);
+				mark[i][1].y = Math.round(oy);
+			}
 			else 
-				calcCircumferencePosition(mark[i][1], mark[i][0].x, mark[i][0].y, barRadX, barRadY);
+				calcCircumferencePosition(mark[i][1], ox, oy, barRadX, barRadY);
 			ang += deltaAng;
 		}
 		nbrTickMarks = nticks;

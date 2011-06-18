@@ -259,7 +259,7 @@ public class GKnob extends GRoundControl {
 		int dy = ay - p.y;
 		inside = (dx * dx  + dy * dy < sizeRadX * sizeRadY);
 		if(inside){
-			int degs = Math.round(PApplet.degrees(getAngleFromXY(p, ax, ay)));
+			int degs = Math.round(PApplet.degrees(calcRealAngleFromXY(p, ax, ay)));
 			inside = isInValidArc(degs);
 		}
 		return inside;
@@ -319,8 +319,7 @@ public class GKnob extends GRoundControl {
 			winApp.noStroke();
 			if(rotArcOnly)
 				winApp.fill(winApp.color(128,128));
-			else
-			{
+			else {
 				winApp.fill(winApp.color(128,48));
 				winApp.ellipse(0, 0, 2*sizeRadX, 2*sizeRadY);
 				winApp.fill(winApp.color(128,80));

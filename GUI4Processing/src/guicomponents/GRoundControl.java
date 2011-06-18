@@ -246,8 +246,7 @@ public abstract class GRoundControl extends GComponent {
 		int degs = 0;
 		switch(mode){
 		case CTRL_ANGULAR:
-			degs =  Math.round(PApplet.degrees(getAngleFromXY(p,  winApp.mouseX, winApp.mouseY)));
-			//etAngleFromXY(p, winApp.mouseX, winApp.mouseY);
+			degs =  Math.round(PApplet.degrees(calcRealAngleFromXY(p,  winApp.mouseX, winApp.mouseY)));
 			break;
 		case CTRL_HORIZONTAL:
 			degs = (int) (sensitivity * (winApp.mouseX - p.x - startMouseX));
@@ -264,12 +263,12 @@ public abstract class GRoundControl extends GComponent {
 	 * @param p the absolute pixel position for the control centre
 	 * @param x x coordinate
 	 * @param y y coordinate
-	 * @return
+	 * @return real angle in radians (0 - 2 Pi)
 	 */
-	protected float getAngleFromXY(Point p, float x, float y){
-		float degs = (float)Math.atan2(y - p.y, x - p.x);
-		degs = (degs < 0) ? degs + PApplet.TWO_PI : degs;
-		return degs;
+	protected float calcRealAngleFromXY(Point p, float x, float y){
+		float rads = (float)Math.atan2(y - p.y, x - p.x);
+		rads = (rads < 0) ? rads + PApplet.TWO_PI : rads;
+		return rads;
 	}
 
 	/**
