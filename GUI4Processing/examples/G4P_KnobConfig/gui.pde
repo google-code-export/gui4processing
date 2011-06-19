@@ -40,7 +40,7 @@ void createGUI() {
   // Rotation arc
   startAng = newStartAng = 120; 
   endAng = newEndAng = 60;
-  new GLabel(this, "Rotation angle                  to                    (0 - 360)", x, y, 300);
+  new GLabel(this, "Rotation arc                   to                    (0 - 360)", x, y, 300);
   txfStartAng = new GTextField(this, "" + startAng, x + 80, y, 40, 18);
   txfStartAng.addEventHandler(this, "handleChangeRotationArc");
   txfEndAng = new GTextField(this, "" + endAng, x + 144, y, 40, 18);
