@@ -199,7 +199,7 @@ public class GKnobOval extends GKnob {
 	 * @param ay y coordinate
 	 * @return true if mouse is over the rotation arc of the control else false
 	 */
-	public boolean isOverStrict(int ax, int ay){
+	public boolean isOverRotArc(int ax, int ay){
 		p.move(0,0);
 		calcAbsPosition(p);
 		boolean inside;

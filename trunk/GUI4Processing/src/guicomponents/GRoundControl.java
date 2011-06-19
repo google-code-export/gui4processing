@@ -44,7 +44,7 @@ public abstract class GRoundControl extends GComponent {
 	protected float start,end;
 	protected int sizeRadX, sizeRadY;
 
-	protected boolean strictOver = false;
+	protected boolean overRotArcOnly = false;
 
 	/*	 
 	 * These are the values of the start angle and end angle used to define
@@ -174,8 +174,8 @@ public abstract class GRoundControl extends GComponent {
 		int degs = 0;
 
 		boolean mouseOver;
-		if(strictOver)
-			mouseOver = isOverStrict(winApp.mouseX, winApp.mouseY);
+		if(overRotArcOnly)
+			mouseOver = isOverRotArc(winApp.mouseX, winApp.mouseY);
 		else
 			mouseOver = isOver(winApp.mouseX, winApp.mouseY);
 
@@ -234,7 +234,7 @@ public abstract class GRoundControl extends GComponent {
 	 * @param mouseY
 	 * @return
 	 */
-	public abstract boolean isOverStrict(int mouseX, int mouseY);
+	public abstract boolean isOverRotArc(int mouseX, int mouseY);
 
 	/**
 	 * Calculates the 'angle' from the current mouse position based on the type
@@ -333,11 +333,10 @@ public abstract class GRoundControl extends GComponent {
 	}
 
 	/**
-	 * See if the 'strict over' option is set
-	 * @return the strictOver
+	 * Get the 'over rotation arc' option
 	 */
-	public boolean isStrictOver() {
-		return strictOver;
+	public boolean isMouseORA() {
+		return overRotArcOnly;
 	}
 
 	/**
@@ -346,10 +345,10 @@ public abstract class GRoundControl extends GComponent {
 	 * the knob. If it is true then only that portion of the knob within
 	 * the rotation arc.
 	 * 
-	 * param strict the strictOver to set
+	 * param overRotArcOnly true or false
 	 */
-	public void setStrictOver(boolean strict) {
-		this.strictOver = strict;
+	public void setMouseORA(boolean overRotArcOnly) {
+		this.overRotArcOnly = overRotArcOnly;
 	}
 
 	/**

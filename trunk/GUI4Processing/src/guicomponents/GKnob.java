@@ -249,7 +249,7 @@ public class GKnob extends GRoundControl {
 	 * @param ay y coordinate
 	 * @return true if mouse is over the rotation arc of the control else false
 	 */
-	public boolean isOverStrict(int ax, int ay){
+	public boolean isOverRotArc(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		p.x += cx;
@@ -273,9 +273,9 @@ public class GKnob extends GRoundControl {
 	 * It can only be changed if 
 	 * param strict the strictOver to set
 	 */
-	public void setStrictOver(boolean strict) {
+	public void setMouseORA(boolean strict) {
 		if(strict || (!strict && !rotArcOnly))
-			strictOver = strict;
+			overRotArcOnly = strict;
 		//		else if(!rotArcOnly )
 		//			strictOver = strict;
 	}
@@ -293,7 +293,7 @@ public class GKnob extends GRoundControl {
 	public void setRotArcOnly(boolean rotArcOnly) {
 		this.rotArcOnly = rotArcOnly;
 		if(rotArcOnly)
-			strictOver = true;
+			overRotArcOnly = true;
 	}
 
 	/**
