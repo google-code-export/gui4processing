@@ -102,7 +102,7 @@ public abstract class GSlider extends GComponent {
 		this.init = Math.round(PApplet.constrain((float)init, minValue, maxValue));
 		
 		if(thumbMax - thumbMin < maxValue - minValue && G4P.messages){
-			System.out.println(this.getClass().getSimpleName()+".setLimits");
+			System.out.println(getClass().getSimpleName()+".setLimits");
 			System.out.println("  not all values in the range "+min+" - "+max+" can be returned");
 			System.out.print("  either reduce the range or make the slider ");
 			if(this.getClass().getSimpleName().equals("GHorzSlider")) 
@@ -114,6 +114,7 @@ public abstract class GSlider extends GComponent {
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
 		setValue(init, true);
+		_valueType = DECIMAL;
 	}
 
 
@@ -129,42 +130,7 @@ public abstract class GSlider extends GComponent {
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
 		setValue(this.init, true);
-	}
-
-	/**
-	 * Move thumb if not at desired position
-	 */
-	public void pre(){
-		int change, inertia = thumbInertia;
-		if(thumbPos == thumbTargetPos){
-			isValueChanging = false;
-		}
-		else {
-			// Make sure we get a change value by repeatedly decreasing the inertia value
-			do {
-				change = (thumbTargetPos - thumbPos)/inertia;
-				inertia--;
-			} while (change == 0 && inertia > 0);
-			// If there is a change update the current value and generate an event
-			if(change != 0){
-				thumbPos += change;
-				float newValue = PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
-				boolean valueChanged = (newValue != value);
-				value = newValue;
-				if(valueChanged){
-					eventType = CHANGED;
-					fireEvent();
-				}
-			}
-			else
-				isValueChanging = false;
-		}			
-	}
-		
-	/**
-	 * Override in child classes
-	 */
-	public void draw(){
+		_valueType = INTEGER;
 	}
 	
 	/**
@@ -198,6 +164,22 @@ public abstract class GSlider extends GComponent {
 		return Math.round(maxValue);
 	}
 
+	/**
+	 * Sets the type of slider that this should be. <br>
+	 * INTEGER or DECIMAL or EXPONENT	 
+	 */
+	public void setValueType(int type){
+		_valueType = type;
+	}
+
+	/**
+	 * Get the type used for the slider value
+	 * @return GSlider.INTEGER or GSlider.DECIMAL or GSlider.EXPONENT
+	 */
+	public int getValueType(){
+		return _valueType;
+	}
+	
 	/**
 	 * Get the current value represented by the slider
 	 * 
@@ -245,21 +227,6 @@ public abstract class GSlider extends GComponent {
 	}
 	
 	/**
-	 * Sets the target value of the slider, if setInertia(x) has been 
-	 * to implement inertia then the actual slider value will gradually
-	 * change until it reaches the target value. The slider thumb is 
-	 * always in the right position for the current slider value. <br>
-	 * <b>Note</b> that events will continue to be generated so if this
-	 * causes unexpected behaviour then use setValue(newValue, true)
-	 * 
-	 * @param newValue the value we wish the slider to become
-	 */
-	public void setValue(float newValue){
-		value = PApplet.constrain(newValue, minValue, maxValue);
-		thumbTargetPos = (int) PApplet.map(value, minValue, maxValue, thumbMin, thumbMax);
-	}
-
-	/**
 	 * The same as setValue(newValue) except the second parameter determines 
 	 * whether we should ignore any inertia value so the affect is immediate. <br>
 	 * <b>Note</b> if false then events will continue to be generated so if this
@@ -274,7 +241,22 @@ public abstract class GSlider extends GComponent {
 			thumbPos = thumbTargetPos;
 		}
 	}
-		
+
+	/**
+	 * Sets the target value of the slider, if setInertia(x) has been 
+	 * to implement inertia then the actual slider value will gradually
+	 * change until it reaches the target value. The slider thumb is 
+	 * always in the right position for the current slider value. <br>
+	 * <b>Note</b> that events will continue to be generated so if this
+	 * causes unexpected behaviour then use setValue(newValue, true)
+	 * 
+	 * @param newValue the value we wish the slider to become
+	 */
+	public void setValue(float newValue){
+		value = PApplet.constrain(newValue, minValue, maxValue);
+		thumbTargetPos = (int) PApplet.map(value, minValue, maxValue, thumbMin, thumbMax);
+	}
+
 	/**
 	 * The same as setValue(newValue) except the second parameter determines 
 	 * whether we should ignore any inertia value so the affect is immediate. <br>
@@ -306,4 +288,40 @@ public abstract class GSlider extends GComponent {
 		thumbInertia = PApplet.constrain(inertia, 1, 100);
 	}
 
+	/**
+	 * Move thumb if not at desired position
+	 */
+	public void pre(){
+		int change, inertia = thumbInertia;
+		if(thumbPos == thumbTargetPos){
+			isValueChanging = false;
+		}
+		else {
+			// Make sure we get a change value by repeatedly decreasing the inertia value
+			do {
+				change = (thumbTargetPos - thumbPos)/inertia;
+				inertia--;
+			} while (change == 0 && inertia > 0);
+			// If there is a change update the current value and generate an event
+			if(change != 0){
+				thumbPos += change;
+				float newValue = PApplet.map(thumbPos, thumbMin, thumbMax, minValue, maxValue);
+				boolean valueChanged = (newValue != value);
+				value = newValue;
+				if(valueChanged){
+					eventType = CHANGED;
+					fireEvent();
+				}
+			}
+			else
+				isValueChanging = false;
+		}			
+	}
+		
+	/**
+	 * Override in child classes
+	 */
+	public void draw(){
+	}
+	
 }

@@ -7,7 +7,8 @@
  *  Copyright (C) 2009 onwards Daniel Brown and Andreas Freise
  *  
  *  
- *  It has been integrated into the GUI for Processing (G4)) library 
+ *  It has been re-factored by Peter Lager to integrate it into the GUI 
+ *  for Processing (G4P) library 
  * 	http://www.lagers.org.uk/g4p/index.html
  *	http://gui4processing.googlecode.com/svn/trunk/
  *
@@ -154,14 +155,6 @@ public class GWSlider extends GSlider {
 	 */
 	public void setPrecision(int acc){
 		_precision = PApplet.constrain(acc, 0, 6);
-	}
-
-	/**
-	 * Sets the type of slider that this should be. <br>
-	 * INTEGER or DECIMAL or EXPONENT	 
-	 */
-	public void setValueType(int type){
-		_valueType = type;
 	}
 
 	/**
