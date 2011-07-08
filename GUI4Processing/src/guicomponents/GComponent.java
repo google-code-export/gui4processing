@@ -204,7 +204,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/**
 	 * Attempt to create the default event handler for the component class. 
 	 * The default event handler is a method that returns void and has a single
-	 * parameter of the same type as the componment class generating the
+	 * parameter of the same type as the component class generating the
 	 * event and a method name specific for that class. 
 	 * 
 	 * @param handlerObj the object to handle the event
@@ -246,7 +246,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/**
 	 * Attempt to create the default event handler for the component class. 
 	 * The default event handler is a method that returns void and has a single
-	 * parameter of the same type as the componment class generating the
+	 * parameter of the same type as the component class generating the
 	 * event and a method name specific for that class. 
 	 * 
 	 * @param obj the object to handle the event
@@ -641,9 +641,9 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * GAlign.LEFT or GAlign.CENTER or GAlign.RIGHT <br>
 	 * Vertical must be one of the following
 	 * GAlign.TOP or GAlign.MIDDLE or GAlign.BOTTOM <br>
-	 * Both horizontal and vertical allignment can be set in one call using
+	 * Both horizontal and vertical alignment can be set in one call using
 	 * bitwise OR e.g. GAlign.BOTTOM | GAlign.CENTER 
-	 * @param align the allignment flag
+	 * @param align the alignment flag
 	 */
 	public void setTextAlign(int align){
 		int ha = align & GAlign.H_ALIGN;
