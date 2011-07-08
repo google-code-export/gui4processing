@@ -434,6 +434,15 @@ public class GTextField extends GComponent {
 	}
 
 	/**
+	 * This class does not support text alignment and uses the default left alignment. <br>
+	 * This method simply displays a warning if G4P messages are enabled.
+	 */
+	public void setTextAlign(int align){
+		if(G4P.messages)
+			System.out.println("GTextfield controls does not support text alignment");
+	}
+
+	/**
 	 * Whether or not to display separator lines
 	 */
 	public void setShowLines(boolean drawlines){
