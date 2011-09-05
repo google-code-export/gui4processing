@@ -100,7 +100,7 @@ public class GHorzSlider extends GSlider {
 		if(mouseOver || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
-				cursorIsOver = null;
+			cursorIsOver = null;
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
