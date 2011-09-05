@@ -222,6 +222,7 @@ public abstract class GRoundControl extends GComponent {
 					// Remember target needle and mouse angles
 					lastTargetNeedleAngle = targetNeedleAngle;
 					lastMouseAngle = mouseAngle;
+//					isValueChanging = true;
 				}
 			}
 			break;
