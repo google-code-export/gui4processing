@@ -416,7 +416,7 @@ public class GButton extends GComponent {
 		}
 		switch(textAlignHorz){
 		case GAlign.LEFT:
-			alignX = imgX + border+  PADH;
+			alignX = imgX + border +  PADH;
 			break;
 		case GAlign.RIGHT:
 			alignX = imgX + areaWidth - textWidth - border - PADH;
@@ -487,16 +487,18 @@ public class GButton extends GComponent {
 	 * All GUI components are registered for mouseEvents. <br>
 	 * When a button is clicked on a GButton it generates 3 events (in this order) 
 	 * mouse down, mouse up and mouse pressed. <br>
-	 * If you only wish to respond to button click events then you should test the 
-	 * event type e.g. <br>
+	 * You can test for a particular event type with : <br>
 	 * <pre>
 	 * 	void handleButtonEvents(GButton button) {
-	 *	  if(button == btnName && button.eventType == GButton.CLICKED){
+	 *	  if(button == btnName && button.eventType == GButton.PRESSED){
 	 *        // code for button click event
 	 *    }
 	 * </pre> <br>
-	 * Where <pre><b>btnName</b></pre> is the GButton identifier (variable name)
+	 * Where <pre><b>btnName</b></pre> is the GButton identifier (variable name) <br><br>
 	 * 
+	 * If you only wish to respond to button click events then use the statement <br>
+	 * <pre>btnName.fireAllEvents(false); </pre><br> 
+	 * This is the default mode.
 	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled) return;
