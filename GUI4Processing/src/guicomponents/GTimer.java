@@ -85,11 +85,9 @@ public class GTimer {
 					fireEvent();
 				}
 
-			});
-			
+			});	
 			timer.stop();
 		}
-		
 	}
 
 	/**
@@ -178,15 +176,35 @@ public class GTimer {
 	}
 	
 	/**
-	 * Get the interval time (milliseconds)between 
+	 * Set the delay before the first event is triggered
+	 * @param msecs initial delay in milliseconds
+	 */
+	public void setInitialDelay(int msecs){
+		if(timer != null)
+			timer.setInitialDelay(msecs);
+	}
+	
+	/**
+	 * Get the interval time (milliseconds) between 
 	 * events.
 	 * @return interval in millsecs or -1 if the timer failed to
 	 * be created.
-	 * 
 	 */
 	public int getInterval(){
 		if(timer != null)
 			return timer.getDelay();
+		else
+			return -1;		
+	}
+	
+	/**
+	 * Get the initial delay time (milliseconds).
+	 * @return initial delay in millsecs or -1 if the timer failed to
+	 * be created.
+	 */
+	public int getInitialDelay(){
+		if(timer != null)
+			return timer.getInitialDelay();
 		else
 			return -1;		
 	}
