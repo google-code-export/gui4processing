@@ -72,20 +72,22 @@ public class GTimer {
 	 * @param theApplet a reference to the PApplet object (invariably <b>this</b>)
 	 * @param obj the object that has the method to be executed (likely to be <b>this</b>)
 	 * @param methodName the name of the method to be called by the timer
-	 * @param interval the time (in millisecs) between function calls
+	 * @param delay the initial delay and the time (in millisecs) between function calls
 	 */
-	public GTimer(PApplet theApplet, Object obj, String methodName, int interval){
+	public GTimer(PApplet theApplet, Object obj, String methodName, int delay){
 		app = theApplet;
 		createEventHandler(obj, methodName);
 		// If we have something to handle the event then create the Timer
 		if(eventHandlerObject != null){
-			timer = new Timer(interval, new ActionListener(){
+			timer = new Timer(delay, new ActionListener(){
 
 				public void actionPerformed(ActionEvent e) {
 					fireEvent();
 				}
 
 			});	
+			timer.setInitialDelay(delay);
+			timer.setDelay(delay);
 			timer.stop();
 		}
 	}
@@ -168,20 +170,36 @@ public class GTimer {
 	
 	/**
 	 * Set the interval between events
-	 * @param msecs interval in milliseconds
+	 * @param interval delay between events in milliseconds
 	 */
-	public void setInterval(int msecs){
+	public void setInterval(int interval){
 		if(timer != null)
-			timer.setDelay(msecs);
+			timer.setDelay(interval);
 	}
 	
 	/**
 	 * Set the delay before the first event is triggered
-	 * @param msecs initial delay in milliseconds
+	 * @param initDelay initial delay in milliseconds
 	 */
-	public void setInitialDelay(int msecs){
+	public void setInitialDelay(int initDelay){
 		if(timer != null)
-			timer.setInitialDelay(msecs);
+			timer.setInitialDelay(initDelay);
+	}
+	
+	/**
+	 * Sets the initial delay and the interval between events. <br>
+	 * This is equivalent to calling both - <br>
+	 * <pre>
+	 * setInterval(delay);
+	 * setInitialDelay(delay);
+	 * </pre><br>
+	 * @param delay initial delay and interval in milliseconds
+	 */
+	public void setDelay(int delay){
+		if(timer != null){
+			timer.setInitialDelay(delay);
+			timer.setDelay(delay);
+		}
 	}
 	
 	/**
