@@ -534,10 +534,10 @@ public class GTextField extends GComponent {
 
 		winApp.textFont(localFont);
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY); //sets whether or not the mouse is even over the textbox
-		if(mouseOver || focusIsWith == this) 	//if the mouse is over or the textbox has focus
-			cursorIsOver = this; 				//set that the cursor is over the textbox
-		else if(cursorIsOver == this) 			//if the cursor is over the box
-			cursorIsOver = null; 				//set the cursor over to nothing
+		if(mouseOver || focusIsWith == this) 	// if the mouse is over or the textbox has focus
+			cursorIsOver = this; 				// set that the cursor is over the textbox
+		else if(cursorIsOver == this) 			// if the cursor was over the box then
+			cursorIsOver = null; 				// now set the cursor over to nothing
 
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
