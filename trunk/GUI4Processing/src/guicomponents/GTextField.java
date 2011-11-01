@@ -264,28 +264,36 @@ public class GTextField extends GComponent {
 	 * Returns the x and y position of the cursor (measured in characters)
 	 */
 	private Point cursorPosition(int pos){
-		// take text up until the cursor position
-		String preCursor = text.substring(0, pos); 
-		// quick code for counting occurrence of "\n"'s;
-		int cursorPosY = (preCursor.length() - preCursor.replaceAll("\n", "").length());
-		// number of characters to the cursor on this line
-		int cursorPosX = preCursor.length() - preCursor.lastIndexOf("\n") - 1;
-		return new Point(cursorPosX, cursorPosY);
+		if(pos >= 0){
+			// take text up until the cursor position
+			String preCursor = text.substring(0, pos); 
+			// quick code for counting occurrence of "\n"'s;
+			int cursorPosY = (preCursor.length() - preCursor.replaceAll("\n", "").length());
+			// number of characters to the cursor on this line
+			int cursorPosX = preCursor.length() - preCursor.lastIndexOf("\n") - 1;
+			return new Point(cursorPosX, cursorPosY);
+		}
+		else
+			return new Point(0,0);
 	}
 
 	/**
 	 * Returns the x and y position of the cursor relative to upper corner of textbox (measured in pixels)
 	 */
 	private Point cursorPixPosition(int pos){
-		// take text up until the cursor position
-		String preCursor = text.substring(0, pos);
-		// text of the current line
-		String thisline = preCursor.substring(Math.max(preCursor.lastIndexOf("\n")+1, 0), preCursor.length());
-		//pixel width of characters on this line
-		int cursorPixX = (int)winApp.textWidth(thisline.substring(startX, thisline.length()));
-		//pixel position is integer line number times line height
-		int cursorPixY = (int) ((preCursor.length() - preCursor.replaceAll("\n", "").length() - startY) * leading);
-		return new Point(cursorPixX, cursorPixY);
+		if(pos >= 0){
+			// take text up until the cursor position
+			String preCursor = text.substring(0, pos);
+			// text of the current line
+			String thisline = preCursor.substring(Math.max(preCursor.lastIndexOf("\n")+1, 0), preCursor.length());
+			//pixel width of characters on this line
+			int cursorPixX = (int)winApp.textWidth(thisline.substring(startX, thisline.length()));
+			//pixel position is integer line number times line height
+			int cursorPixY = (int) ((preCursor.length() - preCursor.replaceAll("\n", "").length() - startY) * leading);
+			return new Point(cursorPixX, cursorPixY);
+		}
+		else
+			return new Point(0,0);		
 	}
 
 	/**
@@ -767,13 +775,14 @@ public class GTextField extends GComponent {
 		winApp.noStroke();
 		if(startSelect != endSelect){ 		// if something is selected
 			winApp.fill(localColor.txfSelBack);
-
-			for(int i = Math.min(startSelect, endSelect); i < Math.max(startSelect, endSelect); i++){
-				if(cursorPosition(i).x >= startX && cursorPixPosition(i).x < (width - 8) &&
-						cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
-					winApp.rect(4 + cursorPixPosition(i).x, 2 + cursorPixPosition(i).y,
-							Math.min(winApp.textWidth(text.substring(i, i+1)),
-									width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+			if(startSelect >=0 && endSelect >=0){
+				for(int i = Math.min(startSelect, endSelect); i < Math.max(startSelect, endSelect); i++){
+					if(cursorPosition(i).x >= startX && cursorPixPosition(i).x < (width - 8) &&
+							cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
+						winApp.rect(4 + cursorPixPosition(i).x, 2 + cursorPixPosition(i).y,
+								Math.min(winApp.textWidth(text.substring(i, i+1)),
+										width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+					}
 				}
 			}
 		}
