@@ -87,15 +87,15 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 
 	// Increment to be used if on a GPanel
 	protected final static int Z_PANEL = 32;
-	
+
 	// Components that don't release focus automatically
 	// i.e. GTextField
 	protected final static int Z_STICKY = 16;
-	
+
 	// Components that automatically releases focus when appropriate
 	// .e. GButton
 	protected final static int Z_SLIPPY = 24;
-	
+
 	/** 
 	 * This is a reference the the PApplet that was used to create the 
 	 * component - in all cases this should be launching or main PApplet.
@@ -364,12 +364,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return focusIsWith;
 	}
 
-	
+
 	public static int focusObjectZ(){
 		return (focusIsWith == null) ? -1 : focusIsWith.z;
 	}
 
-	
+
 	/**
 	 * This can be used to detect the type of event
 	 * @return the eventType
@@ -524,7 +524,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		if(regKey) winApp.unregisterKeyEvent(this);
 		G4P.dumpComponent(this);
 	}
-	
+
 	/**
 	 * Called when we add a component to another window. Transfers autos
 	 * to new window for this component and all it's children.
