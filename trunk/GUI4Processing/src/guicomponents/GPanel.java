@@ -182,14 +182,16 @@ public class GPanel extends GComponent {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
+			if(focusIsWith != this && mouseOver && z >= focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				takeFocus();
 				// May become true but will soon be set to false when
-				// we loose focus
+				// we lose focus
 				beingDragged = true;
 			}
+			if(focusIsWith != null && focusIsWith != this && isOverPanel(winApp.mouseX, winApp.mouseY) && z == focusObjectZ())
+				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
