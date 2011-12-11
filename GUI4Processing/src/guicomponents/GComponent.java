@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -90,10 +91,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 
 	// Components that don't release focus automatically
 	// i.e. GTextField
-	protected final static int Z_STICKY = 16;
+	protected final static int Z_STICKY = 0;
 
 	// Components that automatically releases focus when appropriate
-	// .e. GButton
+	// e.g. GButton
 	protected final static int Z_SLIPPY = 24;
 
 	/** 
@@ -104,7 +105,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	protected PApplet winApp;
 
-	/** Link to the parent panel (if null then it is topmost panel) */
+	/** Link to the parent panel (if null then it is on main window) */
 	protected GComponent parent = null;
 
 	/**
@@ -348,6 +349,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return (this == focusIsWith);
 	}
 
+
 	/**
 	 * Does this component have key focus
 	 * @return true if this component has key focus else false
@@ -365,11 +367,22 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	}
 
 
-	public static int focusObjectZ(){
+	protected static int focusObjectZ(){
 		return (focusIsWith == null) ? -1 : focusIsWith.z;
 	}
 
-
+	/**
+	 * See if this component is a child of another the component
+	 * @param p possible parent
+	 * @return true if p is a parent of this component
+	 */
+	protected boolean isChildOf(GComponent p){
+		if(this == p)
+			return true;
+		else
+			return (parent == null) ? false : parent.isChildOf(p);
+	}
+	
 	/**
 	 * This can be used to detect the type of event
 	 * @return the eventType

@@ -24,8 +24,12 @@
 package guicomponents;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -45,17 +49,17 @@ public class G4P implements PConstants, GConstants {
 	/**
 	 * Set of all the GUI components created
 	 */
-	private static HashSet<GComponent> allComponents = new HashSet<GComponent>();
+	private static List<GComponent> allComponents = new LinkedList<GComponent>();
 
 	/**
 	 * Set of GControlWindows
 	 */
-	private static HashSet<GWindow> allWinApps = new HashSet<GWindow>();
+	private static List<GWindow> allWinApps = new LinkedList<GWindow>();
 
 	/**
 	 * Set of PApplet windows disabled
 	 */
-	private static HashSet<PApplet> autoDrawDisabled = new HashSet<PApplet>();
+	private static List<PApplet> autoDrawDisabled = new LinkedList<PApplet>();
 
 
 	// Will be set when and first component is created
@@ -437,4 +441,17 @@ public class G4P implements PConstants, GConstants {
 		messages = enable;
 	}
 
+	
+	public static void zSort(){
+		Collections.sort(allComponents, new ZCompare());
+	}
+	
+	private static class ZCompare implements Comparator<GComponent> {
+
+		public int compare(GComponent c1, GComponent c2) {
+			return  new Integer(c1.z).compareTo( new Integer(c2.z));
+		}
+	}
+	
+	
 }
