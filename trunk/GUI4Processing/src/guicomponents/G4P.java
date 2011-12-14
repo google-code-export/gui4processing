@@ -371,12 +371,9 @@ public class G4P implements PConstants, GConstants {
 			// Note that GPanels will call the appropriate
 			// draw methods for the components on them
 			app.hint(DISABLE_DEPTH_TEST);
-			Iterator<GComponent> iter = allComponents.iterator();
-			GComponent c;
-			while(iter.hasNext()){
-				c = iter.next();
-				if(c.getParent() == null && c.getPApplet() == app)
-					c.draw();
+			for(GComponent comp : allComponents){
+				if(comp.getParent() == null && comp.getPApplet() == app)
+					comp.draw();
 			}
 			app.hint(ENABLE_DEPTH_TEST);
 		}
@@ -391,13 +388,10 @@ public class G4P implements PConstants, GConstants {
 	 * 
 	 */
 	private static void unregisterFromPAppletDraw(PApplet app) {
-		Iterator<GComponent> iter = allComponents.iterator();
-		GComponent c;
-		while(iter.hasNext()){
-			c = iter.next();
-			if(c.getParent() == null && c.getPApplet() == app){
-				c.regDraw = false;
-				c.getPApplet().unregisterDraw(c);
+		for(GComponent comp : allComponents){
+			if(comp.getParent() == null && comp.getPApplet() == app){
+				comp.regDraw = false;
+				comp.getPApplet().unregisterDraw(comp);
 			}
 		}
 		autoDrawDisabled.add(app);
@@ -441,17 +435,33 @@ public class G4P implements PConstants, GConstants {
 		messages = enable;
 	}
 
-	
-	public static void zSort(){
+	/**
+	 * This will help arrange 
+	 */
+	public static void depthSort(){
+		for(GComponent comp : allComponents){
+			if(comp.getParent() == null){
+				comp.getPApplet().unregisterDraw(comp);
+			}
+		}
 		Collections.sort(allComponents, new ZCompare());
+		for(GComponent comp : allComponents){
+			if(comp.getParent() == null){
+				comp.getPApplet().registerDraw(comp);
+			}
+		}		
 	}
 	
 	private static class ZCompare implements Comparator<GComponent> {
 
 		public int compare(GComponent c1, GComponent c2) {
-			return  new Integer(c1.z).compareTo( new Integer(c2.z));
+			if(c1.z != c2.z)
+				return  new Integer(c1.z).compareTo( new Integer(c2.z));
+			else
+				return new Integer(c1.y).compareTo(new Integer(c2.y));
 		}
-	}
+		
+	} // end of comparitor class
 	
 	
 }
