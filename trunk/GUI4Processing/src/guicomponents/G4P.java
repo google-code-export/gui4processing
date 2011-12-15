@@ -26,7 +26,6 @@ package guicomponents;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -458,7 +457,7 @@ public class G4P implements PConstants, GConstants {
 			if(c1.z != c2.z)
 				return  new Integer(c1.z).compareTo( new Integer(c2.z));
 			else
-				return new Integer(c1.y).compareTo(new Integer(c2.y));
+				return new Integer(-c1.y).compareTo(new Integer(-c2.y));
 		}
 		
 	} // end of comparitor class
