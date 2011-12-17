@@ -28,7 +28,6 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -349,7 +348,27 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return (this == focusIsWith);
 	}
 
-
+	protected boolean hasParentFocus(){
+		if(this == focusIsWith)
+			return true;
+		else if(parent != null)
+			parent.hasParentFocus();
+		return false;
+	}
+	
+	protected boolean hasChildFocus(){
+		if(this == focusIsWith)
+			return true;
+		else if(children != null){
+			boolean hf = false;
+			for(GComponent comp : children){
+				hf |= comp.hasChildFocus();
+			}
+			return hf;
+		}
+		return false;
+	}
+	
 	/**
 	 * Does this component have key focus
 	 * @return true if this component has key focus else false
@@ -371,17 +390,22 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return (focusIsWith == null) ? -1 : focusIsWith.z;
 	}
 
+	public void bringToFront(){
+		if(parent != null)
+			parent.bringToFront();
+	}
+	
 	/**
 	 * See if this component is a child of another the component
 	 * @param p possible parent
 	 * @return true if p is a parent of this component
 	 */
-	protected boolean isChildOf(GComponent p){
-		if(this == p)
-			return true;
-		else
-			return (parent == null) ? false : parent.isChildOf(p);
-	}
+//	protected boolean isChildOf(GComponent p){
+//		if(this == p)
+//			return true;
+//		else
+//			return (parent == null) ? false : parent.isChildOf(p);
+//	}
 	
 	/**
 	 * This can be used to detect the type of event

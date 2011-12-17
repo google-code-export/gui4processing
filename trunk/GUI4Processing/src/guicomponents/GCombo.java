@@ -341,15 +341,15 @@ public class GCombo extends GComponent {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver && z > focusObjectZ())
+			if(focusIsWith != this && mouseOver && z >= focusObjectZ())
 				takeFocus();
 			else if(focusIsWith == this && !mouseOver)
 //			else if(focusIsWith == this && !isOver(winApp.mouseX, winApp.mouseY))
 				loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == this && isOver(winApp.mouseX, winApp.mouseY)){
-//			if(focusIsWith == this && mouseOver){
+//			if(focusIsWith == this && isOver(winApp.mouseX, winApp.mouseY)){
+			if(focusIsWith == this && mouseOver){
 				if(expanded)
 					shrink();
 				else
@@ -441,4 +441,11 @@ public class GCombo extends GComponent {
 		return optGroup.deselectedText();
 	}
 
+	public String toString(){
+		StringBuilder s = new StringBuilder(tag + "   ("+z+")\n");
+		if(children != null)
+			for(GComponent c : children)
+				s.append("\t" + c + "\n");
+		return new String(s);
+	}
 }

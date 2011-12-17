@@ -42,7 +42,6 @@ import processing.core.PApplet;
  */
 public class GPanel extends GComponent {
 
-
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
 
@@ -107,6 +106,12 @@ public class GPanel extends GComponent {
 		setText(text);
 	}
 
+	public void bringToFront(){
+		if(parent != null)
+			parent.bringToFront();
+		G4P.moveToFront(this);
+	}
+	
 	/**
 	 * What to do when the GPanel looses focus.
 	 */
@@ -115,6 +120,11 @@ public class GPanel extends GComponent {
 		beingDragged = false;
 	}
 
+	protected void takeFocus(){
+		super.takeFocus();
+		G4P.moveToFront(this);
+	}
+	
 	/**
 	 * Draw the panel.
 	 * If tabOnly == true 
@@ -124,7 +134,6 @@ public class GPanel extends GComponent {
 	 */
 	public void draw(){
 		if(!visible) return;
-
 
 		Point pos = new Point(0,0);
 		calcAbsPosition(pos);
@@ -144,16 +153,13 @@ public class GPanel extends GComponent {
 		// Display tab (length depends on whether panel is open or closed
 		int w = (tabOnly)? textWidth + PADH * 4 : width;
 		winApp.rect(0, - tabHeight, w, tabHeight);
-//		winApp.rect(pos.x, pos.y - tabHeight, w, tabHeight);
 		// Display tab text
 		winApp.fill(localColor.pnlFont);
 		winApp.textFont(localFont, localFont.getFont().getSize());
-//		winApp.text(text, pos.x + PADH, pos.y - (tabHeight + localFont.getFont().getSize())/2 - PADV , textWidth, tabHeight);
 		winApp.text(text, PADH, - (tabHeight + localFont.getFont().getSize())/2 - PADV , textWidth, tabHeight);
 		if(!tabOnly){
 			if(opaque){
 				winApp.fill(localColor.pnlBack);
-//				winApp.rect(pos.x, pos.y, width, height);
 				winApp.rect(0, 0, width, height);
 			}
 		}
@@ -175,6 +181,7 @@ public class GPanel extends GComponent {
 		if(!visible || !enabled) return;
 		
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
+		boolean mouseOverPanel = isOverPanel(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -190,7 +197,10 @@ public class GPanel extends GComponent {
 				// we lose focus
 				beingDragged = true;
 			}
-			if(focusIsWith != null && focusIsWith != this && isOverPanel(winApp.mouseX, winApp.mouseY) && z == focusObjectZ())
+			// Prevent textfield objects from releasing focus
+//			if(focusIsWith != null && focusIsWith != this && hasChildFocus() && mouseOverPanel)
+//				focusIsWith.loseFocus(null);
+			if(focusIsWith != null && focusIsWith != this && mouseOverPanel && z == focusObjectZ())
 				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
