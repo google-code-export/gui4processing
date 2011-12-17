@@ -25,8 +25,8 @@ package guicomponents;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import processing.core.PApplet;
 
@@ -81,7 +81,7 @@ public class GPanel extends GComponent {
 	 * @param height
 	 */
 	private void panelCtorCore(String text, int width, int height){
-		children = new HashSet<GComponent>();
+		children = new LinkedList<GComponent>();
 		setText(text);
 		tabHeight = (int) (1.2f * localFont.getFont().getSize() + 2 * PADV);
 		constrainPanelPosition();

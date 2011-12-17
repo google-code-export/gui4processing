@@ -26,7 +26,7 @@ package guicomponents;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -71,7 +71,7 @@ public class GCombo extends GComponent {
 	}
 
 	private void comboCtorCore(int width) {
-		children = new HashSet<GComponent>();
+		children = new LinkedList<GComponent>();
 		if(imgArrow == null)
 			imgArrow = winApp.loadImage("combo0.png");
 		this.width = width;
