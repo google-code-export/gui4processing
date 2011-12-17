@@ -23,13 +23,12 @@
 
 package guicomponents;
 
-
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -111,7 +110,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * A list of child GComponents added to this component
 	 * Created and used by GPanel and GCombo classes
 	 */
-	protected HashSet<GComponent> children;
+	protected List<GComponent> children;
 
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
