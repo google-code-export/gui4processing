@@ -51,7 +51,7 @@ public class G4P implements PConstants, GConstants {
 	private static List<GComponent> allComponents = new LinkedList<GComponent>();
 
 	/**
-	 * Set of GControlWindows
+	 * List of GWindows
 	 */
 	private static List<GWindow> allWinApps = new LinkedList<GWindow>();
 
@@ -435,23 +435,61 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * This will help arrange 
+	 * This will sort the GUI controls on the main sketch PApplet.
 	 */
 	public static void depthSort(){
-		for(GComponent comp : allComponents){
-			if(comp.getParent() == null){
-				comp.getPApplet().unregisterDraw(comp);
-			}
-		}
-		Collections.sort(allComponents, new ZCompare());
-		for(GComponent comp : allComponents){
-			if(comp.getParent() == null){
-				comp.getPApplet().registerDraw(comp);
-			}
-		}		
+		depthSort(mainWinApp);
+	}
+
+	/**
+	 * This will sort the GUI controls in a secondary window.
+	 * @param window the GWindow object
+	 */
+	public static void depthSort(GWindow window){
+		PApplet app = window.papplet;
+		depthSort(app);
 	}
 	
-	private static class ZCompare implements Comparator<GComponent> {
+	/**
+	 * This will sort the draw order for GUI controls based on their z attribute - note that
+	 * a control will be drawn before a control with a higher z. If two controls have the 
+	 * same z value, then the controls are ordered by their vertical screen position. This means
+	 * that controls near the bottom of the display will be drawn before those nearer the top.
+	 * @param windowApp the PApplet object
+	 */
+	public static void depthSort(PApplet windowApp){
+		Collections.sort(allComponents, new Z_Order());
+		System.out.println(windowApp + "\n"+isAutoDrawOn(windowApp) + "\n" +System.currentTimeMillis());
+		if(windowApp != null && isAutoDrawOn(windowApp)){
+			for(GComponent comp : allComponents){
+				if(comp.getParent() == null && comp.getPApplet() == windowApp){
+					comp.getPApplet().unregisterDraw(comp);
+					System.out.println("Sorting "+comp );
+				}
+			}
+			for(GComponent comp : allComponents){
+				if(comp.getParent() == null && comp.getPApplet() == windowApp){
+					comp.getPApplet().registerDraw(comp);
+				}
+			}	
+		}
+	}
+	
+	public static void moveToFront(GComponent comp){
+		PApplet app = comp.getPApplet();
+		allComponents.remove(comp);
+		allComponents.add(comp);
+		if(comp.parent == null && app != null && isAutoDrawOn(app)){
+			app.unregisterDraw(comp);
+			app.registerDraw(comp);
+		}
+	}
+	
+	/**
+	 * Comparator used for controlling the order components are drawn
+	 * @author Peter Lager
+	 */
+	private static class Z_Order implements Comparator<GComponent> {
 
 		public int compare(GComponent c1, GComponent c2) {
 			if(c1.z != c2.z)
@@ -460,7 +498,7 @@ public class G4P implements PConstants, GConstants {
 				return new Integer(-c1.y).compareTo(new Integer(-c2.y));
 		}
 		
-	} // end of comparitor class
+	} // end of comparator class
 	
 	
 }
