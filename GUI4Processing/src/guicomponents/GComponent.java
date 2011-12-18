@@ -210,6 +210,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param methodName the method to execute in the object handler class
 	 * @param parameters the parameter classes.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
 		try{
 			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, parameters );
@@ -252,6 +253,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param methodName the method to execute in the object handler class
 	 * @param parameters the parameter classes.
 	 */
+	@SuppressWarnings("unchecked")
 	public void addEventHandler(Object obj, String methodName, Class[] parameters){
 		if(parameters == null)
 			parameters = new Class[0];
@@ -304,6 +306,14 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 
 	/**
+	 * This method stub is overridden in GPanel
+	 */
+	protected void bringToFront(){
+		if(parent != null)
+			parent.bringToFront();
+	}
+	
+	/**
 	 * Give the focus to this component but only after allowing the 
 	 * current component with focus to release it gracefully. <br>
 	 * Always cancel the keyFocusIsWith irrespective of the component
@@ -315,6 +325,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			focusIsWith.loseFocus(this);
 		focusIsWith = this;
 		keyFocusIsWith = null;
+		this.bringToFront();
 	}
 
 	/**
@@ -389,22 +400,18 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return (focusIsWith == null) ? -1 : focusIsWith.z;
 	}
 
-	public void bringToFront(){
-		if(parent != null)
-			parent.bringToFront();
-	}
-	
+
 	/**
 	 * See if this component is a child of another the component
 	 * @param p possible parent
 	 * @return true if p is a parent of this component
 	 */
-//	protected boolean isChildOf(GComponent p){
-//		if(this == p)
-//			return true;
-//		else
-//			return (parent == null) ? false : parent.isChildOf(p);
-//	}
+	protected boolean isChildOf(GComponent p){
+		if(this == p)
+			return true;
+		else
+			return (parent == null) ? false : parent.isChildOf(p);
+	}
 	
 	/**
 	 * This can be used to detect the type of event
@@ -552,7 +559,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			regKey = true;
 		}
 	}
-
+	
+	/**
+	 * Completely dispose of this component. This operation cannot be undone.
+	 */
 	public void dispose(){
 		if(regDraw) winApp.unregisterDraw(this);
 		if(regMouse) winApp.unregisterMouseEvent(this);

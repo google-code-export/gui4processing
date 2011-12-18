@@ -60,7 +60,6 @@ public class G4P implements PConstants, GConstants {
 	 */
 	private static List<PApplet> autoDrawDisabled = new LinkedList<PApplet>();
 
-
 	// Will be set when and first component is created
 	public static PApplet mainWinApp = null;
 
@@ -437,51 +436,70 @@ public class G4P implements PConstants, GConstants {
 	/**
 	 * This will sort the GUI controls on the main sketch PApplet.
 	 */
-	public static void depthSort(){
-		depthSort(mainWinApp);
+	public static void setDrawOrder(){
+		setDrawOrder(mainWinApp);
 	}
 
 	/**
 	 * This will sort the GUI controls in a secondary window.
 	 * @param window the GWindow object
 	 */
-	public static void depthSort(GWindow window){
+	public static void setDrawOrder(GWindow window){
 		PApplet app = window.papplet;
-		depthSort(app);
+		setDrawOrder(app);
 	}
 	
 	/**
+	 * If you are using GPanel or GCombo it would be useful to call this method in setup
+	 * or customGUI (if using GUI builder tool). <br>
+	 * DO NOT CALL this method from inside the draw() method. <br>
 	 * This will sort the draw order for GUI controls based on their z attribute - note that
 	 * a control will be drawn before a control with a higher z. If two controls have the 
 	 * same z value, then the controls are ordered by their vertical screen position. This means
 	 * that controls near the bottom of the display will be drawn before those nearer the top.
 	 * @param windowApp the PApplet object
 	 */
-	public static void depthSort(PApplet windowApp){
+	public static void setDrawOrder(PApplet windowApp){
 		Collections.sort(allComponents, new Z_Order());
-		System.out.println(windowApp + "\n"+isAutoDrawOn(windowApp) + "\n" +System.currentTimeMillis());
 		if(windowApp != null && isAutoDrawOn(windowApp)){
 			for(GComponent comp : allComponents){
-				if(comp.getParent() == null && comp.getPApplet() == windowApp){
+				if(comp.getParent() == null && comp.getPApplet() == windowApp)
 					comp.getPApplet().unregisterDraw(comp);
-					System.out.println("Sorting "+comp );
-				}
 			}
 			for(GComponent comp : allComponents){
-				if(comp.getParent() == null && comp.getPApplet() == windowApp){
+				if(comp.getParent() == null && comp.getPApplet() == windowApp)
 					comp.getPApplet().registerDraw(comp);
-				}
 			}	
 		}
 	}
 	
-	public static void moveToFront(GComponent comp){
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Used to bring a panel to the front of the display. <br>
+	 * Do not use this method directly. 
+	 */
+	public static void moveToFrontForDraw(GComponent comp){
 		PApplet app = comp.getPApplet();
-		allComponents.remove(comp);
-		allComponents.add(comp);
-		if(comp.parent == null && app != null && isAutoDrawOn(app)){
-			app.unregisterDraw(comp);
-			app.registerDraw(comp);
+		if(allComponents.remove(comp)){
+			allComponents.add(comp);
+			if(comp.parent == null && app != null && isAutoDrawOn(app)){
+				app.unregisterDraw(comp);
+				app.registerDraw(comp);
+			}
+		}
+	}
+	
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Used to ensure the panel is the last component to be tested for mouse events. <br>
+	 * Do not use this method. 
+	 */
+	public static void moveToFrontForMouse(GComponent comp){
+		PApplet app = comp.getPApplet();
+		if(app != null && allComponents.remove(comp)){
+			allComponents.add(comp);
+			app.unregisterMouseEvent(comp);
+			app.registerMouseEvent(comp);
 		}
 	}
 	

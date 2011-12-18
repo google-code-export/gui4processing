@@ -3,7 +3,7 @@
    	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-09 Peter Lager
+  Copyright (c) 2008-11 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
