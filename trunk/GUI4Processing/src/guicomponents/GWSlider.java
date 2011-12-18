@@ -435,14 +435,6 @@ public class GWSlider extends GSlider {
 		winApp.registerKeyEvent(this);
 	}
 
-	protected void takeFocus(){
-		if(focusIsWith != null && focusIsWith != this)
-			focusIsWith.loseFocus(this);
-		focusIsWith = this;
-		keyFocusIsWith = this;
-	}
-
-
 	/**
 	 * the width of the control and height, is determined by the length and also 
 	 * the various images used in the skins. This function deals with that. It is

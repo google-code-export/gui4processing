@@ -106,24 +106,27 @@ public class GPanel extends GComponent {
 		setText(text);
 	}
 
+	/**
+	 * Bring this panel to the front i.e. above other panels.
+	 */
 	public void bringToFront(){
 		if(parent != null)
 			parent.bringToFront();
-		G4P.moveToFront(this);
+		G4P.moveToFrontForDraw(this);
 	}
 	
 	/**
-	 * What to do when the GPanel looses focus.
+	 * What to do when the GPanel loses focus.
 	 */
 	protected void loseFocus(GComponent grabber){
 		focusIsWith = null;
 		beingDragged = false;
 	}
 
-	protected void takeFocus(){
-		super.takeFocus();
-		G4P.moveToFront(this);
-	}
+//	protected void takeFocus(){
+//		super.takeFocus();
+//		G4P.moveToFrontForDraw(this);
+//	}
 	
 	/**
 	 * Draw the panel.
@@ -181,7 +184,7 @@ public class GPanel extends GComponent {
 		if(!visible || !enabled) return;
 		
 		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
-		boolean mouseOverPanel = isOverPanel(winApp.mouseX, winApp.mouseY);
+//		boolean mouseOverPanel = isOverPanel(winApp.mouseX, winApp.mouseY);
 		if(mouseOver) 
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -197,10 +200,9 @@ public class GPanel extends GComponent {
 				// we lose focus
 				beingDragged = true;
 			}
-			// Prevent textfield objects from releasing focus
-//			if(focusIsWith != null && focusIsWith != this && hasChildFocus() && mouseOverPanel)
-//				focusIsWith.loseFocus(null);
-			if(focusIsWith != null && focusIsWith != this && mouseOverPanel && z == focusObjectZ())
+			// If focus is with some other control with the same depth and the mouse is over the panel
+			// Used to ensure that GTextField controls on GPanels release focus
+			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && isOverPanel(winApp.mouseX, winApp.mouseY) )
 				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
