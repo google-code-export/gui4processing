@@ -119,7 +119,7 @@ public abstract class GRoundControl extends GComponent {
 		start = PApplet.radians(aLow);
 		end = PApplet.radians(aHigh);
 
-		z= Z_SLIPPY;
+		z = Z_SLIPPY;
 
 		registerAutos_DMPK(true, true, true, false);
 		setLimits(50,0,100);

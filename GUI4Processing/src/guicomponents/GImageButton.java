@@ -119,7 +119,7 @@ public class GImageButton extends GComponent {
 		bimage = getImages(imgFiles);
 		width = bimage[0].width;
 		height = bimage[0].height;
-		z = 24;
+		z = Z_SLIPPY;
 		createEventHandler(winApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}

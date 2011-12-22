@@ -460,7 +460,7 @@ public class G4P implements PConstants, GConstants {
 	 * @param windowApp the PApplet object
 	 */
 	public static void setDrawOrder(PApplet windowApp){
-		Collections.sort(allComponents, new Z_Order());
+		Collections.sort(allComponents, new GComponent.Z_Order());
 		if(windowApp != null && isAutoDrawOn(windowApp)){
 			for(GComponent comp : allComponents){
 				if(comp.getParent() == null && comp.getPApplet() == windowApp)
@@ -503,20 +503,6 @@ public class G4P implements PConstants, GConstants {
 		}
 	}
 	
-	/**
-	 * Comparator used for controlling the order components are drawn
-	 * @author Peter Lager
-	 */
-	private static class Z_Order implements Comparator<GComponent> {
 
-		public int compare(GComponent c1, GComponent c2) {
-			if(c1.z != c2.z)
-				return  new Integer(c1.z).compareTo( new Integer(c2.z));
-			else
-				return new Integer(-c1.y).compareTo(new Integer(-c2.y));
-		}
-		
-	} // end of comparator class
-	
 	
 }

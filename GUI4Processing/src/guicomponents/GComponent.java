@@ -27,6 +27,8 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,7 +87,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected final static int PADV = 2;
 
 	// Increment to be used if on a GPanel
-	protected final static int Z_PANEL = 32;
+	protected final static int Z_PANEL = 1024;
 
 	// Components that don't release focus automatically
 	// i.e. GTextField
@@ -454,6 +456,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			component.regDraw = false;
 			if(localColor.getAlpha() < 255)
 				component.setAlpha(localColor.getAlpha());
+			Collections.sort(children, new Z_Order());
 			return true;
 		}
 	}
@@ -472,7 +475,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		z += parentZ;
 		if(children != null){
 			for(GComponent c : children){
-				c.setZ(z);
+				c.setZ(parentZ);
 			}
 		}
 	}
@@ -911,4 +914,19 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
 	}
 
+	/**
+	 * Comparator used for controlling the order components are drawn
+	 * @author Peter Lager
+	 */
+	public static class Z_Order implements Comparator<GComponent> {
+
+		public int compare(GComponent c1, GComponent c2) {
+			if(c1.z != c2.z)
+				return  new Integer(c1.z).compareTo( new Integer(c2.z));
+			else
+				return new Integer(-c1.y).compareTo(new Integer(-c2.y));
+		}
+		
+	} // end of comparator class
+	
 } // end of class

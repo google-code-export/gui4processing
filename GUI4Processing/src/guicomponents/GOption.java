@@ -78,7 +78,7 @@ public class GOption extends GComponent {
 			this.height = height;
 		opaque = false;
 		setText(text);
-		z = 24;
+		z = Z_SLIPPY;
 		createEventHandler(winApp, "handleOptionEvents", new Class[]{ GOption.class, GOption.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
