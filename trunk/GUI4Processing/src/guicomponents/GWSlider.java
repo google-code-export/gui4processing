@@ -538,15 +538,18 @@ public class GWSlider extends GSlider {
 
 		switch (event.getID()) {
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && isMouseOverThumb && z > focusObjectZ()){
+			if(focusIsWith != this && isMouseOver && z > focusObjectZ()) { // && isMouseOverThumb){
 				this.takeFocus();
-				_mousePressedOverThumb = true;
+				_mousePressedOverThumb = isMouseOverThumb;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED: // OK as long as we have focus
 			if(focusIsWith == this){  // && isMouseOverThumb || (_mousePressedOverThumb == true)){
 				if(_stickToTicks){
 					_stickToTickByPosition(winApp.mouseX - p.x);
+				}
+				else {
+					thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x, thumbMin, thumbMax);
 				}
 				loseFocus(null);
 				eventType = RELEASED;
@@ -560,6 +563,13 @@ public class GWSlider extends GSlider {
 				thumbTargetPos  = PApplet.constrain(winApp.mouseX - p.x , thumbMin, thumbMax);
 				isValueChanging = true;
 			}
+			break;
+		case MouseEvent.MOUSE_MOVED:
+			if(isOverThumb(event.getX(), event.getY())){
+				_isMouseOverThumb = true;
+			}
+			else
+				_isMouseOverThumb = false;
 			break;
 		} // end of switch
 	}
@@ -717,11 +727,10 @@ public class GWSlider extends GSlider {
 			if(_renderValueLabel){
 				if(_valueType == INTEGER)
 					winApp.text(String.format(format,Math.round(value),unit),p.x + thumbPos, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
-				else
+				else 
 					winApp.text(String.format(format,value,unit),p.x + thumbPos, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
-			}			
+			}
 		}			
-
 		winApp.popStyle();
 	}
 
