@@ -49,7 +49,7 @@ public abstract class GSlider extends GComponent {
 	protected float value;
 
 	// Indicates the type of value used in the display
-	protected int _valueType;
+	protected int _valueType = 0;
 
 	/** 
 	 * Pixel values relative to slider top left
@@ -114,7 +114,7 @@ public abstract class GSlider extends GComponent {
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
 		setValue(init, true);
-		_valueType = DECIMAL;
+		_valueType = INTEGER;
 	}
 
 
@@ -130,7 +130,8 @@ public abstract class GSlider extends GComponent {
 		thumbTargetPos = thumbPos;
 		// Set the value immediately ignoring inertia
 		setValue(this.init, true);
-		_valueType = INTEGER;
+		if(_valueType == INTEGER)
+			_valueType = DECIMAL;
 	}
 	
 	/**
