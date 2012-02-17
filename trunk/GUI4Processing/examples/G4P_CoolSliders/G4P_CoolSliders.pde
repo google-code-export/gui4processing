@@ -21,6 +21,7 @@ void setup() {
   // GWSlider.INTEGER
   sdr2.setValueType(GWSlider.DECIMAL);
   sdr2.setLimits(0.5f, 0f, 1.0f);
+  sdr2.setPrecision(3);
   sdr2.setRenderValueLabel(false); 
 
   //=============================================================
@@ -45,7 +46,7 @@ void setup() {
   // `Stick to ticks' enforces that the handle can only rest 
   // at a tick position.
   		
-   //=============================================================
+  //=============================================================
   // This example shows small float numbers used and settings
   // the accuracy of the display labels
   sdr6 = new GWSlider(this,320,80,260);
@@ -53,6 +54,7 @@ void setup() {
   sdr6.setLimits(3E-2f, 2.0E-2f, 3.5E-2f);
   sdr6.setTickCount(15); 
   sdr6.setPrecision(1);
+  sdr6.setInertia(15);
   sdr6.setStickToTicks(true);
   
   //=============================================================
