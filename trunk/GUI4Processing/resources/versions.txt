@@ -1,5 +1,0 @@
-V1.6.4
-GWSlider bug fix now able to test whether the slider is being dragged 
-i.e. the value is changing at the GUI
-
-GWindow close() method added 
