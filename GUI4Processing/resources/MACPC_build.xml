@@ -226,7 +226,7 @@ ${line}
 			<taglet name="ExampleTaglet" path="resources/code" />
  			<fileset dir="${project.tmp}/${project.name}/src" defaultexcludes="yes">
 			<!-- add packages to be added to reference. -->
-				<include name="**/*"/>
+<!--				<include name="**/*"/>  -->
 				<include name="guicomponents/*"/>
 			</fileset>
 	 	</javadoc>
