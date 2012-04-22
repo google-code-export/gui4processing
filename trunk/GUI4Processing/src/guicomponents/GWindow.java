@@ -95,9 +95,9 @@ public class GWindow extends Frame implements GConstants {
 	protected String drawHandlerMethodName;
 
 	/** The object to handle the mouse event */
-	protected Object mouseHandlerObject = null;
+	public Object mouseHandlerObject = null;
 	/** The method in mouseHandlerObject to execute */
-	protected Method mouseHandlerMethod = null;
+	public Method mouseHandlerMethod = null;
 	/** the name of the method to handle the event */ 
 	protected String mouseHandlerMethodName;
 
@@ -379,7 +379,7 @@ public class GWindow extends Frame implements GConstants {
 	}
 	
 	/**
-	 * Allows the program to close this window and release its resources.
+	 * Allows the user to close this window and release its resources.
 	 */
 	public void close(){
 		removeFromG4P();
@@ -462,7 +462,7 @@ public class GWindow extends Frame implements GConstants {
 	}
 
 	/**
-	 * Attempt to add the 'mouse' handler method. 
+	 * Attempt to add the 'post' handler method. 
 	 * The default event handler is a method that returns void and has two
 	 * parameters Papplet and GWinData
 	 * 

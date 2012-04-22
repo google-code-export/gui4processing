@@ -26,13 +26,18 @@ package guicomponents;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
+import processing.core.PMatrix;
+import processing.core.PMatrix3D;
 import processing.core.PStyle;
 
 /**
@@ -45,23 +50,27 @@ import processing.core.PStyle;
  */
 public class G4P implements PConstants, GConstants {
 
+
+	private static HashMap<PApplet, AppletInfo> applets = new HashMap<PApplet, AppletInfo>();
+
+
 	/**
 	 * Set of all the GUI components created
 	 */
-	private static List<GComponent> allComponents = new LinkedList<GComponent>();
+	//	private static List<GComponent> allComponents = new LinkedList<GComponent>();
 
 	/**
 	 * List of GWindows
 	 */
-	private static List<GWindow> allWinApps = new LinkedList<GWindow>();
+//	private static List<GWindow> allWinApps = new LinkedList<GWindow>();
 
 	/**
 	 * Set of PApplet windows disabled
 	 */
-	private static List<PApplet> autoDrawDisabled = new LinkedList<PApplet>();
+	//	private static List<PApplet> autoDrawDisabled = new LinkedList<PApplet>();
 
 	// Will be set when and first component is created
-	public static PApplet mainWinApp = null;
+	//	public static PApplet mainWinApp = null;
 
 	public static PStyle g4pStyle = null;
 
@@ -74,47 +83,43 @@ public class G4P implements PConstants, GConstants {
 	public static int mouseOff = ARROW;
 	public static int mouseOver = HAND;
 
-	private final static int PCAM_AVAILABLE = 0;
-	private final static int PCAM_UNAVAILABLE = 1;
-	private final static int PCAM_UNINITIALISED = 2;
+//	private final static int PCAM_AVAILABLE = 0;
+//	private final static int PCAM_UNAVAILABLE = 1;
+//	private final static int PCAM_UNINITIALISED = 2;
 
-	private static Object peasyCam;
-	private static Method beginHud, endHud;
-	private static int camStatus = PCAM_UNINITIALISED;
-
-
-	// ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-
-	public static void listComponents(String tab){
-		for(GComponent c : allComponents){
-			if(c.parent == null)
-				System.out.println(tab + c);
-			else {
-				if(c.children != null){
-					tab += "  ";
-					System.out.println(tab + c);
-					listChildComponents(c, tab + "  ");
-				}
-			}
-		}
-	}
-
-	public static void listChildComponents(GComponent c, String tab){
-		for(GComponent child : c.children){
-			System.out.println(tab + child);
-			if(child.children != null){
-				listChildComponents(child, tab + "  ");
-			}
-		}
-	}
-
+//	private static Object peasyCam;
+//	private static Method beginHud, endHud;
+//	private static int camStatus = PCAM_UNINITIALISED;
 
 
 	// ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
+	//	public static void listComponents(String tab){
+	//		for(GComponent c : allComponents){
+	//			if(c.parent == null)
+	//				System.out.println(tab + c);
+	//			else {
+	//				if(c.children != null){
+	//					tab += "  ";
+	//					System.out.println(tab + c);
+	//					listChildComponents(c, tab + "  ");
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	//	public static void listChildComponents(GComponent c, String tab){
+	//		for(GComponent child : c.children){
+	//			System.out.println(tab + child);
+	//			if(child.children != null){
+	//				listChildComponents(child, tab + "  ");
+	//			}
+	//		}
+	//	}
+	//
 
 
-
+	// ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 	/**
 	 * Enables or disables cursor over component change
@@ -125,14 +130,16 @@ public class G4P implements PConstants, GConstants {
 	public static void setMouseOverEnabled(boolean enable){
 		cursorChangeEnabled = enable;
 		// If disabling make sure that the cursor is set to mouseOff
-		// for the mainWinApp and all control windows
+		// for all control windows
 		if(cursorChangeEnabled == false){
-			mainWinApp.cursor(mouseOff);
-			Iterator<GWindow> iter = allWinApps.iterator();
-			while(iter.hasNext()){
-				iter.next().papplet.cursor(mouseOff);
-			}
+			Set<PApplet> apps = applets.keySet();
+			for(PApplet pa : apps)
+				pa.cursor(mouseOff);
 		}
+	}
+
+	public static void setMouseOverEnabled(PApplet app, boolean enable){
+		
 	}
 
 	/**
@@ -162,17 +169,24 @@ public class G4P implements PConstants, GConstants {
 	 * components inherit from GComponent and are required to call a 
 	 * GComponent ctor then all GUI components will automatically be 
 	 * registered in the set.
+	 * @param theApplet 
 	 * 
 	 * @param c the component that has been created.
 	 */
-	public static void addComponent(GComponent c){
+	public static void addComponent(PApplet theApplet, GComponent c){
 		if(g4pStyle == null)
 			getStyle();
-		if(allComponents.contains(c)){
-			GMessenger.message(ADD_DUPLICATE, c ,null);
+		AppletInfo info = applets.get(theApplet);
+		if(info == null){
+			info = new AppletInfo(theApplet);
+			applets.put(theApplet, info);
 		}
-		else
-			allComponents.add(c);
+		info.addComponent(c);
+		//		if(allComponents.contains(c)){
+		//			GMessenger.message(ADD_DUPLICATE, c ,null);
+		//		}
+		//		else
+		//			allComponents.add(c);
 	}
 
 	/**
@@ -184,7 +198,9 @@ public class G4P implements PConstants, GConstants {
 	 * @param c the component to remove
 	 */
 	public static void dumpComponent(GComponent c){
-		allComponents.remove(c);
+		AppletInfo info = applets.get(c.getPApplet());
+		if(info != null)
+			info.removeControl(c);
 	}
 
 	/**
@@ -192,12 +208,12 @@ public class G4P implements PConstants, GConstants {
 	 * Used to register the main window for cursor over behaviour.
 	 * 
 	 */
-	public static void setMainApp(PApplet theApplet){
-		if(mainWinApp == null){
-			mainWinApp = theApplet;
-			mainWinApp.registerPost(mcd);
-		}
-	}
+//	public static void setMainApp(PApplet theApplet){
+//		if(mainWinApp == null){
+//			mainWinApp = theApplet;
+//			mainWinApp.registerPost(mcd);
+//		}
+//	}
 
 	/**
 	 * INTERNAL USE ONLY <br>
@@ -205,9 +221,27 @@ public class G4P implements PConstants, GConstants {
 	 * @param window
 	 */
 	public static void addWindow(GWindow window){
-		allWinApps.add(window);
+		if(window != null && window.papplet != null)
+			addWindow(window.papplet);
 	}
 
+	/**
+	 * Add a PApplet object to G4P if not already there. <br>
+	 * The only time you might want to use this is when you are mixing
+	 * G4P and OpenGL. In which case call this method from setup() immediately
+	 * after the call to size() and before any statements that might alter
+	 * the initial drawing matrix e.g. <br>
+	 * <pre>void setup(){</pre> <br>
+	 * <pre>  size(480, 320);</pre> <br> 
+	 * <pre>  G4P.addWindow(this);</pre> <br>
+	 * @param app the PApplet object to add
+	 */
+	public static void addWindow(PApplet app){
+		AppletInfo info = applets.get(app);
+		if(info == null)
+			applets.put(app, new AppletInfo(app));
+	}
+	
 	/**
 	 * INTERNAL USE ONLY <br>
 	 * Remove control window - called when a ControlWindow is closed
@@ -216,7 +250,8 @@ public class G4P implements PConstants, GConstants {
 	 * @param window
 	 */
 	public static void removeWindow(GWindow window){
-		allWinApps.remove(window);
+		if(window != null && window.papplet != null)
+			applets.remove(window.papplet);
 	}
 
 	/**
@@ -225,7 +260,10 @@ public class G4P implements PConstants, GConstants {
 	 * @return true if the window is still open
 	 */
 	public static boolean isWindowActive(GWindow window){
-		return allWinApps.contains(window);
+		if(window != null && window.papplet != null)
+			return applets.containsKey(window.papplet);
+		else
+			return false;
 	}
 
 	/**
@@ -248,6 +286,7 @@ public class G4P implements PConstants, GConstants {
 		g4pStyle.colorModeZ = 255.0f;
 	}
 
+	// Needed ???
 	public static void setTextMode(int mode){
 		if(mode == MODEL || mode == SCREEN || mode == SHAPE){
 			if(g4pStyle == null){
@@ -273,10 +312,10 @@ public class G4P implements PConstants, GConstants {
 	public static void setColorScheme(PApplet theApplet, int schemeNo){
 		// If both theApplet and app are null there is nothing we can do!
 		if(theApplet != null)
-			setMainApp(theApplet);
-		else if(mainWinApp == null)
-			return;
-		GComponent.globalColor = GCScheme.getColor(mainWinApp,  schemeNo);
+			//			setMainApp(theApplet);
+			//		else if(mainWinApp == null)
+			//			return;
+			GComponent.globalColor = GCScheme.getColor(theApplet,  schemeNo);
 	}
 
 	/**
@@ -291,10 +330,10 @@ public class G4P implements PConstants, GConstants {
 	public static void setFont(PApplet theApplet, String fontName, int fontSize){
 		// If both theApplet and app are null there is nothing we can do!
 		if(theApplet != null)
-			setMainApp(theApplet);
-		else if(mainWinApp == null)
-			return;
-		GComponent.globalFont = GFont.getFont(mainWinApp, fontName, fontSize);
+//			setMainApp(theApplet);
+//		else if(mainWinApp == null)
+//			return;
+			GComponent.globalFont = GFont.getFont(theApplet, fontName, fontSize);
 	}
 
 	/**
@@ -303,25 +342,25 @@ public class G4P implements PConstants, GConstants {
 	 * @param pcam a previously created PeasyCam object.
 	 * @return true if it can initialise a PeasyCam object else false.
 	 */
-	public static boolean setPeasyCam(Object pcam){
-		camStatus = PCAM_UNAVAILABLE;
-		if(!pcam.getClass().getSimpleName().equals("PeasyCam")){
-			GMessenger.message(NOT_PEASYCAM, pcam, null);
-			return false;
-		}
-		try {
-			beginHud = pcam.getClass().getMethod("beginHUD", (Class[]) null);
-			endHud = pcam.getClass().getMethod("endHUD", (Class[])null);
-			peasyCam = pcam;
-			camStatus =  PCAM_AVAILABLE;
-			return true;
-		}
-		catch(Exception excp){
-			GMessenger.message(HUD_UNSUPPORTED, null, null);
-			camStatus = PCAM_UNAVAILABLE;
-			return false;
-		}
-	}
+//	public static boolean setPeasyCam(Object pcam){
+//		camStatus = PCAM_UNAVAILABLE;
+//		if(!pcam.getClass().getSimpleName().equals("PeasyCam")){
+//			GMessenger.message(NOT_PEASYCAM, pcam, null);
+//			return false;
+//		}
+//		try {
+//			beginHud = pcam.getClass().getMethod("beginHUD", (Class[]) null);
+//			endHud = pcam.getClass().getMethod("endHUD", (Class[])null);
+//			peasyCam = pcam;
+//			camStatus =  PCAM_AVAILABLE;
+//			return true;
+//		}
+//		catch(Exception excp){
+//			GMessenger.message(HUD_UNSUPPORTED, null, null);
+//			camStatus = PCAM_UNAVAILABLE;
+//			return false;
+//		}
+//	}
 
 	/**
 	 * This method is provided to simplify using G4P with PeasyCam. <br>
@@ -336,24 +375,24 @@ public class G4P implements PConstants, GConstants {
 	 * G4P.draw();
 	 * </pre>
 	 */
-	public static void draw(){
-		if(camStatus != PCAM_AVAILABLE){
-			draw(mainWinApp);			
-		}
-		else {
-			try {
-				beginHud.invoke(peasyCam, (Object[])null);
-			} catch (Exception e) {
-				e.printStackTrace();
-			} 
-			draw(mainWinApp);
-			try {
-				endHud.invoke(peasyCam, (Object[])null);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	public static void draw(){
+//		if(camStatus != PCAM_AVAILABLE){
+//			draw(mainWinApp);			
+//		}
+//		else {
+//			try {
+//				beginHud.invoke(peasyCam, (Object[])null);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			} 
+//			draw(mainWinApp);
+//			try {
+//				endHud.invoke(peasyCam, (Object[])null);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	/**
 	 * When you first use G4P(app) it switches off auto draw for the 
@@ -361,19 +400,35 @@ public class G4P implements PConstants, GConstants {
 	 * 
 	 */
 	public static void draw(PApplet app){
-		if(allComponents.size() > 0){
+		AppletInfo info = applets.get(app);
+
+		if(info != null && info.paControls.size() > 0){
 			// Time to take over the responsibility for drawing
-			if(!autoDrawDisabled.contains(app))
-				unregisterFromPAppletDraw(app);
+			if(info.autoDrawOn){
+				for(GComponent comp : info.paControls){
+					if(comp.getParent() == null){
+						comp.regDraw = false;
+						comp.getPApplet().unregisterDraw(comp);
+					}
+				}
+				info.autoDrawOn = false;
+			}
 			// Draw the components on the mainWinApp only.
 			// Note that GPanels will call the appropriate
 			// draw methods for the components on them
-			app.hint(DISABLE_DEPTH_TEST);
-			for(GComponent comp : allComponents){
+			// Now setup for 2D display
+			app.pushMatrix();
+			app.hint(PConstants.DISABLE_DEPTH_TEST);
+			app.resetMatrix();
+			app.applyMatrix(info.orgMatrix);
+			// Draw components
+			for(GComponent comp : info.paControls){
 				if(comp.getParent() == null && comp.getPApplet() == app)
 					comp.draw();
 			}
-			app.hint(ENABLE_DEPTH_TEST);
+			// Done with drawing components 
+			app.hint(PConstants.ENABLE_DEPTH_TEST);
+			app.popMatrix();
 		}
 	}
 
@@ -386,37 +441,47 @@ public class G4P implements PConstants, GConstants {
 	 * 
 	 */
 	private static void unregisterFromPAppletDraw(PApplet app) {
-		for(GComponent comp : allComponents){
-			if(comp.getParent() == null && comp.getPApplet() == app){
-				comp.regDraw = false;
-				comp.getPApplet().unregisterDraw(comp);
+		AppletInfo info = applets.get(app);
+		if(info != null){
+			//		List<GComponent> paControls = info.paControls);
+			for(GComponent comp : info.paControls){
+				if(comp.getParent() == null){
+					comp.regDraw = false;
+					comp.getPApplet().unregisterDraw(comp);
+				}
 			}
+			info.autoDrawOn = false;
 		}
-		autoDrawDisabled.add(app);
+		//		info.addComponent(c);
+		//		autoDrawDisabled.add(app);
 	}
 
 	/**
 	 * Once disabled you need to call G4P.draw() from the draw()
 	 *  method if you wish to see the GUI ever again!
 	 */
-	public static void disableAutoDraw(){
-		unregisterFromPAppletDraw(mainWinApp);
-		GMessenger.message(DISABLE_AUTO_DRAW, null, null);
-	}
+	//	public static void disableAutoDraw(){
+	//		unregisterFromPAppletDraw(mainWinApp);
+	//		GMessenger.message(DISABLE_AUTO_DRAW, null, null);
+	//	}
 
 	/**
 	 * Is autodraw on for the main PApplet window?
 	 * 
 	 */
-	public static boolean isAutoDrawOn(){
-		return isAutoDrawOn(mainWinApp);
-	}
+	//	public static boolean isAutoDrawOn(){
+	//		return isAutoDrawOn(mainWinApp);
+	//	}
 
 	/**
 	 * Is autodraw on for the PApplet app?
 	 */
 	public static boolean isAutoDrawOn(PApplet app){
-		return !autoDrawDisabled.contains(app);
+		AppletInfo info = applets.get(app);
+		if(info != null)
+			return info.autoDrawOn;
+		else 
+			return false;
 	}
 
 	/**
@@ -436,9 +501,9 @@ public class G4P implements PConstants, GConstants {
 	/**
 	 * This will sort the GUI controls on the main sketch PApplet.
 	 */
-	public static void setDrawOrder(){
-		setDrawOrder(mainWinApp);
-	}
+//	public static void setDrawOrder(){
+//		setDrawOrder(mainWinApp);
+//	}
 
 	/**
 	 * This will sort the GUI controls in a secondary window.
@@ -448,7 +513,7 @@ public class G4P implements PConstants, GConstants {
 		PApplet app = window.papplet;
 		setDrawOrder(app);
 	}
-	
+
 	/**
 	 * If you are using GPanel or GCombo it would be useful to call this method in setup
 	 * or customGUI (if using GUI builder tool). <br>
@@ -459,20 +524,22 @@ public class G4P implements PConstants, GConstants {
 	 * that controls near the bottom of the display will be drawn before those nearer the top.
 	 * @param windowApp the PApplet object
 	 */
-	public static void setDrawOrder(PApplet windowApp){
-		Collections.sort(allComponents, new GComponent.Z_Order());
-		if(windowApp != null && isAutoDrawOn(windowApp)){
-			for(GComponent comp : allComponents){
-				if(comp.getParent() == null && comp.getPApplet() == windowApp)
-					comp.getPApplet().unregisterDraw(comp);
-			}
-			for(GComponent comp : allComponents){
-				if(comp.getParent() == null && comp.getPApplet() == windowApp)
-					comp.getPApplet().registerDraw(comp);
-			}	
+	public static void setDrawOrder(PApplet app){
+		AppletInfo info = applets.get(app);
+		if(info != null && info.autoDrawOn ){
+			Collections.sort(info.paControls, new GComponent.Z_Order());
+			//		if(windowApp != null && isAutoDrawOn(windowApp)){
+			//			for(GComponent comp : allComponents){
+			//				if(comp.getParent() == null && comp.getPApplet() == windowApp)
+			//					comp.getPApplet().unregisterDraw(comp);
+			//			}
+			//			for(GComponent comp : allComponents){
+			//				if(comp.getParent() == null && comp.getPApplet() == windowApp)
+			//					comp.getPApplet().registerDraw(comp);
+			//			}	
 		}
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY <br>
 	 * Used to bring a panel to the front of the display. <br>
@@ -480,15 +547,16 @@ public class G4P implements PConstants, GConstants {
 	 */
 	public static void moveToFrontForDraw(GComponent comp){
 		PApplet app = comp.getPApplet();
-		if(allComponents.remove(comp)){
-			allComponents.add(comp);
-			if(comp.parent == null && app != null && isAutoDrawOn(app)){
+		AppletInfo info = applets.get(app);
+		if(info != null && info.paControls.remove(comp)){
+			info.paControls.add(comp);
+			if(comp.parent == null && app != null && info.autoDrawOn){
 				app.unregisterDraw(comp);
 				app.registerDraw(comp);
 			}
 		}
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY <br>
 	 * Used to ensure the panel is the last component to be tested for mouse events. <br>
@@ -496,13 +564,53 @@ public class G4P implements PConstants, GConstants {
 	 */
 	public static void moveToFrontForMouse(GComponent comp){
 		PApplet app = comp.getPApplet();
-		if(app != null && allComponents.remove(comp)){
-			allComponents.add(comp);
+		AppletInfo info = applets.get(app);
+		if(info != null && info.paControls.remove(comp)){
+			info.paControls.add(comp);
 			app.unregisterMouseEvent(comp);
 			app.registerMouseEvent(comp);
 		}
 	}
-	
 
-	
+	private static class AppletInfo {
+
+		public PMatrix orgMatrix;
+		public List<GComponent> paControls;
+		public boolean autoDrawOn = true;
+
+		/**
+		 * @param papplet
+		 */
+		public AppletInfo(PApplet papplet) {
+			orgMatrix = papplet.getMatrix();
+			paControls = new LinkedList<GComponent>();
+		}
+
+		/**
+		 * If the component is not null and has not already been added then
+		 * add it to the list and return true. Otherwise the operation is
+		 * ignored and the method returns false;
+		 * @param comp the component to add
+		 * @return true if successfully added else false
+		 */
+		public boolean addComponent(GComponent comp){
+			if(comp == null || paControls.contains(comp))
+				return false;
+			paControls.add(comp);
+			return true;
+		}
+
+		/**
+		 * Removes the component from the 
+		 * @param c
+		 * @return
+		 */
+		public boolean removeControl(GComponent c){
+			return paControls.remove(c);
+		}
+
+
+
+	}
+
 }
