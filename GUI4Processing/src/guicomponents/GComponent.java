@@ -198,8 +198,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		localFont = globalFont;
 		this.x = x;
 		this.y = y;
-		G4P.setMainApp(winApp);
-		G4P.addComponent(this);
+//		G4P.setMainApp(winApp);
+		G4P.addComponent(winApp, this);
 	}
 
 	/**
@@ -212,7 +212,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param methodName the method to execute in the object handler class
 	 * @param parameters the parameter classes.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
 		try{
 			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, parameters );
@@ -443,19 +443,20 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * 
 	 * @return always true
 	 */
-	public boolean add(GComponent component){
-		if(component == null || children.contains(component)){
+	public boolean add(GComponent child){
+		if(child == null || children.contains(child)){
 			if(G4P.messages)
-				System.out.println("Either the component doesn't exist or has already been added to this component");
+				System.out.println("Either the child component doesn't exist or has already been added to this component");
 			return false;
 		} else {
-			component.parent = this;
-			children.add(component);
-			component.setZ(z);
-			winApp.unregisterDraw(component);
-			component.regDraw = false;
+			child.parent = this;
+			children.add(child);
+			child.setZ(z);
+			// The parent will take over drawing the child
+			winApp.unregisterDraw(child);
+			child.regDraw = false;
 			if(localColor.getAlpha() < 255)
-				component.setAlpha(localColor.getAlpha());
+				child.setAlpha(localColor.getAlpha());
 			Collections.sort(children, new Z_Order());
 			return true;
 		}
@@ -512,26 +513,25 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/**
 	 * Override in child classes
 	 */
-	public void pre(){	}
+	public void pre(){ }
 
 	/**
 	 * Override in child classes
 	 */
-	public void draw(){	}
+	public void draw(){ }
 
 	/**
 	 * Override in child classes.
 	 * Every object will execute this method when an event
 	 * is to be processed.
 	 */
-	public void mouseEvent(MouseEvent event){	}
+	public void mouseEvent(MouseEvent event){ }
 
 	/**
 	 * Override in child classes
 	 * @param event
 	 */
-	public void keyPressed(KeyEvent event){
-	}
+	public void keyPressed(KeyEvent event){ }
 
 	/**
 	 * This method is used to register this object with PApplet so it can process
@@ -545,7 +545,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	protected void registerAutos_DMPK(boolean draw, boolean mouse, boolean pre, boolean key){
 		// if auto draw has been disabled then do not register for draw()
-		if(draw && G4P.isAutoDrawOn()){
+		if(draw && G4P.isAutoDrawOn(winApp)){
 			winApp.registerDraw(this);
 			regDraw = true;
 		}

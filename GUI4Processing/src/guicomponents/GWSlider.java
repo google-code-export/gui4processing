@@ -665,12 +665,14 @@ public class GWSlider extends GSlider {
 		Point p = new Point(); 
 		calcAbsPosition(p);
 
+		winApp.pushMatrix();
+		
 		winApp.pushStyle();
 
 		//draw each of the slider skin images
-		winApp.image(_leftEnd, p.x, p.y);
-		winApp.image(_centre, p.x + _leftEnd.width, p.y);
-		winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
+//		winApp.image(_leftEnd, p.x, p.y);
+//		winApp.image(_centre, p.x + _leftEnd.width, p.y);
+//		winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
 
 		winApp.textFont(localFont);
 		winApp.textAlign(PConstants.CENTER);
@@ -719,10 +721,10 @@ public class GWSlider extends GSlider {
 			winApp.endShape();
 			winApp.popStyle();
 
-			if(!_isMouseOverThumb)
-				winApp.image(_thumb, p.x + thumbPos - Math.round(_thumb.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb.height));
-			else
-				winApp.image(_thumb_mouseover, p.x + thumbPos - Math.round(_thumb_mouseover.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb_mouseover.height));
+//			if(!_isMouseOverThumb)
+//				winApp.image(_thumb, p.x + thumbPos - Math.round(_thumb.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb.height));
+//			else
+//				winApp.image(_thumb_mouseover, p.x + thumbPos - Math.round(_thumb_mouseover.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb_mouseover.height));
 
 			if(_renderValueLabel){
 				if(_valueType == INTEGER)
@@ -732,6 +734,7 @@ public class GWSlider extends GSlider {
 			}
 		}			
 		winApp.popStyle();
+		winApp.popMatrix();
 	}
 
 }
