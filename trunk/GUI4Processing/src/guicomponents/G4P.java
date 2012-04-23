@@ -50,27 +50,11 @@ import processing.core.PStyle;
  */
 public class G4P implements PConstants, GConstants {
 
-
+	// Keeps info about all applets and their controls
 	private static HashMap<PApplet, AppletInfo> applets = new HashMap<PApplet, AppletInfo>();
 
-
-	/**
-	 * Set of all the GUI components created
-	 */
-	//	private static List<GComponent> allComponents = new LinkedList<GComponent>();
-
-	/**
-	 * List of GWindows
-	 */
-//	private static List<GWindow> allWinApps = new LinkedList<GWindow>();
-
-	/**
-	 * Set of PApplet windows disabled
-	 */
-	//	private static List<PApplet> autoDrawDisabled = new LinkedList<PApplet>();
-
-	// Will be set when and first component is created
-	//	public static PApplet mainWinApp = null;
+	// Will be set when and first window is added
+	public static PApplet mainWinApp = null;
 
 	public static PStyle g4pStyle = null;
 
@@ -83,63 +67,24 @@ public class G4P implements PConstants, GConstants {
 	public static int mouseOff = ARROW;
 	public static int mouseOver = HAND;
 
-//	private final static int PCAM_AVAILABLE = 0;
-//	private final static int PCAM_UNAVAILABLE = 1;
-//	private final static int PCAM_UNINITIALISED = 2;
-
-//	private static Object peasyCam;
-//	private static Method beginHud, endHud;
-//	private static int camStatus = PCAM_UNINITIALISED;
-
-
-	// ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-
-	//	public static void listComponents(String tab){
-	//		for(GComponent c : allComponents){
-	//			if(c.parent == null)
-	//				System.out.println(tab + c);
-	//			else {
-	//				if(c.children != null){
-	//					tab += "  ";
-	//					System.out.println(tab + c);
-	//					listChildComponents(c, tab + "  ");
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	public static void listChildComponents(GComponent c, String tab){
-	//		for(GComponent child : c.children){
-	//			System.out.println(tab + child);
-	//			if(child.children != null){
-	//				listChildComponents(child, tab + "  ");
-	//			}
-	//		}
-	//	}
-	//
-
-
-	// ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 	/**
-	 * Enables or disables cursor over component change
+	 * Enables or disables cursor over component change. <br>
+	 * This method is ignore if an applet or window has not been
+	 * registered with G4P or the mouse over state is not being changed.
 	 * 
 	 * This is ignored if no G4P components have been created yet
 	 * @param enable
 	 */
 	public static void setMouseOverEnabled(boolean enable){
-		cursorChangeEnabled = enable;
-		// If disabling make sure that the cursor is set to mouseOff
-		// for all control windows
-		if(cursorChangeEnabled == false){
-			Set<PApplet> apps = applets.keySet();
-			for(PApplet pa : apps)
-				pa.cursor(mouseOff);
+		if(cursorChangeEnabled != enable && mainWinApp != null){
+			if(enable == false){
+				Set<PApplet> apps = applets.keySet();
+				for(PApplet pa : apps)
+					pa.cursor(mouseOff);				
+			}
+			cursorChangeEnabled = enable;
 		}
-	}
-
-	public static void setMouseOverEnabled(PApplet app, boolean enable){
-		
 	}
 
 	/**
@@ -176,17 +121,9 @@ public class G4P implements PConstants, GConstants {
 	public static void addComponent(PApplet theApplet, GComponent c){
 		if(g4pStyle == null)
 			getStyle();
+		addWindow(theApplet);
 		AppletInfo info = applets.get(theApplet);
-		if(info == null){
-			info = new AppletInfo(theApplet);
-			applets.put(theApplet, info);
-		}
 		info.addComponent(c);
-		//		if(allComponents.contains(c)){
-		//			GMessenger.message(ADD_DUPLICATE, c ,null);
-		//		}
-		//		else
-		//			allComponents.add(c);
 	}
 
 	/**
@@ -204,20 +141,7 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * INTERNAL USE ONLY <br>
-	 * Used to register the main window for cursor over behaviour.
-	 * 
-	 */
-//	public static void setMainApp(PApplet theApplet){
-//		if(mainWinApp == null){
-//			mainWinApp = theApplet;
-//			mainWinApp.registerPost(mcd);
-//		}
-//	}
-
-	/**
-	 * INTERNAL USE ONLY <br>
-	 * Record a new control window
+	 * Add the window's PApplet object to G4P if not already there. <br>
 	 * @param window
 	 */
 	public static void addWindow(GWindow window){
@@ -239,6 +163,11 @@ public class G4P implements PConstants, GConstants {
 	public static void addWindow(PApplet app){
 		AppletInfo info = applets.get(app);
 		if(info == null)
+			// If this is the first time then initialise mouse over ability
+			if(applets.isEmpty()){
+				mainWinApp = app;
+				mainWinApp.registerPost(mcd);
+			}
 			applets.put(app, new AppletInfo(app));
 	}
 	
@@ -286,16 +215,16 @@ public class G4P implements PConstants, GConstants {
 		g4pStyle.colorModeZ = 255.0f;
 	}
 
-	// Needed ???
-	public static void setTextMode(int mode){
-		if(mode == MODEL || mode == SCREEN || mode == SHAPE){
-			if(g4pStyle == null){
-				PGraphics temp = new PGraphics();
-				g4pStyle = temp.getStyle();			
-			}
-			g4pStyle.textMode = mode;
-		}
-	}
+//	// Needed ???
+//	public static void setTextMode(int mode){
+//		if(mode == MODEL || mode == SCREEN || mode == SHAPE){
+//			if(g4pStyle == null){
+//				PGraphics temp = new PGraphics();
+//				g4pStyle = temp.getStyle();			
+//			}
+//			g4pStyle.textMode = mode;
+//		}
+//	}
 
 	/**
 	 * Set the color scheme to be used by G4P<br>
@@ -310,11 +239,7 @@ public class G4P implements PConstants, GConstants {
 	 * @param schemeNo GCScheme.GREEN_SCHEME
 	 */
 	public static void setColorScheme(PApplet theApplet, int schemeNo){
-		// If both theApplet and app are null there is nothing we can do!
 		if(theApplet != null)
-			//			setMainApp(theApplet);
-			//		else if(mainWinApp == null)
-			//			return;
 			GComponent.globalColor = GCScheme.getColor(theApplet,  schemeNo);
 	}
 
@@ -328,71 +253,9 @@ public class G4P implements PConstants, GConstants {
 	 * @param fontSize font size
 	 */
 	public static void setFont(PApplet theApplet, String fontName, int fontSize){
-		// If both theApplet and app are null there is nothing we can do!
 		if(theApplet != null)
-//			setMainApp(theApplet);
-//		else if(mainWinApp == null)
-//			return;
 			GComponent.globalFont = GFont.getFont(theApplet, fontName, fontSize);
 	}
-
-	/**
-	 * This method is called once to initialise a PeasyCam object.
-	 * 
-	 * @param pcam a previously created PeasyCam object.
-	 * @return true if it can initialise a PeasyCam object else false.
-	 */
-//	public static boolean setPeasyCam(Object pcam){
-//		camStatus = PCAM_UNAVAILABLE;
-//		if(!pcam.getClass().getSimpleName().equals("PeasyCam")){
-//			GMessenger.message(NOT_PEASYCAM, pcam, null);
-//			return false;
-//		}
-//		try {
-//			beginHud = pcam.getClass().getMethod("beginHUD", (Class[]) null);
-//			endHud = pcam.getClass().getMethod("endHUD", (Class[])null);
-//			peasyCam = pcam;
-//			camStatus =  PCAM_AVAILABLE;
-//			return true;
-//		}
-//		catch(Exception excp){
-//			GMessenger.message(HUD_UNSUPPORTED, null, null);
-//			camStatus = PCAM_UNAVAILABLE;
-//			return false;
-//		}
-//	}
-
-	/**
-	 * This method is provided to simplify using G4P with PeasyCam. <br>
-	 * If the PeasyCam object has been set then a parameter and it will 
-	 * automatically call the beginHUD and endHUD methods for you.
-	 * <pre>
-	 * pcam.beginHUD();
-	 * G4P.draw();
-	 * pcam.endHUD(); </pre>
-	 * becomes
-	 * <pre>
-	 * G4P.draw();
-	 * </pre>
-	 */
-//	public static void draw(){
-//		if(camStatus != PCAM_AVAILABLE){
-//			draw(mainWinApp);			
-//		}
-//		else {
-//			try {
-//				beginHud.invoke(peasyCam, (Object[])null);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			} 
-//			draw(mainWinApp);
-//			try {
-//				endHud.invoke(peasyCam, (Object[])null);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 
 	/**
 	 * When you first use G4P(app) it switches off auto draw for the 
@@ -452,26 +315,7 @@ public class G4P implements PConstants, GConstants {
 			}
 			info.autoDrawOn = false;
 		}
-		//		info.addComponent(c);
-		//		autoDrawDisabled.add(app);
 	}
-
-	/**
-	 * Once disabled you need to call G4P.draw() from the draw()
-	 *  method if you wish to see the GUI ever again!
-	 */
-	//	public static void disableAutoDraw(){
-	//		unregisterFromPAppletDraw(mainWinApp);
-	//		GMessenger.message(DISABLE_AUTO_DRAW, null, null);
-	//	}
-
-	/**
-	 * Is autodraw on for the main PApplet window?
-	 * 
-	 */
-	//	public static boolean isAutoDrawOn(){
-	//		return isAutoDrawOn(mainWinApp);
-	//	}
 
 	/**
 	 * Is autodraw on for the PApplet app?
@@ -499,13 +343,6 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	/**
-	 * This will sort the GUI controls on the main sketch PApplet.
-	 */
-//	public static void setDrawOrder(){
-//		setDrawOrder(mainWinApp);
-//	}
-
-	/**
 	 * This will sort the GUI controls in a secondary window.
 	 * @param window the GWindow object
 	 */
@@ -528,15 +365,17 @@ public class G4P implements PConstants, GConstants {
 		AppletInfo info = applets.get(app);
 		if(info != null && info.autoDrawOn ){
 			Collections.sort(info.paControls, new GComponent.Z_Order());
-			//		if(windowApp != null && isAutoDrawOn(windowApp)){
-			//			for(GComponent comp : allComponents){
-			//				if(comp.getParent() == null && comp.getPApplet() == windowApp)
-			//					comp.getPApplet().unregisterDraw(comp);
-			//			}
-			//			for(GComponent comp : allComponents){
-			//				if(comp.getParent() == null && comp.getPApplet() == windowApp)
-			//					comp.getPApplet().registerDraw(comp);
-			//			}	
+			// Change physical order in PApplet by removing then adding the components
+			if(info.autoDrawOn){
+				for(GComponent comp : info.paControls){
+					if(comp.getParent() == null)
+						app.unregisterDraw(comp);
+				}
+				for(GComponent comp : info.paControls){
+					if(comp.getParent() == null)
+						app.registerDraw(comp);
+				}	
+			}
 		}
 	}
 
@@ -594,8 +433,12 @@ public class G4P implements PConstants, GConstants {
 		 * @return true if successfully added else false
 		 */
 		public boolean addComponent(GComponent comp){
-			if(comp == null || paControls.contains(comp))
+			if(comp == null)
 				return false;
+			if(paControls.contains(comp)){
+				GMessenger.message(ADD_DUPLICATE, comp ,null);
+				return false;
+			}
 			paControls.add(comp);
 			return true;
 		}
@@ -608,8 +451,6 @@ public class G4P implements PConstants, GConstants {
 		public boolean removeControl(GComponent c){
 			return paControls.remove(c);
 		}
-
-
 
 	}
 
