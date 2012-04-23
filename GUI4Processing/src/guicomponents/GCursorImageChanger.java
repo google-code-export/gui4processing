@@ -39,11 +39,12 @@ public class GCursorImageChanger implements PConstants {
 	GCursorImageChanger(){}
 
 	public void post(){
-		if(G4P.cursorChangeEnabled && GComponent.cursorIsOver != null){
+		if(G4P.cursorChangeEnabled && G4P.mainWinApp != null){
 			if(GComponent.cursorIsOver != null)
-				GComponent.cursorIsOver.getPApplet().cursor(G4P.mouseOver);
+				//GComponent.cursorIsOver.getPApplet().cursor(G4P.mouseOver);
+				G4P.mainWinApp.cursor(G4P.mouseOver);
 			else
-				GComponent.cursorIsOver.getPApplet().cursor(G4P.mouseOff);
+				G4P.mainWinApp.cursor(G4P.mouseOff);
 		}
 	}
 
