@@ -157,7 +157,7 @@ public class GButton extends GComponent {
 		textAlignVert = GAlign.MIDDLE;
 		calcAlignX();
 		calcAlignY();
-		createEventHandler(winApp, "handleButtonEvents", new Class[]{ GButton.class });
+		createEventHandler(G4P.mainWinApp, "handleButtonEvents", new Class[]{ GButton.class });
 		registerAutos_DMPK(true, true, false, false);
 		z = Z_SLIPPY;
 	}

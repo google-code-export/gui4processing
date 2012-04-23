@@ -79,7 +79,7 @@ public class GCombo extends GComponent {
 		opaque = true;
 		border = 1;
 		z = Z_SLIPPY;
-		createEventHandler(winApp, "handleComboEvents", new Class[]{ GCombo.class });
+		createEventHandler(G4P.mainWinApp, "handleComboEvents", new Class[]{ GCombo.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 

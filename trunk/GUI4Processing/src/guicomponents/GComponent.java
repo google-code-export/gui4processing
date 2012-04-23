@@ -198,7 +198,6 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		localFont = globalFont;
 		this.x = x;
 		this.y = y;
-//		G4P.setMainApp(winApp);
 		G4P.addComponent(winApp, this);
 	}
 
@@ -255,7 +254,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param methodName the method to execute in the object handler class
 	 * @param parameters the parameter classes.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void addEventHandler(Object obj, String methodName, Class[] parameters){
 		if(parameters == null)
 			parameters = new Class[0];

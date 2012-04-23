@@ -97,7 +97,7 @@ public class GKnob extends GRoundControl {
 
 		// Calculate ticks
 		calcTickMarkerPositions(nbrTickMarks);
-		createEventHandler(winApp, "handleKnobEvents", new Class[]{ GKnob.class });
+		createEventHandler(G4P.mainWinApp, "handleKnobEvents", new Class[]{ GKnob.class });
 	}
 
 	/**

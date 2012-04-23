@@ -79,7 +79,7 @@ public class GOption extends GComponent {
 		opaque = false;
 		setText(text);
 		z = Z_SLIPPY;
-		createEventHandler(winApp, "handleOptionEvents", new Class[]{ GOption.class, GOption.class });
+		createEventHandler(G4P.mainWinApp, "handleOptionEvents", new Class[]{ GOption.class, GOption.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 

@@ -91,7 +91,7 @@ public class GPanel extends GComponent {
 		this.width = width;
 		this.height = height;
 		z = Z_PANEL;
-		createEventHandler(winApp, "handlePanelEvents", new Class[]{ GPanel.class });
+		createEventHandler(G4P.mainWinApp, "handlePanelEvents", new Class[]{ GPanel.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 
