@@ -75,7 +75,7 @@ public class GCheckbox extends GComponent {
 		opaque = false;
 		setText(text);
 		z = Z_SLIPPY;
-		createEventHandler(winApp, "handleCheckboxEvents", new Class[]{ GCheckbox.class });
+		createEventHandler(G4P.mainWinApp, "handleCheckboxEvents", new Class[]{ GCheckbox.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 

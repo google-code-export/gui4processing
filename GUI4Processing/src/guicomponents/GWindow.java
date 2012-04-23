@@ -56,12 +56,6 @@ public class GWindow extends Frame implements GConstants {
 	 */
 	public GWinApplet papplet;
 
-	/**
-	 * Gives direct access to the PApplet object inside the frame
-	 * @deprecated use papplet instead
-	 */
-	public GWinApplet embed;
-	
 	protected String winName;
 
 	public GWinData data;
@@ -130,7 +124,6 @@ public class GWindow extends Frame implements GConstants {
 			mode = PApplet.JAVA2D;
 		
 		papplet = new GWinApplet(mode);
-		embed = papplet;
 		papplet.owner = this;
 		papplet.frame = this;
 		papplet.frame.setResizable(true);
@@ -139,7 +132,6 @@ public class GWindow extends Frame implements GConstants {
 		papplet.appHeight = h;
 
 		windowCtorCore(x, y, w, h, noFrame, mode);
-		
 		super.setResizable(true);
 	}
 
@@ -162,7 +154,6 @@ public class GWindow extends Frame implements GConstants {
 			mode = PApplet.JAVA2D;
 		
 		papplet = new GWinApplet(mode);
-		embed = papplet;
 		papplet.owner = this;
 		papplet.frame = this;
 		papplet.frame.setResizable(true);
@@ -391,14 +382,15 @@ public class GWindow extends Frame implements GConstants {
 	 */
 	private void removeFromG4P(){
 		papplet.noLoop();
-		papplet.unregisterPost(papplet);
+		if(regPost)
+			papplet.unregisterPost(papplet);
 		if(regDraw)
 			papplet.unregisterDraw(papplet);
 		if(regPre)
 			papplet.unregisterPre(papplet);
 		if(regMouse)
 			papplet.unregisterMouseEvent(papplet);
-		regDraw = regPre = regMouse = false;
+		regPost = regDraw = regPre = regMouse = false;
 		G4P.removeWindow(this);
 	}
 

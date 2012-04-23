@@ -101,7 +101,7 @@ public class GImageButton extends GComponent {
 		width = bimage[0].width;
 		height = bimage[0].height;
 		z = Z_SLIPPY;
-		createEventHandler(winApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
+		createEventHandler(G4P.mainWinApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -120,7 +120,7 @@ public class GImageButton extends GComponent {
 		width = bimage[0].width;
 		height = bimage[0].height;
 		z = Z_SLIPPY;
-		createEventHandler(winApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
+		createEventHandler(G4P.mainWinApp, "handleImageButtonEvents", new Class[]{ GImageButton.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 	

@@ -83,7 +83,7 @@ public abstract class GSlider extends GComponent {
 		this.height = height;
 		z = Z_SLIPPY;
 		registerAutos_DMPK(true, true, true, false);
-		createEventHandler(winApp, "handleSliderEvents", new Class[]{ GSlider.class });
+		createEventHandler(G4P.mainWinApp, "handleSliderEvents", new Class[]{ GSlider.class });
 	}
 
 	/**

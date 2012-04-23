@@ -162,13 +162,14 @@ public class G4P implements PConstants, GConstants {
 	 */
 	public static void addWindow(PApplet app){
 		AppletInfo info = applets.get(app);
-		if(info == null)
+		if(info == null){
 			// If this is the first time then initialise mouse over ability
 			if(applets.isEmpty()){
 				mainWinApp = app;
 				mainWinApp.registerPost(mcd);
 			}
 			applets.put(app, new AppletInfo(app));
+		}
 	}
 	
 	/**
@@ -264,9 +265,10 @@ public class G4P implements PConstants, GConstants {
 	 */
 	public static void draw(PApplet app){
 		AppletInfo info = applets.get(app);
-
 		if(info != null && info.paControls.size() > 0){
-			// Time to take over the responsibility for drawing
+			// If this method has been called and this applet is still using autodraw
+			// then it is time to take over the responsibility for drawing from
+			// the applet.
 			if(info.autoDrawOn){
 				for(GComponent comp : info.paControls){
 					if(comp.getParent() == null){
@@ -280,6 +282,7 @@ public class G4P implements PConstants, GConstants {
 			// Note that GPanels will call the appropriate
 			// draw methods for the components on them
 			// Now setup for 2D display
+			app.noLights();
 			app.pushMatrix();
 			app.hint(PConstants.DISABLE_DEPTH_TEST);
 			app.resetMatrix();
