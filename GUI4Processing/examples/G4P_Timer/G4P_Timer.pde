@@ -1,11 +1,13 @@
 /**
- * Balls of Vesuvius.  
- * by Peter Lager. 
- *
- * A simple program to demonstrate the use of the GTimer
- * class.
- *
- */
+Balls of Vesuvius.  
+ 
+A simple program to demonstrate the use of the GTimer
+class which is part of the G4P (GUI for Processing)
+library.
+
+(c)2012 Peter Lager
+
+*/
 
 import guicomponents.*;
 

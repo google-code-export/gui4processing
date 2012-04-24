@@ -3,7 +3,7 @@
  * set in a separate window. Draw a rectangle over the image to create 
  * a new Mandelbrot in a new window ...
  *
- * by Peter Lager
+ * (c) 2012 by Peter Lager
  */
  
 import guicomponents.*;
@@ -28,7 +28,6 @@ String t0,t1,t2;
 
 
 class Complex {
-
   public double real;
   public double img;
 
@@ -190,8 +189,8 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney,
     mydata.img = new PImage(mydata.w, mydata.h);
     window = new GWindow(this,"Main", locX, locY, mydata.w, mydata.h, false, null);
     windows.add(window);
-    locX = (locX + mydata.w + 20)%(screen.width - MAX_WIDTH);
-    locY = (locY + 20)%(screen.height - MAX_HEIGHT);
+    locX = (locX + mydata.w + 20)%(screenWidth - MAX_WIDTH);
+    locY = (locY + 20)%(screenHeight - MAX_HEIGHT);
     window.addData(mydata);
     window.addDrawHandler(this, "windowDraw");
     window.addMouseHandler(this, "windowMouse");

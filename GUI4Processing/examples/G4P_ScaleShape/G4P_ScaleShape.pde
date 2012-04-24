@@ -1,17 +1,19 @@
 /**
- * Scale Shape with vertical slider.  
- * by Peter Lager. 
- *
- * based on Scale Shape example
- * Illustration by George Brower. 
- * 
- * Use the mouse to move the vertical slider on the left
- * to change the size of the SVG shape. Drag the thumb 
- * quickly and see what happens.
- *
- * This shows how, unlike an imported image, the SVG images
- * do not loose detail when resized.
- */
+ Scale Shape with vertical slider. The slider is part of the
+ G4P (GUI for Processing) library.
+ (c)2012 Peter Lager. 
+
+based on Scale Shape example
+Illustration by George Brower. 
+ 
+Use the mouse to move the vertical slider on the left
+to change the size of the SVG shape. Drag the thumb 
+quickly and see what happens.
+
+This shows how, unlike an imported image, the SVG images
+do not loose detail when resized.
+
+*/
 
 import guicomponents.*;
 

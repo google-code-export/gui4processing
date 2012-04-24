@@ -1,33 +1,42 @@
+/**
+ Demonstration of buttons available in the G4P (GUI for
+ Processing) library. The button face can contain text
+ and/or icon.
+ 
+ (c) 2012 Peter Lager
+ */
+import processing.opengl.*;
 import guicomponents.*;
 
+int[] ha = new int[] {
+  GAlign.LEFT, GAlign.CENTER, GAlign.RIGHT
+};
+int[] va = new int[] {
+  GAlign.TOP, GAlign.MIDDLE, GAlign.BOTTOM
+};
 
-private int[] ha = new int[]{
-  GAlign.LEFT, GAlign.CENTER, GAlign.RIGHT   };
-private int[] va = new int[]{
-  GAlign.TOP, GAlign.MIDDLE, GAlign.BOTTOM   };
+GButton[] btnsA = new GButton[9];
+GButton[] btnsB = new GButton[9];
+GButton btnSmile0, btnSmile1;
 
-private GButton[] btnsA = new GButton[9];
-private GButton[] btnsB = new GButton[9];
-private GButton btnSmile0, btnSmile1;
+GOptionGroup optGroup;
+GOption optLeft, optRight;
+GLabel label;
 
-private GOptionGroup optGroup;
-private GOption optLeft, optRight;
-private GLabel label;
-
-void setup(){
+void setup() {
   size(480, 540);
 
   G4P.setColorScheme(this, GCScheme.BLUE_SCHEME);
   G4P.setFont(this, "Verdana", 12);
 
   int count = 0;
-  for( int v = 0; v < 3; v++){
-    for(int h = 0; h < 3; h++){
-      btnsA[count] = new GButton(this, "BUG " + count , "bugs/bug"+count+".png", 1, 10 + h*160, 10 + v*80, 140,60);
+  for ( int v = 0; v < 3; v++) {
+    for (int h = 0; h < 3; h++) {
+      btnsA[count] = new GButton(this, "BUG " + count, "bugs/bug"+count+".png", 1, 10 + h*160, 10 + v*80, 140, 60);
       btnsA[count].tag = "Bug Image " + count;
       btnsA[count].setTextAlign(ha[h] | va[v]);
 
-      btnsB[count] = new GButton(this, "BUG " + count , 10 + h*160, 370 + v*60, 140, 40);
+      btnsB[count] = new GButton(this, "BUG " + count, 10 + h*160, 370 + v*60, 140, 40);
       btnsB[count].tag = "Bug Text  " + count;
       btnsB[count].setTextAlign(ha[h] | va[v]);
       btnsB[count].fireAllEvents(true);
@@ -36,9 +45,9 @@ void setup(){
     }
   }
 
-  btnSmile0 = new GButton(this,"smile.png",3,20,270,70,70);
+  btnSmile0 = new GButton(this, "smile.png", 3, 20, 270, 70, 70);
   btnSmile0.tag = "Smile image only";
-  btnSmile1 = new GButton(this,"Smile please", "smile.png",3,150,270,300,70);
+  btnSmile1 = new GButton(this, "Smile please", "smile.png", 3, 150, 270, 300, 70);
   btnSmile1.setFont("Verdana", 20, false);
   btnSmile1.tag = "Smile image with text";
 
@@ -55,20 +64,20 @@ void setup(){
   G4P.setMouseOverEnabled(true);
 }
 
-void handleOptionEvents(GOption selected, GOption deselected){
+void handleOptionEvents(GOption selected, GOption deselected) {
   int align = GAlign.LEFT;
-  if(selected == optRight){
+  if (selected == optRight) {
     align = GAlign.RIGHT;
   }
-  for(int i = 0; i < 9; i++){
-    btnsA[i].setImageAlign(align);		
+  for (int i = 0; i < 9; i++) {
+    btnsA[i].setImageAlign(align);
   }
   btnSmile1.setImageAlign(align);
 }
 
 void handleButtonEvents(GButton button) {
   System.out.print(button.tag+"\t\t");
-  switch(button.eventType){
+  switch(button.eventType) {
   case GButton.PRESSED:
     System.out.println("PRESSED");
     break;
@@ -83,6 +92,6 @@ void handleButtonEvents(GButton button) {
   }
 }	
 
-void draw(){
+void draw() {
   background(200);
 }

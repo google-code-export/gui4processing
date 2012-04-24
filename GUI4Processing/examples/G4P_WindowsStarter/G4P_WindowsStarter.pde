@@ -1,3 +1,15 @@
+/*
+Demonstration of how to create and use multiple windows with
+the G4P (GUI for Processing) library.
+
+(c)2012 Peter Lager
+
+A detailed explanation of the code used in this example can be found at
+http://www.lagers.org.uk/g4p/applets/g4p_windowsstarter/index.html
+
+*/
+
+
 import guicomponents.*;
 
 private GWindow[] window;

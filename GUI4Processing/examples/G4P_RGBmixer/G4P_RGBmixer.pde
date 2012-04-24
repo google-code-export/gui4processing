@@ -1,9 +1,16 @@
+/**
+Demonstration of the GKnob component which is part of 
+the G4P (GUI for Processing) library.
+
+Simple program that creates 3 knobs but only shows a third
+of each one. They are used to control the RGB balance for 
+the rectangle fill.
+
+(c)2012 Peter Lager
+*/
+
 import guicomponents.*;
 
-/*
-Simple program that creates 3 knobs that are used to control the
-RGB balance for a rectangle fill.
-*/
 GKnob knbRed, knbGreen, knbBlue;
 int r, g, b;
 int kx, ky;

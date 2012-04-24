@@ -1,3 +1,10 @@
+/**
+Demonstration of the GKnob component which is part of 
+the G4P (GUI for Processing) library.
+
+(c)2012 Peter Lager
+*/
+
 import guicomponents.*;
 
 import java.text.MessageFormat;
