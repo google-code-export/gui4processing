@@ -139,10 +139,12 @@ public class GCheckbox extends GComponent {
 			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, textWidth, height);
 		}
 		winApp.fill(winApp.color(255,255));
-		if(selected)
-			winApp.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
-		else
-			winApp.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
+		if(imgSelected != null && imgCleared != null){
+			if(selected)
+				winApp.image(imgSelected, pos.x, pos.y + (height - imgSelected.height)/2);
+			else
+				winApp.image(imgCleared, pos.x, pos.y + (height - imgSelected.height)/2);
+		}
 		winApp.popStyle();
 	}
 

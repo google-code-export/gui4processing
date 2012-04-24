@@ -462,7 +462,7 @@ public class GButton extends GComponent {
 		winApp.rect(pos.x,pos.y,width,height);
 		
 		// Draw image
-		if(bimage[status] != null && useImages){
+		if(useImages && bimage != null && bimage[status] != null){
 			winApp.image(bimage[status], pos.x + imgAlignX, pos.y+(height-bimage[status].height)/2);
 		}
 		// Draw text

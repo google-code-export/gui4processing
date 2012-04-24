@@ -110,8 +110,8 @@ public class GImageButton extends GComponent {
 	 * @param theApplet
 	 * @param maskFile null if none is to be provided
 	 * @param imgFiles an array of filenames for button state images
-	 * @param x top-left horizontal distance for the buttun
-	 * @param y top left vertical position for the buttun
+	 * @param x top-left horizontal distance for the button
+	 * @param y top left vertical position for the button
 	 */
 	public GImageButton(PApplet theApplet, String maskFile, String imgFiles[], int x, int y){
 		super(theApplet, x, y);
@@ -261,7 +261,7 @@ public class GImageButton extends GComponent {
 		calcAbsPosition(pos);
 		
 		// Draw image
-		if(bimage[status] != null){
+		if(bimage != null && bimage[status] != null){
 			winApp.image(bimage[status], pos.x, pos.y);
 		}
 		winApp.popStyle();

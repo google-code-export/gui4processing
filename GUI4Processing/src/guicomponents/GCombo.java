@@ -392,7 +392,8 @@ public class GCombo extends GComponent {
 
 		// draw drop down list
 		winApp.fill(winApp.color(255,255));
-		winApp.image(imgArrow, pos.x + width - imgArrow.width - 1, pos.y + (height - imgArrow.height)/2);
+		if(imgArrow != null)
+			winApp.image(imgArrow, pos.x + width - imgArrow.width - 1, pos.y + (height - imgArrow.height)/2);
 		if(expanded == true){
 			GOption opt;
 			winApp.noStroke();

@@ -87,6 +87,12 @@ public class G4P implements PConstants, GConstants {
 		}
 	}
 
+	public static void refresh(){
+		Set<PApplet> apps = applets.keySet();
+		for(PApplet pa : apps)
+			pa.repaint();				
+	}
+	
 	/**
 	 * Inform G4P which cursor shapes will be used.
 	 * Initial values are ARROW (off) and HAND (over)
