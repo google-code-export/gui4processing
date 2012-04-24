@@ -1,3 +1,10 @@
+/**
+ Demonstration of image buttons available in the G4P (GUI for
+ Processing) library. The button face comes from user supplied
+ image files.
+ 
+ (c) 2012 Peter Lager
+ */
 import guicomponents.*;
 
 GImageButton btnGhost, btnCoins, btnTJ, btnInfo;

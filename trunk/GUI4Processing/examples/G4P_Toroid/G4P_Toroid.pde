@@ -1,16 +1,17 @@
 /**
- * Interative Toroid with GUI control
- * by Peter Lager
- * 
- * Modification of the example
- * Interactive Toroid by Ira Greenberg. 
- *
- * the toroid has been abstracted to its own class to separate form GUI code
- * for clarity
- * 
- * Illustrates the geometric relationship between Toroid, Sphere, and Helix
- * 3D primitives, as well as lathing principal.
- * 
+ Interative Toroid with GUI controls from the G4P
+ library
+ (c)2012 Peter Lager
+ 
+ Modification of the example
+ Interactive Toroid by Ira Greenberg. 
+ 
+ The toroid code has been abstracted to its own class to 
+ separate it from the GUI code for clarity.
+  
+ Illustrates the geometric relationship between Toroid, Sphere, and Helix
+ 3D primitives, as well as lathing principal.
+ 
  */
 
 import processing.opengl.*;

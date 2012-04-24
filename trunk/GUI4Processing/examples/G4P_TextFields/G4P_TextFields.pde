@@ -1,21 +1,23 @@
 /**
- * TextField demo with GUI control
- * by Peter Lager
- * 
- * Demonstrates the use of the TextField component
- * created by Peter Lager and Brendan Nichols
- * 
- * Supports:
- * > Single and multi-line textfields
- * > Copying and pasting of text between textfields
- *   and with applications e.g. Notepad).
- * > Text can be wider than the textfield width.
- * > In multi-line text can be longer that textfield
- *   height.
- * > Text can be scrolled under program control both
- *   horizontally for single and multiline, and 
- *   vertically for multi-line textfields.
- *
+ 
+ Demonstrates the use of the TextField component that
+ is part of the G4P library.
+ (c) 2012 Peter Lager
+ 
+ The actual GTextField component was developed by 
+ Peter Lager and Brendan Nichols
+  
+ Supports:
+ > Single and multi-line textfields
+ > Copying and pasting of text between textfields
+   and with applications e.g. Notepad).
+ > Text can be wider than the textfield width.
+ > In multi-line text can be longer that textfield
+   height.
+ > Text can be scrolled under program control both
+   horizontally for single and multiline, and 
+   vertically for multi-line textfields.
+ 
  */
 
 import guicomponents.*;

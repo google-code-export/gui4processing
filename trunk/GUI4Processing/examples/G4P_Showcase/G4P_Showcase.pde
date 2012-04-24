@@ -1,3 +1,11 @@
+/**
+Demonstrates many of the controls available in the 
+G4P (GUI for Processing library.
+
+(c) 2012 Peter Lager
+*/
+
+import processing.opengl.*;
 import guicomponents.*;
 
 // G4P components for main window
@@ -61,10 +69,8 @@ public void createTextPlayArea(){
   lblSomeString.setBorder(1);
   lblSomeString.setOpaque(true);
   txfSomeText = new GTextField(this, "TEXTFIELD: Use combo boxes to change color scheme and font", 10, 50, 400, 20);
-
   pnlControls.add(lblSomeString);
   pnlControls.add(txfSomeText);
-
 }
 
 public void createTimer(){
@@ -264,16 +270,12 @@ public void handlePanelEvents(GPanel panel){
   }
 }
 public void createControlWindow(){
-  windControl = new GWindow(this, "Controls",600,400,width/4 + 16,height/4 + 16, false, null);
-  sdrHorzPos = new GHorzSlider(this,0,height/4,width/4,16);
+  windControl = new GWindow(this, "Controls",600,400,width/4 + 16,height/4 + 16, false, JAVA2D);
+  sdrHorzPos = new GHorzSlider(windControl.papplet,0,height/4,width/4,16);
   sdrHorzPos.setLimits(pX, 0 ,width - pWidth);
-  sdrVertPos = new GVertSlider(this,width/4,0,16,height/4);
+  sdrVertPos = new GVertSlider(windControl.papplet,width/4,0,16,height/4);
   sdrVertPos.setLimits(pY, pnlControls.getTabHeight(), height - pHeight);
-
-  windControl.add(sdrHorzPos);
-  windControl.add(sdrVertPos);
   windControl.addData(new GWinData());
-
   windControl.addDrawHandler(this, "drawController");
 }
 

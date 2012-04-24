@@ -1,4 +1,16 @@
-import guicomponents.*;
+/*
+This component was created as part of the Processing 
+library `gwoptics' 
+http://www.gwoptics.org/processing/gwoptics_p5lib/
+(c) 2009 onwards Daniel Brown and Andreas Freise
+
+Demonstration of cool sliders available in the G4P (GUI
+for Processing) library.
+(c) 2012 Peter Lager
+
+ */
+ 
+ import guicomponents.*;
 
 GWSlider sdr1, sdr2, sdr3, sdr4, sdr5, sdr6, sdr7;
 
