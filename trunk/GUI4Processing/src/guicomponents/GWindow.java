@@ -131,7 +131,7 @@ public class GWindow extends Frame implements GConstants {
 		papplet.appWidth = w;
 		papplet.appHeight = h;
 
-		windowCtorCore(x, y, w, h, noFrame, mode);
+		windowCtorCore(theApplet, x, y, w, h, noFrame, mode);
 		super.setResizable(true);
 	}
 
@@ -157,12 +157,14 @@ public class GWindow extends Frame implements GConstants {
 		papplet.owner = this;
 		papplet.frame = this;
 		papplet.frame.setResizable(true);
-		/// Get image details to set size
+		
+
+	    /// Get image details to set size
 		papplet.bkImage = image;
 		papplet.appWidth = image.width;
 		papplet.appHeight = image.height;
 
-		windowCtorCore(x, y, image.width, image.height, noFrame, mode);
+		windowCtorCore(theApplet, x, y, image.width, image.height, noFrame, mode);
 		
 		super.setResizable(false);
 	}
@@ -177,8 +179,8 @@ public class GWindow extends Frame implements GConstants {
 	 * @param noFrame
 	 * @param mode
 	 */
-	private void windowCtorCore(int x, int y, int w, int h, boolean noFrame, String mode){
-		papplet.bkColor = papplet.color(0);
+	private void windowCtorCore(PApplet theApplet, int x, int y, int w, int h, boolean noFrame, String mode){
+		papplet.bkColor = papplet.color(180);
 		
 		papplet.resize(papplet.appWidth, papplet.appHeight);
 		papplet.setPreferredSize(new Dimension(papplet.appWidth, papplet.appHeight));
@@ -191,6 +193,9 @@ public class GWindow extends Frame implements GConstants {
 		// ensures that the animation thread is started and
 		// that other internal variables are properly set.
 		papplet.init();
+
+		// Set the sketch path to the same as the main PApplet object
+	    papplet.sketchPath = theApplet.sketchPath;
 
 		// Pack the window, position it and make visible
 		setUndecorated(noFrame);

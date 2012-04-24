@@ -187,10 +187,12 @@ public class GOption extends GComponent {
 			winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width - imgSelected.width, height);
 		}
 		winApp.fill(winApp.color(255,255));
-		if(ownerGroup != null && ownerGroup.selectedOption() == this)
-			winApp.image(imgSelected, pos.x + 1, pos.y + (height - imgSelected.height)/2);
-		else
-			winApp.image(imgCleared, pos.x + 1, pos.y + (height - imgSelected.height)/2);
+		if(imgSelected != null && imgCleared != null){
+			if(ownerGroup != null && ownerGroup.selectedOption() == this)
+				winApp.image(imgSelected, pos.x + 1, pos.y + (height - imgSelected.height)/2);
+			else
+				winApp.image(imgCleared, pos.x + 1, pos.y + (height - imgSelected.height)/2);
+		}
 		winApp.popStyle();
 
 	}
@@ -207,7 +209,7 @@ public class GOption extends GComponent {
 		if(mouseOver)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
-				cursorIsOver = null;
+			cursorIsOver = null;
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:

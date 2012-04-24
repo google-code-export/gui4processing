@@ -86,6 +86,10 @@ public abstract class GSlider extends GComponent {
 		createEventHandler(G4P.mainWinApp, "handleSliderEvents", new Class[]{ GSlider.class });
 	}
 
+	public GSlider(PApplet theApplet, int x, int y) {
+		super(theApplet, x, y);
+	}
+
 	/**
 	 * The user can change the range and initial value of the 
 	 * slider from the default values of range 0-100 and 

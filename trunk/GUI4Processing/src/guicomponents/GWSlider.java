@@ -339,11 +339,14 @@ public class GWSlider extends GSlider {
 	 * @param length
 	 */
 	public GWSlider(PApplet theApplet, String skin, int x, int y, int length) {
-		super(theApplet, x, y, length, 1); //we reset the height later when we get the image heights
+		super(theApplet, x, y);
+	//	super(theApplet, x, y, length, 1); //we reset the height later when we get the image heights
 
-		if(length < 1){throw new RuntimeException("Length of slider must be greater than 0.");}
-		//signs up to the g4p events system
-		createEventHandler(winApp, "handleSliderEvents", new Class[]{ GSlider.class });
+		this.width = length;
+		this.height = 1;
+		z = Z_SLIPPY;
+
+//		if(length < 1){throw new RuntimeException("Length of slider must be greater than 0.");}
 
 		//Here we set a bunch of default values for everything
 		if(skin == null)
@@ -366,14 +369,15 @@ public class GWSlider extends GSlider {
 
 		// Look for the skin images, if these don't exist the variable come out null
 		// no exceptions are thrown
-		_leftEnd = theApplet.loadImage(_skin + "/end_left.png");
-		_rightEnd = theApplet.loadImage(_skin + "/end_right.png");
-		_thumb = theApplet.loadImage(_skin +"/handle.png");
-		_thumb_mouseover = theApplet.loadImage(_skin +"/handle_mouseover.png");
+		_leftEnd = winApp.loadImage(_skin + "/end_left.png");
+		_rightEnd = winApp.loadImage(_skin + "/end_right.png");
+		_thumb = winApp.loadImage(_skin +"/handle.png");
+		_thumb_mouseover = winApp.loadImage(_skin +"/handle_mouseover.png");
 		//load the centre image up temporarily as we will generate the final stretched
 		//image to use shortly
-		PImage cTemp = theApplet.loadImage(_skin + "/centre.png");
+		PImage cTemp = winApp.loadImage(_skin + "/centre.png");
 
+		System.out.println(tag + " CTOR " + winApp + "   " + _leftEnd);
 		String files = "";
 
 		//generate a list of files that aren't there
@@ -403,8 +407,7 @@ public class GWSlider extends GSlider {
 
 		this.height = cTemp.height;
 		int cWidth = length - _leftEnd.width - _rightEnd.width;
-		if(cWidth < 0){cWidth = 0;}
-
+		if(cWidth < 0){cWidth = 1;}
 
 		_centre = new PImage(cWidth,cTemp.height);
 
@@ -419,20 +422,24 @@ public class GWSlider extends GSlider {
 				_centre.pixels[i*_centre.width +j] = cTemp.pixels[i];
 			}
 		}
-
+		_centre.updatePixels();
+		cTemp.updatePixels();
+		
 		//the thumb only moves along the centre section
 		thumbMin = _leftEnd.width;
 		thumbMax = _leftEnd.width + _centre.width;
 		this.setLimits(50.0f, 0.0f, 100.0f);
 
 		localFont = globalFont;
-		winApp.textFont(localFont);
-		winApp.textAlign(PConstants.CENTER);
 
 		_calcControlWidthHeight();
 		_calcTickPositions();
 		z = Z_SLIPPY;
-		winApp.registerKeyEvent(this);
+		
+		//signs up to the g4p events system
+		createEventHandler(G4P.mainWinApp, "handleSliderEvents", new Class[]{ GSlider.class });
+	
+		registerAutos_DMPK(true, true, true, false);
 	}
 
 	/**
@@ -660,19 +667,23 @@ public class GWSlider extends GSlider {
 			break;
 		}
 
+
+	//	winApp.pushMatrix();
+		winApp.pushStyle();
+
 		//calculates the absolute position, this is 
 		//for when the slider is embedded in other panels and controls
 		Point p = new Point(); 
 		calcAbsPosition(p);
 
-		winApp.pushMatrix();
 		
-		winApp.pushStyle();
-
 		//draw each of the slider skin images
-		winApp.image(_leftEnd, p.x, p.y);
-		winApp.image(_centre, p.x + _leftEnd.width, p.y);
-		winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
+		winApp.imageMode(CORNER);
+		System.out.println(tag + " DRAW " + winApp + "   " + _leftEnd);
+
+		if(_leftEnd != null) winApp.image(_leftEnd, p.x, p.y);
+		if(_centre != null) winApp.image(_centre, p.x + _leftEnd.width, p.y);
+		if(_rightEnd != null) winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
 
 		winApp.textFont(localFont);
 		winApp.textAlign(PConstants.CENTER);
@@ -720,12 +731,12 @@ public class GWSlider extends GSlider {
 			winApp.vertex(p.x + _tickPositions[i] + 1, p.y + _centre.height + _tickOffset + _tickLength);
 			winApp.endShape();
 			winApp.popStyle();
-
-			if(!_isMouseOverThumb)
-				winApp.image(_thumb, p.x + thumbPos - Math.round(_thumb.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb.height));
-			else
-				winApp.image(_thumb_mouseover, p.x + thumbPos - Math.round(_thumb_mouseover.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb_mouseover.height));
-
+			if(_thumb != null){
+				if(!_isMouseOverThumb)
+					winApp.image(_thumb, p.x + thumbPos - Math.round(_thumb.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb.height));
+				else
+					winApp.image(_thumb_mouseover, p.x + thumbPos - Math.round(_thumb_mouseover.width*0.5) + 1, (float) (p.y + 0.5*_centre.height - 0.5*_thumb_mouseover.height));
+			}
 			if(_renderValueLabel){
 				if(_valueType == INTEGER)
 					winApp.text(String.format(format,Math.round(value),unit),p.x + thumbPos, p.y - _thumb.height*0.5f + 0.5f*_centre.height - 4 );
@@ -734,7 +745,7 @@ public class GWSlider extends GSlider {
 			}
 		}			
 		winApp.popStyle();
-		winApp.popMatrix();
+	//	winApp.popMatrix();
 	}
 
 }
