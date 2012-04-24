@@ -377,7 +377,6 @@ public class GWSlider extends GSlider {
 		//image to use shortly
 		PImage cTemp = winApp.loadImage(_skin + "/centre.png");
 
-		System.out.println(tag + " CTOR " + winApp + "   " + _leftEnd);
 		String files = "";
 
 		//generate a list of files that aren't there
@@ -647,7 +646,6 @@ public class GWSlider extends GSlider {
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 	}
 
-
 	@Override
 	public void draw(){		
 		if(!visible) return;
@@ -667,23 +665,22 @@ public class GWSlider extends GSlider {
 			break;
 		}
 
-
-	//	winApp.pushMatrix();
 		winApp.pushStyle();
 
 		//calculates the absolute position, this is 
 		//for when the slider is embedded in other panels and controls
 		Point p = new Point(); 
 		calcAbsPosition(p);
-
 		
 		//draw each of the slider skin images
 		winApp.imageMode(CORNER);
-		System.out.println(tag + " DRAW " + winApp + "   " + _leftEnd);
 
-		if(_leftEnd != null) winApp.image(_leftEnd, p.x, p.y);
-		if(_centre != null) winApp.image(_centre, p.x + _leftEnd.width, p.y);
-		if(_rightEnd != null) winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
+		if(_leftEnd != null) 
+			winApp.image(_leftEnd, p.x, p.y);
+		if(_centre != null) 
+			winApp.image(_centre, p.x + _leftEnd.width, p.y);
+		if(_rightEnd != null) 
+			winApp.image(_rightEnd, p.x + _leftEnd.width + _centre.width, p.y);
 
 		winApp.textFont(localFont);
 		winApp.textAlign(PConstants.CENTER);
@@ -745,7 +742,6 @@ public class GWSlider extends GSlider {
 			}
 		}			
 		winApp.popStyle();
-	//	winApp.popMatrix();
 	}
 
 }
