@@ -208,6 +208,8 @@ public class GPanel extends GComponent {
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
 				tabOnly = !tabOnly;
+				// Perform appropriate action depending on collase state
+				setCollapsed(tabOnly);
 				if(tabOnly)
 					eventType = COLLAPSED;
 				else
@@ -323,12 +325,21 @@ public class GPanel extends GComponent {
 		}
 	}
 
+	public void setContolsEnabled(boolean enable){
+		if(children != null){
+			for(GComponent c : children)
+				c.setEnabled(enable);
+		}
+	}
+
 	/**
-	 * For GPanel set children
+	 * If the panel is made invisible then disable the controls
 	 * @param visible the visible to set
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+		if(!visible)
+			setContolsEnabled(false);
 	}
 
 	/**
@@ -354,9 +365,12 @@ public class GPanel extends GComponent {
 	 */
 	public void setCollapsed(boolean collapse){
 		tabOnly = collapse;
-		// If we open the panel make sure it fits on the screen
+		// If we open the panel make sure it fits on the screen but if we
+		// collapse the panel disable the panel controls
 		if(!tabOnly)
 			constrainPanelPosition();
+		else
+			setContolsEnabled(false);
 	}
 
 	/**
