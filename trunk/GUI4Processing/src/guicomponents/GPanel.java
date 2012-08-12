@@ -325,7 +325,7 @@ public class GPanel extends GComponent {
 		}
 	}
 
-	public void setContolsEnabled(boolean enable){
+	public void setControlsEnabled(boolean enable){
 		if(children != null){
 			for(GComponent c : children)
 				c.setEnabled(enable);
@@ -339,7 +339,7 @@ public class GPanel extends GComponent {
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 		if(!visible)
-			setContolsEnabled(false);
+			setControlsEnabled(false);
 	}
 
 	/**
@@ -370,7 +370,7 @@ public class GPanel extends GComponent {
 		if(!tabOnly)
 			constrainPanelPosition();
 		else
-			setContolsEnabled(false);
+			setControlsEnabled(false);
 	}
 
 	/**
