@@ -100,7 +100,7 @@ public class GCombo extends GComponent {
 	 * 
 	 * @param optTexts
 	 */
-	private void createOptions(String[] optTexts){
+	protected void createOptions(String[] optTexts){
 		optGroup = new GOptionGroup();
 		GOption option;
 		for(int i = 0; i < optTexts.length; i++){
@@ -260,7 +260,35 @@ public class GCombo extends GComponent {
 		if(option != null)
 			remove(option);
 	}
-	
+
+	/**
+	 * Get the number of options
+	 * @return
+	 */
+	public int getNbrOptions() {
+		return optGroup.getOptions().size();
+	}
+
+	/**
+	 * Removes all the current options from the combo box
+	 * 
+	 */
+	public void removeAllOptions() {
+		optGroup.getOptions().clear();
+		setText("");
+	}
+
+	/**
+	 * This will replace all options with the new options specified.
+	 * 
+	 * @param optTexts the new options
+	 * @param selected the initial selection (uses 0 if invalid)
+	 */
+	public void setOptions(String[] optTexts, int selected) {
+		createOptions(optTexts);
+		setSelected(selected);
+	}
+
 	/**
 	 * Determines whether the position ax, ay is over the expand arrow 
 	 * or over the expanded combo box, depending on whether the box 
