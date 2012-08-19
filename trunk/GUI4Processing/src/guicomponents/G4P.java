@@ -23,12 +23,8 @@
 
 package guicomponents;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +33,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PMatrix;
+import processing.core.PMatrix2D;
 import processing.core.PMatrix3D;
 import processing.core.PStyle;
 
@@ -67,7 +64,6 @@ public class G4P implements PConstants, GConstants {
 	public static int mouseOff = ARROW;
 	public static int mouseOver = HAND;
 
-
 	/**
 	 * Enables or disables cursor over component change. <br>
 	 * This method is ignore if an applet or window has not been
@@ -92,7 +88,7 @@ public class G4P implements PConstants, GConstants {
 		for(PApplet pa : apps)
 			pa.repaint();				
 	}
-	
+
 	/**
 	 * Inform G4P which cursor shapes will be used.
 	 * Initial values are ARROW (off) and HAND (over)
@@ -124,11 +120,28 @@ public class G4P implements PConstants, GConstants {
 	 * 
 	 * @param c the component that has been created.
 	 */
-	public static void addComponent(PApplet theApplet, GComponent c){
+	public static void addComponent(PApplet app, GComponent c){
 		if(g4pStyle == null)
 			getStyle();
-		addWindow(theApplet);
-		AppletInfo info = applets.get(theApplet);
+		// info exists for all GWindow objects
+		AppletInfo info = applets.get(app);
+		// If info == null then this must be the main Processing window and
+		// since the matrix may have already been changed e.g. creating 
+		// a PeaseyCam object will do this, so recalculate the original matrix.
+		if(info == null){
+			// We have the main applet window so create the AppletInfo for it
+			info = addWindow(app);
+			if(app.g.is2D())
+				info.orgMatrix = new PMatrix2D();
+			else
+				info.orgMatrix = 
+					new PMatrix3D( 
+							1, 0, 0, -0.5f * app.width,
+							0, 1, 0, -0.5f * app.height,
+							0, 0, 1, -0.5f * app.height / (float)Math.tan(Math.PI / 6.0),
+							0, 0, 0, 1
+					);
+		}
 		info.addComponent(c);
 	}
 
@@ -166,18 +179,20 @@ public class G4P implements PConstants, GConstants {
 	 * <pre>  G4P.addWindow(this);</pre> <br>
 	 * @param app the PApplet object to add
 	 */
-	public static void addWindow(PApplet app){
-		AppletInfo info = applets.get(app);
+	public static AppletInfo addWindow(PApplet app){
+		AppletInfo info = applets.get(app); // avoid duplicates
 		if(info == null){
 			// If this is the first time then initialise mouse over ability
 			if(applets.isEmpty()){
 				mainWinApp = app;
 				mainWinApp.registerPost(mcd);
 			}
-			applets.put(app, new AppletInfo(app));
+			info = new AppletInfo(app);
+			applets.put(app, info);
 		}
+		return info;
 	}
-	
+
 	/**
 	 * INTERNAL USE ONLY <br>
 	 * Remove control window - called when a ControlWindow is closed
@@ -221,17 +236,6 @@ public class G4P implements PConstants, GConstants {
 		g4pStyle.colorModeY = 255.0f;
 		g4pStyle.colorModeZ = 255.0f;
 	}
-
-//	// Needed ???
-//	public static void setTextMode(int mode){
-//		if(mode == MODEL || mode == SCREEN || mode == SHAPE){
-//			if(g4pStyle == null){
-//				PGraphics temp = new PGraphics();
-//				g4pStyle = temp.getStyle();			
-//			}
-//			g4pStyle.textMode = mode;
-//		}
-//	}
 
 	/**
 	 * Set the color scheme to be used by G4P<br>
@@ -430,7 +434,10 @@ public class G4P implements PConstants, GConstants {
 		 * @param papplet
 		 */
 		public AppletInfo(PApplet papplet) {
-			orgMatrix = papplet.getMatrix();
+			if(papplet.g.is3D())
+				orgMatrix = papplet.getMatrix((PMatrix3D)null);
+			else
+				orgMatrix = papplet.getMatrix((PMatrix2D)null);
 			paControls = new LinkedList<GComponent>();
 		}
 
