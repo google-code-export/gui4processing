@@ -261,14 +261,18 @@ public void myTimerFunction(){
 public void handlePanelEvents(GPanel panel){
   if(pnlControls == panel){
     switch (pnlControls.getEventType()){
-    case GPanel.DRAGGED:
-      if(sdrHorzPos != null && sdrVertPos != null){
-        sdrHorzPos.setValue(pnlControls.getX());
-        sdrVertPos.setValue(pnlControls.getY());
+      case GPanel.DRAGGED:
+        if(sdrHorzPos != null && sdrVertPos != null){
+          sdrHorzPos.setValue(pnlControls.getX());
+          sdrVertPos.setValue(pnlControls.getY());
+        }
+      case GPanel.EXPANDED: {
+        pnlControls.setControlsEnabled(true);
       }
     }
   }
 }
+
 public void createControlWindow(){
   windControl = new GWindow(this, "Controls",600,400,width/4 + 16,height/4 + 16, false, JAVA2D);
   sdrHorzPos = new GHorzSlider(windControl.papplet,0,height/4,width/4,16);

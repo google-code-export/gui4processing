@@ -45,20 +45,12 @@ void setup() {
   // gives a better font display while Java 3D is probably
   // better for applets - smaller file size but needs larger 
   // font size.
-  size(400,400,OPENGL);
+  size(400,400,P3D);
+
   // Create a PeasyCam object
   cam = new PeasyCam(this, 100);
   cam.setMinimumDistance(50);
   cam.setMaximumDistance(500);
-
-  // This command was introduced in version 1.5.1 and 
-  // simplifies using G4P and PeasyCam together.
-  // If the PeasyCam object is successfully initiallised 
-  // then calls to G4P.draw() will automatically call
-  // the begin(HUD) and endHUD() methods for toy.
-  // This method returns true if initialisation of the
-  // PeasyCam object was successful.
-  G4P.setPeasyCam(cam);
 
   // Sets the colour scheme for the GUI components 
   // Schemes available are 
@@ -77,7 +69,7 @@ void setup() {
    * println(PFont.list());
    * in a Processing sketch
    */
-  GComponent.globalFont = GFont.getFont(this, "Verdana", 12);
+  GComponent.globalFont = GFont.getFont(this, "Lucinda", 12);
 
   // Create a collapsible panel
   // (this, tab title, x, y, width, height)
@@ -141,7 +133,7 @@ void draw() {
   
   // Methods beginHUD() and endHUD() are automatically 
   // called for you.
-  G4P.draw();
+  G4P.draw(this);
 }
 
 
