@@ -23,20 +23,27 @@
 
 package guicomponents;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.TreeSet;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
+import processing.core.PGraphicsJava2D;
+import processing.core.PImage;
 
 
 /**
@@ -53,7 +60,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	// a control is created
 	// Introduced V3.0
 	private static int control_mode = PApplet.CORNER;
-	
+
 	/**
 	 * Change the way position and size parameters are interpreted when a control is created. 
 	 * There are 3 modes. <br><pre>
@@ -71,7 +78,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			control_mode = mode;
 		}
 	}
-	
+
 	/**
 	 * Get the control creation mode @see ctrlMode(int mode)
 	 * @return
@@ -91,7 +98,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected static GComponent focusIsWith = null; // READ ONLY
 
 	protected static GComponent keyFocusIsWith = null;
-	
+
 	/**
 	 * INTERNAL USE ONLY
 	 * Keeps track of the component the mouse is over so the mouse
@@ -108,6 +115,21 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 
 	public static GCScheme globalColor;
 	public GCScheme localColor;
+	// Replacements for global colour scheme above V3
+	public static int globalColorScheme = FCScheme.BLUE_SCHEME;
+	protected int localColorScheme = globalColorScheme;
+	protected int[] palette = null;
+	protected Color[] jpalette = null;
+
+	// Change local scheme v3
+	public void setLocalColorScheme(int cs){
+		cs = Math.abs(cs) % 16; // Force into valid range
+		if(localColorScheme != cs || palette == null){
+			localColorScheme = cs;
+			palette = FCScheme.getColor(winApp, localColorScheme);
+			jpalette = FCScheme.getJavaColor(winApp, localColorScheme);
+		}
+	}
 
 	public static PFont globalFont;
 	public PFont localFont;
@@ -146,8 +168,23 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * A list of child GComponents added to this component
 	 * Created and used by GPanel and GCombo classes
 	 */
-	protected LinkedList<GComponent> children;
-
+	protected LinkedList<GComponent> children = null;
+	
+	protected HotSpot[] hotspots = null;
+	protected int currSpot = -1;
+	
+	protected int whichHotSpot(float px, float py){
+		if(hotspots == null) return -1;
+		int hs = -1;
+		for(int i = 0; i < hotspots.length; i++){
+			if(hotspots[i].contains(px, py)){
+				hs = hotspots[i].id;
+				break;
+			}
+		}
+		return hs;
+	}
+	
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
 	/** The method in eventHandlerObject to execute */
@@ -163,11 +200,11 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected int alignX = 0;
 	protected int alignY = 0;
 
-	
-	
+
+
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) 
 	 * (changed form int data type in V3*/
-	protected float x,y;
+	protected float x, y;
 	/** Width and height of component in pixels for drawing background (changed form int data type in V3*/
 	protected float width, height;
 	/** Half sizes reduces programming complexity later */
@@ -178,7 +215,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected float rotAngle;
 	/** Introduced V3 to speed up AffineTransform operations */
 	protected double[] temp = new double[2];
-
+	
+	/** 
+	 * Position over control corrected for any transformation. <br>
+	 * [0,0] is top left corner
+	 */
+	protected float ox, oy;
 
 	/** Used to when components overlap */
 	public int z = 0;
@@ -195,6 +237,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/** Is the component enabled to generate mouse and keyboard events */
 	protected boolean enabled = true;
 
+	/** 
+	 * Is the component available for mouse and keyboard events.
+	 * This is on;y used internally to prevent user input being
+	 * processed during animation. new to V3
+	 */
+	protected boolean available = true;
+
 	/** The border width for this component : default value is 0 */
 	protected int border = 0;
 
@@ -204,6 +253,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	// The event type use READ ONLY
 	public int eventType = 0;
 
+	// New to V3 components have an image buffer which is only redrawn if 
+	// it has been invalidated
+	protected PGraphicsJava2D buffer = null;
+	protected boolean bufferInvalid = true;
+	
+	
 	/**
 	 * Remember what we have registered for.
 	 */
@@ -250,8 +305,11 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	public GComponent(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		this.winApp = theApplet;
 		setPositionAndSize(p0, p1, p2, p3);
+		rotAngle = 0;
+		z = 0;
+		palette = FCScheme.getColor(winApp, localColorScheme);
+		jpalette = FCScheme.getJavaColor(winApp, localColorScheme);
 		G4P.addComponent(winApp, this);
-
 	}
 
 	/**
@@ -278,7 +336,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			break;
 		}
 	}
-	
+
 	/**
 	 * The control to be added has absolute screen coordinates.
 	 * 
@@ -300,7 +358,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		// @TODO really need to test this
 		c.cx = c.x + c.halfWidth - halfWidth;
 		c.cy = c.y + c.halfHeight - halfHeight;
-		
+
 		c.parent = this;
 		children.addLast(c);
 	}
@@ -318,8 +376,11 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param angle
 	 */
 	public void addCompoundControl(GComponent c, float x, float y, float angle){
+		if(angle == 0)
+			angle = c.rotAngle;
 		// In child control reset the control so it centred about the origin
 		c.x = x; c.y = y;
+		
 		c.temp[0] = c.halfWidth;
 		c.temp[1] = c.halfHeight;
 		AffineTransform aff = new AffineTransform();
@@ -328,12 +389,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		c.cx = (float)c.temp[0] + x - halfWidth;
 		c.cy = (float)c.temp[1] + y - halfHeight;
 		c.rotAngle = angle;
+		
 		c.parent = this;
 		if(children == null)
 			children = new LinkedList<GComponent>();
 		children.addLast(c);
 	}
-			
+
 	// This is for visualisation
 	public void setRotation(float rot){
 		this.rotAngle = rot;
@@ -355,7 +417,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param py
 	 * @return
 	 */
-	public boolean isOverF(float px, float py){
+	public boolean contains(float px, float py){
 		AffineTransform aff = new AffineTransform();
 		aff = getTransform(aff);
 		temp[0] = px; temp[1] = py;
@@ -365,15 +427,15 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			e.printStackTrace();
 			return false;
 		}
-		px = (float) temp[0] + halfWidth;
-		py = (float) temp[1] + halfHeight;
-		boolean over = (px >= 0 && px <= width && py >= 0 && py <= height);
-		if(over){
-			System.out.println("Mouse over " + tag + "  @ [" + px + ", " + py + "]");
-		}
+		ox = (float) temp[0] + halfWidth;
+		oy = (float) temp[1] + halfHeight;
+		boolean over = (ox >= 0 && ox <= width && oy >= 0 && oy <= height);
+//		if(over){
+//			System.out.println("Mouse over " + tag + "  @ [" + ox + ", " + oy + "]");
+//		}
 		return over;
 	}
-	
+
 	/**
 	 * Attempt to create the default event handler for the component class. 
 	 * The default event handler is a method that returns void and has a single
@@ -486,7 +548,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		if(parent != null)
 			parent.bringToFront();
 	}
-	
+
 	/**
 	 * Give the focus to this component but only after allowing the 
 	 * current component with focus to release it gracefully. <br>
@@ -539,7 +601,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			parent.hasParentFocus();
 		return false;
 	}
-	
+
 	protected boolean hasChildFocus(){
 		if(this == focusIsWith)
 			return true;
@@ -552,7 +614,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Does this component have key focus
 	 * @return true if this component has key focus else false
@@ -586,7 +648,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		else
 			return (parent == null) ? false : parent.isChildOf(p);
 	}
-	
+
 	/**
 	 * This can be used to detect the type of event
 	 * @return the eventType
@@ -734,7 +796,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			regKey = true;
 		}
 	}
-	
+
 	/**
 	 * Completely dispose of this component. This operation cannot be undone.
 	 */
@@ -1098,7 +1160,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			else
 				return new Integer((int) -c1.y).compareTo(new Integer((int) -c2.y));
 		}
-		
+
 	} // end of comparator class
-	
+
 } // end of class
