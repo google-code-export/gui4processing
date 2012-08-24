@@ -185,8 +185,8 @@ public class GKnobOval extends GKnob {
 		p.move(0,0);
 		calcAbsPosition(p);
 		boolean inside;
-		int dx = ax - p.x - cx;
-		int dy = ay - p.y - cy;
+		int dx = (int) (ax - p.x - cx);
+		int dy = (int) (ay - p.y - cy);
 		float ratioX = ((float)dx)/ sizeRadX;
 		float ratioY = ((float)dy)/ sizeRadY;
 		inside = (ratioX * ratioX + ratioY * ratioY < 1.0f);
@@ -203,8 +203,8 @@ public class GKnobOval extends GKnob {
 		p.move(0,0);
 		calcAbsPosition(p);
 		boolean inside;
-		int dx = ax - p.x - cx;
-		int dy = ay - p.y - cy;
+		int dx = (int) (ax - p.x - cx);
+		int dy = (int) (ay - p.y - cy);
 		float ratioX = ((float)dx)/ sizeRadX;
 		float ratioY = ((float)dy)/ sizeRadY;
 		inside = (ratioX * ratioX + ratioY * ratioY < 1.0f);

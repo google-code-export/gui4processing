@@ -92,7 +92,7 @@ public class GKnob extends GRoundControl {
 		super(theApplet, x, y, width, height, arcStart, arcEnd);
 
 		// Calculate an acceptable bezel width based on initial size
-		bezelWidth = Math.max(Math.min(sizeRadX, sizeRadY)/3, 4);
+		bezelWidth = (int) Math.max(Math.min(sizeRadX, sizeRadY)/3, 4);
 		calculateSizes(bezelWidth);
 
 		// Calculate ticks
@@ -132,14 +132,14 @@ public class GKnob extends GRoundControl {
 	 * @param bw the width of the bezel
 	 */
 	protected void calculateSizes(int bw){
-		bezelWidth = PApplet.constrain(bw, 0, Math.min(sizeRadX, sizeRadY));
-		knobRadX = sizeRadX - bezelWidth;
-		knobRadY = sizeRadY - bezelWidth;
+		bezelWidth = (int) PApplet.constrain(bw, 0, Math.min(sizeRadX, sizeRadY));
+		knobRadX = (int) (sizeRadX - bezelWidth);
+		knobRadY = (int) (sizeRadY - bezelWidth);
 		if(knobRadX <=0 || knobRadY <= 0){
 			knobRadX = knobRadY = 0;
 			int inset = Math.min(Math.round(0.2f * bezelWidth), 10);
-			barRadX = sizeRadX - inset;
-			barRadY = sizeRadY - inset;
+			barRadX = (int) (sizeRadX - inset);
+			barRadY = (int) (sizeRadY - inset);
 		}
 		else {
 			barRadX = Math.round(0.5f * (sizeRadX + knobRadX));
@@ -237,8 +237,8 @@ public class GKnob extends GRoundControl {
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
 		boolean inside;
-		int dx = ax - p.x - cx;
-		int dy = ay - p.y - cy;
+		int dx = (int) (ax - p.x - cx);
+		int dy = (int) (ay - p.y - cy);
 		inside = (dx * dx  + dy * dy < sizeRadX * sizeRadY);
 		return inside;
 	}

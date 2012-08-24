@@ -132,10 +132,10 @@ public class GOption extends GComponent {
 			alignX = imgSelected.width + 2 * border + PADH;
 			break;
 		case GAlign.RIGHT:
-			alignX = width - textWidth - 2 * border - PADH;
+			alignX = (int) (width - textWidth - 2 * border - PADH);
 			break;
 		case GAlign.CENTER:
-			alignX = imgSelected.width + (width - imgSelected.width - textWidth)/2;
+			alignX = (int) (imgSelected.width + (width - imgSelected.width - textWidth)/2);
 			break;
 		}
 	}

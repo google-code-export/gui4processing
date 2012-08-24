@@ -59,9 +59,9 @@ public class GVertSlider extends GSlider {
 	 * Initialises the thumb details called by constructor
 	 */
 	protected void initThumbDetails(){
-		thumbSize = Math.max(20, height / 20);
+		thumbSize = (int) Math.max(20, height / 20);
 		thumbMin = thumbSize/2;
-		thumbMax = height - thumbSize/2;
+		thumbMax = (int) (height - thumbSize/2);
 		thumbTargetPos = thumbPos;
 	}
 

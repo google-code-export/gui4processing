@@ -59,9 +59,9 @@ public class GHorzSlider extends GSlider {
 	 * Initialises the thumb details
 	 */
 	protected void initThumbDetails(){
-		thumbSize = Math.max(20, width / 20);
+		thumbSize = (int) Math.max(20, width / 20);
 		thumbMin = thumbSize/2;
-		thumbMax = width - thumbSize/2;
+		thumbMax = (int) (width - thumbSize/2);
 		thumbTargetPos = thumbPos;
 	}
 

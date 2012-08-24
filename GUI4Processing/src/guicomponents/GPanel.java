@@ -49,7 +49,7 @@ public class GPanel extends GComponent {
 	protected int tabHeight;
 
 	/** Used to restore position when closing panel */
-	protected int dockX, dockY;
+	protected float dockX, dockY;
 
 	/** true if the panel is being dragged */
 	protected boolean beingDragged = false;
@@ -154,7 +154,7 @@ public class GPanel extends GComponent {
 		}
 		winApp.fill(localColor.pnlTabBack);
 		// Display tab (length depends on whether panel is open or closed
-		int w = (tabOnly)? textWidth + PADH * 4 : width;
+		int w = (int) ((tabOnly)? textWidth + PADH * 4 : width);
 		winApp.rect(0, - tabHeight, w, tabHeight);
 		// Display tab text
 		winApp.fill(localColor.pnlFont);
@@ -273,8 +273,8 @@ public class GPanel extends GComponent {
 	 * extend off the screen.
 	 */
 	private void constrainPanelPosition(){
-		int w = (tabOnly)? textWidth + PADH * 2 : width;
-		int h = (tabOnly)? 0 : height;
+		int w = (int) ((tabOnly)? textWidth + PADH * 2 : width);
+		int h = (int) ((tabOnly)? 0 : height);
 		// Constrain horizontally
 		if(x < 0) 
 			x = 0;
@@ -297,7 +297,7 @@ public class GPanel extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		int w = (tabOnly)? textWidth + PADH * 2 : width;
+		int w = (int) ((tabOnly)? textWidth + PADH * 2 : width);
 		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y)
 			return true;
 		else
