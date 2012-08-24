@@ -39,10 +39,10 @@ import processing.core.PApplet;
  */
 public abstract class GRoundControl extends GComponent {
 
-	protected int cx,cy;
+	protected float cx,cy;
 
 	protected float start,end;
-	protected int sizeRadX, sizeRadY;
+	protected float sizeRadX, sizeRadY;
 
 	protected boolean overRotArcOnly = false;
 

@@ -26,15 +26,18 @@ package guicomponents;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
+
 
 /**
  * CLASS FOR INTERNAL USE ONLY
@@ -45,6 +48,37 @@ import processing.core.PFont;
  *
  */
 abstract public class GComponent implements PConstants, GConstants, Comparable<Object> {
+
+	// Determines how position and size parameters are interpreted when
+	// a control is created
+	// Introduced V3.0
+	private static int control_mode = PApplet.CORNER;
+	
+	/**
+	 * Change the way position and size parameters are interpreted when a control is created. 
+	 * There are 3 modes. <br><pre>
+	 * PApplet.CORNER	 (x, y, w, h)
+	 * PApplet.CORNERS	 (x0, y0, x1, y1)
+	 * PApplet.CENTER	 (cx, cy, w, h) </pre><br>
+	 * 
+	 * @param mode illegal values are ignored leaving the mode unchanged
+	 */
+	public static void ctrlMode(int mode){
+		switch(mode){
+		case PApplet.CORNER:	// (x, y, w, h)
+		case PApplet.CORNERS:	// (x0, y0, x1, y1)
+		case PApplet.CENTER:	// (cx, cy, w, h)
+			control_mode = mode;
+		}
+	}
+	
+	/**
+	 * Get the control creation mode @see ctrlMode(int mode)
+	 * @return
+	 */
+	public static int getCtrlMode(){
+		return control_mode;
+	}
 
 	/**
 	 * INTERNAL USE ONLY
@@ -112,7 +146,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * A list of child GComponents added to this component
 	 * Created and used by GPanel and GCombo classes
 	 */
-	protected List<GComponent> children;
+	protected LinkedList<GComponent> children;
 
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
@@ -129,13 +163,25 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected int alignX = 0;
 	protected int alignY = 0;
 
-	/** Top left position of component in pixels (relative to parent or absolute if parent is null) */
-	protected int x, y;
+	
+	
+	/** Top left position of component in pixels (relative to parent or absolute if parent is null) 
+	 * (changed form int data type in V3*/
+	protected float x,y;
+	/** Width and height of component in pixels for drawing background (changed form int data type in V3*/
+	protected float width, height;
+	/** Half sizes reduces programming complexity later */
+	protected float halfWidth, halfHeight;
+	/** The cenre of the control */
+	protected float cx, cy;
+	/** The angle to control is rotated (radians) */
+	protected float rotAngle;
+	/** Introduced V3 to speed up AffineTransform operations */
+	protected double[] temp = new double[2];
+
+
 	/** Used to when components overlap */
 	public int z = 0;
-
-	/** Width and height of component in pixels for drawing background */
-	protected int width, height;
 
 	/** Simple tag that can be used by the user */
 	public String tag;
@@ -201,6 +247,133 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		G4P.addComponent(winApp, this);
 	}
 
+	public GComponent(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		this.winApp = theApplet;
+		setPositionAndSize(p0, p1, p2, p3);
+		G4P.addComponent(winApp, this);
+
+	}
+
+	/**
+	 * Calculate all the variables that determine the position and size of the
+	 * control. This depends on <pre>control_mode</pre>
+	 * 
+	 */
+	protected void setPositionAndSize(float n0, float n1, float n2, float n3){
+		switch(control_mode){
+		case PApplet.CORNER:	// (x,y,w,h)
+			x = n0; y = n1; width = n2; height = n3;
+			halfWidth = width/2; halfHeight = height/2;
+			cx = x + halfWidth; cy = y + halfHeight;
+			break;			
+		case PApplet.CORNERS:	// (x0,y0,x1,y1)
+			x = n0; y = n1; width = n2 - n0; height = n3 - n1;
+			halfWidth = width/2; halfHeight = height/2;
+			cx = x + halfWidth; cy = y + halfHeight;
+			break;
+		case PApplet.CENTER:	// (cx,cy,w,h)
+			cx = n0; cy = n1; width = n2; height = n3;
+			halfWidth = width/2; halfHeight = height/2;
+			x = cx - halfWidth; y = cy + halfHeight;
+			break;
+		}
+	}
+	
+	/**
+	 * The control to be added has absolute screen coordinates.
+	 * 
+	 * @param c
+	 */
+	public void addAbsoluteControl(GComponent c){
+		// @TODO really need to test this
+		c.x -= x; c.y -= y;
+		c.cx -= x; c.cy -= y;
+		c.parent = this;
+		children.addLast(c);
+	}
+
+	/**
+	 * The control to be added has screen coordinates relative to this control
+	 * @param c
+	 */
+	public void addRelativeControl(GComponent c){
+		// @TODO really need to test this
+		c.cx = c.x + c.halfWidth - halfWidth;
+		c.cy = c.y + c.halfHeight - halfHeight;
+		
+		c.parent = this;
+		children.addLast(c);
+	}
+
+	/**
+	 * This will set the rotation of the control to angle overwriting
+	 * any previous rotation set. Then it calculates the centre position
+	 * so that the original top left corner of the control will be the 
+	 * position indicated by x,y with respect to the top left corner of
+	 *  parent
+	 * 
+	 * @param c
+	 * @param x
+	 * @param y
+	 * @param angle
+	 */
+	public void addCompoundControl(GComponent c, float x, float y, float angle){
+		// In child control reset the control so it centred about the origin
+		c.x = x; c.y = y;
+		c.temp[0] = c.halfWidth;
+		c.temp[1] = c.halfHeight;
+		AffineTransform aff = new AffineTransform();
+		aff.setToRotation(angle);
+		aff.transform(c.temp, 0, c.temp, 0, 1);
+		c.cx = (float)c.temp[0] + x - halfWidth;
+		c.cy = (float)c.temp[1] + y - halfHeight;
+		c.rotAngle = angle;
+		c.parent = this;
+		if(children == null)
+			children = new LinkedList<GComponent>();
+		children.addLast(c);
+	}
+			
+	// This is for visualisation
+	public void setRotation(float rot){
+		this.rotAngle = rot;
+	}
+
+	public AffineTransform getTransform(AffineTransform aff){
+		if(parent != null)
+			aff = parent.getTransform(aff);
+		aff.translate(cx, cy);
+		aff.rotate(rotAngle);
+		return aff;
+	}
+
+	/**
+	 * This method tests to see if the position is over the control taking
+	 * into account whether it has added to another control or if fact is
+	 * part of a larger control e.g. GTextArea
+	 * @param px
+	 * @param py
+	 * @return
+	 */
+	public boolean isOverF(float px, float py){
+		AffineTransform aff = new AffineTransform();
+		aff = getTransform(aff);
+		temp[0] = px; temp[1] = py;
+		try {
+			aff.inverseTransform(temp, 0, temp, 0, 1);
+		} catch (NoninvertibleTransformException e) {
+			e.printStackTrace();
+			return false;
+		}
+		px = (float) temp[0] + halfWidth;
+		py = (float) temp[1] + halfHeight;
+		boolean over = (px >= 0 && px <= width && py >= 0 && py <= height);
+		if(over){
+			System.out.println("Mouse over " + tag + "  @ [" + px + ", " + py + "]");
+		}
+		return over;
+	}
+	
 	/**
 	 * Attempt to create the default event handler for the component class. 
 	 * The default event handler is a method that returns void and has a single
@@ -723,10 +896,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			alignX = border + PADH;
 			break;
 		case GAlign.RIGHT:
-			alignX = width - textWidth - border - PADH;
+			alignX = (int) (width - textWidth - border - PADH);
 			break;
 		case GAlign.CENTER:
-			alignX = (width - textWidth)/2;
+			alignX = (int) ((width - textWidth)/2);
 			break;
 		}
 	}
@@ -737,10 +910,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			alignY = border + PADV;
 			break;
 		case GAlign.BOTTOM:
-			alignY = height - localFont.getFont().getSize() - border - PADV;
+			alignY = (int) (height - localFont.getFont().getSize() - border - PADV);
 			break;
 		case GAlign.MIDDLE:
-			alignY = (height - localFont.getFont().getSize() - border - PADV)/2;
+			alignY = (int) ((height - localFont.getFont().getSize() - border - PADV)/2);
 			break;
 		}
 	}
@@ -774,35 +947,35 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/**
 	 * @return the x
 	 */
-	public int getX() {
+	public float getX() {
 		return x;
 	}
 
 	/**
 	 * @return the y
 	 */
-	public int getY() {
+	public float getY() {
 		return y;
 	}
 
 	/**
 	 * @return the width
 	 */
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 
 	/**
 	 * @param width the width to set
 	 */
-	public void setWidth(int width) {
+	public void setWidth(float width) {
 		this.width = width;
 	}
 
 	/**
 	 * @return the height
 	 */
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
@@ -923,7 +1096,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			if(c1.z != c2.z)
 				return  new Integer(c1.z).compareTo( new Integer(c2.z));
 			else
-				return new Integer(-c1.y).compareTo(new Integer(-c2.y));
+				return new Integer((int) -c1.y).compareTo(new Integer((int) -c2.y));
 		}
 		
 	} // end of comparator class

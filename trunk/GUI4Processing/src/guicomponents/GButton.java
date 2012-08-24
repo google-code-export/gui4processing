@@ -386,12 +386,12 @@ public class GButton extends GComponent {
 				break;
 			case GAlign.RIGHT:
 				imageAlign = imgAlign;
-				imgAlignX = width - btnImgWidth - PADH;
+				imgAlignX = (int) (width - btnImgWidth - PADH);
 				break;
 			case GAlign.CENTER:
 				if(text.length() == 0){
 					imageAlign = imgAlign;
-					imgAlignX = (width - btnImgWidth)/2;
+					imgAlignX = (int) ((width - btnImgWidth)/2);
 				}
 				else {
 					imageAlign = GAlign.LEFT;
@@ -407,7 +407,7 @@ public class GButton extends GComponent {
 	 * Calculate text and image X alignment position
 	 */
 	protected void calcAlignX(){
-		int areaWidth = width;
+		int areaWidth = (int) width;
 		int imgX = 0;
 		if(useImages){
 			areaWidth -= btnImgWidth;

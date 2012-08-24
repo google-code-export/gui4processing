@@ -87,7 +87,7 @@ public class GCombo extends GComponent {
 	 * Create the vertical slider for the drop down list
 	 */
 	private void createSlider(){
-		slider = new GVertSlider(winApp, width - 10, height, 10, maxRows * height);
+		slider = new GVertSlider(winApp, (int)width - 10, (int)height, 10, maxRows * (int)height);
 		slider.setBorder(1);
 		slider.setVisible(false);
 		slider.setLimits(0, 0, maxRows - 1);
@@ -124,7 +124,7 @@ public class GCombo extends GComponent {
 	public GOption makeOption(String optText){
 		GOption opt = null;
 		if(optText != null && !optText.equals("")){
-			opt = new GOption(winApp, optText, 0, 0, width - 10);
+			opt = new GOption(winApp, optText, 0, 0, (int)width - 10);
 			opt.addEventHandler(this, "processOptionSelection");
 			opt.setVisible(false);
 			opt.setOpaque(true);
@@ -149,8 +149,8 @@ public class GCombo extends GComponent {
 			width += (textWidth - tw);
 		ArrayList<GOption> options = optGroup.getOptions();
 		for(int i = 0; i < options.size(); i++)
-			options.get(i).setWidth(width - 10);
-		slider.setX(width - 10);
+			options.get(i).setWidth((int)width - 10);
+		slider.setX((int)width - 10);
 	}
 
 	/**
@@ -303,12 +303,12 @@ public class GCombo extends GComponent {
 		if(expanded){
 			x1 = p.x;
 			y1 = p.y;
-			x2 = x1 + width;
-			y2 = y1 + (nbrRowsToShow + 1)*height;
+			x2 = x1 + (int)width;
+			y2 = y1 + (nbrRowsToShow + 1)*(int)height;
 		}
 		else {
-			x1 = p.x + width - imgArrow.width - PADH;
-			y1 = p.y + (height - imgArrow.height)/2 + PADV;
+			x1 = p.x + (int)width - imgArrow.width - PADH;
+			y1 = p.y + ((int)height - imgArrow.height)/2 + PADV;
 			x2 = x1 + imgArrow.width;
 			y2 = y1 + imgArrow.height;
 		}

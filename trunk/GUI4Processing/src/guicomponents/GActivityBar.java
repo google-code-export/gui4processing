@@ -67,7 +67,7 @@ public class GActivityBar extends GComponent {
 		this.height = Math.max(height,10);
 		if(this.height % 2 != 0)
 			this.height++;
-		trackHeight = this.height - 2 * PADV;
+		trackHeight = (int) (this.height - 2 * PADV);
 		this.width = Math.max(this.height * 4, width);
 		initThumbPos();
 		initThumbColor();
@@ -91,7 +91,7 @@ public class GActivityBar extends GComponent {
 	 * Initialise the stating position for the thumbs
 	 */
 	private void initThumbPos(){
-		thumbX[0] = width/2 + NBR_THUMBS * trackHeight /2;
+		thumbX[0] = (int) (width/2 + NBR_THUMBS * trackHeight /2);
 		thumbDeltaX[0] = 1;
 		for(int i=1; i<NBR_THUMBS; i++){
 			thumbX[i] = thumbX[i-1]- 1*trackHeight/2;

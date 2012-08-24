@@ -424,8 +424,8 @@ public class G4P implements PConstants, GConstants {
 		}
 	}
 
+	// Only used inside G4P to keep track of windows and associated applets
 	private static class AppletInfo {
-
 		public PMatrix orgMatrix;
 		public List<GComponent> paControls;
 		public boolean autoDrawOn = true;
