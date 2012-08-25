@@ -195,8 +195,8 @@ public class FScrollbar extends GComponent {
 			g2d.setColor(jpalette[OFF_STROKE]);
 			g2d.draw(thumb);
 		}
-		bufferInvalid = false;
 		buffer.endDraw();
+		bufferInvalid = false;
 	}
 	
 	public void draw(){
