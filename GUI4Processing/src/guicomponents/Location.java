@@ -7,7 +7,9 @@ import java.util.LinkedList;
 
 public class Location {
 	public int charInText, charOnLine, lineNo;
-	public float cursorX, cursorY, cursorHeight; // do not take scrolling into account
+	// Do not take scrolling into account this should be 
+	// done by the parent component
+	public float cursorX, cursorY, cursorHeight;
 	public boolean valid;
 
 	public Location(){
@@ -16,7 +18,9 @@ public class Location {
 		valid = false;
 	}
 	
-	public boolean calculateFromCharNo(int charNumber, int textLength, LinkedList<TextLayout> lines){
+	public boolean calculateFromCharNo(int charNumber, 
+			int textLength, 
+			LinkedList<TextLayout> lines){
 		valid = false;
 		if(charNumber < 0 || charNumber > textLength){
 			charInText = charOnLine = lineNo = -1;
@@ -45,7 +49,9 @@ public class Location {
 
 	
 	// px and py represent the value over the text so must be adjusted for scrolling
-	public boolean calculateFromXY(float px, float py, float breakWidth, LinkedList<TextLayout> lines){
+	public boolean calculateFromXY(float px, float py, 
+			float breakWidth, 
+			LinkedList<TextLayout> lines){
 		valid = false;
 		float yLine = 0, layoutHeight;
 		if(py >= 0 && px >= 0 || px < breakWidth) {

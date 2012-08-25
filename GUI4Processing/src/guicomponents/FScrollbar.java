@@ -24,11 +24,10 @@ public class FScrollbar extends GComponent {
 	private BasicStroke pen = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
 	protected float value = 0.2f;
-//	protected float startDragValue;
 	protected float filler = .5f;
 	protected boolean autoHide = false;
-	boolean currOverThumb = false;
-	boolean isValueChanging = false;
+	protected boolean currOverThumb = false;
+	protected boolean isValueChanging = false;
 	
 	protected float last_ox, last_oy;
 	
@@ -51,7 +50,16 @@ public class FScrollbar extends GComponent {
 		createEventHandler(G4P.mainWinApp, "handleScrollbarEvents", new Class[]{ FScrollbar.class });
 	}
 
+	public void setValue(float value){
+		if(value + filler > 1)
+			filler = 1 - value;
+		this.value = value;
+		bufferInvalid = true;
+	}
+	
 	public void setValue(float value, float filler){
+		if(value + filler > 1)
+			value = 1 - filler;
 		this.value = value;
 		this.filler = filler;
 		bufferInvalid = true;
