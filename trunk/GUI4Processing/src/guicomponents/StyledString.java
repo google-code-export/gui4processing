@@ -32,7 +32,6 @@ final public class StyledString implements Serializable {
 
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
-	transient private Location cursorPos = new Location();
 	transient private LineBreakMeasurer lineMeasurer = null;
 	transient private LinkedList<TextLayout> lines = new LinkedList<TextLayout>();
 
@@ -52,12 +51,14 @@ final public class StyledString implements Serializable {
 	// Default colours
 	private final Color backcolor = new Color(255,255,255,0);
 	private final Color forecolor = Color.black;
-	private final Color cursorColor = Color.red;
 	// Default justification
 	private boolean justify = true;
 	private float justifyRatio = 0.7f;
 
-
+	private float textHeight = 0;
+	private float maxLineLength = 0;
+	private float maxLineHeight = 0;
+	
 	private boolean showCursor = false;
 
 
@@ -67,7 +68,7 @@ final public class StyledString implements Serializable {
 		else
 			breakWidth = viewWidth;
 		spacer = getParagraghSpacer((int)breakWidth);
-		cursorPos = new Location();
+//		cursorPos = new Location();
 		plainText = startText;
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
@@ -79,6 +80,9 @@ final public class StyledString implements Serializable {
 		return new String(plainText);
 	}
 	
+	public AttributedString getStylesString(){
+		return styledText;
+	}
 	public int length(){
 		return plainText.length();
 	}
@@ -111,8 +115,8 @@ final public class StyledString implements Serializable {
 	
 	public void setJustifyOn(){
 		if(!justify){
-			invalidLayout = true;
 			justify = true;
+			invalidLayout = true;
 		}
 	}
 	
@@ -252,6 +256,9 @@ final public class StyledString implements Serializable {
 		if(lines == null)
 			lines = new LinkedList<TextLayout>();
 		if(invalidLayout){
+			textHeight = 0;
+			maxLineLength = 0;
+			 maxLineHeight = 0;
 			lines.clear();
 			if(plainText.length() > 0){
 				int nbrChars = plainText.length();
@@ -260,8 +267,8 @@ final public class StyledString implements Serializable {
 				lineMeasurer = new LineBreakMeasurer(paragraph, frc);		
 				while (lineMeasurer.getPosition() < nbrChars) {
 					TextLayout layout = lineMeasurer.nextLayout(breakWidth);
+					float advance = layout.getVisibleAdvance();
 					if(justify){
-						float advance = layout.getVisibleAdvance();
 						if(justify && advance > justifyRatio * breakWidth){
 							//System.out.println(layout.getVisibleAdvance() + "  " + breakWidth + "  "+ layout.get);
 							// If advance > breakWidth then we have a line break
@@ -270,6 +277,13 @@ final public class StyledString implements Serializable {
 						}
 					}
 					lines.add(layout);
+					float lh = getHeight(layout);
+					if(lh > maxLineHeight)
+						maxLineHeight = lh;
+					textHeight += lh;
+					if(advance <= breakWidth && advance > maxLineLength){
+						maxLineLength = advance;
+					}
 				}
 			}
 			invalidLayout = false;
@@ -277,37 +291,19 @@ final public class StyledString implements Serializable {
 		return lines;
 	}
 
-	public void drawText(Graphics2D g2d){
-		if(invalidLayout)
-			lines = getLines(g2d);
-
-		float drawPosX = 0, drawPosY = 0;
-		//g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		for(TextLayout layout : lines){
-			// Compute pen x position. If the paragraph is right-to-left we
-			// will align the TextLayouts to the right edge of the panel.
-			// Note: this won't occur for the English text in this sample.
-			// Note: drawPosX is always where the LEFT of the text is placed.
-			drawPosX = (layout.isLeftToRight() ? 0 : breakWidth - layout.getAdvance());
-
-			// Move y-coordinate by the ascent of the layout.
-			drawPosY += layout.getAscent();
-
-			// Draw the TextLayout at (drawPosX, drawPosY).
-			layout.draw(g2d, drawPosX, drawPosY);
-
-			// Move y-coordinate in preparation for next layout.
-			drawPosY += layout.getDescent() + layout.getLeading();
-		}
-		if(showCursor){
-			g2d.setColor(cursorColor);
-			g2d.drawLine((int)cursorPos.cursorX, (int)cursorPos.cursorY, (int)cursorPos.cursorX, (int)(cursorPos.cursorY - cursorPos.cursorHeight));
-		}
+	public float getAllLinesHeight(){
+		return textHeight;
 	}
-
-	public boolean getCursorPos(Graphics2D g2d, Location cursorPos, float px, float py){
+	
+	public float getMaxLineLength(){
+		return maxLineLength;
+	}
+	
+	public float getMaxLineHeight(){
+		return maxLineHeight;
+	}
+	
+	public Location getCursorPos(Graphics2D g2d, Location cursorPos, float px, float py){
 		if(cursorPos == null)
 			cursorPos = new Location();
 		if(invalidLayout)
@@ -317,8 +313,7 @@ final public class StyledString implements Serializable {
 			System.out.println(cursorPos);
 			showCursor = true;
 		}
-		this.cursorPos = cursorPos;
-		return showCursor;
+		return cursorPos;
 	}
 
 	@SuppressWarnings("unused")
@@ -326,6 +321,10 @@ final public class StyledString implements Serializable {
 		return layout.getAscent() +layout.getDescent() + layout.getLeading();
 	}
 
+	public float getBreakWidth(){
+		return breakWidth;
+	}
+	
 	private ImageGraphicAttribute getParagraghSpacer(int bw){
 		if(bw == Integer.MAX_VALUE)
 			bw = 1;

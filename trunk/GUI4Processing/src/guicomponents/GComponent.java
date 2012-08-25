@@ -185,13 +185,19 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return hs;
 	}
 	
+	protected int getCurrHotSpot(){
+		return currSpot;
+	}
+	
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
 	/** The method in eventHandlerObject to execute */
 	protected Method eventHandlerMethod = null;
 	/** the name of the method to handle the event */ 
 	protected String eventHandlerMethodName;
-
+	
+	protected StyledString stext = null;
+	protected float sTextHeight;
 	
 	/** Text value associated with component */
 	protected String text = "";
