@@ -18,13 +18,13 @@ public class FScrollbar extends GComponent {
 	private static final int OFF_STROKE = 4;
 	private static final int OVER_FILL = 3;
 	private static final int OVER_STROKE = 2;
-	private static final int TRACK = 6;
+	private static final int TRACK = 5;
 	
 	protected RoundRectangle2D lowCap, highCap;
 	private BasicStroke pen = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
 	protected float value = 0.2f;
-	protected float startDragValue;
+//	protected float startDragValue;
 	protected float filler = .5f;
 	protected boolean autoHide = false;
 	boolean currOverThumb = false;
@@ -39,10 +39,12 @@ public class FScrollbar extends GComponent {
 				new HSrect(2, width - 16, 0, 16, height),
 				new HSrect(9, 17, 0, width - 17, height)
 		};
-		lowCap = new RoundRectangle2D.Float(1, 1, 15, height-2, 6, 6);
-		highCap = new RoundRectangle2D.Float(width - 15, 1, 13, height-2, 6, 6);
-		
 		Arrays.sort(hotspots); // belt and braces
+
+		lowCap = new RoundRectangle2D.Float(1, 1, 15, height-2, 6, 6);
+		highCap = new RoundRectangle2D.Float(width - 15, 1, 14.5f, height-2, 6, 6);
+		
+		opaque = false;
 		registerAutos_DMPK(true, true, false, false);
 	}
 
@@ -63,6 +65,7 @@ public class FScrollbar extends GComponent {
 		
 
 		int spot = whichHotSpot(ox, oy);
+		// 
 		if(spot >= 9){
 			if(isOverThumb(ox, oy))
 				spot = 10;
@@ -74,8 +77,6 @@ public class FScrollbar extends GComponent {
 			bufferInvalid = true;
 		}
 		
-//		System.out.println(ox +"  " +oy +"  " + spot);
-		
 		if(mouseOver || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -86,7 +87,7 @@ public class FScrollbar extends GComponent {
 			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
-				startDragValue = value;
+//				startDragValue = value;
 				takeFocus();
 			}
 			break;
@@ -126,16 +127,23 @@ public class FScrollbar extends GComponent {
 	protected void updateBuffer(){
 		Graphics2D g2d = buffer.g2;
 		buffer.beginDraw();
-		buffer.background(buffer.color(255,0));
+		if(opaque) {
+			buffer.background(buffer.color(255,0));
+			buffer.fill(palette[6]);
+			buffer.noStroke();
+			buffer.rect(8,0,width-16,height);
+		}
+		else
+			buffer.background(buffer.color(255,0));
+		// Draw the rack
 		buffer.fill(palette[TRACK]);
 		buffer.noStroke();
-		buffer.rect(8,2,width-8,height-3);
+		buffer.rect(8,2,width-8,height-4);
 		g2d.setStroke(pen);
 		
 		// Draw low end placement
 		g2d.setColor(jpalette[3]);
-		
-		buffer.fill(palette[3]);
+//	
 		buffer.strokeWeight(2.0f);
 		if(currSpot == 1){
 			g2d.setColor(jpalette[OVER_FILL]);
