@@ -192,8 +192,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/** the name of the method to handle the event */ 
 	protected String eventHandlerMethodName;
 
+	
 	/** Text value associated with component */
 	protected String text = "";
+	
 	protected int textWidth;
 	protected int textAlignHorz = GAlign.LEFT;
 	protected int textAlignVert = GAlign.MIDDLE;
@@ -368,7 +370,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * any previous rotation set. Then it calculates the centre position
 	 * so that the original top left corner of the control will be the 
 	 * position indicated by x,y with respect to the top left corner of
-	 *  parent
+	 * parent
 	 * 
 	 * @param c
 	 * @param x
@@ -389,11 +391,34 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		c.cx = (float)c.temp[0] + x - halfWidth;
 		c.cy = (float)c.temp[1] + y - halfHeight;
 		c.rotAngle = angle;
-		
+		// Add to parent
 		c.parent = this;
+		// The parent will take over drawing the child
+		winApp.unregisterDraw(c);
+		c.regDraw = false;
+		c.setZ(z);
 		if(children == null)
 			children = new LinkedList<GComponent>();
 		children.addLast(c);
+		Collections.sort(children, new Z_Order());
+	}
+
+	public boolean addXXX(GComponent c){
+		if(c == null || children.contains(c)){
+			if(G4P.messages)
+				System.out.println("Either the child component doesn't exist or has already been added to this component");
+			return false;
+		} else {
+			c.parent = this;
+			children.add(c);
+			// The parent will take over drawing the child
+			winApp.unregisterDraw(c);
+			c.regDraw = false;
+			if(localColor.getAlpha() < 255)
+				c.setAlpha(localColor.getAlpha());
+			Collections.sort(children, new Z_Order());
+			return true;
+		}
 	}
 
 	// This is for visualisation

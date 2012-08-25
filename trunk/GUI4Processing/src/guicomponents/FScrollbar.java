@@ -30,14 +30,16 @@ public class FScrollbar extends GComponent {
 	boolean currOverThumb = false;
 	boolean isValueChanging = false;
 	
+	protected float last_ox, last_oy;
+	
 	public FScrollbar(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		hotspots = new HotSpot[]{
-				new HSrect(1, 0, 0, 16, height),
-				new HSrect(2, width - 16, 0, 16, height),
-				new HSrect(9, 17, 0, width - 17, height)
+				new HSrect(1, 0, 0, 16, height),			// low cap
+				new HSrect(2, width - 16, 0, 16, height),	// high cap
+				new HSrect(9, 17, 0, width - 17, height)	// thumb track
 		};
 		Arrays.sort(hotspots); // belt and braces
 
@@ -46,12 +48,17 @@ public class FScrollbar extends GComponent {
 		
 		opaque = false;
 		registerAutos_DMPK(true, true, false, false);
+		createEventHandler(G4P.mainWinApp, "handleScrollbarEvents", new Class[]{ FScrollbar.class });
 	}
 
 	public void setValue(float value, float filler){
 		this.value = value;
 		this.filler = filler;
 		bufferInvalid = true;
+	}
+	
+	public float getValue(){
+		return value;
 	}
 	
 	/**
@@ -87,6 +94,7 @@ public class FScrollbar extends GComponent {
 			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
+				last_ox = ox; last_oy = oy;
 //				startDragValue = value;
 				takeFocus();
 			}
@@ -107,12 +115,15 @@ public class FScrollbar extends GComponent {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
-				float movement = winApp.mouseX - winApp.pmouseX;
+				float movement = ox - last_ox;
+				last_ox = ox;
 				float deltaV = movement / (width - 32);
 				value += deltaV;
 				value = PApplet.constrain(value, 0, 1.0f - filler);
 				isValueChanging = true;
 				bufferInvalid = true;
+				eventType = CHANGED;
+				fireEvent();
 			}
 			break;
 		}
@@ -141,9 +152,7 @@ public class FScrollbar extends GComponent {
 		buffer.rect(8,2,width-8,height-4);
 		g2d.setStroke(pen);
 		
-		// Draw low end placement
-		g2d.setColor(jpalette[3]);
-//	
+		// Draw the low cap
 		buffer.strokeWeight(2.0f);
 		if(currSpot == 1){
 			g2d.setColor(jpalette[OVER_FILL]);
@@ -157,6 +166,7 @@ public class FScrollbar extends GComponent {
 			g2d.setColor(jpalette[OFF_STROKE]);
 			g2d.draw(lowCap);
 		}
+		// Draw the high cap
 		if(currSpot == 2){
 			g2d.setColor(jpalette[OVER_FILL]);
 			g2d.fill(highCap);
@@ -169,9 +179,8 @@ public class FScrollbar extends GComponent {
 			g2d.setColor(jpalette[OFF_STROKE]);
 			g2d.draw(highCap);
 		}
-
+		// draw thumb
 		float thumbWidth = (width - 32) * filler;
-		System.out.println(thumbWidth);
 		RoundRectangle2D thumb = new RoundRectangle2D.Float(1,1,thumbWidth-1, height-2,6,6);
 		buffer.translate((width - 32) * value + 16, 0);
 		if(currSpot == 10 || isValueChanging){
@@ -186,28 +195,6 @@ public class FScrollbar extends GComponent {
 			g2d.setColor(jpalette[OFF_STROKE]);
 			g2d.draw(thumb);
 		}
-		// draw thumb
-//		buffer.noStroke();
-//		buffer.translate((width - 16) * value + 16, 0);
-//		buffer.beginShape(PApplet.QUADS);
-//		buffer.fill(palette[5]);
-//		buffer.vertex(0, 0);
-//		buffer.vertex(thumbWidth, 0);
-//		buffer.fill(palette[3]);
-//		buffer.vertex(thumbWidth, height);
-//		buffer.vertex(0, height);
-//		buffer.endShape();
-//		// Draw thumb highlight if mouse over
-//		if(currSpot == 10){
-//			buffer.noFill();
-//			buffer.stroke(palette[2]);
-//			buffer.beginShape();
-//			buffer.vertex(0, 0);
-//			buffer.vertex(thumbWidth, 0);
-//			buffer.vertex(thumbWidth, height);
-//			buffer.vertex(0, height);
-//			buffer.endShape(PApplet.CLOSE);
-//		}
 		bufferInvalid = false;
 		buffer.endDraw();
 	}
@@ -216,9 +203,6 @@ public class FScrollbar extends GComponent {
 		if(!visible) return;
 		if(bufferInvalid)
 			updateBuffer();
-		// Get absolute position
-//		Point pos = new Point(0,0);
-//		calcAbsPosition(pos);
 
 		winApp.pushStyle();
 		winApp.pushMatrix();
