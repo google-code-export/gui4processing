@@ -603,7 +603,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected void loseFocus(GComponent grabber){
 		if(cursorIsOver == this)
 			cursorIsOver = null;
-		focusIsWith = null;
+		focusIsWith = grabber;
 	}
 
 	/**
