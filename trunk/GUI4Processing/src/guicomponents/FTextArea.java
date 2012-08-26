@@ -1,11 +1,12 @@
 package guicomponents;
 import guicomponents.HotSpot.HSrect;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
-import java.awt.geom.GeneralPath;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
@@ -37,6 +38,8 @@ public class FTextArea extends GComponent {
 	protected float tx,ty,th,tw;
 
 	protected float ptx, pty;
+	
+	protected Location startSel = new Location();
 	protected Location endSel = new Location();
 	
 	protected int allTextHeight = 0;
@@ -107,11 +110,18 @@ public class FTextArea extends GComponent {
 
 	public void updateBuffer(){
 		Graphics2D g2d = buffer.g2;
+		float drawPosX, drawPosY = 0;
+
 		buffer.beginDraw();
 		buffer.background(buffer.color(255,0));
 		buffer.translate(-ptx, -pty);
-		float drawPosX, drawPosY = 0;
-		LinkedList<TextLayout> lines = this.stext.getLines(g2d);
+		if(startSel.valid && endSel.valid && !startSel.equals(endSel)){
+			System.out.println("Highlight from +\n\t" + startSel + "    to \n\t" + endSel);
+			int s = Math.min(startSel.charInText, endSel.charInText);
+			int e = Math.max(startSel.charInText, endSel.charInText);
+			stext.setSelectionArea(jpalette[14], s, e);
+		}
+		LinkedList<TextLayout> lines = stext.getLines(g2d);
 		for(TextLayout layout : lines){
 			// Leave the possibility for right justified text
 			drawPosX = (layout.isLeftToRight() ? 0 : stext.getBreakWidth() - layout.getAdvance());
@@ -128,7 +138,42 @@ public class FTextArea extends GComponent {
 		bufferInvalid = false;
 	}
 
-//	g2d.drawLine((int)cursorPos.cursorX, (int)cursorPos.cursorY, (int)cursorPos.cursorX, (int)(cursorPos.cursorY - cursorPos.cursorHeight));
+	public boolean keepCursorInDisplay(){
+		boolean horzScroll = false, vertScroll = false;
+		if(endSel.valid){
+			float x = endSel.cursorX;
+			float y = endSel.cursorY;
+			if(x < ptx ){ 										// LEFT?
+				ptx--;
+				if(ptx < 0) ptx = 0;
+				horzScroll = true;
+			}
+			else if(x > ptx + tw){ 								// RIGHT?
+				ptx++;
+				horzScroll = true;
+			}
+			if(y < pty + stext.getMaxLineHeight()){				// UP?
+				if(pty < 0) pty = 0;
+				pty--;
+				vertScroll = true;
+			}
+			else if(y > pty + th - stext.getMaxLineHeight()){	// DOWN?
+				pty++;
+				vertScroll = true;
+			}
+			if(horzScroll && hsb != null){
+				hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
+			}
+			if(vertScroll && vsb != null){
+				vsb.setValue(pty / (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight()));
+			}
+		}
+//		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
+//		pty = vsb.getValue() * (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight());
+
+		bufferInvalid = horzScroll | vertScroll;
+		return bufferInvalid;
+	}
 
 	public void draw(){
 		if(!visible) return;
@@ -188,22 +233,18 @@ public class FTextArea extends GComponent {
 			cursorIsOver = null;
 
 		int spot = whichHotSpot(ox, oy);
-		
-		if(spot == 1) {
+		if(spot >= 0)
 			ox -= tx; oy -= ty;
-			System.out.println("TextArea @ " + ox + "  " + oy);
-		}
-
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
-//				startDragValue = value;
-				stext.getCursorPos(buffer.g2, endSel, ox + ptx, oy +pty);
+//				stext.getCursorPos(buffer.g2, endSel, ox + ptx, oy + pty);
+				stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
+				startSel.setEqualTo(endSel);
 				bufferInvalid = true;
-				System.out.println("Get cursor position " + endSel);
 				takeFocus();
 			}
 			break;
@@ -214,24 +255,17 @@ public class FTextArea extends GComponent {
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
-//				loseFocus(null);
-//				mdx = mdy = Integer.MAX_VALUE;
-//				isValueChanging = false;
-//				bufferInvalid = true;
+			if(focusIsWith == this){
+				loseFocus(null);
+				bufferInvalid = true;
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
-//				float movement = ox - last_ox;
-//				last_ox = ox;
-//				float deltaV = movement / (width - 32);
-//				value += deltaV;
-//				value = PApplet.constrain(value, 0, 1.0f - filler);
-//				isValueChanging = true;
-//				bufferInvalid = true;
-//				eventType = CHANGED;
-//				fireEvent();
+//				stext.getCursorPos(buffer.g2, endSel, ox + ptx, oy + pty);
+				stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
+				keepCursorInDisplay();
+				bufferInvalid = true;
 			}
 			break;
 		}

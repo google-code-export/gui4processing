@@ -4,7 +4,6 @@ import guicomponents.HotSpot.HSrect;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Arrays;
@@ -14,10 +13,10 @@ import processing.core.PGraphicsJava2D;
 
 public class FScrollbar extends GComponent {
 
-	private static final int OFF_FILL = 4;
-	private static final int OFF_STROKE = 4;
-	private static final int OVER_FILL = 3;
-	private static final int OVER_STROKE = 2;
+	private static final int OFF_FILL = 3;
+	private static final int OFF_STROKE = 0;
+	private static final int OVER_FILL = 1;
+	private static final int OVER_STROKE = 3;
 	private static final int TRACK = 5;
 	
 	protected RoundRectangle2D lowCap, highCap;
@@ -80,7 +79,7 @@ public class FScrollbar extends GComponent {
 		
 
 		int spot = whichHotSpot(ox, oy);
-		// 
+		// If over the track then see if we are over the thumb
 		if(spot >= 9){
 			if(isOverThumb(ox, oy))
 				spot = 10;
@@ -109,13 +108,31 @@ public class FScrollbar extends GComponent {
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
+				switch(currSpot){
+				case 1:
+					value -= 0.1f;
+					if(value < 0)
+						value = 0;
+					bufferInvalid = true;
+					eventType = CHANGED;
+					fireEvent();
+					break;
+				case 2:
+					value += 0.1f;
+					if(value + filler > 1.0)
+						value = 1 - filler;
+					bufferInvalid = true;
+					eventType = CHANGED;
+					fireEvent();
+					break;
+				}
 				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
-				loseFocus(null);
+				loseFocus(parent);
 				mdx = mdy = Integer.MAX_VALUE;
 				isValueChanging = false;
 				bufferInvalid = true;
