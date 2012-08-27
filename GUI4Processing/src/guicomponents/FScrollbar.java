@@ -18,18 +18,19 @@ public class FScrollbar extends GComponent {
 	private static final int OVER_FILL = 1;
 	private static final int OVER_STROKE = 3;
 	private static final int TRACK = 5;
-	
+
 	protected RoundRectangle2D lowCap, highCap;
 	private BasicStroke pen = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
 	protected float value = 0.2f;
 	protected float filler = .5f;
-	protected boolean autoHide = false;
+	protected boolean autoHide = true;
 	protected boolean currOverThumb = false;
 	protected boolean isValueChanging = false;
-	
+
 	protected float last_ox, last_oy;
-	
+
+
 	public FScrollbar(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
@@ -43,40 +44,54 @@ public class FScrollbar extends GComponent {
 
 		lowCap = new RoundRectangle2D.Float(1, 1, 15, height-2, 6, 6);
 		highCap = new RoundRectangle2D.Float(width - 15, 1, 14.5f, height-2, 6, 6);
-		
+
 		opaque = false;
 		registerAutos_DMPK(true, true, false, false);
 		createEventHandler(G4P.mainWinApp, "handleScrollbarEvents", new Class[]{ FScrollbar.class });
 	}
 
+	public void setAutoHide(boolean autoHide){
+		if(this.autoHide != autoHide){
+			this.autoHide = autoHide;
+			if(this.autoHide && filler > 0.99999f)
+				visible = false;
+			bufferInvalid = true;
+		}
+	}
 	public void setValue(float value){
 		if(value + filler > 1)
 			filler = 1 - value;
 		this.value = value;
+		if(autoHide && filler > 0.99999f)
+			visible = false;
+		else
+			visible = true;
 		bufferInvalid = true;
 	}
-	
+
 	public void setValue(float value, float filler){
 		if(value + filler > 1)
 			value = 1 - filler;
 		this.value = value;
 		this.filler = filler;
+		if(autoHide && this.filler > 0.99999f)
+			visible = false;
+		else
+			visible = true;
 		bufferInvalid = true;
 	}
-	
+
 	public float getValue(){
 		return value;
 	}
-	
+
 	/**
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible  || !enabled || !available) return;
-		
-		// This next line will also set ox and oy
-		boolean mouseOver = contains(winApp.mouseX, winApp.mouseY);
-		
+
+		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
 
 		int spot = whichHotSpot(ox, oy);
 		// If over the track then see if we are over the thumb
@@ -84,25 +99,30 @@ public class FScrollbar extends GComponent {
 			if(isOverThumb(ox, oy))
 				spot = 10;
 			else
-				spot = 9;
+				spot = -1; // Over empty track so ignore
 		}
 		if(spot != currSpot){
 			currSpot = spot;
 			bufferInvalid = true;
 		}
-		
-		if(mouseOver || focusIsWith == this)
+
+
+		// This next line will also set ox and oy
+		//		boolean mouseOver = contains(winApp.mouseX, winApp.mouseY);
+
+
+		if(currSpot>= 0 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
+
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
+			if(focusIsWith != this && currSpot>= 0 && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				last_ox = ox; last_oy = oy;
-//				startDragValue = value;
 				takeFocus();
 			}
 			break;
@@ -153,13 +173,13 @@ public class FScrollbar extends GComponent {
 			break;
 		}
 	}
-	
+
 	protected boolean isOverThumb(float px, float py){
 		float p = (px - 16) / (width - 32);
 		boolean over =( p >= value && p < value + filler);
 		return over;
 	}
-	
+
 	protected void updateBuffer(){
 		Graphics2D g2d = buffer.g2;
 		buffer.beginDraw();
@@ -176,7 +196,7 @@ public class FScrollbar extends GComponent {
 		buffer.noStroke();
 		buffer.rect(8,2,width-8,height-4);
 		g2d.setStroke(pen);
-		
+
 		// Draw the low cap
 		buffer.strokeWeight(2.0f);
 		if(currSpot == 1){
@@ -223,7 +243,7 @@ public class FScrollbar extends GComponent {
 		buffer.endDraw();
 		bufferInvalid = false;
 	}
-	
+
 	public void draw(){
 		if(!visible) return;
 		if(bufferInvalid)
@@ -231,19 +251,19 @@ public class FScrollbar extends GComponent {
 
 		winApp.pushStyle();
 		winApp.pushMatrix();
-		
+
 		winApp.translate(cx, cy);
 		winApp.rotate(rotAngle);
 		winApp.imageMode(PApplet.CENTER);
 		winApp.image(buffer, 0, 0);
 
 		if(children != null){
-		for(GComponent c : children)
-			c.draw();
+			for(GComponent c : children)
+				c.draw();
 		}
 		winApp.popMatrix();
 		winApp.popStyle();
 
 	}	
-		
+
 }

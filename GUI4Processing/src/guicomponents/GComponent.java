@@ -197,7 +197,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected String eventHandlerMethodName;
 	
 	protected StyledString stext = null;
-	protected float sTextHeight;
+//	protected float sTextHeight;
 	
 	/** Text value associated with component */
 	protected String text = "";
@@ -432,6 +432,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		this.rotAngle = rot;
 	}
 
+	/**
+	 * Get an affine transformation that is the compound of all 
+	 * transformations including parents
+	 * @param aff
+	 * @return
+	 */
 	public AffineTransform getTransform(AffineTransform aff){
 		if(parent != null)
 			aff = parent.getTransform(aff);
@@ -441,9 +447,31 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	}
 
 	/**
-	 * This method tests to see if the position is over the control taking
-	 * into account whether it has added to another control or if fact is
-	 * part of a larger control e.g. GTextArea
+	 * This method takes a position px, py and calulates the equivalent
+	 * position [ox,oy] as is no transformations have taken place and
+	 * the origin is the top-left corner of the control.
+	 * @param px
+	 * @param py
+	 */
+	protected void calcTransformedOrigin(float px, float py){
+		AffineTransform aff = new AffineTransform();
+		aff = getTransform(aff);
+		temp[0] = px; temp[1] = py;
+		try {
+			aff.inverseTransform(temp, 0, temp, 0, 1);
+			ox = (float) temp[0] + halfWidth;
+			oy = (float) temp[1] + halfHeight;
+		} catch (NoninvertibleTransformException e) {
+		}
+	}
+	
+	
+	/**
+	 * NOT REQD
+	 * Remove this method from the release version performs the same task as 
+	 * calcTransformedOrigin(px,py) but also tests to see if it is over
+	 * the control.
+	 * 
 	 * @param px
 	 * @param py
 	 * @return
@@ -461,11 +489,9 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		ox = (float) temp[0] + halfWidth;
 		oy = (float) temp[1] + halfHeight;
 		boolean over = (ox >= 0 && ox <= width && oy >= 0 && oy <= height);
-//		if(over){
-//			System.out.println("Mouse over " + tag + "  @ [" + ox + ", " + oy + "]");
-//		}
 		return over;
 	}
+
 
 	/**
 	 * Attempt to create the default event handler for the component class. 
