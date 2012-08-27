@@ -38,14 +38,15 @@ public class FTextArea extends GComponent {
 	protected float tx,ty,th,tw;
 
 	protected float ptx, pty;
-	
+
 	protected Location startSel = new Location();
 	protected Location endSel = new Location();
-	
+
 	protected int allTextHeight = 0;
 
 	// The scrollbar policy
 	protected final int sbPolicy;
+	protected boolean autoHide = true;
 	FScrollbar hsb, vsb;
 
 
@@ -64,6 +65,7 @@ public class FTextArea extends GComponent {
 		buffer.rectMode(PApplet.CORNER);
 		hotspots = new HotSpot[]{
 				new HSrect(1, tx, ty, tw, th),			// typing area
+				new HSrect(9, 0, 0, width, height),		// control surface
 		};
 		if((sbPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new FScrollbar(theApplet, 0, 0, tw, 16);
@@ -76,7 +78,7 @@ public class FTextArea extends GComponent {
 			vsb.addEventHandler(this, "vsbEventHandler");
 		}
 		opaque = true;
-
+		setText("",tw);
 		z = Z_STICKY;
 		//createEventHandler(G4P.mainWinApp, "handleTextAreaEvents", new Class[]{ FTextArea.class });
 		registerAutos_DMPK(true, true, false, true);
@@ -85,20 +87,20 @@ public class FTextArea extends GComponent {
 	public void setText(String text){
 		setText(text, tw);
 	}
-	
+
 	public void setText(String text, float maxLineLength){
 		this.text = text;
 		stext = new StyledString(buffer.g2, text, maxLineLength);
+		float sTextHeight;
 		if(vsb != null){
 			sTextHeight = stext.getAllLinesHeight();
 			ptx = pty = 0;
-			if(sTextHeight < th){
+			if(sTextHeight < th)
 				vsb.setValue(0.0f, 1.0f);
-			}
-			else {
+			else 
 				vsb.setValue(0, th/sTextHeight);
-			}
 		}
+		// If needed update the horizontal scrollbar
 		if(hsb != null){
 			if(stext.getMaxLineLength() < tw)
 				hsb.setValue(0,1);
@@ -108,39 +110,42 @@ public class FTextArea extends GComponent {
 	}
 
 
-	public void updateBuffer(){
-		Graphics2D g2d = buffer.g2;
-		float drawPosX, drawPosY = 0;
+	/**
+	 * If the buffer is invalid then redraw it.
+	 */
+	protected void updateBuffer(){
+		if(bufferInvalid) {
+			Graphics2D g2d = buffer.g2;
+			float drawPosX, drawPosY = 0;
 
-		buffer.beginDraw();
-		buffer.background(buffer.color(255,0));
-		buffer.translate(-ptx, -pty);
-		if(startSel.valid && endSel.valid && !startSel.equals(endSel)){
-			System.out.println("Highlight from +\n\t" + startSel + "    to \n\t" + endSel);
-			int s = Math.min(startSel.charInText, endSel.charInText);
-			int e = Math.max(startSel.charInText, endSel.charInText);
-			stext.setSelectionArea(jpalette[14], s, e);
+			buffer.beginDraw();
+			buffer.background(buffer.color(255,0));
+			buffer.translate(-ptx, -pty);
+			LinkedList<TextLayout> lines = stext.getLines(g2d);
+			for(TextLayout layout : lines){
+				// Leave the possibility for right justified text
+				drawPosX = (layout.isLeftToRight() ? 0 : stext.getBreakWidth() - layout.getAdvance());
+				drawPosY += layout.getAscent();
+				layout.draw(g2d, drawPosX, drawPosY);
+				drawPosY += layout.getDescent() + layout.getLeading();
+			}
+			if(endSel.valid){
+				buffer.strokeWeight(1.5f);
+				buffer.stroke(255,0,0);
+				buffer.line(endSel.cursorX, endSel.cursorY, endSel.cursorX, endSel.cursorY - endSel.cursorHeight);
+			}
+			buffer.endDraw();
+			bufferInvalid = false;
 		}
-		LinkedList<TextLayout> lines = stext.getLines(g2d);
-		for(TextLayout layout : lines){
-			// Leave the possibility for right justified text
-			drawPosX = (layout.isLeftToRight() ? 0 : stext.getBreakWidth() - layout.getAdvance());
-			drawPosY += layout.getAscent();
-			layout.draw(g2d, drawPosX, drawPosY);
-			drawPosY += layout.getDescent() + layout.getLeading();
-		}
-		if(endSel.valid){
-			buffer.strokeWeight(1.5f);
-			buffer.stroke(255,0,0);
-			buffer.line(endSel.cursorX, endSel.cursorY, endSel.cursorX, endSel.cursorY - endSel.cursorHeight);
-		}
-		buffer.endDraw();
-		bufferInvalid = false;
 	}
 
-	public boolean keepCursorInDisplay(){
+	/**
+	 * See if the cursor is off screen if so pan the display
+	 * @return
+	 */
+	protected boolean keepCursorInDisplay(){
 		boolean horzScroll = false, vertScroll = false;
-		if(endSel.valid){
+		if(endSel.valid && startSel.valid){
 			float x = endSel.cursorX;
 			float y = endSel.cursorY;
 			if(x < ptx ){ 										// LEFT?
@@ -161,21 +166,20 @@ public class FTextArea extends GComponent {
 				pty++;
 				vertScroll = true;
 			}
-			if(horzScroll && hsb != null){
+			if(horzScroll && hsb != null)
 				hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
-			}
-			if(vertScroll && vsb != null){
+			if(vertScroll && vsb != null)
 				vsb.setValue(pty / (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight()));
-			}
 		}
-		bufferInvalid = horzScroll | vertScroll;
+		// If we have scrolled invalidate the buffer otherwise forget it
+		if(horzScroll || vertScroll)
+			bufferInvalid = true;
 		return bufferInvalid;
 	}
 
 	public void draw(){
 		if(!visible) return;
-		if(bufferInvalid)
-			updateBuffer();
+		updateBuffer();
 
 		winApp.pushStyle();
 		winApp.pushMatrix();
@@ -210,62 +214,75 @@ public class FTextArea extends GComponent {
 		winApp.popMatrix();
 		winApp.popStyle();
 	}
-	
+
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 	}
-	
-	
+
+
 	public void mouseEvent(MouseEvent event){
 		if(!visible  || !enabled || !available) return;
-		
-		// This next line will also set ox and oy
-		boolean mouseOver = contains(winApp.mouseX, winApp.mouseY);
-		
-		if(mouseOver || focusIsWith == this)
-			cursorIsOver = this;
-		else if(cursorIsOver == this)
-			cursorIsOver = null;
 
-		int spot = whichHotSpot(ox, oy);
-		if(spot >= 0)
+		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
+
+		currSpot = whichHotSpot(ox, oy);
+		if(currSpot >= 0)
 			ox -= tx; oy -= ty;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
-				mdx = winApp.mouseX;
-				mdy = winApp.mouseY;
-				stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
-				startSel.setEqualTo(endSel);
-				stext.clearSelection();
-				bufferInvalid = true;
-				takeFocus();
+			// This next line will also set ox and oy
+			//		boolean mouseOver = contains(winApp.mouseX, winApp.mouseY);
+
+			if(currSpot >= 0 || focusIsWith == this)
+				cursorIsOver = this;
+			else if(cursorIsOver == this)
+				cursorIsOver = null;
+
+
+			switch(event.getID()){
+			case MouseEvent.MOUSE_PRESSED:
+				if(focusIsWith != this && currSpot == 1 && z > focusObjectZ()){
+					mdx = winApp.mouseX;
+					mdy = winApp.mouseY;
+					stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
+					startSel.setEqualTo(endSel);
+					stext.clearSelection();
+					bufferInvalid = true;
+					takeFocus();
+				}
+				break;
+			case MouseEvent.MOUSE_CLICKED:
+				if(focusIsWith == this){
+					loseFocus(null);
+					mdx = mdy = Integer.MAX_VALUE;
+				}
+				break;
+			case MouseEvent.MOUSE_RELEASED:
+				if(focusIsWith == this){
+					loseFocus(null);
+					bufferInvalid = true;
+				}
+				break;
+			case MouseEvent.MOUSE_DRAGGED:
+				if(focusIsWith == this){
+					Location curr = stext.calculateFromXY(buffer.g2, null, ox + ptx, oy + pty);
+					if(!curr.equals(startSel) && !curr.equals(endSel)){
+						endSel.setEqualTo(curr);
+						System.out.println("Highlight from +\n\t" + startSel + "    to \n\t" + endSel);
+						int s = Math.min(startSel.charInText, endSel.charInText);
+						int e = Math.max(startSel.charInText, endSel.charInText);
+						stext.setSelectionArea(jpalette[14], s, e);
+						bufferInvalid = true;
+					}
+					keepCursorInDisplay();
+				}
+				break;
 			}
-			break;
-		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == this){
-				loseFocus(null);
-				mdx = mdy = Integer.MAX_VALUE;
-			}
-			break;
-		case MouseEvent.MOUSE_RELEASED:
-			if(focusIsWith == this){
-				loseFocus(null);
-				bufferInvalid = true;
-			}
-			break;
-		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this){
-				stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
-				keepCursorInDisplay();
-				bufferInvalid = true;
-			}
-			break;
-		}
 	}
 
-	
+	protected void calcScrollbaValue(){
+		
+	}
+
 	public void hsbEventHandler(FScrollbar scrollbar){
 		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
 		bufferInvalid = true;

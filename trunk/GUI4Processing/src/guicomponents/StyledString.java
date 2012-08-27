@@ -519,6 +519,7 @@ final public class StyledString implements Serializable {
 		if(loc == null)
 			loc = new Location();
 		loc.charInText = 0;
+		loc.valid = true;
 		float yLine = 0, layoutHeight;
 		if(px < 0) px = 0;
 		if(py < 0) py = 0;
@@ -550,7 +551,6 @@ final public class StyledString implements Serializable {
 			loc.cursorY = getHeight(line) + yLine;
 			//cursorY += cursorHeight;
 			loc.cursorHeight = line.getAscent() + line.getDescent();
-			loc.valid = true;
 		}
 		else {
 			// Place cursor on last line after text
@@ -563,7 +563,6 @@ final public class StyledString implements Serializable {
 			if(loc.cursorX > breakWidth)
 				loc.cursorX -= breakWidth;
 			loc.cursorY = yLine;
-			loc.valid = true;
 		}
 		return loc;
 	}
