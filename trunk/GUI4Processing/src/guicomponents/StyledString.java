@@ -553,13 +553,16 @@ final public class StyledString implements Serializable {
 			loc.valid = true;
 		}
 		else {
-			// Place cursor on blank line after text
+			// Place cursor on last line after text
+			TextLayout lastline = lines.getLast();
 			loc.charInText = plainText.length();
-			loc.charOnLine = 0;
-			loc.lineNo = lines.size();
-			loc.cursorHeight = getHeight(lines.getLast());
-			loc.cursorX = 0;
-			loc.cursorY = yLine + loc.cursorHeight;
+			loc.charOnLine = lastline.getCharacterCount();
+			loc.lineNo = lines.size() - 1;
+			loc.cursorHeight = getHeight(lastline);
+			loc.cursorX = lastline.getVisibleAdvance();
+			if(loc.cursorX > breakWidth)
+				loc.cursorX -= breakWidth;
+			loc.cursorY = yLine;
 			loc.valid = true;
 		}
 		return loc;
