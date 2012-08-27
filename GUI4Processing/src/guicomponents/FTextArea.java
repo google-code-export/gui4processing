@@ -168,9 +168,6 @@ public class FTextArea extends GComponent {
 				vsb.setValue(pty / (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight()));
 			}
 		}
-//		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
-//		pty = vsb.getValue() * (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight());
-
 		bufferInvalid = horzScroll | vertScroll;
 		return bufferInvalid;
 	}
@@ -212,8 +209,6 @@ public class FTextArea extends GComponent {
 		}
 		winApp.popMatrix();
 		winApp.popStyle();
-
-
 	}
 	
 	public void keyEvent(KeyEvent e) {
@@ -241,9 +236,9 @@ public class FTextArea extends GComponent {
 			if(focusIsWith != this && mouseOver && z > focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
-//				stext.getCursorPos(buffer.g2, endSel, ox + ptx, oy + pty);
 				stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
 				startSel.setEqualTo(endSel);
+				stext.clearSelection();
 				bufferInvalid = true;
 				takeFocus();
 			}
@@ -262,7 +257,6 @@ public class FTextArea extends GComponent {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
-//				stext.getCursorPos(buffer.g2, endSel, ox + ptx, oy + pty);
 				stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
 				keepCursorInDisplay();
 				bufferInvalid = true;
@@ -273,13 +267,11 @@ public class FTextArea extends GComponent {
 
 	
 	public void hsbEventHandler(FScrollbar scrollbar){
-		System.out.println("HORZ " + hsb.getValue());
 		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
 		bufferInvalid = true;
 	}
 
 	public void vsbEventHandler(FScrollbar scrollbar){
-		System.out.println("VERT " + vsb.getValue());
 		pty = vsb.getValue() * (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight());
 		bufferInvalid = true;
 	}
