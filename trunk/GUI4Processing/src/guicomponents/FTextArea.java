@@ -42,7 +42,7 @@ public class FTextArea extends GComponent {
 	protected float ptx, pty;
 
 
-	protected TextLayoutHitInfo startTHI = null, endTHI = null;
+	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
 	protected int startChar = 0, endChar = 0;
 	protected boolean dragging = false;
 	
@@ -121,22 +121,22 @@ public class FTextArea extends GComponent {
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
 			boolean isSelection = false;
-			TextLayoutHitInfo startSelTHI = null, endSelTHI = null;
+			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
 			buffer.beginDraw();
 			buffer.background(buffer.color(255,0));
 			buffer.translate(-ptx, -pty);
 			buffer.strokeWeight(1.5f);
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
-			if(endTHI != null && startTHI != null){
-				switch(endTHI.compareTo(startTHI)){
+			if(endTLHI != null && startTLHI != null){
+				switch(endTLHI.compareTo(startTLHI)){
 				case -1:
-					startSelTHI = endTHI;
-					endSelTHI = startTHI;
+					startSelTLHI = endTLHI;
+					endSelTLHI = startTLHI;
 					isSelection = true;
 					break;
 				case 1:
-					startSelTHI = startTHI;
-					endSelTHI = endTHI;
+					startSelTLHI = startTLHI;
+					endSelTLHI = endTLHI;
 					isSelection = true;
 					break;
 				default:
@@ -148,11 +148,11 @@ public class FTextArea extends GComponent {
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
 				// Draw selection if any
-				if(isSelection && lineInfo.compareTo(startSelTHI.tli) >= 0 && lineInfo.compareTo(endSelTHI.tli) <= 0 ){				
+				if(isSelection && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
 					int ss = 0;
-					ss = (lineInfo.compareTo(startSelTHI.tli) == 0) ? startSelTHI.thi.getInsertionIndex()  : 0;
-					int ee = endSelTHI.thi.getInsertionIndex();
-					ee = (lineInfo.compareTo(endSelTHI.tli) == 0) ? endSelTHI.thi.getInsertionIndex() : lineInfo.nbrChars-1;
+					ss = (lineInfo.compareTo(startSelTLHI.tli) == 0) ? startSelTLHI.thi.getInsertionIndex()  : 0;
+					int ee = endSelTLHI.thi.getInsertionIndex();
+					ee = (lineInfo.compareTo(endSelTLHI.tli) == 0) ? endSelTLHI.thi.getInsertionIndex() : lineInfo.nbrChars-1;
 					System.out.println("  In line " + ss + "  " + ee + "  " + lineInfo.startCharIndex);
 					g2d.setColor(Color.cyan);
 					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
@@ -164,10 +164,10 @@ public class FTextArea extends GComponent {
 			}
 			buffer.popMatrix();
 			// Draw caret
-			if(endSelTHI != null && dragging == false){
+			if(endTLHI != null ){
 				buffer.pushMatrix();
-				buffer.translate(0, endSelTHI.tli.yPosInPara + endSelTHI.tli.layout.getAscent() );
-				Shape[] caret = endSelTHI.tli.layout.getCaretShapes(endSelTHI.thi.getInsertionIndex());
+				buffer.translate(0, endTLHI.tli.yPosInPara + endTLHI.tli.layout.getAscent() );
+				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
 				g2d.setColor(Color.red);
 				g2d.draw(caret[0]);
 				if(caret[1] != null){
@@ -215,11 +215,11 @@ public class FTextArea extends GComponent {
 	 */
 	protected boolean keepCursorInDisplay(){
 		boolean horzScroll = false, vertScroll = false;
-		if(endTHI != null){
-			float temp[] = endTHI.tli.layout.getCaretInfo(endTHI.thi);
+		if(endTLHI != null){
+			float temp[] = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
 			float x = temp[0];
 			
-			float y = endTHI.tli.yPosInPara;
+			float y = endTLHI.tli.yPosInPara;
 			if(x < ptx ){ 										// LEFT?
 				ptx--;
 				if(ptx < 0) ptx = 0;
@@ -290,7 +290,7 @@ public class FTextArea extends GComponent {
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 		
-		if(focusIsWith == this && endTHI != null){
+		if(focusIsWith == this && endTLHI != null){
 			
 		}
 	}
@@ -319,8 +319,8 @@ public class FTextArea extends GComponent {
 				if(focusIsWith != this && currSpot == 1 && z > focusObjectZ()){
 					mdx = winApp.mouseX;
 					mdy = winApp.mouseY;
-					endTHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
-					startTHI = new TextLayoutHitInfo(endTHI);
+					endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
+					startTLHI = new TextLayoutHitInfo(endTLHI);
 					bufferInvalid = true;
 					takeFocus();
 				}
@@ -333,10 +333,10 @@ public class FTextArea extends GComponent {
 				break;
 			case MouseEvent.MOUSE_RELEASED:
 				if(focusIsWith == this){
-					if(endTHI.compareTo(startTHI) == -1){
-						TextLayoutHitInfo temp = endTHI;
-						endTHI = startTHI;
-						startTHI = temp;
+					if(endTLHI.compareTo(startTLHI) == -1){
+						TextLayoutHitInfo temp = endTLHI;
+						endTLHI = startTLHI;
+						startTLHI = temp;
 						System.out.println("SWAP ends");
 					}
 					dragging = false;
@@ -347,7 +347,7 @@ public class FTextArea extends GComponent {
 			case MouseEvent.MOUSE_DRAGGED:
 				if(focusIsWith == this){
 					dragging = true;
-					endTHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
+					endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 //					if(endTHI.compareTo(startTHI) == -1){
 //						TextLayoutHitInfo temp = endTHI;
 //						endTHI = startTHI;
