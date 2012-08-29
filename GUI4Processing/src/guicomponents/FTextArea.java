@@ -1,11 +1,13 @@
 package guicomponents;
 import guicomponents.HotSpot.HSrect;
+import guicomponents.StyledString.TextLayoutHitInfo;
+import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.util.LinkedList;
 
@@ -36,12 +38,14 @@ public class FTextArea extends GComponent {
 
 	// The typing area
 	protected float tx,ty,th,tw;
-
+	// Offsetd to display area
 	protected float ptx, pty;
 
-	protected Location startSel = new Location();
-	protected Location endSel = new Location();
 
+	protected TextLayoutHitInfo startTHI = null, endTHI = null;
+	protected int startChar = 0, endChar = 0;
+	protected boolean dragging = false;
+	
 	protected int allTextHeight = 0;
 
 	// The scrollbar policy
@@ -116,28 +120,94 @@ public class FTextArea extends GComponent {
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
-			float drawPosX, drawPosY = 0;
-
+			boolean isSelection = false;
+			TextLayoutHitInfo startSelTHI = null, endSelTHI = null;
 			buffer.beginDraw();
 			buffer.background(buffer.color(255,0));
 			buffer.translate(-ptx, -pty);
-			LinkedList<TextLayout> lines = stext.getLines(g2d);
-			for(TextLayout layout : lines){
-				// Leave the possibility for right justified text
-				drawPosX = (layout.isLeftToRight() ? 0 : stext.getBreakWidth() - layout.getAdvance());
-				drawPosY += layout.getAscent();
-				layout.draw(g2d, drawPosX, drawPosY);
-				drawPosY += layout.getDescent() + layout.getLeading();
+			buffer.strokeWeight(1.5f);
+			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
+			if(endTHI != null && startTHI != null){
+				switch(endTHI.compareTo(startTHI)){
+				case -1:
+					startSelTHI = endTHI;
+					endSelTHI = startTHI;
+					isSelection = true;
+					break;
+				case 1:
+					startSelTHI = startTHI;
+					endSelTHI = endTHI;
+					isSelection = true;
+					break;
+				default:
+					isSelection = false;
+				}
 			}
-			if(endSel.valid){
-				buffer.strokeWeight(1.5f);
-				buffer.stroke(255,0,0);
-				buffer.line(endSel.cursorX, endSel.cursorY, endSel.cursorX, endSel.cursorY - endSel.cursorHeight);
+			buffer.pushMatrix();
+			for(TextLayoutInfo lineInfo : lines){
+				TextLayout layout = lineInfo.layout;
+				buffer.translate(0, layout.getAscent());
+				// Draw selection if any
+				if(isSelection && lineInfo.compareTo(startSelTHI.tli) >= 0 && lineInfo.compareTo(endSelTHI.tli) <= 0 ){				
+					int ss = 0;
+					ss = (lineInfo.compareTo(startSelTHI.tli) == 0) ? startSelTHI.thi.getInsertionIndex()  : 0;
+					int ee = endSelTHI.thi.getInsertionIndex();
+					ee = (lineInfo.compareTo(endSelTHI.tli) == 0) ? endSelTHI.thi.getInsertionIndex() : lineInfo.nbrChars-1;
+					System.out.println("  In line " + ss + "  " + ee + "  " + lineInfo.startCharIndex);
+					g2d.setColor(Color.cyan);
+					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
+					g2d.fill(selShape);
+				}
+				g2d.setColor(Color.black);
+				lineInfo.layout.draw(g2d, 0, 0);
+				buffer.translate(0, layout.getDescent() + layout.getLeading());
+			}
+			buffer.popMatrix();
+			// Draw caret
+			if(endSelTHI != null && dragging == false){
+				buffer.pushMatrix();
+				buffer.translate(0, endSelTHI.tli.yPosInPara + endSelTHI.tli.layout.getAscent() );
+				Shape[] caret = endSelTHI.tli.layout.getCaretShapes(endSelTHI.thi.getInsertionIndex());
+				g2d.setColor(Color.red);
+				g2d.draw(caret[0]);
+				if(caret[1] != null){
+					g2d.setColor(Color.green);
+					g2d.draw(caret[1]);
+					System.out.println(caret[1]);
+				}
+				buffer.popMatrix();
+				
+				
 			}
 			buffer.endDraw();
 			bufferInvalid = false;
 		}
 	}
+//	protected void updateBuffer(){
+//		if(bufferInvalid) {
+//			Graphics2D g2d = buffer.g2;
+//			float drawPosX, drawPosY = 0;
+//
+//			buffer.beginDraw();
+//			buffer.background(buffer.color(255,0));
+//			buffer.translate(-ptx, -pty);
+//			LinkedList<TextLayout> lines = stext.getLines(g2d);
+//			for(TextLayout layout : lines){
+//				// Leave the possibility for right justified text
+//				drawPosX = (layout.isLeftToRight() ? 0 : stext.getBreakWidth() - layout.getAdvance());
+//				drawPosY += layout.getAscent();
+//				layout.draw(g2d, drawPosX, drawPosY);
+//				drawPosY += layout.getDescent() + layout.getLeading();
+//			}
+//			if(endSel.valid){
+//				buffer.strokeWeight(1.5f);
+//				buffer.stroke(255,0,0);
+//				buffer.line(endSel.cursorX, endSel.cursorY, endSel.cursorX, endSel.cursorY - endSel.cursorHeight);
+//			}
+//			buffer.endDraw();
+//			bufferInvalid = false;
+//		}
+//	}
 
 	/**
 	 * See if the cursor is off screen if so pan the display
@@ -145,9 +215,11 @@ public class FTextArea extends GComponent {
 	 */
 	protected boolean keepCursorInDisplay(){
 		boolean horzScroll = false, vertScroll = false;
-		if(endSel.valid && startSel.valid){
-			float x = endSel.cursorX;
-			float y = endSel.cursorY;
+		if(endTHI != null){
+			float temp[] = endTHI.tli.layout.getCaretInfo(endTHI.thi);
+			float x = temp[0];
+			
+			float y = endTHI.tli.yPosInPara;
 			if(x < ptx ){ 										// LEFT?
 				ptx--;
 				if(ptx < 0) ptx = 0;
@@ -217,6 +289,10 @@ public class FTextArea extends GComponent {
 
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
+		
+		if(focusIsWith == this && endTHI != null){
+			
+		}
 	}
 
 
@@ -243,9 +319,8 @@ public class FTextArea extends GComponent {
 				if(focusIsWith != this && currSpot == 1 && z > focusObjectZ()){
 					mdx = winApp.mouseX;
 					mdy = winApp.mouseY;
-					stext.calculateFromXY(buffer.g2, endSel, ox + ptx, oy + pty);
-					startSel.setEqualTo(endSel);
-					stext.clearSelection();
+					endTHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
+					startTHI = new TextLayoutHitInfo(endTHI);
 					bufferInvalid = true;
 					takeFocus();
 				}
@@ -258,21 +333,28 @@ public class FTextArea extends GComponent {
 				break;
 			case MouseEvent.MOUSE_RELEASED:
 				if(focusIsWith == this){
+					if(endTHI.compareTo(startTHI) == -1){
+						TextLayoutHitInfo temp = endTHI;
+						endTHI = startTHI;
+						startTHI = temp;
+						System.out.println("SWAP ends");
+					}
+					dragging = false;
 					loseFocus(null);
 					bufferInvalid = true;
 				}
 				break;
 			case MouseEvent.MOUSE_DRAGGED:
 				if(focusIsWith == this){
-					Location curr = stext.calculateFromXY(buffer.g2, null, ox + ptx, oy + pty);
-					if(!curr.equals(startSel) && !curr.equals(endSel)){
-						endSel.setEqualTo(curr);
-						System.out.println("Highlight from +\n\t" + startSel + "    to \n\t" + endSel);
-						int s = Math.min(startSel.charInText, endSel.charInText);
-						int e = Math.max(startSel.charInText, endSel.charInText);
-						stext.setSelectionArea(jpalette[14], s, e);
-						bufferInvalid = true;
-					}
+					dragging = true;
+					endTHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
+//					if(endTHI.compareTo(startTHI) == -1){
+//						TextLayoutHitInfo temp = endTHI;
+//						endTHI = startTHI;
+//						startTHI = temp;
+//						System.out.println("SWAP ends");
+//					}
+					bufferInvalid = true;
 					keepCursorInDisplay();
 				}
 				break;
