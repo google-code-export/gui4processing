@@ -62,7 +62,9 @@ final public class StyledString implements Serializable {
 	private float breakWidth = 100;
 	// Flag to determine whether the text layouts need recalculating
 	private boolean invalidLayout = true;
-
+	// Flag to determine whether the actual character string have changed
+	private boolean invalidText = true;
+	
 	// Base style used for base
 	private String family = "Dialog";
 	private float posture = TextAttribute.POSTURE_REGULAR;
@@ -71,12 +73,14 @@ final public class StyledString implements Serializable {
 	private final Color backcolor = new Color(255,255,255,0);
 	private Color forecolor = Color.black;
 	// Base justification
-	private boolean justify = true;
+	private boolean justify = false;
 	private float justifyRatio = 0.7f;
 
+	// Stats
 	private float textHeight = 0;
 	private float maxLineLength = 0;
 	private float maxLineHeight = 0;
+	private int nbrLines;
 
 	public StyledString(Graphics2D g2d, String startText, float lineWidth){
 		if(lineWidth < 0 || lineWidth == Integer.MAX_VALUE)
@@ -305,7 +309,7 @@ final public class StyledString implements Serializable {
 	 * @param chars
 	 * @param insertPos the position in the text
 	 */
-	public void insertCharacters(String chars, int insertPos){
+	public boolean insertCharacters(int insertPos, String chars){
 		int nbrChars = chars.length();
 		plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
 		for(AttributeRun ar : atrun){
@@ -317,9 +321,12 @@ final public class StyledString implements Serializable {
 				}
 			}
 		}
-		styledText = new AttributedString(plainText);
-		styledText = insertParagraphMarkers(plainText, styledText);
-		applyAttributes();
+		invalidText = true;
+
+//		styledText = new AttributedString(plainText);
+//		styledText = insertParagraphMarkers(plainText, styledText);
+//		applyAttributes();
+		return true;
 	}
 
 	/**
@@ -329,8 +336,8 @@ final public class StyledString implements Serializable {
 	 * @param fromPos start location for removal
 	 * @return
 	 */
-	public boolean deleteCharacters(int nbrToRemove, int fromPos){
-		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
+	public boolean deleteCharacters(int fromPos, int nbrToRemove){
+		if(fromPos < 0 || fromPos + nbrToRemove >= plainText.length())
 			return false;
 		plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
 		ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
@@ -347,13 +354,19 @@ final public class StyledString implements Serializable {
 				}
 			}		
 		}
-		styledText = new AttributedString(plainText);
-		styledText = insertParagraphMarkers(plainText, styledText);
-		applyAttributes();
+		invalidText = true;
+//		styledText = new AttributedString(plainText);
+//		styledText = insertParagraphMarkers(plainText, styledText);
+//		applyAttributes();
 		return true;
 	}
 
-	
+
+	public LinkedList<TextLayoutInfo> getUpdatedLines(Graphics2D g2d){
+		invalidLayout = true;
+		return getLines(g2d);
+	}
+
 	/**
 	 * Get the text layouts for display if the string has changed since last call
 	 * to this method regenerate them.
@@ -362,25 +375,24 @@ final public class StyledString implements Serializable {
 	 * @return
 	 */
 	public LinkedList<TextLayoutInfo> getLines(Graphics2D g2d){
+		if(invalidText){
+			styledText = new AttributedString(plainText);
+			styledText = insertParagraphMarkers(plainText, styledText);
+			applyAttributes();
+			invalidLayout = true;
+		}
 		if(linesInfo == null)
 			linesInfo = new LinkedList<TextLayoutInfo>();
 		if(invalidLayout){
-			System.out.println("\t\t\t##############   Recreate text layouts");
 			textHeight = 0;
 			maxLineLength = 0;
 			maxLineHeight = 0;
-			int ln = 0;
+			nbrLines = 0;
 			linesInfo.clear();
 			if(plainText.length() > 0){
-				//int nbrChars = plainText.length();
-				System.out.println("\t\t\t##############   Recreate line break measurer");
 				AttributedCharacterIterator paragraph = styledText.getIterator(null, 0, plainText.length());
 				FontRenderContext frc = g2d.getFontRenderContext();
-				long t = System.nanoTime();
 				lineMeasurer = new LineBreakMeasurer(paragraph, frc);
-				t = System.nanoTime() - t;
-				System.out.println("New line measurer tokk " + (t * 1e-6) + " milli seconds");
-				
 				float yposinpara = 0;
 				int charssofar = 0;
 				while (lineMeasurer.getPosition() < plainText.length()) {
@@ -403,10 +415,10 @@ final public class StyledString implements Serializable {
 						maxLineLength = advance;
 					
 					// Store line and line info
-					linesInfo.add(new TextLayoutInfo(ln, layout, charssofar, layout.getCharacterCount(), yposinpara));
+					linesInfo.add(new TextLayoutInfo(nbrLines, layout, charssofar, layout.getCharacterCount(), yposinpara));
 					charssofar += layout.getCharacterCount();
 					yposinpara += lh;
-					ln++;
+					nbrLines++;
 				}
 			}
 			invalidLayout = false;
@@ -415,9 +427,17 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
+	 * Return the number of lines in the layout
+	 * @return
+	 */
+	public int getNbrLines(){
+		return nbrLines;
+	}
+	
+	/**
 	 * Return the height of the text line(s)
 	 */
-	public float getAllLinesHeight(){
+	public float getTextAreaHeight(){
 		return textHeight;
 	}
 
@@ -452,102 +472,6 @@ final public class StyledString implements Serializable {
 		return breakWidth;
 	}
 
-	/**
-	 * This is not used at the moment and I am not sure it will needed
-	 * in the final release. <br>
-	 * It has NOT been tested<br>
-	 * 
-	 * @param loc
-	 * @param charNumber
-	 * @param lines
-	 * @return
-	 */
-	public Location calculateFromCharNo(Location loc, int charNumber){
-//		if(loc == null)
-//			loc = new Location();
-//		if(charNumber < 0 || charNumber >= plainText.length()){
-//			loc.invalidate();
-//			return loc;
-//		} 
-//		loc.valid = true;
-//		loc.charInText = charNumber;
-//		loc.lineNo = 0;
-//		loc.cursorY = 0;
-//		for(TextLayout line : lines){
-//			if(charNumber > line.getCharacterCount()){
-//				charNumber -= line.getCharacterCount();
-//				loc.charOnLine = charNumber;
-//				loc.cursorY += getHeight(line);
-//				loc.lineNo ++;
-//			}
-//			else {
-//				loc.cursorHeight = line.getAscent() + line.getDescent();
-//				loc.cursorY += loc.cursorHeight;
-//			}
-//		}
-		return loc;
-	}
-
-	/**
-	 * For a given position [px, py] calculate and return the Location. <br>
-	 * 
-	 * 
-	 * @param g2d
-	 * @param loc the Location object to store the results
-	 * @param px distance from the left hand side of text
-	 * @param py distance to the top of the first line
-	 * @return
-	 */
-	public Location calculateFromXY(Graphics2D g2d, Location loc, float px, float py){
-//		if(loc == null)
-//			loc = new Location();
-//		loc.charInText = 0;
-//		loc.valid = true;
-//		float yLine = 0, layoutHeight;
-//		if(px < 0) px = 0;
-//		if(py < 0) py = 0;
-//
-//		loc.lineNo = 0;
-//		TextLayout line = null;
-//		do {
-//			line = lines.get(loc.lineNo);
-//			layoutHeight = getHeight(line);
-//			if(py < layoutHeight)
-//				break;
-//			else {
-//				loc.charInText += line.getCharacterCount();
-//				yLine += layoutHeight;
-//				py -= layoutHeight;
-//				loc.lineNo++;
-//			}
-//		} while(loc.lineNo < lines.size());
-//		if(loc.lineNo < lines.size()){
-//			TextHitInfo thi = line.hitTestChar(px,py);
-//			loc.charOnLine = thi.getInsertionIndex();
-//			loc.charInText += loc.charOnLine;
-//			Point2D caretPos = new Point2D.Float();
-//			line.hitToPoint(thi, caretPos);
-//			loc.cursorX = (float) caretPos.getX();
-//			//cursorY = (float) line.getBaseline() + yLine;
-//			loc.cursorY = getHeight(line) + yLine;
-//			//cursorY += cursorHeight;
-//			loc.cursorHeight = line.getAscent() + line.getDescent();
-//		}
-//		else {
-//			// Place cursor after last character in last line
-//			TextLayout lastline = lines.getLast();
-//			loc.charInText = plainText.length();
-//			loc.charOnLine = lastline.getCharacterCount();
-//			loc.lineNo = lines.size() - 1;
-//			loc.cursorHeight = getHeight(lastline);
-//			loc.cursorX = lastline.getVisibleAdvance();
-//			if(loc.cursorX > breakWidth)
-//				loc.cursorX -= breakWidth;
-//			loc.cursorY = yLine;
-//		}
-		return loc;
-	}
-
 	public TextLayoutHitInfo calculateFromXY(Graphics2D g2d, float px, float py){
 		TextHitInfo thi = null;
 		TextLayoutInfo tli = null;
@@ -556,7 +480,7 @@ final public class StyledString implements Serializable {
 			getLines(g2d);
 		if(px < 0) px = 0;
 		if(py < 0) py = 0;
-		tli = getLayoutInfo(py);
+		tli = getLayoutFromYpos(py);
 		// Correct py to match layout's upper-left bounds
 		py -= tli.yPosInPara;
 		// get hit
@@ -566,11 +490,20 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
+	 * Get a layout based on line number
+	 * @param ln
+	 * @return
+	 */
+	public TextLayoutInfo getTLIforLineNo(int ln){
+		return linesInfo.get(ln);
+	}
+	
+	/**
 	 * This will always return a layout.
 	 * @param y Must be >= 0
 	 * @return the first layout where y is above the upper layout bounds
 	 */
-	public TextLayoutInfo getLayoutInfo(float y){
+	protected TextLayoutInfo getLayoutFromYpos(float y){
 		TextLayoutInfo tli = null;
 		if(!linesInfo.isEmpty()){
 			for(int i = linesInfo.size()-1; i >= 0; i--){
@@ -587,24 +520,34 @@ final public class StyledString implements Serializable {
 	 * If c > than the index of the last character in the plain text then this
 	 * should be corrected to the last character in the layout by the caller.
 	 * 
-	 * @param c the character position in text (must be >= 0
+	 * @param charNo the character position in text (must be >= 0
 	 * @return the first layout where c is greater that the layout's start char index.
 	 */
-	public TextLayoutInfo getLayoutInfo(int c){
+	public TextLayoutInfo getTLIforCharNo(int charNo){
 		TextLayoutInfo tli = null;
 		if(!linesInfo.isEmpty()){
 			for(int i = linesInfo.size()-1; i >= 0; i--){
 				tli = linesInfo.get(i);
-				if(tli.startCharIndex < c)
+				if(tli.startCharIndex < charNo)
 					break;
 			}
 		}
 		return tli;
 	}
 
+	/** 
+	 * Ensure we do not have blank lines by replacing double EOL characters by 
+	 * single EOL until there are only single EOLs.
+	 */
+	void removeBlankLines(){
+		while(plainText.indexOf("\n\n") >= 0){
+			invalidText = true;
+			plainText = plainText.replaceAll("\n\n", "\n");
+		}
+	}
 	
 	/**
-	 * Create 
+	 * Create a graphic image charecter to simulate paragraphs
 	 * @param bw
 	 * @return
 	 */
@@ -705,6 +648,11 @@ final public class StyledString implements Serializable {
 			thi = tlhi.thi;
 		}
 
+		public void copyFrom(TextLayoutHitInfo other){
+			this.tli = other.tli;
+			this.thi = other.thi;
+		}
+		
 		public int compareTo(TextLayoutHitInfo other) {
 			int layoutComparison = tli.compareTo(other.tli);
 			if(layoutComparison != 0)
@@ -738,8 +686,8 @@ final public class StyledString implements Serializable {
 	 */
 	static class TextLayoutInfo implements Comparable<TextLayoutInfo> {
 		public TextLayout layout;		// The matching layout
-		public int lineNo;
-		public int startCharIndex;	// The position of the first layout char in text
+		public int lineNo;				// The line number
+		public int startCharIndex;		// Position of the first char in text
 		public int nbrChars;			// Number of chars in this layout
 		public float yPosInPara; 		// Top-left corner of bounds
 		

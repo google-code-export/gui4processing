@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.util.LinkedList;
 
@@ -33,7 +34,7 @@ public class FTextArea extends GComponent {
 	/** Create and display horizontal scrollbar only. */
 	protected static final int SCROLLBAR_HORIZONTAL = 2;
 
-	private static float pad = 4;
+	private static float pad = 6;
 
 
 	// The typing area
@@ -43,7 +44,7 @@ public class FTextArea extends GComponent {
 
 
 	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
-	protected int startChar = 0, endChar = 0;
+//	protected int startChar = 0, endChar = 0;
 	protected boolean dragging = false;
 	
 	protected int allTextHeight = 0;
@@ -95,9 +96,10 @@ public class FTextArea extends GComponent {
 	public void setText(String text, float maxLineLength){
 		this.text = text;
 		stext = new StyledString(buffer.g2, text, maxLineLength);
+		stext.removeBlankLines();
 		float sTextHeight;
 		if(vsb != null){
-			sTextHeight = stext.getAllLinesHeight();
+			sTextHeight = stext.getTextAreaHeight();
 			ptx = pty = 0;
 			if(sTextHeight < th)
 				vsb.setValue(0.0f, 1.0f);
@@ -216,8 +218,7 @@ public class FTextArea extends GComponent {
 		boolean horzScroll = false, vertScroll = false;
 		if(endTLHI != null){
 			float temp[] = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
-			float x = temp[0];
-			
+			float x = temp[0];		
 			float y = endTLHI.tli.yPosInPara;
 			if(x < ptx ){ 										// LEFT?
 				ptx--;
@@ -228,24 +229,25 @@ public class FTextArea extends GComponent {
 				ptx++;
 				horzScroll = true;
 			}
-			if(y < pty + stext.getMaxLineHeight()){				// UP?
-				if(pty < 0) pty = 0;
+			if(y < pty){				// UP?
 				pty--;
+				if(pty < 0) pty = 0;
 				vertScroll = true;
 			}
-			else if(y > pty + th - stext.getMaxLineHeight()){	// DOWN?
+			else if(y > pty + th  - stext.getMaxLineHeight()){	// DOWN?
 				pty++;
 				vertScroll = true;
 			}
 			if(horzScroll && hsb != null)
 				hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
 			if(vertScroll && vsb != null)
-				vsb.setValue(pty / (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight()));
+				vsb.setValue(pty / (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight()));
 		}
 		// If we have scrolled invalidate the buffer otherwise forget it
 		if(horzScroll || vertScroll)
 			bufferInvalid = true;
-		return bufferInvalid;
+		// Let the user know we have scrolled
+		return horzScroll | vertScroll;
 	}
 
 	public void draw(){
@@ -260,19 +262,18 @@ public class FTextArea extends GComponent {
 
 		winApp.pushMatrix();
 		winApp.translate(-halfWidth, -halfHeight);
-		// Draw the textarea background
+		// Whole control surface if opaque
 		if(opaque)
 			winApp.fill(palette[6]);
 		else
 			winApp.fill(buffer.color(255,0));
 		winApp.noStroke();
-		// Whole control surface
 		winApp.rectMode(CORNER);
 		winApp.rect(0,0,width,height);		
 		// Typing area surface
 		winApp.fill(palette[7]);
-		winApp.rect(tx,ty,tw,th);
-		// Text
+		winApp.rect(tx-1,ty-1,tw+2,th+2);
+		// Now the text 
 		winApp.imageMode(PApplet.CORNER);
 		winApp.image(buffer, tx, ty);
 
@@ -288,17 +289,162 @@ public class FTextArea extends GComponent {
 
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
-		
-		boolean hasSelection = hasSelection();
-		
+		keepCursorInDisplay();
+
+
 		if(focusIsWith == this && endTLHI != null){
-			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+//			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
-			endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getCharIndex();
-			startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getCharIndex() : endChar;
+
+			if(e.getID() == KeyEvent.KEY_PRESSED) {						//if a key is pressed
+				boolean caretMoved = false;
+				if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+					caretMoved = moveCaretLeft(endTLHI);
+				}
+				else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					caretMoved = moveCaretRight(endTLHI);
+				}
+				else if(e.getKeyCode() == KeyEvent.VK_HOME) {
+					if(ctrlDown){
+						// move to start of text
+						System.out.println("Move to start of text");
+						caretMoved = moveCaretStartOfText(endTLHI);
+					}
+					else {
+						// Move to start of line
+						caretMoved = moveCaretStartOfLine(endTLHI);
+					}
+				}
+				else if(e.getKeyCode() == KeyEvent.VK_END) {
+					if(ctrlDown){
+						// move to end of text
+						System.out.println("Move to end of text");
+						caretMoved = moveCaretEndOfText(endTLHI);
+					}
+					else {
+						// Move to end of line
+						caretMoved = moveCaretEndOfLine(endTLHI);
+					}
+				}
+				else {
+	//				System.out.println("Key PRESSED event ID " + e.getID() + "     Code = " + e.getKeyCode());
+				}
+				// After testing for cursor moving keys
+				if(caretMoved){
+					if(!shiftDown)				// Not extending selection
+						startTLHI.copyFrom(endTLHI);
+					bufferInvalid = true;							
 				
+				}
+			}
+			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
+	//			System.out.println("Key TYPED event ID " + e.getID() + "     Char = " + e.getKeyChar());
+	
+				boolean hasSelection = hasSelection();
+				int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getCharIndex();
+				int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getCharIndex() : endChar;
+				int pos = Math.min(startChar, endChar);
+				int nbr = Math.abs(startChar - endChar) + 1;
+				
+				int move = 0;
+				boolean textChanged = false;
+				
+				if(hasSelection){
+					stext.deleteCharacters(pos, nbr);
+					move = 0;
+					textChanged = true;
+				}
+				// Only need to process back_space and delete if there had been no selection
+				if(e.getKeyChar() == KeyEvent.VK_BACK_SPACE && !hasSelection){
+					if(stext.deleteCharacters(pos - 1, 1)){
+						move = 0;
+						textChanged = true;
+					}
+				}
+				else if(e.getKeyChar() == KeyEvent.VK_DELETE && !hasSelection){
+					if(stext.deleteCharacters(pos, 1)){
+						move = 1;
+						textChanged = true;
+					}
+				}
+				else if(e.getKeyChar() == KeyEvent.VK_ENTER){
+					if(stext.insertCharacters(pos, "\n")){
+						move = 0;
+						textChanged = true;
+					}
+				}
+				else {
+					System.out.println("Other " + (int)e.getKeyChar());
+					if(stext.insertCharacters(pos, "" + e.getKeyChar())){
+						move = 0;
+						textChanged = true;
+					}
+				}
+				
+				if(textChanged){
+					TextLayoutInfo tli;
+					TextHitInfo thi = null, thiLeft, thiRight;
+					// Force update
+					stext.getLines(buffer.g2);
+					// new pos
+					pos += move;
+					tli = stext.getTLIforCharNo(pos);
+					int posInLine = pos - tli.startCharIndex;
+					System.out.println(tli.lineNo + "  starts @ " + tli.startCharIndex + "      pos in line " + posInLine + "    length " +  tli.nbrChars);
+					thiLeft = tli.layout.getNextLeftHit(posInLine);
+					thiRight = tli.layout.getNextRightHit(posInLine);
+					switch(move){
+					case 0:
+						thi = thiLeft;
+						break;
+					case -1:
+						if(posInLine == 0){
+							// We can't be on line 0 if posInLine == 0 so this is safe
+							tli = stext.getTLIforLineNo(tli.lineNo - 1);
+							thi = tli.layout.getNextRightHit(tli.nbrChars-1);
+						}
+						else {
+							thi = thiLeft;
+						}
+						break;
+					case 1:
+						if(posInLine >= tli.nbrChars){
+							if(tli.lineNo < stext.getNbrLines() - 1){
+								tli = stext.getTLIforLineNo(tli.lineNo + 1);
+								thi = tli.layout.getNextLeftHit(1);
+							}
+							else {
+								thi = thiRight;
+							}
+						}
+						else {
+							thi = tli.layout.getNextRightHit(tli.nbrChars-1);							
+						}
+						break;
+					}
+//					if(thi == null)
+//						thi = tli.layout.getNextLeftHit(pos - tli.startCharIndex);
+					endTLHI = new TextLayoutHitInfo(tli, thi);
+					startTLHI.copyFrom(endTLHI);
+					bufferInvalid = true;
+				}
+				/**
+				 * If we have a selection 
+				 * 		then delete selection it 
+				 * if delete key and no previous selection
+				 * 		delete character to right (first character in next line if at eol)
+				 * if backspace key
+				 * 		delete character to left of key 
+				 * if enter then insert 'space' + '\n'
+				 * if any other key then insert it as is
+				 */
+			}
+			while(keepCursorInDisplay());
+		}
+
+	}
 /*
  * If arrow key VK_HOME or VK_END but no shift
  * 		advance caret to new position
@@ -337,73 +483,139 @@ public class FTextArea extends GComponent {
  * 
  * 
  */
-		}
+	
+	/**
+	 * Move caret to home position
+	 * @return true if caret moved else false
+	 */
+	protected boolean moveCaretStartOfLine(TextLayoutHitInfo currPos){
+		if(currPos.thi.getCharIndex() == 0)
+			return false; // already at start of line
+		currPos.thi = currPos.tli.layout.getNextLeftHit(1);
+		return true;
 	}
-
-
+	
+	protected boolean moveCaretEndOfLine(TextLayoutHitInfo currPos){
+		if(currPos.thi.getCharIndex() == currPos.tli.nbrChars - 1)
+			return false; // already at end of line
+		currPos.thi = currPos.tli.layout.getNextRightHit(currPos.tli.nbrChars - 1);
+		return true;
+	}
+	
+	protected boolean moveCaretStartOfText(TextLayoutHitInfo currPos){
+		if(currPos.tli.lineNo == 0 && currPos.thi.getCharIndex() == 0)
+			return false; // already at start of text
+		currPos.tli = stext.getTLIforLineNo(0);
+		currPos.thi = currPos.tli.layout.getNextLeftHit(1);
+		return true;
+	}
+	
+	protected boolean moveCaretEndOfText(TextLayoutHitInfo currPos){
+		if(currPos.tli.lineNo == stext.getNbrLines() - 1 && currPos.thi.getCharIndex() == currPos.tli.nbrChars - 1)
+			return false; // already at end of text
+		currPos.tli = stext.getTLIforLineNo(stext.getNbrLines() - 1);		
+		currPos.thi = currPos.tli.layout.getNextRightHit(currPos.tli.nbrChars - 1);
+		return true;
+	}
+	
+	
+	/**
+	 * Move caret left by one character. If necessary move to the end of the line above
+	 * @return true if caret was moved else false
+	 */
+	protected boolean moveCaretLeft(TextLayoutHitInfo currPos){
+		TextLayoutInfo ntli;
+		TextHitInfo nthi = currPos.tli.layout.getNextLeftHit(currPos.thi);
+		if(nthi == null){ 
+			// Move the caret to the end of the previous line 
+			if(currPos.tli.lineNo == 0)
+				// Can't goto previous line because this is the first line
+				return false;
+			else {
+				// Move to end of previous line
+				ntli = stext.getTLIforLineNo(currPos.tli.lineNo - 1);
+				nthi = ntli.layout.getNextRightHit(ntli.nbrChars-1);
+				currPos.tli = ntli;
+				currPos.thi = nthi;
+				bufferInvalid = true;
+			}
+		}
+		else {
+			// Move the caret to the left of current position
+			currPos.thi = nthi;
+			bufferInvalid = true;			
+		}
+		return true;
+	}
+	
+	/**
+	 * Move caret left by one character. If necessary move to the end of the line above
+	 * @return true if caret was moved else false
+	 */
+	protected boolean moveCaretRight(TextLayoutHitInfo currPos){
+		TextLayoutInfo ntli;
+		TextHitInfo nthi = currPos.tli.layout.getNextRightHit(currPos.thi);
+		if(nthi == null){ 
+			// Move the caret to the end of the previous line 
+			if(currPos.tli.lineNo >= stext.getNbrLines() - 1)
+				// Can't goto next line because this is the last line
+				return false;
+			else {
+				// Move to start of next line
+				ntli = stext.getTLIforLineNo(currPos.tli.lineNo + 1);
+				nthi = ntli.layout.getNextLeftHit(1);
+				currPos.tli = ntli;
+				currPos.thi = nthi;
+				bufferInvalid = true;
+			}
+		}
+		else {
+			// Move the caret to the right of current position
+			currPos.thi = nthi;
+			bufferInvalid = true;			
+		}
+		return true;
+	}
+	
 	public void mouseEvent(MouseEvent event){
 		if(!visible  || !enabled || !available) return;
 
 		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
+		ox -= tx; oy -= ty; // Remove translation
 
 		currSpot = whichHotSpot(ox, oy);
-		if(currSpot >= 0)
-			ox -= tx; oy -= ty;
 
-			// This next line will also set ox and oy
-			//		boolean mouseOver = contains(winApp.mouseX, winApp.mouseY);
+		if(currSpot == 1 || focusIsWith == this)
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+			cursorIsOver = null;
 
-			if(currSpot >= 0 || focusIsWith == this)
-				cursorIsOver = this;
-			else if(cursorIsOver == this)
-				cursorIsOver = null;
-
-
-			switch(event.getID()){
-			case MouseEvent.MOUSE_PRESSED:
-				if(focusIsWith != this && currSpot == 1 && z > focusObjectZ()){
-					mdx = winApp.mouseX;
-					mdy = winApp.mouseY;
-					endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
-					startTLHI = new TextLayoutHitInfo(endTLHI);
-					bufferInvalid = true;
+		switch(event.getID()){
+		case MouseEvent.MOUSE_PRESSED:
+			if(currSpot == 1){
+				if(focusIsWith != this && z > focusObjectZ()){
 					takeFocus();
 				}
-				break;
-			case MouseEvent.MOUSE_CLICKED:
-				if(focusIsWith == this){
-					loseFocus(null);
-					mdx = mdy = Integer.MAX_VALUE;
-				}
-				break;
-			case MouseEvent.MOUSE_RELEASED:
-				if(focusIsWith == this){
-//					if(endTLHI.compareTo(startTLHI) == -1){
-//						TextLayoutHitInfo temp = endTLHI;
-//						endTLHI = startTLHI;
-//						startTLHI = temp;
-//						System.out.println("SWAP ends");
-//					}
-					dragging = false;
-					loseFocus(null);
-					bufferInvalid = true;
-				}
-				break;
-			case MouseEvent.MOUSE_DRAGGED:
-				if(focusIsWith == this){
-					dragging = true;
-					endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
-//					if(endTHI.compareTo(startTHI) == -1){
-//						TextLayoutHitInfo temp = endTHI;
-//						endTHI = startTHI;
-//						startTHI = temp;
-//						System.out.println("SWAP ends");
-//					}
-					bufferInvalid = true;
-					keepCursorInDisplay();
-				}
-				break;
+				mdx = winApp.mouseX;
+				mdy = winApp.mouseY;
+				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
+				startTLHI = new TextLayoutHitInfo(endTLHI);
+				bufferInvalid = true;
 			}
+			break;
+		case MouseEvent.MOUSE_RELEASED:
+			dragging = false;
+			bufferInvalid = true;
+			break;
+		case MouseEvent.MOUSE_DRAGGED:
+			if(focusIsWith == this){
+				dragging = true;
+				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
+				bufferInvalid = true;
+				keepCursorInDisplay();
+			}
+			break;
+		}
 	}
 
 	protected void calcScrollbaValue(){
@@ -416,7 +628,7 @@ public class FTextArea extends GComponent {
 	}
 
 	public void vsbEventHandler(FScrollbar scrollbar){
-		pty = vsb.getValue() * (stext.getAllLinesHeight() + 1.5f * stext.getMaxLineHeight());
+		pty = vsb.getValue() * (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight());
 		bufferInvalid = true;
 	}
 
