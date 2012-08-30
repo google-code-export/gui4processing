@@ -113,34 +113,33 @@ public class FTextArea extends GComponent {
 		}
 	}
 
-
+	public boolean hasSelection(){
+		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
+	}
+	
 	/**
 	 * If the buffer is invalid then redraw it.
+	 * @TODO need to use palette for colours
 	 */
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
-			boolean isSelection = false;
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
 			buffer.beginDraw();
 			buffer.background(buffer.color(255,0));
 			buffer.translate(-ptx, -pty);
 			buffer.strokeWeight(1.5f);
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
-			if(endTLHI != null && startTLHI != null){
-				switch(endTLHI.compareTo(startTLHI)){
-				case -1:
+//			if(endTLHI != null && startTLHI != null){
+			boolean hasSelection = hasSelection();
+			if(hasSelection){
+				if(endTLHI.compareTo(startTLHI) == -1){
 					startSelTLHI = endTLHI;
 					endSelTLHI = startTLHI;
-					isSelection = true;
-					break;
-				case 1:
+				}
+				else {
 					startSelTLHI = startTLHI;
 					endSelTLHI = endTLHI;
-					isSelection = true;
-					break;
-				default:
-					isSelection = false;
 				}
 			}
 			buffer.pushMatrix();
@@ -148,12 +147,12 @@ public class FTextArea extends GComponent {
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
 				// Draw selection if any
-				if(isSelection && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
+				if(hasSelection && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
 					int ss = 0;
 					ss = (lineInfo.compareTo(startSelTLHI.tli) == 0) ? startSelTLHI.thi.getInsertionIndex()  : 0;
 					int ee = endSelTLHI.thi.getInsertionIndex();
 					ee = (lineInfo.compareTo(endSelTLHI.tli) == 0) ? endSelTLHI.thi.getInsertionIndex() : lineInfo.nbrChars-1;
-					System.out.println("  In line " + ss + "  " + ee + "  " + lineInfo.startCharIndex);
+//					System.out.println("  In line " + ss + "  " + ee + "  " + lineInfo.startCharIndex);
 					g2d.setColor(Color.cyan);
 					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
 					g2d.fill(selShape);
@@ -170,11 +169,11 @@ public class FTextArea extends GComponent {
 				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
 				g2d.setColor(Color.red);
 				g2d.draw(caret[0]);
-				if(caret[1] != null){
-					g2d.setColor(Color.green);
-					g2d.draw(caret[1]);
-					System.out.println(caret[1]);
-				}
+//				if(caret[1] != null){
+//					g2d.setColor(Color.green);
+//					g2d.draw(caret[1]);
+//					System.out.println(caret[1]);
+//				}
 				buffer.popMatrix();
 				
 				
@@ -290,8 +289,54 @@ public class FTextArea extends GComponent {
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 		
+		boolean hasSelection = hasSelection();
+		
 		if(focusIsWith == this && endTLHI != null){
-			
+			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
+			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
+
+			endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getCharIndex();
+			startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getCharIndex() : endChar;
+				
+/*
+ * If arrow key VK_HOME or VK_END but no shift
+ * 		advance caret to new position
+ * 			if result is null move to end of last line or move to beginning of next line if possible
+ * 		end selection by setting startTHLI to null
+ * 		invalidate buffer if caret moved
+ * If arrow key VK_HOME or VK_END but with shift
+ * 		advance caret to new position
+ * 			if result is null move to end of last line or move to beginning of next line if possible
+ * 		invalidate buffer if caret moved
+ * if arrow key and ctrl key
+ * 		move to start/end line/text
+ * 		end selection
+ * if ctrl key and c and has selection
+ * 		copy to clipboard
+ * if ctrl key and v
+ * 		if has selection delete the selected text
+ * 		paste from clipboard
+ * * 		insert key at current position
+ * 		recalculate endTHLI to end of pasted test
+ * 		startTHLI = null
+ *		invalidate buffer
+ * if backspace key
+ * 
+ * if delete key
+ * 
+ * if any other key
+ * 		if has selection delete the selected text set startTLHI to null
+ * 		insert key at current position
+ * 		recalculate endTHLI
+ * 		startTHLI = null
+ * 		advance caret to next right position
+ * 		invalidate layouts
+ * 		invalidate buffer
+ * 
+ * 
+ * 
+ */
 		}
 	}
 
@@ -333,12 +378,12 @@ public class FTextArea extends GComponent {
 				break;
 			case MouseEvent.MOUSE_RELEASED:
 				if(focusIsWith == this){
-					if(endTLHI.compareTo(startTLHI) == -1){
-						TextLayoutHitInfo temp = endTLHI;
-						endTLHI = startTLHI;
-						startTLHI = temp;
-						System.out.println("SWAP ends");
-					}
+//					if(endTLHI.compareTo(startTLHI) == -1){
+//						TextLayoutHitInfo temp = endTLHI;
+//						endTLHI = startTLHI;
+//						startTLHI = temp;
+//						System.out.println("SWAP ends");
+//					}
 					dragging = false;
 					loseFocus(null);
 					bufferInvalid = true;
