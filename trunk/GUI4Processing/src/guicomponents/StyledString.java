@@ -57,8 +57,6 @@ final public class StyledString implements Serializable {
 	private LinkedList<AttributeRun> base = new LinkedList<AttributeRun>();
 	// List of attribute runs to be applied over the base style
 	private LinkedList<AttributeRun> atrun = new LinkedList<AttributeRun>();
-	// A single attribute run to represent a text selection
-	private AttributeRun textSelection;
 
 	// The width to break a line
 	private float breakWidth = 100;
@@ -200,27 +198,6 @@ final public class StyledString implements Serializable {
 	 */
 
 	/**
-	 * Set the highlight area
-	 * @param c
-	 * @param charStart
-	 * @param charEnd
-	 */
-	public void setSelectionArea(Color c, int charStart, int charEnd){
-		textSelection = new AttributeRun(TextAttribute.BACKGROUND, c, charStart, charEnd);
-		applyAttributes();
-	}
-
-	/**
-	 * Clear the highlight area
-	 */
-	public void clearSelection(){
-		if(textSelection != null){
-			textSelection = null;
-			applyAttributes();
-		}
-	}
-
-	/**
 	 * Text can be either left or fully justified.
 	 * @param justify true for full justification
 	 */
@@ -319,14 +296,6 @@ final public class StyledString implements Serializable {
 					styledText.addAttribute(ar.atype, ar.value, ar.start, ar.end);
 				}
 			}
-			// Apply text selection
-			if(textSelection != null){
-				if(textSelection.end == Integer.MAX_VALUE)
-					styledText.addAttribute(textSelection.atype, textSelection.value);
-				else {
-					styledText.addAttribute(textSelection.atype, textSelection.value, textSelection.start, textSelection.end);
-				}
-			}
 		}
 		invalidLayout = true;
 	}
@@ -400,6 +369,7 @@ final public class StyledString implements Serializable {
 			textHeight = 0;
 			maxLineLength = 0;
 			maxLineHeight = 0;
+			int ln = 0;
 			linesInfo.clear();
 			if(plainText.length() > 0){
 				//int nbrChars = plainText.length();
@@ -433,9 +403,10 @@ final public class StyledString implements Serializable {
 						maxLineLength = advance;
 					
 					// Store line and line info
-					linesInfo.add(new TextLayoutInfo(layout, charssofar, layout.getCharacterCount(), yposinpara));
+					linesInfo.add(new TextLayoutInfo(ln, layout, charssofar, layout.getCharacterCount(), yposinpara));
 					charssofar += layout.getCharacterCount();
 					yposinpara += lh;
+					ln++;
 				}
 			}
 			invalidLayout = false;
@@ -713,8 +684,8 @@ final public class StyledString implements Serializable {
 	 *
 	 */
 	static class TextLayoutHitInfo implements Comparable<TextLayoutHitInfo>{
-		public final TextLayoutInfo tli;
-		public final TextHitInfo thi;
+		public TextLayoutInfo tli;
+		public TextHitInfo thi;
 		
 		/**
 		 * @param tli
@@ -766,17 +737,19 @@ final public class StyledString implements Serializable {
 	 *
 	 */
 	static class TextLayoutInfo implements Comparable<TextLayoutInfo> {
-		public final TextLayout layout;		// The matching layout
-		public final int startCharIndex;	// The position of the first layout char in text
-		public final int nbrChars;			// Number of chars in this layout
-		public final float yPosInPara; 		// Top-left corner of bounds
+		public TextLayout layout;		// The matching layout
+		public int lineNo;
+		public int startCharIndex;	// The position of the first layout char in text
+		public int nbrChars;			// Number of chars in this layout
+		public float yPosInPara; 		// Top-left corner of bounds
 		
 		/**
 		 * @param startCharIndex
 		 * @param nbrChars
 		 * @param yPosInPara
 		 */
-		public TextLayoutInfo(TextLayout layout, int startCharIndex, int nbrChars, float yPosInPara) {
+		public TextLayoutInfo(int lineNo, TextLayout layout, int startCharIndex, int nbrChars, float yPosInPara) {
+			this.lineNo = lineNo;
 			this.layout  = layout;
 			this.startCharIndex = startCharIndex;
 			this.nbrChars = nbrChars;
@@ -784,7 +757,8 @@ final public class StyledString implements Serializable {
 		}
 
 		public int compareTo(TextLayoutInfo other) {
-			if(layout == other.layout)
+			//if(layout == other.layout)
+			if(lineNo == other.lineNo)
 				return 0;
 			return (startCharIndex < other.startCharIndex) ? -1 : 1;
 		}
