@@ -46,6 +46,8 @@ public class FScrollbar extends GComponent {
 		highCap = new RoundRectangle2D.Float(width - 15, 1, 14.5f, height-2, 6, 6);
 
 		opaque = false;
+		
+		z = Z_SLIPPY;
 		registerAutos_DMPK(true, true, false, false);
 		createEventHandler(G4P.mainWinApp, "handleScrollbarEvents", new Class[]{ FScrollbar.class });
 	}
