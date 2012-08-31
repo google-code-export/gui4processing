@@ -96,7 +96,6 @@ public class FTextArea extends GComponent {
 	public void setText(String text, float maxLineLength){
 		this.text = text;
 		stext = new StyledString(buffer.g2, text, maxLineLength);
-		stext.removeBlankLines();
 		float sTextHeight;
 		if(vsb != null){
 			sTextHeight = stext.getTextAreaHeight();
@@ -127,12 +126,12 @@ public class FTextArea extends GComponent {
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
+			
 			buffer.beginDraw();
 			buffer.background(buffer.color(255,0));
 			buffer.translate(-ptx, -pty);
 			buffer.strokeWeight(1.5f);
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
-//			if(endTLHI != null && startTLHI != null){
 			boolean hasSelection = hasSelection();
 			if(hasSelection){
 				if(endTLHI.compareTo(startTLHI) == -1){
@@ -154,7 +153,6 @@ public class FTextArea extends GComponent {
 					ss = (lineInfo.compareTo(startSelTLHI.tli) == 0) ? startSelTLHI.thi.getInsertionIndex()  : 0;
 					int ee = endSelTLHI.thi.getInsertionIndex();
 					ee = (lineInfo.compareTo(endSelTLHI.tli) == 0) ? endSelTLHI.thi.getInsertionIndex() : lineInfo.nbrChars-1;
-//					System.out.println("  In line " + ss + "  " + ee + "  " + lineInfo.startCharIndex);
 					g2d.setColor(Color.cyan);
 					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
 					g2d.fill(selShape);
@@ -171,44 +169,13 @@ public class FTextArea extends GComponent {
 				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
 				g2d.setColor(Color.red);
 				g2d.draw(caret[0]);
-//				if(caret[1] != null){
-//					g2d.setColor(Color.green);
-//					g2d.draw(caret[1]);
-//					System.out.println(caret[1]);
-//				}
 				buffer.popMatrix();
-				
-				
 			}
 			buffer.endDraw();
 			bufferInvalid = false;
 		}
 	}
-//	protected void updateBuffer(){
-//		if(bufferInvalid) {
-//			Graphics2D g2d = buffer.g2;
-//			float drawPosX, drawPosY = 0;
-//
-//			buffer.beginDraw();
-//			buffer.background(buffer.color(255,0));
-//			buffer.translate(-ptx, -pty);
-//			LinkedList<TextLayout> lines = stext.getLines(g2d);
-//			for(TextLayout layout : lines){
-//				// Leave the possibility for right justified text
-//				drawPosX = (layout.isLeftToRight() ? 0 : stext.getBreakWidth() - layout.getAdvance());
-//				drawPosY += layout.getAscent();
-//				layout.draw(g2d, drawPosX, drawPosY);
-//				drawPosY += layout.getDescent() + layout.getLeading();
-//			}
-//			if(endSel.valid){
-//				buffer.strokeWeight(1.5f);
-//				buffer.stroke(255,0,0);
-//				buffer.line(endSel.cursorX, endSel.cursorY, endSel.cursorX, endSel.cursorY - endSel.cursorHeight);
-//			}
-//			buffer.endDraw();
-//			bufferInvalid = false;
-//		}
-//	}
+
 
 	/**
 	 * See if the cursor is off screen if so pan the display
@@ -289,16 +256,15 @@ public class FTextArea extends GComponent {
 
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
-		keepCursorInDisplay();
-
-
 		if(focusIsWith == this && endTLHI != null){
-//			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
+			//			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
-
-			if(e.getID() == KeyEvent.KEY_PRESSED) {						//if a key is pressed
+			// KEY PRESSED ================================================================================================================================
+			// Process caret movement
+			if(e.getID() == KeyEvent.KEY_PRESSED) {
 				boolean caretMoved = false;
 				if(e.getKeyCode() == KeyEvent.VK_LEFT) {
 					caretMoved = moveCaretLeft(endTLHI);
@@ -328,58 +294,72 @@ public class FTextArea extends GComponent {
 						caretMoved = moveCaretEndOfLine(endTLHI);
 					}
 				}
-				else {
-	//				System.out.println("Key PRESSED event ID " + e.getID() + "     Code = " + e.getKeyCode());
-				}
 				// After testing for cursor moving keys
 				if(caretMoved){
 					if(!shiftDown)				// Not extending selection
 						startTLHI.copyFrom(endTLHI);
 					bufferInvalid = true;							
-				
 				}
-			}
+			}			
+			// KEY TYPED ================================================================================================================================
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
-	//			System.out.println("Key TYPED event ID " + e.getID() + "     Char = " + e.getKeyChar());
-	
 				boolean hasSelection = hasSelection();
-				int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getCharIndex();
-				int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getCharIndex() : endChar;
-				int pos = Math.min(startChar, endChar);
-				int nbr = Math.abs(startChar - endChar) + 1;
+				int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
+				int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
+				int pos, nbr, adjust = 0;
+
+				int adjustPart = 0;
 				
-				int move = 0;
+				if(startChar < endChar){
+					pos = startChar;
+					nbr = endChar - pos;
+				}
+				else if(startChar > endChar){
+					pos = endChar;
+					nbr = startChar - pos;
+				}
+				else {
+					pos = endChar;
+					nbr = 0;
+				}
+				// Assume that the text will not be changed by the keypress
+				// set this to true when the text does change
 				boolean textChanged = false;
-				
+				// If we have a selection then any key typed will delete it
 				if(hasSelection){
 					stext.deleteCharacters(pos, nbr);
-					move = 0;
+					adjust = 0;
 					textChanged = true;
 				}
-				// Only need to process back_space and delete if there had been no selection
-				if(e.getKeyChar() == KeyEvent.VK_BACK_SPACE && !hasSelection){
-					if(stext.deleteCharacters(pos - 1, 1)){
-						move = 0;
-						textChanged = true;
+				else {		
+					// Only process back_space and delete if there was no selection
+					if(e.getKeyChar() == KeyEvent.VK_BACK_SPACE){
+						if(stext.deleteCharacters(pos - 1, 1)){
+							adjust = -1;
+							textChanged = true;
+						}
+					}
+					else if(e.getKeyChar() == KeyEvent.VK_DELETE){
+						if(stext.deleteCharacters(pos, 1)){
+							adjust = 0;
+							textChanged = true;
+						}
 					}
 				}
-				else if(e.getKeyChar() == KeyEvent.VK_DELETE && !hasSelection){
-					if(stext.deleteCharacters(pos, 1)){
-						move = 1;
-						textChanged = true;
-					}
-				}
-				else if(e.getKeyChar() == KeyEvent.VK_ENTER){
-					if(stext.insertCharacters(pos, "\n")){
-						move = 0;
+				// Now we have got rid of any selection be can process other kys
+				if(e.getKeyChar() == KeyEvent.VK_ENTER){
+					if(stext.insertCharacters(pos, "\n ")){
+						adjust = 1;
 						textChanged = true;
 					}
 				}
 				else {
-					System.out.println("Other " + (int)e.getKeyChar());
-					if(stext.insertCharacters(pos, "" + e.getKeyChar())){
-						move = 0;
-						textChanged = true;
+					int ascii = (int)(e.getKeyChar());
+					if(ascii >= 32 && ascii < 127){
+						if(stext.insertCharacters(pos, "" + e.getKeyChar())){
+							adjust = 1;
+							textChanged = true;
+						}
 					}
 				}
 				
@@ -388,58 +368,83 @@ public class FTextArea extends GComponent {
 					TextHitInfo thi = null, thiLeft, thiRight;
 					// Force update
 					stext.getLines(buffer.g2);
-					// new pos
-					pos += move;
+					
 					tli = stext.getTLIforCharNo(pos);
 					int posInLine = pos - tli.startCharIndex;
+					
 					System.out.println(tli.lineNo + "  starts @ " + tli.startCharIndex + "      pos in line " + posInLine + "    length " +  tli.nbrChars);
+					
 					thiLeft = tli.layout.getNextLeftHit(posInLine);
 					thiRight = tli.layout.getNextRightHit(posInLine);
-					switch(move){
-					case 0:
-						thi = thiLeft;
+//					// These should always be not null
+//					if(thiLeft == null)
+//						System.out.println(">>>>>>>>>>> thiLeft null");
+//					if(thiRight == null)
+//						System.out.println(">>>>>>>>>>> thiRight null");
+//					if(thiLeft != null && thiRight != null){
+//						System.out.println("===============================================");
+//						System.out.print("Pos in line " + posInLine + "  Hit left " + thiLeft.getInsertionIndex());
+//						System.out.println("    Hit right " + thiRight.getInsertionIndex());
+//						System.out.println("===============================================");
+//					}
+//					System.out.println();
+					
+					// We need to 'adjust' the caret position based on what we did
+					//  0 caret does not move from current position
+					// -1 caret needs to go left
+					//  1 caret needs to go right
+					switch(adjust){
+					case 0:		
+						if(thiLeft != null)
+							thi = tli.layout.getNextRightHit(thiLeft);
+						else if(thiRight != null)
+							thi = tli.layout.getNextLeftHit(thiRight);
 						break;
 					case -1:
-						if(posInLine == 0){
-							// We can't be on line 0 if posInLine == 0 so this is safe
-							tli = stext.getTLIforLineNo(tli.lineNo - 1);
-							thi = tli.layout.getNextRightHit(tli.nbrChars-1);
+						if(thiLeft == null){   // we are at start of line
+							if(tli.lineNo == 0){
+								// first line so move to beginning of text
+								thi = tli.layout.getNextLeftHit(0);
+							}
+							else {
+								// Attempt to move to end of previous line
+								tli = stext.getTLIforLineNo(tli.lineNo - 1);
+								thi = tli.layout.getNextRightHit(tli.nbrChars - 1);
+							}
 						}
 						else {
 							thi = thiLeft;
 						}
 						break;
 					case 1:
-						if(posInLine >= tli.nbrChars){
-							if(tli.lineNo < stext.getNbrLines() - 1){
-								tli = stext.getTLIforLineNo(tli.lineNo + 1);
-								thi = tli.layout.getNextLeftHit(1);
+						if(thiRight == null){	// we are at the end of line
+							if(tli.lineNo == stext.getNbrLines() - 1){ 
+								// Last line so move to right of last character
+								thi = tli.layout.getNextRightHit(tli.nbrChars - 1);	
+								adjustPart = 1;
 							}
 							else {
-								thi = thiRight;
+								// Attempt to move to start of next line
+								tli = stext.getTLIforLineNo(tli.lineNo + 1);
+								thi = tli.layout.getNextRightHit(0);
+								adjustPart = 2;
 							}
+							
 						}
 						else {
-							thi = tli.layout.getNextRightHit(tli.nbrChars-1);							
+							thi = thiRight;
+							adjustPart = 3;
 						}
+						
 						break;
 					}
-//					if(thi == null)
-//						thi = tli.layout.getNextLeftHit(pos - tli.startCharIndex);
+					if(thi == null){
+						System.out.println("KeyEvent handling thi = null   adjust = " + adjust + "  " + adjustPart + "\n\n");
+					}
 					endTLHI = new TextLayoutHitInfo(tli, thi);
 					startTLHI.copyFrom(endTLHI);
 					bufferInvalid = true;
 				}
-				/**
-				 * If we have a selection 
-				 * 		then delete selection it 
-				 * if delete key and no previous selection
-				 * 		delete character to right (first character in next line if at eol)
-				 * if backspace key
-				 * 		delete character to left of key 
-				 * if enter then insert 'space' + '\n'
-				 * if any other key then insert it as is
-				 */
 			}
 			while(keepCursorInDisplay());
 		}

@@ -89,6 +89,7 @@ final public class StyledString implements Serializable {
 			breakWidth = lineWidth;
 		spacer = getParagraghSpacer((int)breakWidth);
 		plainText = startText;
+		removeBlankLines(); // just in case we merge two eol characters
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		resetStyles();
@@ -312,6 +313,7 @@ final public class StyledString implements Serializable {
 	public boolean insertCharacters(int insertPos, String chars){
 		int nbrChars = chars.length();
 		plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
+		removeBlankLines(); // just in case we merge two eol characters
 		for(AttributeRun ar : atrun){
 			if(ar.end < Integer.MAX_VALUE){
 				if(ar.end >= insertPos){
@@ -337,9 +339,12 @@ final public class StyledString implements Serializable {
 	 * @return
 	 */
 	public boolean deleteCharacters(int fromPos, int nbrToRemove){
-		if(fromPos < 0 || fromPos + nbrToRemove >= plainText.length())
+		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
 			return false;
+		System.out.print(plainText.length() + "  >>>  ");
 		plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
+		removeBlankLines(); // just in case we merge two eol characters
+		System.out.println(plainText.length());
 		ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
 		AttributeRun ar;
 		while(iter.hasPrevious()){
@@ -355,9 +360,6 @@ final public class StyledString implements Serializable {
 			}		
 		}
 		invalidText = true;
-//		styledText = new AttributedString(plainText);
-//		styledText = insertParagraphMarkers(plainText, styledText);
-//		applyAttributes();
 		return true;
 	}
 
@@ -670,10 +672,9 @@ final public class StyledString implements Serializable {
 		}
 		
 		public String toString(){
-			StringBuilder s = new StringBuilder("{ Line starts @ " + tli.startCharIndex);
-			s.append("");
-			return new String(s);
-			
+			StringBuilder s = new StringBuilder(tli.toString());
+			s.append("  Hit char = " + thi.getCharIndex());
+			return new String(s);			
 		}
 	}
 	
@@ -709,6 +710,13 @@ final public class StyledString implements Serializable {
 			if(lineNo == other.lineNo)
 				return 0;
 			return (startCharIndex < other.startCharIndex) ? -1 : 1;
+		}
+	
+		public String toString(){
+			StringBuilder s = new StringBuilder("{ Line starts @ " + startCharIndex);
+			s.append("  last index " + (startCharIndex+nbrChars+1));
+			s.append("  (" + nbrChars +")  ");
+			return new String(s);
 		}
 	}
 
