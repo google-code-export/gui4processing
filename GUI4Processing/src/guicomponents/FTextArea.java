@@ -1,9 +1,9 @@
 package guicomponents;
+
 import guicomponents.HotSpot.HSrect;
 import guicomponents.StyledString.TextLayoutHitInfo;
 import guicomponents.StyledString.TextLayoutInfo;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -17,7 +17,6 @@ import processing.core.PGraphicsJava2D;
 
 
 public class FTextArea extends GComponent {
-
 
 	/** Do not create or display any scrollbars for the text area. */
 	public static final int SCROLLBARS_NONE = 0;
@@ -39,9 +38,10 @@ public class FTextArea extends GComponent {
 
 	// The typing area
 	protected float tx,ty,th,tw;
-	// Offsetd to display area
+	// Offset to display area
 	protected float ptx, pty;
-
+	// Caret position
+	float caretX, caretY;
 
 	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
 //	protected int startChar = 0, endChar = 0;
@@ -153,11 +153,11 @@ public class FTextArea extends GComponent {
 					ss = (lineInfo.compareTo(startSelTLHI.tli) == 0) ? startSelTLHI.thi.getInsertionIndex()  : 0;
 					int ee = endSelTLHI.thi.getInsertionIndex();
 					ee = (lineInfo.compareTo(endSelTLHI.tli) == 0) ? endSelTLHI.thi.getInsertionIndex() : lineInfo.nbrChars-1;
-					g2d.setColor(Color.cyan);
+					g2d.setColor(jpalette[14]);
 					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
 					g2d.fill(selShape);
 				}
-				g2d.setColor(Color.black);
+				g2d.setColor(jpalette[2]);
 				lineInfo.layout.draw(g2d, 0, 0);
 				buffer.translate(0, layout.getDescent() + layout.getLeading());
 			}
@@ -167,7 +167,7 @@ public class FTextArea extends GComponent {
 				buffer.pushMatrix();
 				buffer.translate(0, endTLHI.tli.yPosInPara + endTLHI.tli.layout.getAscent() );
 				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
-				g2d.setColor(Color.red);
+				g2d.setColor(jpalette[15]);
 				g2d.draw(caret[0]);
 				buffer.popMatrix();
 			}
@@ -184,24 +184,24 @@ public class FTextArea extends GComponent {
 	protected boolean keepCursorInDisplay(){
 		boolean horzScroll = false, vertScroll = false;
 		if(endTLHI != null){
-			float temp[] = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
-			float x = temp[0];		
-			float y = endTLHI.tli.yPosInPara;
-			if(x < ptx ){ 										// LEFT?
+//			float temp[] = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
+//			float x = temp[0];		
+//			float y = endTLHI.tli.yPosInPara;
+			if(caretX < ptx ){ 										// LEFT?
 				ptx--;
 				if(ptx < 0) ptx = 0;
 				horzScroll = true;
 			}
-			else if(x > ptx + tw){ 								// RIGHT?
+			else if(caretX > ptx + tw){ 								// RIGHT?
 				ptx++;
 				horzScroll = true;
 			}
-			if(y < pty){				// UP?
+			if(caretY < pty){				// UP?
 				pty--;
 				if(pty < 0) pty = 0;
 				vertScroll = true;
 			}
-			else if(y > pty + th  - stext.getMaxLineHeight()){	// DOWN?
+			else if(caretY > pty + th  - stext.getMaxLineHeight()){	// DOWN?
 				pty++;
 				vertScroll = true;
 			}
@@ -272,6 +272,12 @@ public class FTextArea extends GComponent {
 				else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					caretMoved = moveCaretRight(endTLHI);
 				}
+				else if(e.getKeyCode() == KeyEvent.VK_UP) {
+					caretMoved = moveCaretUp(endTLHI);
+				}
+				else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+					caretMoved = moveCaretDown(endTLHI);
+				}
 				else if(e.getKeyCode() == KeyEvent.VK_HOME) {
 					if(ctrlDown){
 						// move to start of text
@@ -304,6 +310,7 @@ public class FTextArea extends GComponent {
 			// KEY TYPED ================================================================================================================================
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
 				boolean hasSelection = hasSelection();
+				System.out.println(hasSelection);
 				int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
 				int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
 				int pos, nbr, adjust = 0;
@@ -356,6 +363,7 @@ public class FTextArea extends GComponent {
 				else {
 					int ascii = (int)(e.getKeyChar());
 					if(ascii >= 32 && ascii < 127){
+						System.out.println("Key typed = " + (int) e.getKeyChar());
 						if(stext.insertCharacters(pos, "" + e.getKeyChar())){
 							adjust = 1;
 							textChanged = true;
@@ -375,20 +383,7 @@ public class FTextArea extends GComponent {
 					System.out.println(tli.lineNo + "  starts @ " + tli.startCharIndex + "      pos in line " + posInLine + "    length " +  tli.nbrChars);
 					
 					thiLeft = tli.layout.getNextLeftHit(posInLine);
-					thiRight = tli.layout.getNextRightHit(posInLine);
-//					// These should always be not null
-//					if(thiLeft == null)
-//						System.out.println(">>>>>>>>>>> thiLeft null");
-//					if(thiRight == null)
-//						System.out.println(">>>>>>>>>>> thiRight null");
-//					if(thiLeft != null && thiRight != null){
-//						System.out.println("===============================================");
-//						System.out.print("Pos in line " + posInLine + "  Hit left " + thiLeft.getInsertionIndex());
-//						System.out.println("    Hit right " + thiRight.getInsertionIndex());
-//						System.out.println("===============================================");
-//					}
-//					System.out.println();
-					
+					thiRight = tli.layout.getNextRightHit(posInLine);					
 					// We need to 'adjust' the caret position based on what we did
 					//  0 caret does not move from current position
 					// -1 caret needs to go left
@@ -446,48 +441,16 @@ public class FTextArea extends GComponent {
 					bufferInvalid = true;
 				}
 			}
+			calculateCaretPos(endTLHI);
+			if(caretX > stext.getBreakWidth()){
+				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(endTLHI.thi);
+				calculateCaretPos(endTLHI);
+			}
+				
 			while(keepCursorInDisplay());
 		}
 
 	}
-/*
- * If arrow key VK_HOME or VK_END but no shift
- * 		advance caret to new position
- * 			if result is null move to end of last line or move to beginning of next line if possible
- * 		end selection by setting startTHLI to null
- * 		invalidate buffer if caret moved
- * If arrow key VK_HOME or VK_END but with shift
- * 		advance caret to new position
- * 			if result is null move to end of last line or move to beginning of next line if possible
- * 		invalidate buffer if caret moved
- * if arrow key and ctrl key
- * 		move to start/end line/text
- * 		end selection
- * if ctrl key and c and has selection
- * 		copy to clipboard
- * if ctrl key and v
- * 		if has selection delete the selected text
- * 		paste from clipboard
- * * 		insert key at current position
- * 		recalculate endTHLI to end of pasted test
- * 		startTHLI = null
- *		invalidate buffer
- * if backspace key
- * 
- * if delete key
- * 
- * if any other key
- * 		if has selection delete the selected text set startTLHI to null
- * 		insert key at current position
- * 		recalculate endTHLI
- * 		startTHLI = null
- * 		advance caret to next right position
- * 		invalidate layouts
- * 		invalidate buffer
- * 
- * 
- * 
- */
 	
 	/**
 	 * Move caret to home position
@@ -523,6 +486,26 @@ public class FTextArea extends GComponent {
 		return true;
 	}
 	
+	
+	protected boolean moveCaretUp(TextLayoutHitInfo currPos){
+		if(currPos.tli.lineNo == 0)
+			return false;
+		TextLayoutInfo ntli = stext.getTLIforLineNo(currPos.tli.lineNo - 1);	
+		TextHitInfo nthi = ntli.layout.hitTestChar(caretX, 0);
+		currPos.tli = ntli;
+		currPos.thi = nthi;
+		return true;
+	}
+	
+	protected boolean moveCaretDown(TextLayoutHitInfo currPos){
+		if(currPos.tli.lineNo == stext.getNbrLines() - 1)
+			return false;
+		TextLayoutInfo ntli = stext.getTLIforLineNo(currPos.tli.lineNo + 1);	
+		TextHitInfo nthi = ntli.layout.hitTestChar(caretX, 0);
+		currPos.tli = ntli;
+		currPos.thi = nthi;
+		return true;
+	}
 	
 	/**
 	 * Move caret left by one character. If necessary move to the end of the line above
@@ -605,6 +588,7 @@ public class FTextArea extends GComponent {
 				mdy = winApp.mouseY;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				startTLHI = new TextLayoutHitInfo(endTLHI);
+				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
 			}
 			break;
@@ -616,6 +600,7 @@ public class FTextArea extends GComponent {
 			if(focusIsWith == this){
 				dragging = true;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
+				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
 				keepCursorInDisplay();
 			}
@@ -623,7 +608,10 @@ public class FTextArea extends GComponent {
 		}
 	}
 
-	protected void calcScrollbaValue(){
+	protected void calculateCaretPos(TextLayoutHitInfo tlhi){
+		float temp[] = tlhi.tli.layout.getCaretInfo(tlhi.thi);
+		caretX = temp[0];		
+		caretY = tlhi.tli.yPosInPara;
 		
 	}
 

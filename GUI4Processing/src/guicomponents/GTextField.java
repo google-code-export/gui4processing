@@ -161,7 +161,7 @@ public class GTextField extends GComponent {
 	 * @param fontname
 	 * @param fontsize
 	 */
-	public void setFont(String fontname, int fontsize){
+	public void setFontOLD(String fontname, int fontsize){
 		setFont(fontname, fontsize, leading);
 	}
 

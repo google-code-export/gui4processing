@@ -23,6 +23,8 @@
 
 package guicomponents;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -31,6 +33,7 @@ import java.util.Set;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.core.PMatrix;
 import processing.core.PMatrix2D;
@@ -57,12 +60,33 @@ public class G4P implements PConstants, GConstants {
 
 	public static boolean messages = true;
 
+	/**
+	 * An array of names representing all the available fonts.
+	 */
+	final public static String[] fontFamilies = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+
+	
 	/** INTERNAL USE ONLY  Cursor over changer */
 	private static GCursorImageChanger mcd = new GCursorImageChanger();
 	public static boolean overControl = false;
 	public static boolean cursorChangeEnabled = false;
 	public static int mouseOff = ARROW;
 	public static int mouseOver = HAND;
+
+	/**
+	 * See if this font family is available on this user's computer system
+	 * and return the family name if found. If the font family is unavailable
+	 * then it returns the name "Dialog"
+	 * @param family
+	 * @return
+	 */
+	public static String getFamily(String family){
+		for(String f : fontFamilies)
+			if(f.equalsIgnoreCase(family))
+				return f;
+		return "Dialog";
+	}
+
 
 	/**
 	 * Enables or disables cursor over component change. <br>
@@ -262,12 +286,68 @@ public class G4P implements PConstants, GConstants {
 	 * @param theApplet
 	 * @param fontName name of font
 	 * @param fontSize font size
+	 * 
+	 * @deprecated
 	 */
 	public static void setFont(PApplet theApplet, String fontName, int fontSize){
 		if(theApplet != null)
 			GComponent.globalFont = GFont.getFont(theApplet, fontName, fontSize);
 	}
 
+	/**
+	 * Set the global font to be used by all controls. <br>
+	 * You can override the font used by individual controls with
+	 * the equivalent setFont method for the control.
+	 * 
+	 * @param fontName font family name
+	 * @param fontSize font size
+	 */
+	public static void setFont(String fontName, int fontSize){
+		setFont(fontName, fontSize, Font.PLAIN);
+	}
+
+	/**
+	 * Set the global font to be used by all controls. <br>
+	 * You can override the font used by individual controls with
+	 * the equivalent setFont method for the control. <br>
+	 * 
+     * The style argument is an integer bitmask that may
+     * be PLAIN, or a bitwise union of BOLD and/or ITALIC
+     * (for example, ITALIC or BOLD|ITALIC). If the style is
+     * unrecognised it will default to PLAIN.
+	 * 
+	 * @param fontName font family name
+	 * @param fontSize font size
+	 * @param style style e.g. Font.PLAIN
+	 */
+	public static void setFont(String fontName, int fontSize, int style){
+		GComponent.fGlobalFont = new Font(fontName, fontSize, style);
+	}
+	
+	/**
+	 * Set the global font to be used by all controls. <br>
+	 * You can override the font used by individual controls with
+	 * the equivalent setFont method for the control. <br>
+	 * 
+	 * @param font the java.awt.Font to use
+	 */
+	public static void setFont(Font font){
+		GComponent.fGlobalFont = font;
+	}
+	
+	/**
+	 * Set the global font to be used by all controls. <br>
+	 * You can override the font used by individual controls with
+	 * the equivalent setFont method for the control. <br>
+	 * 
+	 * @param pfont the Processing font to use
+	 */
+	public static void setFont(PFont pfont){
+		GComponent.fGlobalFont = pfont.getFont();
+	}
+	
+	
+	
 	/**
 	 * When you first use G4P(app) it switches off auto draw for the 
 	 * PApplet app.
