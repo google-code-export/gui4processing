@@ -344,7 +344,7 @@ public class GButton extends GComponent {
 	 * @param fontname the name of the font to use (if not available use default font)
 	 * @param fontsize the font size to use
 	 */
-	public void setFont(String fontname, int fontsize){
+	public void setFontOLD(String fontname, int fontsize){
 		setFont(fontname, fontsize, true);
 	}
 

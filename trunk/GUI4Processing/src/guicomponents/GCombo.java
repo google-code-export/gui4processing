@@ -138,7 +138,7 @@ public class GCombo extends GComponent {
 	 * width of the button if necessary to display text. <br>
 	 * It will not shrink if the font size is decreased.  
 	 */
-	public void setFont(String fontname, int fontsize){
+	public void setFontOLD(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.getFont().getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);

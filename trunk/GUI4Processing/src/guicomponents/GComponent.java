@@ -24,26 +24,22 @@
 package guicomponents;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.TreeSet;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
 import processing.core.PGraphicsJava2D;
-import processing.core.PImage;
 
 
 /**
@@ -113,6 +109,9 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	protected int mdx = Integer.MAX_VALUE, mdy = Integer.MAX_VALUE;
 
+	
+	private Font fLocalFont;
+	
 	public static GCScheme globalColor;
 	public GCScheme localColor;
 	// Replacements for global colour scheme above V3
@@ -131,6 +130,9 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		}
 	}
 
+	// This is the new global font
+	public static Font fGlobalFont = new Font("Dialog", 11, Font.PLAIN);
+	
 	public static PFont globalFont;
 	public PFont localFont;
 
@@ -196,12 +198,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/** the name of the method to handle the event */ 
 	protected String eventHandlerMethodName;
 	
-	protected StyledString stext = null;
-//	protected float sTextHeight;
-	
 	/** Text value associated with component */
 	protected String text = "";
+	// The styled version of text
+	protected StyledString stext = null;
 	
+	// These next variable will be abandoned in next version
 	protected int textWidth;
 	protected int textAlignHorz = GAlign.LEFT;
 	protected int textAlignVert = GAlign.MIDDLE;
@@ -317,6 +319,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		z = 0;
 		palette = FCScheme.getColor(winApp, localColorScheme);
 		jpalette = FCScheme.getJavaColor(winApp, localColorScheme);
+		fLocalFont = fGlobalFont;
 		G4P.addComponent(winApp, this);
 	}
 
@@ -1003,9 +1006,32 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param fontname
 	 * @param fontsize
 	 */
-	public void setFont(String fontname, int fontsize){
+	public void setFontOLD(String fontname, int fontsize){
 	}
 
+	/**
+	 * Set the global font to be used by all controls. <br>
+	 * You can override the font used by individual controls with
+	 * the equivalent setFont method for the control. <br>
+	 * 
+	 * @param font the java.awt.Font to use
+	 */
+	public void setFont(Font font){
+		fLocalFont = font;
+	}
+	
+	/**
+	 * Set the global font to be used by all controls. <br>
+	 * You can override the font used by individual controls with
+	 * the equivalent setFont method for the control. <br>
+	 * 
+	 * @param pfont the Processing font to use
+	 */
+	public void setFont(PFont pfont){
+		fLocalFont = pfont.getFont();
+	}
+	
+	
 	/**
 	 * Calculate text X & Y position based on text alignment
 	 */

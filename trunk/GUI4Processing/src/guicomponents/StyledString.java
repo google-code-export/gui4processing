@@ -1,9 +1,9 @@
 package guicomponents;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GraphicAttribute;
 import java.awt.font.ImageGraphicAttribute;
@@ -41,10 +41,6 @@ import processing.core.PApplet;
  */
 final public class StyledString implements Serializable {
 
-	/**
-	 * An array of names representing all the available fonts.
-	 */
-	transient final public static String[] fontFamilies = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
@@ -53,25 +49,25 @@ final public class StyledString implements Serializable {
 
 	// The plain text to be styled
 	private String plainText = "";
-	// List of attribute runs to return the string to its base style
-	private LinkedList<AttributeRun> base = new LinkedList<AttributeRun>();
 	// List of attribute runs to be applied over the base style
 	private LinkedList<AttributeRun> atrun = new LinkedList<AttributeRun>();
 
 	// The width to break a line
 	private float breakWidth = 100;
 	// Flag to determine whether the text layouts need recalculating
+	private boolean invalidFont = false;
+	// Flag to determine whether the text layouts need recalculating
 	private boolean invalidLayout = true;
 	// Flag to determine whether the actual character string have changed
 	private boolean invalidText = true;
 	
-	// Base style used for base
-	private String family = "Dialog";
-	private float posture = TextAttribute.POSTURE_REGULAR;
-	private float size = 16.0f;
+	// Base font to use with this instance
+	Font font = GComponent.fGlobalFont;
+	
 	// Base colours
 	private final Color backcolor = new Color(255,255,255,0);
-	private Color forecolor = Color.black;
+	private Color forecolor = Color.black;						// jpalette
+	
 	// Base justification
 	private boolean justify = false;
 	private float justifyRatio = 0.7f;
@@ -92,7 +88,7 @@ final public class StyledString implements Serializable {
 		removeBlankLines(); // just in case we merge two eol characters
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
-		resetStyles();
+		applyAttributes();
 		linesInfo = getLines(g2d);
 	}
 
@@ -121,26 +117,6 @@ final public class StyledString implements Serializable {
 	 */
 
 	/**
-	 * Change the base foreground colour.
-	 * @param c the font face colour to use
-	 */
-	public void setBaseForeground(Color c){
-		forecolor = c;
-		resetStyles();
-	}
-
-	/**
-	 * Change the base foreground colour. <br>
-	 * The value passed is a 32bit ARGB integer
-	 * @param c the font face colour to use.
-	 */
-	public void setBaseForeground(int c){
-		forecolor = new Color((c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff, (c >> 24));
-		resetStyles();
-	}
-
-
-	/**
 	 * Set the font face to be used. This will be system specific 
 	 * but all Java implementations support the following logical
 	 * fonts. <br>
@@ -157,41 +133,8 @@ final public class StyledString implements Serializable {
 	 * @param family
 	 * @return true if the font was found and different from the current font family
 	 */
-	public boolean setBaseFontFamily(String family){
-		String f = getFamily(family);
-		if(f.length() > 0 && !f.equals(family)){
-			this.family = f;
-			resetStyles();
-			return true;
-		}
-		return false;
-	}
 
-	/**
-	 * Set the base font size. The size must be at least 8pt
-	 * 
-	 * @param size
-	 */
-	public void setBaseFontSize(float size){
-		size = Math.max(8, size);
-		this.size = size;
-		resetStyles();
-	}
 
-	/**
-	 * Set the base posture. <br>
-	 * Values are constrained to the range 0.0 (REGULAR) 
-	 * and 0.2 (ITALIC)
-	 * @param posture
-	 */
-	public void setBaseFontPosture(float posture){
-		if(posture <0)
-			posture = 0;
-		else if(posture > 0.2f)
-			posture = 0.2f;
-		this.posture = posture;
-		resetStyles();
-	}
 
 
 	/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -244,24 +187,6 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
-	 * Recalculate the TextLayouts when the plainText has changed. The user can specify 
-	 * the line number to start the calculation.
-	 * @param charStart
-	 * @param charEnd
-	 * @param lineStart
-	 */
-	public void resetStyles(){
-		base.clear();
-		base.add(new AttributeRun(TextAttribute.FAMILY, family));
-		base.add(new AttributeRun(TextAttribute.SIZE, size));
-		base.add(new AttributeRun(TextAttribute.POSTURE, posture));
-		base.add(new AttributeRun(TextAttribute.JUSTIFICATION, TextAttribute.JUSTIFICATION_FULL));
-		base.add(new AttributeRun(TextAttribute.BACKGROUND, backcolor));
-		base.add(new AttributeRun(TextAttribute.FOREGROUND, forecolor));
-		applyAttributes();
-	}
-
-	/**
 	 * Set charStart and charEnd to <0 if full length.
 	 * 
 	 * @param type
@@ -289,11 +214,6 @@ final public class StyledString implements Serializable {
 	 */
 	private void applyAttributes(){
 		if(plainText.length() > 0){
-			// Apply base
-			for(AttributeRun ar : base){
-				styledText.addAttribute(ar.atype, ar.value);
-			}
-			// Apply other attributes
 			for(AttributeRun ar : atrun){
 				if(ar.end == Integer.MAX_VALUE)
 					styledText.addAttribute(ar.atype, ar.value);
@@ -324,10 +244,6 @@ final public class StyledString implements Serializable {
 			}
 		}
 		invalidText = true;
-
-//		styledText = new AttributedString(plainText);
-//		styledText = insertParagraphMarkers(plainText, styledText);
-//		applyAttributes();
 		return true;
 	}
 
@@ -359,14 +275,11 @@ final public class StyledString implements Serializable {
 				}
 			}		
 		}
+		if(plainText.length() == 0){
+			styledText = null;
+		}
 		invalidText = true;
 		return true;
-	}
-
-
-	public LinkedList<TextLayoutInfo> getUpdatedLines(Graphics2D g2d){
-		invalidLayout = true;
-		return getLines(g2d);
 	}
 
 	/**
@@ -377,15 +290,17 @@ final public class StyledString implements Serializable {
 	 * @return
 	 */
 	public LinkedList<TextLayoutInfo> getLines(Graphics2D g2d){
-		if(invalidText){
+		if(invalidFont){
+			g2d.setFont(font);
+			invalidLayout = true;
+		}
+		if(invalidText && plainText.length() > 0){
 			styledText = new AttributedString(plainText);
 			styledText = insertParagraphMarkers(plainText, styledText);
 			applyAttributes();
 			invalidLayout = true;
 		}
-		if(linesInfo == null)
-			linesInfo = new LinkedList<TextLayoutInfo>();
-		if(invalidLayout){
+		if(invalidLayout && plainText.length() > 0){
 			textHeight = 0;
 			maxLineLength = 0;
 			maxLineHeight = 0;
@@ -612,13 +527,6 @@ final public class StyledString implements Serializable {
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();
-	}
-
-	private String getFamily(String family){
-		for(String f : fontFamilies)
-			if(f.equalsIgnoreCase(family))
-				return f;
-		return "";
 	}
 
 	/**
