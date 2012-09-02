@@ -115,9 +115,23 @@ public class FTextArea extends GComponent {
 		}
 	}
 
-		public boolean hasSelection(){
-			return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
-		}
+	public void setJustify(boolean justify){
+		stext.setJustify(justify);
+		bufferInvalid = true;
+	}
+	
+	public void setLocalColorScheme(int cs){
+		super.setLocalColorScheme(cs);
+		if(hsb != null)
+			hsb.setLocalColorScheme(localColorScheme);
+		if(vsb != null)
+			vsb.setLocalColorScheme(localColorScheme);
+	}
+
+
+	public boolean hasSelection(){
+		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
+	}
 
 	/**
 	 * If the buffer is invalid then redraw it.
@@ -370,8 +384,6 @@ public class FTextArea extends GComponent {
 
 			tli = stext.getTLIforCharNo(pos);
 			int posInLine = pos - tli.startCharIndex;
-//
-//			System.out.println(tli.lineNo + "  starts @ " + tli.startCharIndex + "      pos in line " + posInLine + "    length " +  tli.nbrChars);
 
 			thiLeft = tli.layout.getNextLeftHit(posInLine);
 			thiRight = tli.layout.getNextRightHit(posInLine);					
