@@ -64,10 +64,6 @@ final public class StyledString implements Serializable {
 	// Base font to use with this instance
 	Font font = GComponent.fGlobalFont;
 	
-	// Base colours
-	private final Color backcolor = new Color(255,255,255,0);
-	private Color forecolor = Color.black;						// jpalette
-	
 	// Base justification
 	private boolean justify = false;
 	private float justifyRatio = 0.7f;

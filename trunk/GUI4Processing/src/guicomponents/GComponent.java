@@ -109,8 +109,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	protected int mdx = Integer.MAX_VALUE, mdy = Integer.MAX_VALUE;
 
-	
-	private Font fLocalFont;
+	/** the font to be used for a control */
+	protected Font fLocalFont;
 	
 	public static GCScheme globalColor;
 	public GCScheme localColor;
@@ -127,6 +127,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			localColorScheme = cs;
 			palette = FCScheme.getColor(winApp, localColorScheme);
 			jpalette = FCScheme.getJavaColor(winApp, localColorScheme);
+			bufferInvalid = true;
 		}
 	}
 
