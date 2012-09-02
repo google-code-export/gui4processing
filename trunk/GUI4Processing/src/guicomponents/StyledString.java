@@ -257,10 +257,10 @@ final public class StyledString implements Serializable {
 	public boolean deleteCharacters(int fromPos, int nbrToRemove){
 		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
 			return false;
-		System.out.print(plainText.length() + "  >>>  ");
+//		System.out.print(plainText.length() + "  >>>  ");
 		plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
 		removeBlankLines(); // just in case we merge two eol characters
-		System.out.println(plainText.length());
+//		System.out.println(plainText.length());
 		ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
 		AttributeRun ar;
 		while(iter.hasPrevious()){
@@ -561,6 +561,11 @@ final public class StyledString implements Serializable {
 		public void copyFrom(TextLayoutHitInfo other){
 			this.tli = other.tli;
 			this.thi = other.thi;
+		}
+		
+		public void setInfo(TextLayoutInfo tli, TextHitInfo thi) {
+			this.tli = tli;
+			this.thi = thi;
 		}
 		
 		public int compareTo(TextLayoutHitInfo other) {

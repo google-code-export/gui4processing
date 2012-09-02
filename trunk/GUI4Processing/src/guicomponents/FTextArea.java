@@ -44,15 +44,16 @@ public class FTextArea extends GComponent {
 	float caretX, caretY;
 
 	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
-//	protected int startChar = 0, endChar = 0;
+	//	protected int startChar = 0, endChar = 0;
 	protected boolean dragging = false;
-	
+
 	protected int allTextHeight = 0;
 
 	// The scrollbar policy
 	protected final int sbPolicy;
 	protected boolean autoHide = true;
 	FScrollbar hsb, vsb;
+
 
 
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3) {
@@ -114,10 +115,10 @@ public class FTextArea extends GComponent {
 		}
 	}
 
-	public boolean hasSelection(){
-		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
-	}
-	
+		public boolean hasSelection(){
+			return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
+		}
+
 	/**
 	 * If the buffer is invalid then redraw it.
 	 * @TODO need to use palette for colours
@@ -126,7 +127,7 @@ public class FTextArea extends GComponent {
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
-			
+
 			buffer.beginDraw();
 			buffer.background(buffer.color(255,0));
 			buffer.translate(-ptx, -pty);
@@ -184,9 +185,9 @@ public class FTextArea extends GComponent {
 	protected boolean keepCursorInDisplay(){
 		boolean horzScroll = false, vertScroll = false;
 		if(endTLHI != null){
-//			float temp[] = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
-//			float x = temp[0];		
-//			float y = endTLHI.tli.yPosInPara;
+			//			float temp[] = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
+			//			float x = temp[0];		
+			//			float y = endTLHI.tli.yPosInPara;
 			if(caretX < ptx ){ 										// LEFT?
 				ptx--;
 				if(ptx < 0) ptx = 0;
@@ -201,7 +202,7 @@ public class FTextArea extends GComponent {
 				if(pty < 0) pty = 0;
 				vertScroll = true;
 			}
-			else if(caretY > pty + th  - stext.getMaxLineHeight()){	// DOWN?
+			else if(caretY > pty + th  + stext.getMaxLineHeight()){	// DOWN?
 				pty++;
 				vertScroll = true;
 			}
@@ -254,204 +255,208 @@ public class FTextArea extends GComponent {
 		winApp.popStyle();
 	}
 
+	protected boolean processKeyPressed(KeyEvent e, boolean shiftDown, boolean ctrlDown){
+		int keyCode = e.getKeyCode();
+		boolean caretMoved = false;
+
+		switch(keyCode){
+		case KeyEvent.VK_LEFT:
+			caretMoved = moveCaretLeft(endTLHI);
+			break;
+		case KeyEvent.VK_RIGHT:
+			caretMoved = moveCaretRight(endTLHI);
+			break;
+		case KeyEvent.VK_UP:
+			caretMoved = moveCaretUp(endTLHI);
+			break;
+		case KeyEvent.VK_DOWN:
+			caretMoved = moveCaretDown(endTLHI);
+			break;
+		case KeyEvent.VK_HOME:
+			if(ctrlDown){		// move to start of text
+				System.out.println("Move to start of text");
+				caretMoved = moveCaretStartOfText(endTLHI);
+			}
+			else 	// Move to start of line
+				caretMoved = moveCaretStartOfLine(endTLHI);
+			break;
+		case KeyEvent.VK_END:
+			if(ctrlDown){		// move to end of text
+				caretMoved = moveCaretEndOfText(endTLHI);
+			}
+			else 	// Move to end of line
+				caretMoved = moveCaretEndOfLine(endTLHI);
+			break;
+		}
+		calculateCaretPos(endTLHI);
+		if(caretX > stext.getBreakWidth()){
+			switch(keyCode){
+			case KeyEvent.VK_LEFT:
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_END:
+				moveCaretLeft(endTLHI);
+				caretMoved = true;
+				break;
+			case KeyEvent.VK_RIGHT:
+				if(!moveCaretRight(endTLHI))
+					moveCaretLeft(endTLHI);
+				caretMoved = true;
+			}
+			// Calculate new caret position
+			calculateCaretPos(endTLHI);
+		}
+		// After testing for cursor moving keys
+		if(caretMoved){
+			if(!shiftDown)				// Not extending selection
+				startTLHI.copyFrom(endTLHI);
+			bufferInvalid = true;	
+			while(keepCursorInDisplay());
+		}
+		return caretMoved;
+	}
+
+	protected void processKeyTyped(KeyEvent e, boolean shiftDown, boolean ctrlDown){
+		int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
+		int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
+		int pos = endChar, nbr = 0, adjust = 0;
+		boolean hasSelection = (startTLHI.compareTo(endTLHI) != 0);
+
+		if(hasSelection){ // Have we some text selected?
+			if(startChar < endChar){ // Forward selection
+				pos = startChar; nbr = endChar - pos;
+			}
+			else if(startChar > endChar){ // Backward selection
+				pos = endChar;	nbr = startChar - pos;
+			}
+		}
+		
+		char keyChar = e.getKeyChar();
+		int ascii = (int)keyChar;
+		boolean textChanged = false;
+		// If we have a selection then any key typed will delete it
+		if(hasSelection){
+			stext.deleteCharacters(pos, nbr);
+			adjust = 0; textChanged = true;
+		}
+		else {	// Only process back_space and delete if there was no selection
+			if(keyChar == KeyEvent.VK_BACK_SPACE){
+				if(stext.deleteCharacters(pos - 1, 1)){
+					adjust = -1; textChanged = true;
+				}
+			}
+			else if(keyChar == KeyEvent.VK_DELETE){
+				if(stext.deleteCharacters(pos, 1)){
+					adjust = 0; textChanged = true;
+				}
+			}
+		}
+		// Now we have got rid of any selection be can process other keys
+		if(keyChar == KeyEvent.VK_ENTER){
+			if(stext.insertCharacters(pos, "\n ")){
+				adjust = 1; textChanged = true;
+			}
+		}
+		else if(ascii >= 32 && ascii < 127){
+			if(stext.insertCharacters(pos, "" + e.getKeyChar())){
+				adjust = 1; textChanged = true;
+			}
+		}
+		if(textChanged){
+			TextLayoutInfo tli;
+			TextHitInfo thi = null, thiLeft, thiRight;
+			// Force update
+			stext.getLines(buffer.g2);
+
+			tli = stext.getTLIforCharNo(pos);
+			int posInLine = pos - tli.startCharIndex;
+//
+//			System.out.println(tli.lineNo + "  starts @ " + tli.startCharIndex + "      pos in line " + posInLine + "    length " +  tli.nbrChars);
+
+			thiLeft = tli.layout.getNextLeftHit(posInLine);
+			thiRight = tli.layout.getNextRightHit(posInLine);					
+			// We need to 'adjust' the caret position based on what we did
+			//  0 caret does not move from current position
+			// -1 caret needs to go left
+			//  1 caret needs to go right
+			switch(adjust){
+			case 0:		
+				if(thiLeft != null)
+					thi = tli.layout.getNextRightHit(thiLeft);
+				else if(thiRight != null)
+					thi = tli.layout.getNextLeftHit(thiRight);
+				break;
+			case -1:
+				if(thiLeft == null){		// we are at start of line
+					if(tli.lineNo == 0){	// first line so move to beginning of text
+						thi = tli.layout.getNextLeftHit(0);
+					}
+					else {					// Attempt to move to end of previous line
+						tli = stext.getTLIforLineNo(tli.lineNo - 1);
+						thi = tli.layout.getNextRightHit(tli.nbrChars - 1);
+					}
+				}
+				else {
+					thi = thiLeft;
+				}
+				break;
+			case 1:
+				if(thiRight == null){	// we are at the end of line
+					if(tli.lineNo == stext.getNbrLines() - 1){ 
+						// Last line so move to right of last character
+						thi = tli.layout.getNextRightHit(tli.nbrChars - 1);	
+					}
+					else {	// Attempt to move to start of next line
+						tli = stext.getTLIforLineNo(tli.lineNo + 1);
+						thi = tli.layout.getNextRightHit(0);
+					}
+				}
+				else {
+					thi = thiRight;
+				}
+				break;
+			}
+			endTLHI.setInfo(tli, thi);
+			// Cursor at end of paragraph graphic
+			calculateCaretPos(endTLHI);
+			if(caretX > stext.getBreakWidth()){
+				switch(keyChar){
+				case KeyEvent.VK_DELETE:
+				case KeyEvent.VK_BACK_SPACE:
+					moveCaretLeft(endTLHI);
+					break;
+				case KeyEvent.VK_ENTER:
+					if(!moveCaretRight(endTLHI))
+						moveCaretLeft(endTLHI);
+
+					break;
+				}
+				calculateCaretPos(endTLHI);
+			}
+			// Finish off by ensuring no selection, invalidate buffer etc.
+			startTLHI.copyFrom(endTLHI);
+			bufferInvalid = true;
+			while(keepCursorInDisplay());
+		} // End of text changed == true
+
+	}
+
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 		if(focusIsWith == this && endTLHI != null){
-
 			//			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
-			// KEY PRESSED ================================================================================================================================
-			// Process caret movement
 			if(e.getID() == KeyEvent.KEY_PRESSED) {
-				boolean caretMoved = false;
-				if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-					caretMoved = moveCaretLeft(endTLHI);
-				}
-				else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					caretMoved = moveCaretRight(endTLHI);
-				}
-				else if(e.getKeyCode() == KeyEvent.VK_UP) {
-					caretMoved = moveCaretUp(endTLHI);
-				}
-				else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-					caretMoved = moveCaretDown(endTLHI);
-				}
-				else if(e.getKeyCode() == KeyEvent.VK_HOME) {
-					if(ctrlDown){
-						// move to start of text
-						System.out.println("Move to start of text");
-						caretMoved = moveCaretStartOfText(endTLHI);
-					}
-					else {
-						// Move to start of line
-						caretMoved = moveCaretStartOfLine(endTLHI);
-					}
-				}
-				else if(e.getKeyCode() == KeyEvent.VK_END) {
-					if(ctrlDown){
-						// move to end of text
-						System.out.println("Move to end of text");
-						caretMoved = moveCaretEndOfText(endTLHI);
-					}
-					else {
-						// Move to end of line
-						caretMoved = moveCaretEndOfLine(endTLHI);
-					}
-				}
-				// After testing for cursor moving keys
-				if(caretMoved){
-					if(!shiftDown)				// Not extending selection
-						startTLHI.copyFrom(endTLHI);
-					bufferInvalid = true;							
-				}
-			}			
-			// KEY TYPED ================================================================================================================================
+				processKeyPressed(e, shiftDown, ctrlDown);
+			}
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
-				boolean hasSelection = hasSelection();
-				System.out.println(hasSelection);
-				int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
-				int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
-				int pos, nbr, adjust = 0;
-
-				int adjustPart = 0;
-				
-				if(startChar < endChar){
-					pos = startChar;
-					nbr = endChar - pos;
-				}
-				else if(startChar > endChar){
-					pos = endChar;
-					nbr = startChar - pos;
-				}
-				else {
-					pos = endChar;
-					nbr = 0;
-				}
-				// Assume that the text will not be changed by the keypress
-				// set this to true when the text does change
-				boolean textChanged = false;
-				// If we have a selection then any key typed will delete it
-				if(hasSelection){
-					stext.deleteCharacters(pos, nbr);
-					adjust = 0;
-					textChanged = true;
-				}
-				else {		
-					// Only process back_space and delete if there was no selection
-					if(e.getKeyChar() == KeyEvent.VK_BACK_SPACE){
-						if(stext.deleteCharacters(pos - 1, 1)){
-							adjust = -1;
-							textChanged = true;
-						}
-					}
-					else if(e.getKeyChar() == KeyEvent.VK_DELETE){
-						if(stext.deleteCharacters(pos, 1)){
-							adjust = 0;
-							textChanged = true;
-						}
-					}
-				}
-				// Now we have got rid of any selection be can process other kys
-				if(e.getKeyChar() == KeyEvent.VK_ENTER){
-					if(stext.insertCharacters(pos, "\n ")){
-						adjust = 1;
-						textChanged = true;
-					}
-				}
-				else {
-					int ascii = (int)(e.getKeyChar());
-					if(ascii >= 32 && ascii < 127){
-						System.out.println("Key typed = " + (int) e.getKeyChar());
-						if(stext.insertCharacters(pos, "" + e.getKeyChar())){
-							adjust = 1;
-							textChanged = true;
-						}
-					}
-				}
-				
-				if(textChanged){
-					TextLayoutInfo tli;
-					TextHitInfo thi = null, thiLeft, thiRight;
-					// Force update
-					stext.getLines(buffer.g2);
-					
-					tli = stext.getTLIforCharNo(pos);
-					int posInLine = pos - tli.startCharIndex;
-					
-					System.out.println(tli.lineNo + "  starts @ " + tli.startCharIndex + "      pos in line " + posInLine + "    length " +  tli.nbrChars);
-					
-					thiLeft = tli.layout.getNextLeftHit(posInLine);
-					thiRight = tli.layout.getNextRightHit(posInLine);					
-					// We need to 'adjust' the caret position based on what we did
-					//  0 caret does not move from current position
-					// -1 caret needs to go left
-					//  1 caret needs to go right
-					switch(adjust){
-					case 0:		
-						if(thiLeft != null)
-							thi = tli.layout.getNextRightHit(thiLeft);
-						else if(thiRight != null)
-							thi = tli.layout.getNextLeftHit(thiRight);
-						break;
-					case -1:
-						if(thiLeft == null){   // we are at start of line
-							if(tli.lineNo == 0){
-								// first line so move to beginning of text
-								thi = tli.layout.getNextLeftHit(0);
-							}
-							else {
-								// Attempt to move to end of previous line
-								tli = stext.getTLIforLineNo(tli.lineNo - 1);
-								thi = tli.layout.getNextRightHit(tli.nbrChars - 1);
-							}
-						}
-						else {
-							thi = thiLeft;
-						}
-						break;
-					case 1:
-						if(thiRight == null){	// we are at the end of line
-							if(tli.lineNo == stext.getNbrLines() - 1){ 
-								// Last line so move to right of last character
-								thi = tli.layout.getNextRightHit(tli.nbrChars - 1);	
-								adjustPart = 1;
-							}
-							else {
-								// Attempt to move to start of next line
-								tli = stext.getTLIforLineNo(tli.lineNo + 1);
-								thi = tli.layout.getNextRightHit(0);
-								adjustPart = 2;
-							}
-							
-						}
-						else {
-							thi = thiRight;
-							adjustPart = 3;
-						}
-						
-						break;
-					}
-					if(thi == null){
-						System.out.println("KeyEvent handling thi = null   adjust = " + adjust + "  " + adjustPart + "\n\n");
-					}
-					endTLHI = new TextLayoutHitInfo(tli, thi);
-					startTLHI.copyFrom(endTLHI);
-					bufferInvalid = true;
-				}
+				processKeyTyped(e, shiftDown, ctrlDown);
 			}
-			calculateCaretPos(endTLHI);
-			if(caretX > stext.getBreakWidth()){
-				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(endTLHI.thi);
-				calculateCaretPos(endTLHI);
-			}
-				
-			while(keepCursorInDisplay());
 		}
-
 	}
-	
+
 	/**
 	 * Move caret to home position
 	 * @return true if caret moved else false
@@ -462,14 +467,14 @@ public class FTextArea extends GComponent {
 		currPos.thi = currPos.tli.layout.getNextLeftHit(1);
 		return true;
 	}
-	
+
 	protected boolean moveCaretEndOfLine(TextLayoutHitInfo currPos){
 		if(currPos.thi.getCharIndex() == currPos.tli.nbrChars - 1)
 			return false; // already at end of line
 		currPos.thi = currPos.tli.layout.getNextRightHit(currPos.tli.nbrChars - 1);
 		return true;
 	}
-	
+
 	protected boolean moveCaretStartOfText(TextLayoutHitInfo currPos){
 		if(currPos.tli.lineNo == 0 && currPos.thi.getCharIndex() == 0)
 			return false; // already at start of text
@@ -477,7 +482,7 @@ public class FTextArea extends GComponent {
 		currPos.thi = currPos.tli.layout.getNextLeftHit(1);
 		return true;
 	}
-	
+
 	protected boolean moveCaretEndOfText(TextLayoutHitInfo currPos){
 		if(currPos.tli.lineNo == stext.getNbrLines() - 1 && currPos.thi.getCharIndex() == currPos.tli.nbrChars - 1)
 			return false; // already at end of text
@@ -485,8 +490,8 @@ public class FTextArea extends GComponent {
 		currPos.thi = currPos.tli.layout.getNextRightHit(currPos.tli.nbrChars - 1);
 		return true;
 	}
-	
-	
+
+
 	protected boolean moveCaretUp(TextLayoutHitInfo currPos){
 		if(currPos.tli.lineNo == 0)
 			return false;
@@ -496,7 +501,7 @@ public class FTextArea extends GComponent {
 		currPos.thi = nthi;
 		return true;
 	}
-	
+
 	protected boolean moveCaretDown(TextLayoutHitInfo currPos){
 		if(currPos.tli.lineNo == stext.getNbrLines() - 1)
 			return false;
@@ -506,7 +511,7 @@ public class FTextArea extends GComponent {
 		currPos.thi = nthi;
 		return true;
 	}
-	
+
 	/**
 	 * Move caret left by one character. If necessary move to the end of the line above
 	 * @return true if caret was moved else false
@@ -535,7 +540,7 @@ public class FTextArea extends GComponent {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Move caret left by one character. If necessary move to the end of the line above
 	 * @return true if caret was moved else false
@@ -564,7 +569,7 @@ public class FTextArea extends GComponent {
 		}
 		return true;
 	}
-	
+
 	public void mouseEvent(MouseEvent event){
 		if(!visible  || !enabled || !available) return;
 
@@ -612,7 +617,7 @@ public class FTextArea extends GComponent {
 		float temp[] = tlhi.tli.layout.getCaretInfo(tlhi.thi);
 		caretX = temp[0];		
 		caretY = tlhi.tli.yPosInPara;
-		
+
 	}
 
 	public void hsbEventHandler(FScrollbar scrollbar){
