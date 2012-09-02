@@ -108,16 +108,10 @@ public class FScrollbar extends GComponent {
 			bufferInvalid = true;
 		}
 
-
-		// This next line will also set ox and oy
-		//		boolean mouseOver = contains(winApp.mouseX, winApp.mouseY);
-
-
 		if(currSpot>= 0 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
-
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
@@ -173,6 +167,10 @@ public class FScrollbar extends GComponent {
 				fireEvent();
 			}
 			break;
+		}
+		if(focusIsWith != this){
+			currSpot = 0;
+			bufferInvalid = true;
 		}
 	}
 
