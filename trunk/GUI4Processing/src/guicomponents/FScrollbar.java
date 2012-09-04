@@ -191,14 +191,14 @@ public class FScrollbar extends GComponent {
 		}
 		else
 			buffer.background(buffer.color(255,0));
-		// Draw the rack
+		// Draw the track
 		buffer.fill(palette[TRACK]);
 		buffer.noStroke();
-		buffer.rect(8,2,width-8,height-4);
+		buffer.rect(8,3,width-8,height-5);
 		g2d.setStroke(pen);
 
 		// Draw the low cap
-		buffer.strokeWeight(2.0f);
+		buffer.strokeWeight(1.2f);
 		if(currSpot == 1){
 			g2d.setColor(jpalette[OVER_FILL]);
 			g2d.fill(lowCap);
