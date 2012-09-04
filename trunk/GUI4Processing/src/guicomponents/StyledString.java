@@ -308,26 +308,32 @@ final public class StyledString implements Serializable {
 	public boolean deleteCharacters(int fromPos, int nbrToRemove){
 		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
 			return false;
-//		System.out.print(plainText.length() + "  >>>  ");
-		plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
+		System.out.print(plainText.length() + "  >>>  ");
+		if(fromPos != 0)
+			plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
+		else
+			plainText = plainText.substring(fromPos + nbrToRemove);
 		removeBlankLines(); // just in case we merge two eol characters
-//		System.out.println(plainText.length());
-		ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
-		AttributeRun ar;
-		while(iter.hasPrevious()){
-			ar = iter.previous();
-			if(ar.end < Integer.MAX_VALUE){
-				if(ar.end >= fromPos){
-					ar.end -= nbrToRemove;
-					if(ar.start > ar.end)
-						iter.remove();
-					else if(ar.start >= fromPos)
-						ar.start -= nbrToRemove;
-				}
-			}		
-		}
+		System.out.println(plainText.length());
 		if(plainText.length() == 0){
+			atrun.clear();
 			styledText = null;
+		}
+		else {
+			ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
+			AttributeRun ar;
+			while(iter.hasPrevious()){
+				ar = iter.previous();
+				if(ar.end < Integer.MAX_VALUE){
+					if(ar.end >= fromPos){
+						ar.end -= nbrToRemove;
+						if(ar.start > ar.end)
+							iter.remove();
+						else if(ar.start >= fromPos)
+							ar.start -= nbrToRemove;
+					}
+				}		
+			}
 		}
 		invalidText = true;
 		return true;
@@ -369,13 +375,14 @@ final public class StyledString implements Serializable {
 			applyAttributes();
 			invalidLayout = true;
 		}
-		if(invalidLayout && plainText.length() > 0){
-			textHeight = 0;
-			maxLineLength = 0;
-			maxLineHeight = 0;
-			nbrLines = 0;
+		if(invalidLayout){
+			System.out.println("Text length " + plainText.length());
 			linesInfo.clear();
 			if(plainText.length() > 0){
+				textHeight = 0;
+				maxLineLength = 0;
+				maxLineHeight = 0;
+				nbrLines = 0;
 				AttributedCharacterIterator paragraph = styledText.getIterator(null, 0, plainText.length());
 				FontRenderContext frc = g2d.getFontRenderContext();
 				lineMeasurer = new LineBreakMeasurer(paragraph, frc);
