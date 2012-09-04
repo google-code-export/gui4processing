@@ -46,23 +46,21 @@ final public class StyledString implements Serializable {
 	transient private ImageGraphicAttribute spacer = null;
 	transient private LineBreakMeasurer lineMeasurer = null;
 	transient private LinkedList<TextLayoutInfo> linesInfo = new LinkedList<TextLayoutInfo>();
-
+	transient private Font font = null;
+	
 	// The plain text to be styled
 	private String plainText = "";
+	// List of attribute runs to match font
+	private LinkedList<AttributeRun> baseStyle = new LinkedList<AttributeRun>();
 	// List of attribute runs to be applied over the base style
 	private LinkedList<AttributeRun> atrun = new LinkedList<AttributeRun>();
 
 	// The width to break a line
-	private float breakWidth = 100;
-	// Flag to determine whether the text layouts need recalculating
-	private boolean invalidFont = false;
+	private int wrapWidth = 100;
 	// Flag to determine whether the text layouts need recalculating
 	private boolean invalidLayout = true;
 	// Flag to determine whether the actual character string have changed
 	private boolean invalidText = true;
-	
-	// Base font to use with this instance
-	Font font = GComponent.fGlobalFont;
 	
 	// Base justification
 	private boolean justify = false;
@@ -74,18 +72,67 @@ final public class StyledString implements Serializable {
 	private float maxLineHeight = 0;
 	private int nbrLines;
 
-	public StyledString(Graphics2D g2d, String startText, float lineWidth){
-		if(lineWidth < 0 || lineWidth == Integer.MAX_VALUE)
-			breakWidth = Integer.MAX_VALUE;
-		else
-			breakWidth = lineWidth;
-		spacer = getParagraghSpacer((int)breakWidth);
+ 
+	/**
+	 * This is assumed to be a single line of text (i.e. no wrap). 
+	 * EOL characters will be stripped from the text before use.
+	 * 
+	 * @param startText
+	 */
+	public StyledString(String startText){
+		this(null, startText);	
+	}
+	
+	/**
+	 * This is assumed to be a single line of text (i.e. no wrap). 
+	 * EOL characters will be stripped from the text before use.
+	 * It will use the first parameter to calculate StyledString metrics
+	 * immediately.
+	 * 
+	 * @param g2d
+	 * @param startText
+	 */
+	public StyledString(Graphics2D g2d, String startText){
+		wrapWidth = Integer.MAX_VALUE;
+		spacer = getParagraghSpacer(1); //  safety
+		// Get rid of any EOLs
+		plainText = startText.replaceAll("\n", " ");
+		styledText = new AttributedString(plainText);
+		applyAttributes();
+		if(g2d != null)
+			linesInfo = getLines(g2d);		
+	}
+
+	/**
+	 * Supports multiple lines of text wrapped on word boundaries.
+	 * 
+	 * @param startText
+	 * @param wrapWidth the maximum size after which the text is 
+	 */
+	public StyledString(String startText, int wrapWidth){
+		this(null, startText, wrapWidth);	
+	}
+	
+
+	/**
+	 * Supports multiple lines of text wrapped on word boundaries. <br>
+	 * It will use the first parameter to calculate StyledString metrics
+	 * immediately.
+	 * 
+	 * @param g2d
+	 * @param startText
+	 * @param lineWidth
+	 */
+	public StyledString(Graphics2D g2d, String startText, int lineWidth){
+		this.wrapWidth = (lineWidth > 0 && lineWidth < Integer.MAX_VALUE) ? lineWidth : Integer.MAX_VALUE;
+		spacer = getParagraghSpacer(wrapWidth);
 		plainText = startText;
 		removeBlankLines(); // just in case we merge two eol characters
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();
-		linesInfo = getLines(g2d);
+		if(g2d != null)
+			linesInfo = getLines(g2d);		
 	}
 
 	/**
@@ -210,6 +257,9 @@ final public class StyledString implements Serializable {
 	 */
 	private void applyAttributes(){
 		if(plainText.length() > 0){
+			for(AttributeRun bsar : baseStyle){
+				styledText.addAttribute(bsar.atype, bsar.value);
+			}
 			for(AttributeRun ar : atrun){
 				if(ar.end == Integer.MAX_VALUE)
 					styledText.addAttribute(ar.atype, ar.value);
@@ -243,6 +293,11 @@ final public class StyledString implements Serializable {
 		return true;
 	}
 
+	public void clearAllAttributes(){
+		atrun.clear();
+		invalidLayout = true;
+	}
+	
 	/**
 	 * Remove a number of characters from the string
 	 * 
@@ -277,7 +332,25 @@ final public class StyledString implements Serializable {
 		invalidText = true;
 		return true;
 	}
-
+	
+	public void setFont(Font a_font){
+		if(a_font != null){
+			font = a_font;
+			baseStyle.clear();
+			System.out.println(font.getFamily());
+			System.out.println(font.getSize());
+			System.out.println(font.getStyle());
+			System.out.println(font);
+			baseStyle.add(new AttributeRun(TextAttribute.FAMILY, font.getFamily()));
+			baseStyle.add(new AttributeRun(TextAttribute.SIZE, font.getSize()));
+			if(font.isBold())
+				baseStyle.add(new AttributeRun(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD));
+			if(font.isItalic())
+				baseStyle.add(new AttributeRun(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE));	
+			
+		}
+	}
+	
 	/**
 	 * Get the text layouts for display if the string has changed since last call
 	 * to this method regenerate them.
@@ -286,9 +359,9 @@ final public class StyledString implements Serializable {
 	 * @return
 	 */
 	public LinkedList<TextLayoutInfo> getLines(Graphics2D g2d){
-		if(invalidFont){
-			g2d.setFont(font);
-			invalidLayout = true;
+		if(font != g2d.getFont()){
+			setFont(g2d.getFont());
+			invalidText= true;
 		}
 		if(invalidText && plainText.length() > 0){
 			styledText = new AttributedString(plainText);
@@ -309,13 +382,13 @@ final public class StyledString implements Serializable {
 				float yposinpara = 0;
 				int charssofar = 0;
 				while (lineMeasurer.getPosition() < plainText.length()) {
-					TextLayout layout = lineMeasurer.nextLayout(breakWidth);
+					TextLayout layout = lineMeasurer.nextLayout(wrapWidth);
 					float advance = layout.getVisibleAdvance();
 					if(justify){
-						if(justify && advance > justifyRatio * breakWidth){
+						if(justify && advance > justifyRatio * wrapWidth){
 							//System.out.println(layout.getVisibleAdvance() + "  " + breakWidth + "  "+ layout.get);
 							// If advance > breakWidth then we have a line break
-							float jw = (advance > breakWidth) ? advance - breakWidth : breakWidth;
+							float jw = (advance > wrapWidth) ? advance - wrapWidth : wrapWidth;
 							layout = layout.getJustifiedLayout(jw);
 						}
 					}
@@ -324,7 +397,7 @@ final public class StyledString implements Serializable {
 					if(lh > maxLineHeight)
 						maxLineHeight = lh;
 					textHeight += lh;
-					if(advance <= breakWidth && advance > maxLineLength)
+					if(advance <= wrapWidth && advance > maxLineLength)
 						maxLineLength = advance;
 					
 					// Store line and line info
@@ -382,7 +455,7 @@ final public class StyledString implements Serializable {
 	 * @return
 	 */
 	public float getBreakWidth(){
-		return breakWidth;
+		return wrapWidth;
 	}
 
 	public TextLayoutHitInfo calculateFromXY(Graphics2D g2d, float px, float py){
@@ -450,7 +523,10 @@ final public class StyledString implements Serializable {
 
 	/** 
 	 * Ensure we do not have blank lines by replacing double EOL characters by 
-	 * single EOL until there are only single EOLs.
+	 * single EOL until there are only single EOLs. <br>
+	 * Using replaceAll on its own will not work because EOL/EOL/EOL would 
+	 * become EOL/EOL not the single EOL required.
+	 * 
 	 */
 	void removeBlankLines(){
 		while(plainText.indexOf("\n\n") >= 0){
@@ -460,14 +536,15 @@ final public class StyledString implements Serializable {
 	}
 	
 	/**
-	 * Create a graphic image charecter to simulate paragraphs
-	 * @param bw
+	 * Create a graphic image character to simulate paragraph breaks
+	 * 
+	 * @param ww
 	 * @return
 	 */
-	private ImageGraphicAttribute getParagraghSpacer(int bw){
-		if(bw == Integer.MAX_VALUE)
-			bw = 1;
-		BufferedImage img = new BufferedImage(bw, 10, BufferedImage.TYPE_INT_ARGB);
+	private ImageGraphicAttribute getParagraghSpacer(int ww){
+		if(ww == Integer.MAX_VALUE)
+			ww = 1;
+		BufferedImage img = new BufferedImage(ww, 10, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = img.getGraphics();
 		g.setColor(new Color(255, 255, 255, 0));
 		g.fillRect(0,0,img.getWidth(), img.getHeight());
@@ -519,7 +596,7 @@ final public class StyledString implements Serializable {
 	throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
 		// Recreate transient elements
-		spacer = getParagraghSpacer((int)breakWidth);
+		spacer = getParagraghSpacer((int)wrapWidth);
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();

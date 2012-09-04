@@ -110,7 +110,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected int mdx = Integer.MAX_VALUE, mdy = Integer.MAX_VALUE;
 
 	/** the font to be used for a control */
-	protected Font fLocalFont;
+	protected Font fLocalFont = fGlobalFont;
 	
 	public static GCScheme globalColor;
 	public GCScheme localColor;
@@ -132,7 +132,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	}
 
 	// This is the new global font
-	public static Font fGlobalFont = new Font("Dialog", 11, Font.PLAIN);
+	public static Font fGlobalFont = new Font("Dialog", Font.PLAIN, 11);
 	
 	public static PFont globalFont;
 	public PFont localFont;

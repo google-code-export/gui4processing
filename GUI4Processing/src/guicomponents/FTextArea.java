@@ -16,43 +16,9 @@ import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 
 
-public class FTextArea extends GComponent {
-
-	/** Do not create or display any scrollbars for the text area. */
-	public static final int SCROLLBARS_NONE = 0;
-	/** Create and display vertical scrollbar only. */
-	public static final int SCROLLBARS_VERTICAL_ONLY = 1;
-	/** Create and display horizontal scrollbar only. */
-	public static final int SCROLLBARS_HORIZONTAL_ONLY = 2;
-	/** Create and display both vertical and horizontal scrollbars. */
-	public static final int SCROLLBARS_BOTH = 3;
-
-
-	/** Create and display vertical scrollbar only. */
-	protected static final int SCROLLBAR_VERTICAL = 1;
-	/** Create and display horizontal scrollbar only. */
-	protected static final int SCROLLBAR_HORIZONTAL = 2;
+public class FTextArea extends FTextComponent {
 
 	private static float pad = 6;
-
-
-	// The typing area
-	protected float tx,ty,th,tw;
-	// Offset to display area
-	protected float ptx, pty;
-	// Caret position
-	float caretX, caretY;
-
-	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
-	//	protected int startChar = 0, endChar = 0;
-	protected boolean dragging = false;
-
-	protected int allTextHeight = 0;
-
-	// The scrollbar policy
-	protected final int sbPolicy;
-	protected boolean autoHide = true;
-	FScrollbar hsb, vsb;
 
 
 
@@ -61,14 +27,14 @@ public class FTextArea extends GComponent {
 	}
 
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
-		super(theApplet, p0, p1, p2, p3);
-		sbPolicy = scrollbars;
+		super(theApplet, p0, p1, p2, p3, scrollbars);
 		tx = ty = pad;
 		tw = width - 2 * pad - ((sbPolicy & SCROLLBAR_VERTICAL) != 0 ? 18 : 0);
 		th = height - 2 * pad - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 18 : 0);
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)tw, (int)th, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
+		buffer.g2.setFont(fLocalFont);
 		hotspots = new HotSpot[]{
 				new HSrect(1, tx, ty, tw, th),			// typing area
 				new HSrect(9, 0, 0, width, height),		// control surface
@@ -77,24 +43,33 @@ public class FTextArea extends GComponent {
 			hsb = new FScrollbar(theApplet, 0, 0, tw, 16);
 			addCompoundControl(hsb, tx, ty + th + 2, 0);
 			hsb.addEventHandler(this, "hsbEventHandler");
+			hsb.setAutoHide(autoHide);
 		}
 		if((sbPolicy & SCROLLBAR_VERTICAL) != 0){
 			vsb = new FScrollbar(theApplet, 0, 0, th, 16);
 			addCompoundControl(vsb, tx + tw + 18, ty, PI/2);
 			vsb.addEventHandler(this, "vsbEventHandler");
+			vsb.setAutoHide(autoHide);
 		}
-		opaque = true;
-		setText("",tw);
+		setText("",(int)tw);
 		z = Z_STICKY;
-		//createEventHandler(G4P.mainWinApp, "handleTextAreaEvents", new Class[]{ FTextArea.class });
 		registerAutos_DMPK(true, true, false, true);
 	}
 
+	/**
+	 * Set the text to be used. The wrap width is determined by the size of the component.
+	 * @param text
+	 */
 	public void setText(String text){
-		setText(text, tw);
+		setText(text, (int)tw);
 	}
 
-	public void setText(String text, float maxLineLength){
+	/**
+	 * Set the text to display and adjust any scrollbars
+	 * @param text
+	 * @param maxLineLength
+	 */
+	public void setText(String text, int maxLineLength){
 		this.text = text;
 		stext = new StyledString(buffer.g2, text, maxLineLength);
 		float sTextHeight;
@@ -115,23 +90,23 @@ public class FTextArea extends GComponent {
 		}
 	}
 
-	public void setJustify(boolean justify){
-		stext.setJustify(justify);
-		bufferInvalid = true;
-	}
-	
-	public void setLocalColorScheme(int cs){
-		super.setLocalColorScheme(cs);
-		if(hsb != null)
-			hsb.setLocalColorScheme(localColorScheme);
-		if(vsb != null)
-			vsb.setLocalColorScheme(localColorScheme);
-	}
-
-
-	public boolean hasSelection(){
-		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
-	}
+//	public void setJustify(boolean justify){
+//		stext.setJustify(justify);
+//		bufferInvalid = true;
+//	}
+//	
+//	public void setLocalColorScheme(int cs){
+//		super.setLocalColorScheme(cs);
+//		if(hsb != null)
+//			hsb.setLocalColorScheme(localColorScheme);
+//		if(vsb != null)
+//			vsb.setLocalColorScheme(localColorScheme);
+//	}
+//
+//
+//	public boolean hasSelection(){
+//		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
+//	}
 
 	/**
 	 * If the buffer is invalid then redraw it.
@@ -178,7 +153,7 @@ public class FTextArea extends GComponent {
 			}
 			buffer.popMatrix();
 			// Draw caret
-			if(endTLHI != null ){
+			if(showCaret && endTLHI != null){
 				buffer.pushMatrix();
 				buffer.translate(0, endTLHI.tli.yPosInPara + endTLHI.tli.layout.getAscent() );
 				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
@@ -199,19 +174,16 @@ public class FTextArea extends GComponent {
 	protected boolean keepCursorInDisplay(){
 		boolean horzScroll = false, vertScroll = false;
 		if(endTLHI != null){
-			//			float temp[] = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
-			//			float x = temp[0];		
-			//			float y = endTLHI.tli.yPosInPara;
 			if(caretX < ptx ){ 										// LEFT?
 				ptx--;
 				if(ptx < 0) ptx = 0;
 				horzScroll = true;
 			}
-			else if(caretX > ptx + tw){ 								// RIGHT?
+			else if(caretX > ptx + tw - 2){ 						// RIGHT?
 				ptx++;
 				horzScroll = true;
 			}
-			if(caretY < pty){				// UP?
+			if(caretY < pty){										// UP?
 				pty--;
 				if(pty < 0) pty = 0;
 				vertScroll = true;
@@ -258,7 +230,6 @@ public class FTextArea extends GComponent {
 		// Now the text 
 		winApp.imageMode(PApplet.CORNER);
 		winApp.image(buffer, tx, ty);
-
 		winApp.popMatrix();
 
 		if(children != null){
@@ -288,7 +259,6 @@ public class FTextArea extends GComponent {
 			break;
 		case KeyEvent.VK_HOME:
 			if(ctrlDown){		// move to start of text
-				System.out.println("Move to start of text");
 				caretMoved = moveCaretStartOfText(endTLHI);
 			}
 			else 	// Move to start of line
@@ -447,6 +417,7 @@ public class FTextArea extends GComponent {
 			}
 			// Finish off by ensuring no selection, invalidate buffer etc.
 			startTLHI.copyFrom(endTLHI);
+			setScrollbarValues();
 			bufferInvalid = true;
 			while(keepCursorInDisplay());
 		} // End of text changed == true
@@ -630,16 +601,6 @@ public class FTextArea extends GComponent {
 		caretX = temp[0];		
 		caretY = tlhi.tli.yPosInPara;
 
-	}
-
-	public void hsbEventHandler(FScrollbar scrollbar){
-		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
-		bufferInvalid = true;
-	}
-
-	public void vsbEventHandler(FScrollbar scrollbar){
-		pty = vsb.getValue() * (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight());
-		bufferInvalid = true;
 	}
 
 }
