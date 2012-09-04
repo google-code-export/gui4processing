@@ -96,7 +96,7 @@ public class FTextComponent extends GComponent {
 	}
 
 	/**
-	 * Move caret left by one character.
+	 * Move caret right by one character.
 	 * @return true if caret was moved else false
 	 */
 	protected boolean moveCaretRight(TextLayoutHitInfo currPos){

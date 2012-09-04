@@ -208,30 +208,13 @@ public class FTextField extends FTextComponent {
 			break;
 		}
 		calculateCaretPos(endTLHI);
-//		if(caretX > stext.getBreakWidth()){
-//			switch(keyCode){
-//			case KeyEvent.VK_LEFT:
-//			case KeyEvent.VK_UP:
-//			case KeyEvent.VK_DOWN:
-//			case KeyEvent.VK_END:
-//				moveCaretLeft(endTLHI);
-//				caretMoved = true;
-//				break;
-//			case KeyEvent.VK_RIGHT:
-//				if(!moveCaretRight(endTLHI))
-//					moveCaretLeft(endTLHI);
-//				caretMoved = true;
-//			}
-//			// Calculate new caret position
-//			calculateCaretPos(endTLHI);
-//		}
-		// After testing for cursor moving keys
 		if(caretMoved){
 			if(!shiftDown)				// Not extending selection
 				startTLHI.copyFrom(endTLHI);
 			bufferInvalid = true;	
 			while(keepCursorInDisplay());
 		}
+		
 		return caretMoved;
 	}
 
@@ -283,7 +266,9 @@ public class FTextField extends FTextComponent {
 			stext.getLines(buffer.g2);
 
 			tli = stext.getTLIforCharNo(pos);
+			
 			int posInLine = pos - tli.startCharIndex;
+			if((posInLine > tli.nbrChars)) posInLine = tli.nbrChars;
 			
 			try{
 				thiLeft = tli.layout.getNextLeftHit(posInLine);
@@ -298,9 +283,9 @@ public class FTextField extends FTextComponent {
 				thiRight = null;
 			}
 
-			System.out.println("Pos = " + posInLine + "  " + adjust);
-			System.out.println("\t\t" + thiLeft);
-			System.out.println("\t\t" + thiRight);
+			System.out.println("Pos = " + posInLine + "  " + pos + "  " + adjust);
+			System.out.println("\t\tLEFT   " + thiLeft);
+			System.out.println("\t\tRIGHT  " + thiRight);
 								
 			// We need to 'adjust' the caret position based on what we did
 			//  0 caret does not move from current position
@@ -312,14 +297,19 @@ public class FTextField extends FTextComponent {
 					thi = tli.layout.getNextRightHit(thiLeft);
 				else if(thiRight != null)
 					thi = tli.layout.getNextLeftHit(thiRight);
-				else
-					thi = tli.layout.getNextRightHit(tli.nbrChars - 1);	
+//				else
+//					thi = tli.layout.getNextRightHit(tli.nbrChars - 1);	
 				break;
 			case -1:
-				if(thiLeft == null)		// we are at start of line
-					thi = tli.layout.getNextLeftHit(0);
-				else 
+				if(thiLeft == null){		// we are at end of line
+//					if(thiLeft.getCharIndex() == 0)
+					thi = tli.layout.getNextLeftHit(0);	
+				}
+				else if(thiRight == null)	
+					thi = tli.layout.getNextRightHit(tli.nbrChars - 1);	
+				else
 					thi = thiLeft;
+//					thi = tli.layout.getNextLeftHit(tli.nbrChars);
 				break;
 			case 1:
 				if(thiRight == null)	// we are at the end of line
