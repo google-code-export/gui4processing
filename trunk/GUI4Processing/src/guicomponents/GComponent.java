@@ -393,13 +393,25 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		// In child control reset the control so it centred about the origin
 		c.x = x; c.y = y;
 		
-		c.temp[0] = c.halfWidth;
-		c.temp[1] = c.halfHeight;
-		AffineTransform aff = new AffineTransform();
-		aff.setToRotation(angle);
-		aff.transform(c.temp, 0, c.temp, 0, 1);
-		c.cx = (float)c.temp[0] + x - halfWidth;
-		c.cy = (float)c.temp[1] + y - halfHeight;
+		switch(control_mode){
+		case PApplet.CORNER:
+		case PApplet.CORNERS:
+			// Rotate about top corner
+			c.temp[0] = c.halfWidth;
+			c.temp[1] = c.halfHeight;
+			AffineTransform aff = new AffineTransform();
+			aff.setToRotation(angle);
+			aff.transform(c.temp, 0, c.temp, 0, 1);
+			c.cx = (float)c.temp[0] + x - halfWidth;
+			c.cy = (float)c.temp[1] + y - halfHeight;
+			break;
+		case PApplet.CENTER:
+			// Rotate about centre
+			// @TODO rotate about center
+			break;
+		}
+		
+		
 		c.rotAngle = angle;
 		// Add to parent
 		c.parent = this;
@@ -412,6 +424,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		children.addLast(c);
 		Collections.sort(children, new Z_Order());
 	}
+	
 
 	public boolean addXXX(GComponent c){
 		if(c == null || children.contains(c)){
@@ -958,10 +971,29 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	}
 
 	/**
+	 * Get the StyledString used for display
+	 * @return
+	 */
+	public StyledString getStyledText() {
+		return stext;
+	}
+
+	/**
+	 * Set the text to be displayed.
+	 * NEW version for FPanel etc.
+	 * @param text
+	 */
+	public void setText(String text){
+		if(text == null || text.length() == 0 )
+			text = "";
+		stext = new StyledString(text);
+	}
+	
+	/**
 	 * @param text use this function to set the text so that the
 	 * text length is calculated
 	 */
-	public void setText(String text) {
+	public void setTextOLD(String text) {
 		this.text = text;
 		winApp.textFont(localFont, localFont.getSize());
 		textWidth = (int) winApp.textWidth(text); 
@@ -972,11 +1004,11 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/**
 	 * @param text the text to set with alignment
 	 */
-	public void setText(String text, int align) {
+	public void setTextOLD(String text, int align) {
 		this.text = text;
 		winApp.textFont(localFont, localFont.getSize());
 		textWidth = (int) winApp.textWidth(text);
-		setTextAlign(align);
+		setTextAlignOLD(align);
 	}
 
 	/**
@@ -989,7 +1021,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * bitwise OR e.g. GAlign.BOTTOM | GAlign.CENTER 
 	 * @param align the alignment flag
 	 */
-	public void setTextAlign(int align){
+	public void setTextAlignOLD(int align){
 		int ha = align & GAlign.H_ALIGN;
 		int va = align & GAlign.V_ALIGN;
 		if(ha == GAlign.LEFT || ha == GAlign.CENTER || ha == GAlign.RIGHT){
@@ -1028,9 +1060,14 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * 
 	 * @param pfont the Processing font to use
 	 */
-//	public void setFont(PFont pfont){
-//		fLocalFont = pfont.getFont();
-//	}
+	public void setFont(PFont pfont){
+//		Font font = pfont.getNative();
+//		if(font == null){
+//			
+//		}
+//		
+		fLocalFont = pfont.getFont();
+	}
 	
 	
 	/**

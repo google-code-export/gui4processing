@@ -41,8 +41,6 @@ public class FTextComponent extends GComponent {
 		opaque = true;
 	}
 
-
-	
 	void setScrollbarValues(){
 		float sTextHeight;
 		if(vsb != null){
@@ -241,8 +239,8 @@ public class FTextComponent extends GComponent {
 			setScrollbarValues();
 			bufferInvalid = true;
 		} // End of text changed == true
-
 	}
+	
 	public void flashCaret(){
 		showCaret = !showCaret;
 		if(focusIsWith == this && endTLHI != null){
@@ -250,7 +248,6 @@ public class FTextComponent extends GComponent {
 		}
 	}
 	
-
 	public void hsbEventHandler(FScrollbar scrollbar){
 		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
 		bufferInvalid = true;

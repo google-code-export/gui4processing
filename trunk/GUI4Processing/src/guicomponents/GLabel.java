@@ -75,7 +75,7 @@ public class GLabel extends GComponent {
 			this.height = height;
 		opaque = false;
 		if(text != null)
-			setText(text);
+			setTextOLD(text);
 		registerAutos_DMPK(true, false, false, false);
 	}
 
@@ -89,7 +89,7 @@ public class GLabel extends GComponent {
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
-		setText(text);
+		setTextOLD(text);
 		if(textWidth != tw)
 			width += (textWidth - tw);
 		calcAlignX();
