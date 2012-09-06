@@ -149,7 +149,7 @@ public class GButton extends GComponent {
 	private void buttonCtorCore(int width, int height) {
 		// Check button is wide and tall enough for both text
 		this.width = Math.max(width, textWidth + 2 * PADH);
-		this.height = Math.max(height, localFont.getFont().getSize() + 2 * PADV);
+		this.height = Math.max(height, localFont.getSize() + 2 * PADV);
 		border = 1;
 		// and now update for image/text combined
 		setImageAlign(imageAlign);
@@ -330,7 +330,7 @@ public class GButton extends GComponent {
 			if(useImages && imageAlign == GAlign.CENTER)
 				setImageAlign(GAlign.LEFT);
 			this.text = text;
-			winApp.textFont(localFont, localFont.getFont().getSize());
+			winApp.textFont(localFont, localFont.getSize());
 			textWidth = Math.round(winApp.textWidth(text));
 			calcAlignX();
 			calcAlignY();
@@ -357,7 +357,7 @@ public class GButton extends GComponent {
 	 */
 	public void setFont(String fontname, int fontsize, boolean resize){
 		int tw = textWidth;
-		int fs = (int) localFont.getFont().getSize();
+		int fs = (int) localFont.getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(resize){
 			if(fontsize > fs)
@@ -468,7 +468,7 @@ public class GButton extends GComponent {
 		// Draw text
 		winApp.noStroke();
 		winApp.fill(localColor.btnFont);
-		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.textFont(localFont, localFont.getSize());
 		winApp.text(text, pos.x + alignX, pos.y + alignY, width, height);
 //		winApp.text(text, pos.x + alignX, pos.y + (height - localFont.getFont().getSize())/2 - PADV, width, height);
 		winApp.popStyle();

@@ -97,6 +97,8 @@ final public class StyledString implements Serializable {
 		spacer = getParagraghSpacer(1); //  safety
 		// Get rid of any EOLs
 		plainText = startText.replaceAll("\n", " ");
+		if(plainText.length() == 0)
+			plainText = " ";
 		styledText = new AttributedString(plainText);
 		applyAttributes();
 		if(g2d != null)
@@ -128,6 +130,8 @@ final public class StyledString implements Serializable {
 		spacer = getParagraghSpacer(wrapWidth);
 		plainText = startText;
 		removeBlankLines(); // just in case we merge two eol characters
+		if(plainText.length() == 0)
+			plainText = " ";
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();
@@ -176,9 +180,6 @@ final public class StyledString implements Serializable {
 	 * @param family
 	 * @return true if the font was found and different from the current font family
 	 */
-
-
-
 
 	/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	 * 
@@ -278,7 +279,10 @@ final public class StyledString implements Serializable {
 	 */
 	public boolean insertCharacters(int insertPos, String chars){
 		int nbrChars = chars.length();
-		plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
+		if(plainText.equals(" "))
+			plainText = chars;
+		else
+			plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
 		removeBlankLines(); // just in case we merge two eol characters
 		for(AttributeRun ar : atrun){
 			if(ar.end < Integer.MAX_VALUE){
@@ -313,10 +317,11 @@ final public class StyledString implements Serializable {
 			plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
 		else
 			plainText = plainText.substring(fromPos + nbrToRemove);
-		removeBlankLines(); // just in case we merge two eol characters
 		System.out.println(plainText.length());
+		removeBlankLines(); // just in case we merge two eol characters
 		if(plainText.length() == 0){
 			atrun.clear();
+			plainText = " ";
 			styledText = null;
 		}
 		else {
@@ -353,7 +358,6 @@ final public class StyledString implements Serializable {
 				baseStyle.add(new AttributeRun(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD));
 			if(font.isItalic())
 				baseStyle.add(new AttributeRun(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE));	
-			
 		}
 	}
 	
@@ -376,7 +380,8 @@ final public class StyledString implements Serializable {
 			invalidLayout = true;
 		}
 		if(invalidLayout){
-			System.out.println("Text length " + plainText.length());
+			if(plainText.length() == 0)
+				System.out.println("");
 			linesInfo.clear();
 			if(plainText.length() > 0){
 				textHeight = 0;
@@ -399,7 +404,7 @@ final public class StyledString implements Serializable {
 							layout = layout.getJustifiedLayout(jw);
 						}
 					}
-					// Get line limit stats
+					// Remember the longest and tallest value for a layout so far.
 					float lh = getHeight(layout);
 					if(lh > maxLineHeight)
 						maxLineHeight = lh;
@@ -407,12 +412,13 @@ final public class StyledString implements Serializable {
 					if(advance <= wrapWidth && advance > maxLineLength)
 						maxLineLength = advance;
 					
-					// Store line and line info
+					// Store layout and line info
 					linesInfo.add(new TextLayoutInfo(nbrLines, layout, charssofar, layout.getCharacterCount(), yposinpara));
 					charssofar += layout.getCharacterCount();
 					yposinpara += lh;
 					nbrLines++;
 				}
+
 			}
 			invalidLayout = false;
 		}
@@ -461,7 +467,7 @@ final public class StyledString implements Serializable {
 	 * Get the break width used to create the lines.
 	 * @return
 	 */
-	public float getBreakWidth(){
+	public float getWrapWidth(){
 		return wrapWidth;
 	}
 
@@ -496,7 +502,7 @@ final public class StyledString implements Serializable {
 	 * @param y Must be >= 0
 	 * @return the first layout where y is above the upper layout bounds
 	 */
-	protected TextLayoutInfo getLayoutFromYpos(float y){
+	TextLayoutInfo getLayoutFromYpos(float y){
 		TextLayoutInfo tli = null;
 		if(!linesInfo.isEmpty()){
 			for(int i = linesInfo.size()-1; i >= 0; i--){
@@ -509,14 +515,15 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
-	 * This will always return a layout.
-	 * If c > than the index of the last character in the plain text then this
+	 * This will always return a layout provided charNo >= 0. <br>
+	 * 
+	 * If charNo > than the index of the last character in the plain text then this
 	 * should be corrected to the last character in the layout by the caller.
 	 * 
-	 * @param charNo the character position in text (must be >= 0
+	 * @param charNo the character position in text (must be >= 0)
 	 * @return the first layout where c is greater that the layout's start char index.
 	 */
-	public TextLayoutInfo getTLIforCharNo(int charNo){
+	TextLayoutInfo getTLIforCharNo(int charNo){
 		TextLayoutInfo tli = null;
 		if(!linesInfo.isEmpty()){
 			for(int i = linesInfo.size()-1; i >= 0; i--){

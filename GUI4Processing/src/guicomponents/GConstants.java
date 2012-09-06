@@ -81,7 +81,7 @@ public interface GConstants {
 	/** Create and display both vertical and horizontal scrollbars. */
 	public static final int SCROLLBARS_BOTH = 				0x0003;
 
-	public static final int SCROLLBARS_AUTOHIDE =			0x00100;
+	public static final int SCROLLBARS_AUTOHIDE =			0x1000;
 
 	// ### Scroll bar type constants ###
 	/** Create and display vertical scrollbar only. */
