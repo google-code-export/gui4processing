@@ -51,7 +51,7 @@ public class FTextArea extends FTextComponent {
 			vsb.addEventHandler(this, "vsbEventHandler");
 			vsb.setAutoHide(autoHide);
 		}
-		setText("",(int)tw);
+		setTextOLD("",(int)tw);
 		z = Z_STICKY;
 		registerAutos_DMPK(true, true, false, true);
 	}
@@ -60,8 +60,8 @@ public class FTextArea extends FTextComponent {
 	 * Set the text to be used. The wrap width is determined by the size of the component.
 	 * @param text
 	 */
-	public void setText(String text){
-		setText(text, (int)tw);
+	public void setTextOLD(String text){
+		setTextOLD(text, (int)tw);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class FTextArea extends FTextComponent {
 	 * @param text
 	 * @param maxLineLength
 	 */
-	public void setText(String text, int maxLineLength){
+	public void setTextOLD(String text, int maxLineLength){
 		this.text = text;
 		stext = new StyledString(buffer.g2, text, maxLineLength);
 		float sTextHeight;
@@ -90,27 +90,8 @@ public class FTextArea extends FTextComponent {
 		}
 	}
 
-//	public void setJustify(boolean justify){
-//		stext.setJustify(justify);
-//		bufferInvalid = true;
-//	}
-//	
-//	public void setLocalColorScheme(int cs){
-//		super.setLocalColorScheme(cs);
-//		if(hsb != null)
-//			hsb.setLocalColorScheme(localColorScheme);
-//		if(vsb != null)
-//			vsb.setLocalColorScheme(localColorScheme);
-//	}
-//
-//
-//	public boolean hasSelection(){
-//		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
-//	}
-
 	/**
 	 * If the buffer is invalid then redraw it.
-	 * @TODO need to use palette for colours
 	 */
 	protected void updateBuffer(){
 		if(bufferInvalid) {

@@ -41,12 +41,12 @@ public class FTextField extends FTextComponent {
 			hsb.addEventHandler(this, "hsbEventHandler");
 			hsb.setAutoHide(autoHide);
 		}
-		setText(" ");
+		setTextOLD(" ");
 		z = Z_STICKY;
 		registerAutos_DMPK(true, true, false, true);
 	}
 
-	public void setText(String text){
+	public void setTextOLD(String text){
 		if(text == null || text.length() == 0)
 			text = " ";
 		this.text = text;

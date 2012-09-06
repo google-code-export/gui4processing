@@ -77,7 +77,7 @@ public class GOption extends GComponent {
 		if(height > this.height)
 			this.height = height;
 		opaque = false;
-		setText(text);
+		setTextOLD(text);
 		z = Z_SLIPPY;
 		createEventHandler(G4P.mainWinApp, "handleOptionEvents", new Class[]{ GOption.class, GOption.class });
 		registerAutos_DMPK(true, true, false, false);
@@ -152,7 +152,7 @@ public class GOption extends GComponent {
 			height += (fontsize - fs);
 			height = Math.max(height, imgSelected.height);
 		}
-		setText(text);
+		setTextOLD(text);
 		if(textWidth != tw)
 			width += (textWidth - tw);
 	}

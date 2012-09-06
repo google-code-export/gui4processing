@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-09 Peter Lager
+  Copyright (c) 2012 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
+import processing.core.PGraphicsJava2D;
+
 
 /**
  * A component that can be used to group GUI components that can be
@@ -37,16 +39,21 @@ import processing.core.PApplet;
  * When created the Panel is collapsed by default. To open the panel
  * use setCollapsed(true); after creating it.
  * 
+ * Unlike all the other components the [x,y] coordinates do not represent
+ * the top-left corner of the control rather the top-left corner of the 
+ * panel drawing surface (which is the bottom left corner of the tab)
+ *  
  * @author Peter Lager
  *
  */
-public class GPanel extends GComponent {
+public class FPanel extends GComponent  {
+	
 
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
 
 	/** The height of the tab calculated from font height + padding */
-	protected int tabHeight;
+	protected int tabHeight, tabWidth;
 
 	/** Used to restore position when closing panel */
 	protected float dockX, dockY;
@@ -58,43 +65,41 @@ public class GPanel extends GComponent {
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
 	 * select and move the panel and the container window below the tab which 
 	 * is used to hold other components.
-	 * The size of the container window will grow to fit components added
-	 * provided that it does not exceed the width and height of the applet
-	 * window.
 	 *  
 	 * @param theApplet the PApplet reference
-	 * @param text to appear on tab
 	 * @param x horizontal position
 	 * @param y vertical position
 	 * @param width width of the panel
 	 * @param height height of the panel (excl. tab)
+	 * @param text to appear on tab
 	 */
-	public GPanel(PApplet theApplet, String text, int x, int y, int width, int height){
-		super(theApplet, x, y);
-		panelCtorCore(text, width, height);
-	}
-
-	/**
-	 * Code common for all constructors.
-	 * @param text to appear on the tab
-	 * @param width
-	 * @param height
-	 */
-	private void panelCtorCore(String text, int width, int height){
+	public FPanel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
+		super(theApplet, p0, p1, p2, p3);
 		children = new LinkedList<GComponent>();
-		setTextOLD(text);
-		tabHeight = (int) (1.2f * localFont.getSize() + 2 * PADV);
+		if(text == null || text.length() == 0)
+			text = "Tab";
+		this.text = text;
+		tabHeight = fLocalFont.getSize() + 10;
+		// The image buffer is just for the typing area
+		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, tabHeight + (int)height, PApplet.JAVA2D);
+		buffer.rectMode(PApplet.CORNER);
+		buffer.g2.setFont(fLocalFont);
+		stext = new StyledString(buffer.g2, text);
+		stext.getLines(buffer.g2);
+		tabHeight = (int) (stext.getMaxLineHeight() + 4);
 		constrainPanelPosition();
 		opaque = true;
 		dockX = x;
 		dockY = y;
-		this.width = width;
-		this.height = height;
 		z = Z_PANEL;
 		createEventHandler(G4P.mainWinApp, "handlePanelEvents", new Class[]{ GPanel.class });
 		registerAutos_DMPK(true, true, false, false);
 	}
 
+
+	public void setFText(String text){
+		
+	}
 	/**
 	 * Set the font & size for the tab text changing the height (+/-) 
 	 * of the tab if necessary to display text.  
@@ -154,12 +159,12 @@ public class GPanel extends GComponent {
 		}
 		winApp.fill(localColor.pnlTabBack);
 		// Display tab (length depends on whether panel is open or closed
-		int w = (int) ((tabOnly)? textWidth + PADH * 4 : width);
+		int w = (int) ((tabOnly)? tabWidth + PADH * 4 : width);
 		winApp.rect(0, - tabHeight, w, tabHeight);
 		// Display tab text
 		winApp.fill(localColor.pnlFont);
 		winApp.textFont(localFont, localFont.getSize());
-		winApp.text(text, PADH, - (tabHeight + localFont.getSize())/2 - PADV , textWidth, tabHeight);
+		winApp.text(text, PADH, - (tabHeight + localFont.getSize())/2 - PADV , tabWidth, tabHeight);
 		if(!tabOnly){
 			if(opaque){
 				winApp.fill(localColor.pnlBack);
@@ -273,7 +278,7 @@ public class GPanel extends GComponent {
 	 * extend off the screen.
 	 */
 	private void constrainPanelPosition(){
-		int w = (int) ((tabOnly)? textWidth + PADH * 2 : width);
+		int w = (int) ((tabOnly)? tabWidth + PADH * 2 : width);
 		int h = (int) ((tabOnly)? 0 : height);
 		// Constrain horizontally
 		if(x < 0) 
@@ -297,7 +302,7 @@ public class GPanel extends GComponent {
 	public boolean isOver(int ax, int ay){
 		Point p = new Point(0,0);
 		calcAbsPosition(p);
-		int w = (int) ((tabOnly)? textWidth + PADH * 2 : width);
+		int w = (int) ((tabOnly)? tabWidth + PADH * 2 : width);
 		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y)
 			return true;
 		else
@@ -385,4 +390,4 @@ public class GPanel extends GComponent {
 		return tabHeight;
 	}
 
-} // end of class
+}

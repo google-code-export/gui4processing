@@ -124,7 +124,7 @@ public class GTextField extends GComponent {
 		//calculate the number of lines that can be displayed fully
 		endY = Math.max(1,  (int)Math.floor(this.height / leading));
 		// Set text AFTER the width of the textfield has been set
-		setText(text);
+		setTextOLD(text);
 		winApp.textFont(localFont);
 		z = Z_STICKY;
 		createEventHandler(G4P.mainWinApp, "handleTextFieldEvents", new Class[]{ GTextField.class });
@@ -149,7 +149,7 @@ public class GTextField extends GComponent {
 		//change the number of lines that can be displayed fully
 		endY = (int) Math.floor(this.height / fontLeading);
 
-		setText(text);
+		setTextOLD(text);
 	}
 
 	/**
@@ -428,7 +428,7 @@ public class GTextField extends GComponent {
 	 * Fires SET event.
 	 * @param newValue the string to become the text field's contents
 	 */
-	public void setText(String newValue) {
+	public void setTextOLD(String newValue) {
 		text = newValue; 
 		// remove all line breaks and replace with spaces
 		if(!multiLine)
@@ -445,7 +445,7 @@ public class GTextField extends GComponent {
 	 * This class does not support text alignment and uses the default left alignment. <br>
 	 * This method simply displays a warning if G4P messages are enabled.
 	 */
-	public void setTextAlign(int align){
+	public void setTextAlignOLD(int align){
 		if(G4P.messages)
 			System.out.println("GTextfield controls does not support text alignment");
 	}

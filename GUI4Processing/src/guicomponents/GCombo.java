@@ -144,7 +144,7 @@ public class GCombo extends GComponent {
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize > fs)
 			height += (fontsize - fs);
-		setText(text);
+		setTextOLD(text);
 		if(textWidth > tw)
 			width += (textWidth - tw);
 		ArrayList<GOption> options = optGroup.getOptions();
@@ -198,7 +198,7 @@ public class GCombo extends GComponent {
 	 */
 	public void setSelected(int index){
 		optGroup.setSelected(index);
-		setText(optGroup.selectedText());
+		setTextOLD(optGroup.selectedText());
 	}
 	
 	/**
@@ -207,7 +207,7 @@ public class GCombo extends GComponent {
 	 */
 	public void setSelected(String optText){
 		optGroup.setSelected(optText);
-		setText(optGroup.selectedText());
+		setTextOLD(optGroup.selectedText());
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class GCombo extends GComponent {
 	 */
 	public void removeAllOptions() {
 		optGroup.getOptions().clear();
-		setText("");
+		setTextOLD("");
 	}
 
 	/**
