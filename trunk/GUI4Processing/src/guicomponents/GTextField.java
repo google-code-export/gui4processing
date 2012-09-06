@@ -117,10 +117,10 @@ public class GTextField extends GComponent {
 		//set to either the spec. width or the width of the box plus horz. padding
 		this.width = Math.max(width, textWidth + PADH * 2); 
 		// Ensure that the box height is large enough to display at least 1 line of text
-		this.height = Math.max(height, (int)(1.5f * localFont.getFont().getSize()));
+		this.height = Math.max(height, (int)(1.5f * localFont.getSize()));
 		border = 1;
 		// default line leading is 1.5 times the font height
-		leading = (int)(1.2f * localFont.getFont().getSize());
+		leading = (int)(1.2f * localFont.getSize());
 		//calculate the number of lines that can be displayed fully
 		endY = Math.max(1,  (int)Math.floor(this.height / leading));
 		// Set text AFTER the width of the textfield has been set
@@ -143,7 +143,7 @@ public class GTextField extends GComponent {
 	public void setFont(String fontname, int fontSize, int fontLeading){
 		localFont = GFont.getFont(winApp, fontname, fontSize); 	//possible change in font size
 		// Ensure that the box height is large enough to display at least 1 line of text
-		height = Math.max(height, (int)(1.5f * localFont.getFont().getSize() + 0.5f));
+		height = Math.max(height, (int)(1.5f * localFont.getSize() + 0.5f));
 		// update the line leading (can't be less than font height
 		leading = Math.max(fontSize + fontLeadPad, fontLeading);
 		//change the number of lines that can be displayed fully
@@ -781,7 +781,7 @@ public class GTextField extends GComponent {
 							cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
 						winApp.rect(4 + cursorPixPosition(i).x, 2 + cursorPixPosition(i).y,
 								Math.min(winApp.textWidth(text.substring(i, i+1)),
-										width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+										width - 8 - cursorPixPosition(i).x),localFont.getSize()+2);
 					}
 				}
 			}
@@ -802,7 +802,7 @@ public class GTextField extends GComponent {
 			winApp.stroke(localColor.txfCursor);
 			winApp.strokeWeight(2);
 			winApp.line(4 + cursorPix.x, cursorPix.y + 2, 
-					4 + cursorPix.x, cursorPix.y + localFont.getFont().getSize()+2);
+					4 + cursorPix.x, cursorPix.y + localFont.getSize()+2);
 			winApp.fill(localColor.txfFont);
 		}
 		winApp.popStyle();
@@ -853,7 +853,7 @@ public class GTextField extends GComponent {
 						cursorPosition(i).y >= startY && cursorPosition(i).y < endY) {
 					winApp.rect(pos.x + 4 + cursorPixPosition(i).x, pos.y + 2 + cursorPixPosition(i).y,
 							Math.min(winApp.textWidth(text.substring(i, i+1)),
-									width - 8 - cursorPixPosition(i).x),localFont.getFont().getSize()+2);
+									width - 8 - cursorPixPosition(i).x),localFont.getSize()+2);
 				}
 			}
 		}
@@ -874,7 +874,7 @@ public class GTextField extends GComponent {
 			winApp.strokeWeight(2);
 			winApp.line(pos.x + 4 + cursorPix.x, pos.y + cursorPix.y + 2, 
 					pos.x + 4 + cursorPix.x, 
-					pos.y + cursorPix.y + localFont.getFont().getSize()+2);
+					pos.y + cursorPix.y + localFont.getSize()+2);
 			winApp.fill(localColor.txfFont);
 		}
 		winApp.popStyle();

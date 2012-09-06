@@ -963,7 +963,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	public void setText(String text) {
 		this.text = text;
-		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.textFont(localFont, localFont.getSize());
 		textWidth = (int) winApp.textWidth(text); 
 		calcAlignX();
 		calcAlignY();
@@ -974,7 +974,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	public void setText(String text, int align) {
 		this.text = text;
-		winApp.textFont(localFont, localFont.getFont().getSize());
+		winApp.textFont(localFont, localFont.getSize());
 		textWidth = (int) winApp.textWidth(text);
 		setTextAlign(align);
 	}
@@ -1028,9 +1028,9 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * 
 	 * @param pfont the Processing font to use
 	 */
-	public void setFont(PFont pfont){
-		fLocalFont = pfont.getFont();
-	}
+//	public void setFont(PFont pfont){
+//		fLocalFont = pfont.getFont();
+//	}
 	
 	
 	/**
@@ -1056,10 +1056,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			alignY = border + PADV;
 			break;
 		case GAlign.BOTTOM:
-			alignY = (int) (height - localFont.getFont().getSize() - border - PADV);
+			alignY = (int) (height - localFont.getSize() - border - PADV);
 			break;
 		case GAlign.MIDDLE:
-			alignY = (int) ((height - localFont.getFont().getSize() - border - PADV)/2);
+			alignY = (int) ((height - localFont.getSize() - border - PADV)/2);
 			break;
 		}
 	}

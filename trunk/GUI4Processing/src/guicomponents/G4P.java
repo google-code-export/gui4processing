@@ -342,9 +342,9 @@ public class G4P implements PConstants, GConstants {
 	 * 
 	 * @param pfont the Processing font to use
 	 */
-	public static void setFont(PFont pfont){
-		GComponent.fGlobalFont = pfont.getFont();
-	}
+//	public static void setFont(PFont pfont){
+//		GComponent.fGlobalFont = pfont.getFont();
+//	}
 	
 	
 	

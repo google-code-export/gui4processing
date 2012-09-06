@@ -1,9 +1,11 @@
 package guicomponents;
 
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.awt.font.TextHitInfo;
 
 import guicomponents.StyledString.TextLayoutHitInfo;
+import guicomponents.StyledString.TextLayoutInfo;
 import processing.core.PApplet;
 
 public class FTextComponent extends GComponent {
@@ -136,6 +138,111 @@ public class FTextComponent extends GComponent {
 		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
 	}
 
+	
+	protected void calculateCaretPos(TextLayoutHitInfo tlhi){
+		float temp[] = tlhi.tli.layout.getCaretInfo(tlhi.thi);
+		caretX = temp[0];		
+		caretY = tlhi.tli.yPosInPara;
+	}
+
+	protected void processKeyTyped(KeyEvent e, boolean shiftDown, boolean ctrlDown){
+		int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
+		int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
+		int pos = endChar, nbr = 0, adjust = 0;
+		boolean hasSelection = (startTLHI.compareTo(endTLHI) != 0);
+
+		if(hasSelection){ // Have we some text selected?
+			if(startChar < endChar){ // Forward selection
+				pos = startChar; nbr = endChar - pos;
+			}
+			else if(startChar > endChar){ // Backward selection
+				pos = endChar;	nbr = startChar - pos;
+			}
+		}
+		
+		char keyChar = e.getKeyChar();
+		int ascii = (int)keyChar;
+		boolean textChanged = false;
+		// If we have a selection then any key typed will delete it
+		if(hasSelection){
+			stext.deleteCharacters(pos, nbr);
+			adjust = 0; textChanged = true;
+		}
+		else {	// Only process back_space and delete if there was no selection
+			if(keyChar == KeyEvent.VK_BACK_SPACE){
+				if(stext.deleteCharacters(pos - 1, 1)){
+					adjust = -1; textChanged = true;
+				}
+			}
+			else if(keyChar == KeyEvent.VK_DELETE){
+				if(stext.deleteCharacters(pos, 1)){
+					adjust = 0; textChanged = true;
+				}
+			}
+		}
+		// Now we have got rid of any selection be can process other keys
+		if(ascii >= 32 && ascii < 127){
+			if(stext.insertCharacters(pos, "" + e.getKeyChar())){
+				adjust = 1; textChanged = true;
+			}
+		}
+		if(textChanged){
+			pos += adjust;
+			// Force update
+			stext.getLines(buffer.g2);
+
+			// ============================================================================================================================================
+			
+			TextLayoutInfo tli;
+			TextHitInfo thi = null, thiLeft, thiRight;
+
+			tli = stext.getTLIforCharNo(pos);
+
+			int posInLine = pos - tli.startCharIndex;
+
+			// Get some hit info so we can see what is happening
+			try{
+				thiLeft = tli.layout.getNextLeftHit(posInLine);
+			}
+			catch(Exception excp){
+				thiLeft = null;
+			}
+			try{
+				thiRight = tli.layout.getNextRightHit(posInLine);
+			}
+			catch(Exception excp){
+				thiRight = null;
+			}
+
+			System.out.println("Pos in line is " + posInLine + "  Adjusted by " + adjust + "   Length of text in layout " + tli.nbrChars);
+			System.out.println("\t\tText length = " + stext.getPlainText().length());
+			System.out.println("\t\tLEFT   " + thiLeft);
+			System.out.println("\t\tRIGHT  " + thiRight);
+
+			// ============================================================================================================================================
+			
+			if(posInLine <= 0){					// At start of line
+				thi = tli.layout.getNextLeftHit(thiRight);				
+			}
+			else if(posInLine >= tli.nbrChars){	// End of line
+				thi = tli.layout.getNextRightHit(tli.nbrChars - 1);					
+			}
+			else {								// Character in line;
+				thi = tli.layout.getNextLeftHit(thiRight);	
+			}
+			System.out.println("\t\tAFTER  " + thi);
+
+			endTLHI.setInfo(tli, thi);
+			// Cursor at end of paragraph graphic
+			calculateCaretPos(endTLHI);
+			
+			// Finish off by ensuring no selection, invalidate buffer etc.
+			startTLHI.copyFrom(endTLHI);
+			setScrollbarValues();
+			bufferInvalid = true;
+		} // End of text changed == true
+
+	}
 	public void flashCaret(){
 		showCaret = !showCaret;
 		if(focusIsWith == this && endTLHI != null){

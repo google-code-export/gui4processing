@@ -453,7 +453,7 @@ public class GWSlider extends GSlider {
 		width = _leftEnd.width + _centre.width + _rightEnd.width;
 		height =  _centre.height + _tickLength + _tickOffset;
 
-		if(_renderMaxMinLabel){height += localFont.getFont().getSize();}
+		if(_renderMaxMinLabel){height += localFont.getSize();}
 	}
 
 	/**
@@ -691,7 +691,7 @@ public class GWSlider extends GSlider {
 		winApp.strokeWeight(1);
 		winApp.fill(_fontColour);
 		//draw ticks
-		float tickYPos = p.y + _centre.height + _tickOffset + _tickLength + localFont.getFont().getSize();
+		float tickYPos = p.y + _centre.height + _tickOffset + _tickLength + localFont.getSize();
 
 		for(int i = 0;i < _tickPositions.length;i++){
 			if(_tickLabels != null){
@@ -699,7 +699,7 @@ public class GWSlider extends GSlider {
 				winApp.text(_tickLabels[i],p.x + pos.x,pos.y);
 			}else if(i == 0 && _renderMaxMinLabel){
 				//Draw in the min value
-				Point pos = new Point(p.x + _leftEnd.width + Math.round(i * tickDist),p.y + _centre.height + _tickOffset + _tickLength + localFont.getFont().getSize()) ;
+				Point pos = new Point(p.x + _leftEnd.width + Math.round(i * tickDist),p.y + _centre.height + _tickOffset + _tickLength + localFont.getSize()) ;
 				if(_valueType == INTEGER)
 					winApp.text(String.format(format,Math.round(minValue),unit),pos.x,pos.y);
 				else
@@ -707,7 +707,7 @@ public class GWSlider extends GSlider {
 
 			}else if(i == _numTicks && _renderMaxMinLabel){	
 				//Draw in the max value			
-				Point pos = new Point(p.x + _leftEnd.width + Math.round(i * tickDist),p.y + _centre.height + _tickOffset + _tickLength + localFont.getFont().getSize()) ;
+				Point pos = new Point(p.x + _leftEnd.width + Math.round(i * tickDist),p.y + _centre.height + _tickOffset + _tickLength + localFont.getSize()) ;
 				if(_valueType == INTEGER)
 					winApp.text(String.format(format,Math.round(maxValue),unit),pos.x,pos.y);
 				else

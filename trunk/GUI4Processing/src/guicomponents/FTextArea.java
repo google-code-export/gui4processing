@@ -273,7 +273,7 @@ public class FTextArea extends FTextComponent {
 			break;
 		}
 		calculateCaretPos(endTLHI);
-		if(caretX > stext.getBreakWidth()){
+		if(caretX > stext.getWrapWidth()){
 			switch(keyCode){
 			case KeyEvent.VK_LEFT:
 			case KeyEvent.VK_UP:
@@ -295,12 +295,12 @@ public class FTextArea extends FTextComponent {
 			if(!shiftDown)				// Not extending selection
 				startTLHI.copyFrom(endTLHI);
 			bufferInvalid = true;	
-			while(keepCursorInDisplay());
 		}
 		return caretMoved;
 	}
 
-	protected void processKeyTyped(KeyEvent e, boolean shiftDown, boolean ctrlDown){
+	
+	protected void processKeyTypedXXXX(KeyEvent e, boolean shiftDown, boolean ctrlDown){
 		int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
 		int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
 		int pos = endChar, nbr = 0, adjust = 0;
@@ -336,85 +336,61 @@ public class FTextArea extends FTextComponent {
 			}
 		}
 		// Now we have got rid of any selection be can process other keys
-		if(keyChar == KeyEvent.VK_ENTER){
-			if(stext.insertCharacters(pos, "\n ")){
-				adjust = 1; textChanged = true;
-			}
-		}
-		else if(ascii >= 32 && ascii < 127){
+		if(ascii >= 32 && ascii < 127){
 			if(stext.insertCharacters(pos, "" + e.getKeyChar())){
 				adjust = 1; textChanged = true;
 			}
 		}
 		if(textChanged){
-			TextLayoutInfo tli;
-			TextHitInfo thi = null, thiLeft, thiRight;
+			pos += adjust;
 			// Force update
 			stext.getLines(buffer.g2);
 
+			// ============================================================================================================================================
+			
+			TextLayoutInfo tli;
+			TextHitInfo thi = null, thiLeft, thiRight;
+
 			tli = stext.getTLIforCharNo(pos);
+
 			int posInLine = pos - tli.startCharIndex;
 
-			thiLeft = tli.layout.getNextLeftHit(posInLine);
-			thiRight = tli.layout.getNextRightHit(posInLine);					
-			// We need to 'adjust' the caret position based on what we did
-			//  0 caret does not move from current position
-			// -1 caret needs to go left
-			//  1 caret needs to go right
-			switch(adjust){
-			case 0:		
-				if(thiLeft != null)
-					thi = tli.layout.getNextRightHit(thiLeft);
-				else if(thiRight != null)
-					thi = tli.layout.getNextLeftHit(thiRight);
-				break;
-			case -1:
-				if(thiLeft == null){		// we are at start of line
-					if(tli.lineNo == 0){	// first line so move to beginning of text
-						thi = tli.layout.getNextLeftHit(0);
-					}
-					else {					// Attempt to move to end of previous line
-						tli = stext.getTLIforLineNo(tli.lineNo - 1);
-						thi = tli.layout.getNextRightHit(tli.nbrChars - 1);
-					}
-				}
-				else {
-					thi = thiLeft;
-				}
-				break;
-			case 1:
-				if(thiRight == null){	// we are at the end of line
-					if(tli.lineNo == stext.getNbrLines() - 1){ 
-						// Last line so move to right of last character
-						thi = tli.layout.getNextRightHit(tli.nbrChars - 1);	
-					}
-					else {	// Attempt to move to start of next line
-						tli = stext.getTLIforLineNo(tli.lineNo + 1);
-						thi = tli.layout.getNextRightHit(0);
-					}
-				}
-				else {
-					thi = thiRight;
-				}
-				break;
+			// Get some hit info so we can see what is happening
+			try{
+				thiLeft = tli.layout.getNextLeftHit(posInLine);
 			}
+			catch(Exception excp){
+				thiLeft = null;
+			}
+			try{
+				thiRight = tli.layout.getNextRightHit(posInLine);
+			}
+			catch(Exception excp){
+				thiRight = null;
+			}
+
+			System.out.println("Pos in line is " + posInLine + "  Adjusted by " + adjust + "   Length of text in layout " + tli.nbrChars);
+			System.out.println("\t\tText length = " + stext.getPlainText().length());
+			System.out.println("\t\tLEFT   " + thiLeft);
+			System.out.println("\t\tRIGHT  " + thiRight);
+
+			// ============================================================================================================================================
+			
+			if(posInLine <= 0){					// At start of line
+				thi = tli.layout.getNextLeftHit(thiRight);				
+			}
+			else if(posInLine >= tli.nbrChars){	// End of line
+				thi = tli.layout.getNextRightHit(tli.nbrChars - 1);					
+			}
+			else {								// Character in line;
+				thi = tli.layout.getNextLeftHit(thiRight);	
+			}
+			System.out.println("\t\tAFTER  " + thi);
+
 			endTLHI.setInfo(tli, thi);
 			// Cursor at end of paragraph graphic
 			calculateCaretPos(endTLHI);
-			if(caretX > stext.getBreakWidth()){
-				switch(keyChar){
-				case KeyEvent.VK_DELETE:
-				case KeyEvent.VK_BACK_SPACE:
-					moveCaretLeft(endTLHI);
-					break;
-				case KeyEvent.VK_ENTER:
-					if(!moveCaretRight(endTLHI))
-						moveCaretLeft(endTLHI);
-
-					break;
-				}
-				calculateCaretPos(endTLHI);
-			}
+			
 			// Finish off by ensuring no selection, invalidate buffer etc.
 			startTLHI.copyFrom(endTLHI);
 			setScrollbarValues();
@@ -424,18 +400,21 @@ public class FTextArea extends FTextComponent {
 
 	}
 
+
+
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 		if(focusIsWith == this && endTLHI != null){
-			//			int shortcutMask = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
 			if(e.getID() == KeyEvent.KEY_PRESSED) {
 				processKeyPressed(e, shiftDown, ctrlDown);
+				while(keepCursorInDisplay());
 			}
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
 				processKeyTyped(e, shiftDown, ctrlDown);
+				while(keepCursorInDisplay());
 			}
 		}
 	}

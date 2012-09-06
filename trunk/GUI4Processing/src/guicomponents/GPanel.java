@@ -83,7 +83,7 @@ public class GPanel extends GComponent {
 	private void panelCtorCore(String text, int width, int height){
 		children = new LinkedList<GComponent>();
 		setText(text);
-		tabHeight = (int) (1.2f * localFont.getFont().getSize() + 2 * PADV);
+		tabHeight = (int) (1.2f * localFont.getSize() + 2 * PADV);
 		constrainPanelPosition();
 		opaque = true;
 		dockX = x;
@@ -102,7 +102,7 @@ public class GPanel extends GComponent {
 	public void setFontOLD(String fontname, int fontsize){
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 
-		tabHeight = (int) (1.2f * localFont.getFont().getSize() + 2 * PADV);
+		tabHeight = (int) (1.2f * localFont.getSize() + 2 * PADV);
 		setText(text);
 	}
 
@@ -158,8 +158,8 @@ public class GPanel extends GComponent {
 		winApp.rect(0, - tabHeight, w, tabHeight);
 		// Display tab text
 		winApp.fill(localColor.pnlFont);
-		winApp.textFont(localFont, localFont.getFont().getSize());
-		winApp.text(text, PADH, - (tabHeight + localFont.getFont().getSize())/2 - PADV , textWidth, tabHeight);
+		winApp.textFont(localFont, localFont.getSize());
+		winApp.text(text, PADH, - (tabHeight + localFont.getSize())/2 - PADV , textWidth, tabHeight);
 		if(!tabOnly){
 			if(opaque){
 				winApp.fill(localColor.pnlBack);
