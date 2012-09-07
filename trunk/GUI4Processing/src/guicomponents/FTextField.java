@@ -214,7 +214,6 @@ public class FTextField extends FTextComponent {
 				startTLHI.copyFrom(endTLHI);
 			bufferInvalid = true;	
 		}
-		
 		return caretMoved;
 	}
 
@@ -226,10 +225,12 @@ public class FTextField extends FTextComponent {
 
 			if(e.getID() == KeyEvent.KEY_PRESSED) {
 				processKeyPressed(e, shiftDown, ctrlDown);
+				setScrollbarValues(ptx, pty);
 				while(keepCursorInDisplay());
 			}
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
 				processKeyTyped(e, shiftDown, ctrlDown);
+				setScrollbarValues(ptx, pty);
 				while(keepCursorInDisplay());
 			}
 		}

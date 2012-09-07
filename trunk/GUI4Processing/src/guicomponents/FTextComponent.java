@@ -41,24 +41,44 @@ public class FTextComponent extends GComponent {
 		opaque = true;
 	}
 
-	void setScrollbarValues(){
-		float sTextHeight;
+//	void setScrollbarValues(){
+//		float sTextHeight;
+//		if(vsb != null){
+//			sTextHeight = stext.getTextAreaHeight();
+//			ptx = pty = 0;
+//			if(sTextHeight < th)
+//				vsb.setValue(0.0f, 1.0f);
+//			else 
+//				vsb.setValue(0, th/sTextHeight);
+//		}
+//		// If needed update the horizontal scrollbar
+//		if(hsb != null){
+//			if(stext.getMaxLineLength() < tw)
+//				hsb.setValue(0,1);
+//			else
+//				hsb.setValue(0, tw/stext.getMaxLineLength());
+//		}
+//	}
+	
+	void setScrollbarValues(float sx, float sy){
 		if(vsb != null){
-			sTextHeight = stext.getTextAreaHeight();
+			float sTextHeight = stext.getTextAreaHeight();
 			ptx = pty = 0;
 			if(sTextHeight < th)
 				vsb.setValue(0.0f, 1.0f);
 			else 
-				vsb.setValue(0, th/sTextHeight);
+				vsb.setValue(sy/sTextHeight, th/sTextHeight);
 		}
 		// If needed update the horizontal scrollbar
 		if(hsb != null){
+			float sTextWidth = stext.getMaxLineLength();
 			if(stext.getMaxLineLength() < tw)
 				hsb.setValue(0,1);
 			else
-				hsb.setValue(0, tw/stext.getMaxLineLength());
+				hsb.setValue(sy/sTextWidth, tw/sTextWidth);
 		}
 	}
+	
 	
 	/**
 	 * Move caret to home position
@@ -236,7 +256,6 @@ public class FTextComponent extends GComponent {
 			
 			// Finish off by ensuring no selection, invalidate buffer etc.
 			startTLHI.copyFrom(endTLHI);
-			setScrollbarValues();
 			bufferInvalid = true;
 		} // End of text changed == true
 	}
