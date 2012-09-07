@@ -374,7 +374,7 @@ public class FTextArea extends FTextComponent {
 			
 			// Finish off by ensuring no selection, invalidate buffer etc.
 			startTLHI.copyFrom(endTLHI);
-			setScrollbarValues();
+			setScrollbarValues(ptx, pty);
 			bufferInvalid = true;
 			while(keepCursorInDisplay());
 		} // End of text changed == true
@@ -391,10 +391,12 @@ public class FTextArea extends FTextComponent {
 
 			if(e.getID() == KeyEvent.KEY_PRESSED) {
 				processKeyPressed(e, shiftDown, ctrlDown);
+				setScrollbarValues(ptx, pty);
 				while(keepCursorInDisplay());
 			}
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
 				processKeyTyped(e, shiftDown, ctrlDown);
+				setScrollbarValues(ptx, pty);
 				while(keepCursorInDisplay());
 			}
 		}
