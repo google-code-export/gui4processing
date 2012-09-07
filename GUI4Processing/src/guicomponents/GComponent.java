@@ -132,7 +132,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	}
 
 	// This is the new global font
-	public static Font fGlobalFont = new Font("Dialog", Font.PLAIN, 11);
+	public static Font fGlobalFont = new Font("Dialog", Font.PLAIN, 12);
 	
 	public static PFont globalFont;
 	public PFont localFont;
@@ -984,6 +984,12 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param text
 	 */
 	public void setText(String text){
+		if(text == null || text.length() == 0 )
+			text = "";
+		stext = new StyledString(text);
+	}
+	
+	public void setText(String text, int wrapWidth){
 		if(text == null || text.length() == 0 )
 			text = "";
 		stext = new StyledString(text);

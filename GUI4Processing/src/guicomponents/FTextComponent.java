@@ -3,6 +3,7 @@ package guicomponents;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextHitInfo;
+import java.awt.geom.GeneralPath;
 
 import guicomponents.StyledString.TextLayoutHitInfo;
 import guicomponents.StyledString.TextLayoutInfo;
@@ -16,8 +17,11 @@ public class FTextComponent extends GComponent {
 	// Offset to display area
 	protected float ptx, pty;
 	// Caret position
-	float caretX, caretY;
-
+	protected float caretX, caretY;
+	
+	protected GeneralPath gpTextDisplayArea;
+	
+	
 	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
 
 	// Set to true when mouse is dragging : set false on button released
@@ -110,7 +114,6 @@ public class FTextComponent extends GComponent {
 		else {
 			// Move the caret to the left of current position
 			currPos.thi = nthi;
-			bufferInvalid = true;			
 		}
 		return true;
 	}
@@ -126,7 +129,6 @@ public class FTextComponent extends GComponent {
 		}
 		else {
 			currPos.thi = nthi;
-			bufferInvalid = true;			
 		}
 		return true;
 	}
@@ -205,14 +207,13 @@ public class FTextComponent extends GComponent {
 			}
 		}
 		if(textChanged){
+			// Get new caret character position
 			pos += adjust;
-			// Force update
+			// Force update of lines since they have changed
 			stext.getLines(buffer.g2);
-
-			// ============================================================================================================================================
 			
 			TextLayoutInfo tli;
-			TextHitInfo thi = null, thiLeft, thiRight;
+			TextHitInfo thi = null, thiRight;
 
 			tli = stext.getTLIforCharNo(pos);
 
@@ -220,10 +221,8 @@ public class FTextComponent extends GComponent {
 
 			// Get some hit info so we can see what is happening
 			try{
-				thiLeft = tli.layout.getNextLeftHit(posInLine);
 			}
 			catch(Exception excp){
-				thiLeft = null;
 			}
 			try{
 				thiRight = tli.layout.getNextRightHit(posInLine);
@@ -231,13 +230,6 @@ public class FTextComponent extends GComponent {
 			catch(Exception excp){
 				thiRight = null;
 			}
-
-			System.out.println("Pos in line is " + posInLine + "  Adjusted by " + adjust + "   Length of text in layout " + tli.nbrChars);
-			System.out.println("\t\tText length = " + stext.getPlainText().length());
-			System.out.println("\t\tLEFT   " + thiLeft);
-			System.out.println("\t\tRIGHT  " + thiRight);
-
-			// ============================================================================================================================================
 			
 			if(posInLine <= 0){					// At start of line
 				thi = tli.layout.getNextLeftHit(thiRight);				
@@ -248,7 +240,6 @@ public class FTextComponent extends GComponent {
 			else {								// Character in line;
 				thi = tli.layout.getNextLeftHit(thiRight);	
 			}
-			System.out.println("\t\tAFTER  " + thi);
 
 			endTLHI.setInfo(tli, thi);
 			// Cursor at end of paragraph graphic
@@ -262,9 +253,6 @@ public class FTextComponent extends GComponent {
 	
 	public void flashCaret(){
 		showCaret = !showCaret;
-		if(focusIsWith == this && endTLHI != null){
-			bufferInvalid = true;
-		}
 	}
 	
 	public void hsbEventHandler(FScrollbar scrollbar){

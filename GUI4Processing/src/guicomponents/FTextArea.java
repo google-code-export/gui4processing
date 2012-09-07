@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
+import java.awt.geom.GeneralPath;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
@@ -31,8 +32,15 @@ public class FTextArea extends FTextComponent {
 		tx = ty = pad;
 		tw = width - 2 * pad - ((sbPolicy & SCROLLBAR_VERTICAL) != 0 ? 18 : 0);
 		th = height - 2 * pad - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 18 : 0);
+		gpTextDisplayArea = new GeneralPath();
+		gpTextDisplayArea.moveTo( 0,  0);
+		gpTextDisplayArea.lineTo( 0, th);
+		gpTextDisplayArea.lineTo(tw, th);
+		gpTextDisplayArea.lineTo(tw,  0);
+		gpTextDisplayArea.closePath();
+
 		// The image buffer is just for the typing area
-		buffer = (PGraphicsJava2D) winApp.createGraphics((int)tw, (int)th, PApplet.JAVA2D);
+		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(fLocalFont);
 		hotspots = new HotSpot[]{
@@ -51,7 +59,7 @@ public class FTextArea extends FTextComponent {
 			vsb.addEventHandler(this, "vsbEventHandler");
 			vsb.setAutoHide(autoHide);
 		}
-		setTextOLD("",(int)tw);
+		setText(" ", (int)tw);
 		z = Z_STICKY;
 		registerAutos_DMPK(true, true, false, true);
 	}
@@ -60,18 +68,18 @@ public class FTextArea extends FTextComponent {
 	 * Set the text to be used. The wrap width is determined by the size of the component.
 	 * @param text
 	 */
-	public void setTextOLD(String text){
+	public void setText(String text){
 		setTextOLD(text, (int)tw);
 	}
 
 	/**
 	 * Set the text to display and adjust any scrollbars
 	 * @param text
-	 * @param maxLineLength
+	 * @param wrapWidth
 	 */
-	public void setTextOLD(String text, int maxLineLength){
+	public void setText(String text, int wrapWidth){
 		this.text = text;
-		stext = new StyledString(buffer.g2, text, maxLineLength);
+		stext = new StyledString(buffer.g2, text, wrapWidth);
 		float sTextHeight;
 		if(vsb != null){
 			sTextHeight = stext.getTextAreaHeight();
@@ -99,10 +107,28 @@ public class FTextArea extends FTextComponent {
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
 
 			buffer.beginDraw();
-			buffer.background(buffer.color(255,0));
+			// Whole control surface if opaque
+			if(opaque)
+				buffer.background(palette[6]);
+			else
+				buffer.background(buffer.color(255,0));
+
+			// Now move to top left corner of text display area
+			buffer.translate(tx,ty); 
+
+			// Typing area surface
+			buffer.noStroke();
+			buffer.fill(palette[7]);
+			buffer.rect(-1,-1,tw+2,th+2);
+
+			g2d.setClip(gpTextDisplayArea);
 			buffer.translate(-ptx, -pty);
-			buffer.strokeWeight(1.5f);
+			// Translate in preparation for display selection and text
+//			buffer.strokeWeight(1.5f);
+
+			// Get latest version of styled text layouts
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
+
 			boolean hasSelection = hasSelection();
 			if(hasSelection){
 				if(endTLHI.compareTo(startTLHI) == -1){
@@ -113,8 +139,9 @@ public class FTextArea extends FTextComponent {
 					startSelTLHI = startTLHI;
 					endSelTLHI = endTLHI;
 				}
-			}
-			buffer.pushMatrix();
+			}	
+
+			// Display selection and text
 			for(TextLayoutInfo lineInfo : lines){
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
@@ -128,20 +155,12 @@ public class FTextArea extends FTextComponent {
 					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
 					g2d.fill(selShape);
 				}
+				// display text
 				g2d.setColor(jpalette[2]);
 				lineInfo.layout.draw(g2d, 0, 0);
 				buffer.translate(0, layout.getDescent() + layout.getLeading());
 			}
-			buffer.popMatrix();
-			// Draw caret
-			if(showCaret && endTLHI != null){
-				buffer.pushMatrix();
-				buffer.translate(0, endTLHI.tli.yPosInPara + endTLHI.tli.layout.getAscent() );
-				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
-				g2d.setColor(jpalette[15]);
-				g2d.draw(caret[0]);
-				buffer.popMatrix();
-			}
+			g2d.setClip(null);
 			buffer.endDraw();
 			bufferInvalid = false;
 		}
@@ -187,30 +206,38 @@ public class FTextArea extends FTextComponent {
 
 	public void draw(){
 		if(!visible) return;
+
+		// Uodate buffer if invalid
 		updateBuffer();
-
 		winApp.pushStyle();
-		winApp.pushMatrix();
 
+		winApp.pushMatrix();
+		// Perform the rotation
 		winApp.translate(cx, cy);
 		winApp.rotate(rotAngle);
 
 		winApp.pushMatrix();
+		// Move matrix to line up with top-left corner
 		winApp.translate(-halfWidth, -halfHeight);
-		// Whole control surface if opaque
-		if(opaque)
-			winApp.fill(palette[6]);
-		else
-			winApp.fill(buffer.color(255,0));
-		winApp.noStroke();
-		winApp.rectMode(CORNER);
-		winApp.rect(0,0,width,height);		
-		// Typing area surface
-		winApp.fill(palette[7]);
-		winApp.rect(tx-1,ty-1,tw+2,th+2);
-		// Now the text 
+		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
-		winApp.image(buffer, tx, ty);
+		winApp.image(buffer, 0, 0);
+		
+		// Draw caret if text display area
+		if(showCaret && endTLHI != null){
+			float[] cinfo = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
+			float x_left =  - ptx + cinfo[0];
+			float y_top = - pty + endTLHI.tli.yPosInPara; 
+			float y_bot = y_top - cinfo[3] + cinfo[5];
+			System.out.println(x_left + "   " + y_top + "   " + y_bot+ "   " + tw+ "   " + th);
+			if(x_left >= 0 && x_left <= tw && y_top >= 0 && y_bot <= th){
+				System.out.println("CARET");
+				winApp.strokeWeight(1.9f);
+				winApp.stroke(palette[15]);
+				winApp.line(tx+x_left, ty+Math.max(0, y_top), tx+x_left, ty+Math.min(th, y_bot));
+			}
+		}
+		
 		winApp.popMatrix();
 
 		if(children != null){
@@ -275,113 +302,11 @@ public class FTextArea extends FTextComponent {
 		if(caretMoved){
 			if(!shiftDown)				// Not extending selection
 				startTLHI.copyFrom(endTLHI);
-			bufferInvalid = true;	
+			else
+				bufferInvalid = true;		// Selection changed
 		}
 		return caretMoved;
 	}
-
-	
-	protected void processKeyTypedXXXX(KeyEvent e, boolean shiftDown, boolean ctrlDown){
-		int endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
-		int startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
-		int pos = endChar, nbr = 0, adjust = 0;
-		boolean hasSelection = (startTLHI.compareTo(endTLHI) != 0);
-
-		if(hasSelection){ // Have we some text selected?
-			if(startChar < endChar){ // Forward selection
-				pos = startChar; nbr = endChar - pos;
-			}
-			else if(startChar > endChar){ // Backward selection
-				pos = endChar;	nbr = startChar - pos;
-			}
-		}
-		
-		char keyChar = e.getKeyChar();
-		int ascii = (int)keyChar;
-		boolean textChanged = false;
-		// If we have a selection then any key typed will delete it
-		if(hasSelection){
-			stext.deleteCharacters(pos, nbr);
-			adjust = 0; textChanged = true;
-		}
-		else {	// Only process back_space and delete if there was no selection
-			if(keyChar == KeyEvent.VK_BACK_SPACE){
-				if(stext.deleteCharacters(pos - 1, 1)){
-					adjust = -1; textChanged = true;
-				}
-			}
-			else if(keyChar == KeyEvent.VK_DELETE){
-				if(stext.deleteCharacters(pos, 1)){
-					adjust = 0; textChanged = true;
-				}
-			}
-		}
-		// Now we have got rid of any selection be can process other keys
-		if(ascii >= 32 && ascii < 127){
-			if(stext.insertCharacters(pos, "" + e.getKeyChar())){
-				adjust = 1; textChanged = true;
-			}
-		}
-		if(textChanged){
-			pos += adjust;
-			// Force update
-			stext.getLines(buffer.g2);
-
-			// ============================================================================================================================================
-			
-			TextLayoutInfo tli;
-			TextHitInfo thi = null, thiLeft, thiRight;
-
-			tli = stext.getTLIforCharNo(pos);
-
-			int posInLine = pos - tli.startCharIndex;
-
-			// Get some hit info so we can see what is happening
-			try{
-				thiLeft = tli.layout.getNextLeftHit(posInLine);
-			}
-			catch(Exception excp){
-				thiLeft = null;
-			}
-			try{
-				thiRight = tli.layout.getNextRightHit(posInLine);
-			}
-			catch(Exception excp){
-				thiRight = null;
-			}
-
-			System.out.println("Pos in line is " + posInLine + "  Adjusted by " + adjust + "   Length of text in layout " + tli.nbrChars);
-			System.out.println("\t\tText length = " + stext.getPlainText().length());
-			System.out.println("\t\tLEFT   " + thiLeft);
-			System.out.println("\t\tRIGHT  " + thiRight);
-
-			// ============================================================================================================================================
-			
-			if(posInLine <= 0){					// At start of line
-				thi = tli.layout.getNextLeftHit(thiRight);				
-			}
-			else if(posInLine >= tli.nbrChars){	// End of line
-				thi = tli.layout.getNextRightHit(tli.nbrChars - 1);					
-			}
-			else {								// Character in line;
-				thi = tli.layout.getNextLeftHit(thiRight);	
-			}
-			System.out.println("\t\tAFTER  " + thi);
-
-			endTLHI.setInfo(tli, thi);
-			// Cursor at end of paragraph graphic
-			calculateCaretPos(endTLHI);
-			
-			// Finish off by ensuring no selection, invalidate buffer etc.
-			startTLHI.copyFrom(endTLHI);
-			setScrollbarValues(ptx, pty);
-			bufferInvalid = true;
-			while(keepCursorInDisplay());
-		} // End of text changed == true
-
-	}
-
-
 
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
@@ -475,13 +400,11 @@ public class FTextArea extends FTextComponent {
 				nthi = ntli.layout.getNextRightHit(ntli.nbrChars-1);
 				currPos.tli = ntli;
 				currPos.thi = nthi;
-				bufferInvalid = true;
 			}
 		}
 		else {
 			// Move the caret to the left of current position
 			currPos.thi = nthi;
-			bufferInvalid = true;			
 		}
 		return true;
 	}
@@ -504,13 +427,11 @@ public class FTextArea extends FTextComponent {
 				nthi = ntli.layout.getNextLeftHit(1);
 				currPos.tli = ntli;
 				currPos.thi = nthi;
-				bufferInvalid = true;
 			}
 		}
 		else {
 			// Move the caret to the right of current position
 			currPos.thi = nthi;
-			bufferInvalid = true;			
 		}
 		return true;
 	}
@@ -544,7 +465,6 @@ public class FTextArea extends FTextComponent {
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			dragging = false;
-			bufferInvalid = true;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
@@ -562,7 +482,6 @@ public class FTextArea extends FTextComponent {
 		float temp[] = tlhi.tli.layout.getCaretInfo(tlhi.thi);
 		caretX = temp[0];		
 		caretY = tlhi.tli.yPosInPara;
-
 	}
 
 }
