@@ -111,7 +111,6 @@ public class FTextField extends FTextComponent {
 			// Display selection and text
 			if(stext.length() > 0){
 				buffer.pushMatrix();
-				System.out.println("Update Buffer no. of layouts " + lines.size() );
 				for(TextLayoutInfo lineInfo : lines){
 					TextLayout layout = lineInfo.layout;
 					buffer.translate(0, layout.getAscent());
@@ -285,24 +284,12 @@ public class FTextField extends FTextComponent {
 			float x_left =  - ptx + cinfo[0];
 			float y_top = - pty + endTLHI.tli.yPosInPara; 
 			float y_bot = y_top - cinfo[3] + cinfo[5];
-			System.out.println(x_left + "   " + y_top + "   " + y_bot+ "   " + tw+ "   " + th);
 			if(x_left >= 0 && x_left <= tw && y_top >= 0 && y_bot <= th){
-				System.out.println("CARET");
 				winApp.strokeWeight(1.9f);
 				winApp.stroke(palette[15]);
 				winApp.line(tx+x_left, ty+Math.max(0, y_top), tx+x_left, ty+Math.min(th, y_bot));
 			}
 		}
-//		// Draw caret if visible
-//		if(showCaret && endTLHI != null){
-//			float[] cinfo = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
-//			winApp.pushMatrix();
-//			winApp.translate(tx-ptx+cinfo[0], ty-pty+endTLHI.tli.yPosInPara);
-//			winApp.strokeWeight(1.9f);
-//			winApp.stroke(palette[15]);
-//			winApp.line(0, 0, 0, cinfo[5] - cinfo[3]);
-//			winApp.popMatrix();
-//		}
 		
 		winApp.popMatrix();
 

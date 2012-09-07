@@ -229,9 +229,7 @@ public class FTextArea extends FTextComponent {
 			float x_left =  - ptx + cinfo[0];
 			float y_top = - pty + endTLHI.tli.yPosInPara; 
 			float y_bot = y_top - cinfo[3] + cinfo[5];
-			System.out.println(x_left + "   " + y_top + "   " + y_bot+ "   " + tw+ "   " + th);
 			if(x_left >= 0 && x_left <= tw && y_top >= 0 && y_bot <= th){
-				System.out.println("CARET");
 				winApp.strokeWeight(1.9f);
 				winApp.stroke(palette[15]);
 				winApp.line(tx+x_left, ty+Math.max(0, y_top), tx+x_left, ty+Math.min(th, y_bot));

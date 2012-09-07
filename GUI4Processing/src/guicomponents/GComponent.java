@@ -132,7 +132,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	}
 
 	// This is the new global font
-	public static Font fGlobalFont = new Font("Dialog", Font.PLAIN, 12);
+	public static Font fGlobalFont = new Font("Dialog", Font.PLAIN, 11);
 	
 	public static PFont globalFont;
 	public PFont localFont;
