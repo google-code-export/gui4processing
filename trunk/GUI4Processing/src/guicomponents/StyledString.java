@@ -312,12 +312,10 @@ final public class StyledString implements Serializable {
 	public boolean deleteCharacters(int fromPos, int nbrToRemove){
 		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
 			return false;
-		System.out.print(plainText.length() + "  >>>  ");
 		if(fromPos != 0)
 			plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
 		else
 			plainText = plainText.substring(fromPos + nbrToRemove);
-		System.out.println(plainText.length());
 		removeBlankLines(); // just in case we merge two eol characters
 		if(plainText.length() == 0){
 			atrun.clear();
@@ -348,10 +346,6 @@ final public class StyledString implements Serializable {
 		if(a_font != null){
 			font = a_font;
 			baseStyle.clear();
-			System.out.println(font.getFamily());
-			System.out.println(font.getSize());
-			System.out.println(font.getStyle());
-			System.out.println(font);
 			baseStyle.add(new AttributeRun(TextAttribute.FAMILY, font.getFamily()));
 			baseStyle.add(new AttributeRun(TextAttribute.SIZE, font.getSize()));
 			if(font.isBold())
