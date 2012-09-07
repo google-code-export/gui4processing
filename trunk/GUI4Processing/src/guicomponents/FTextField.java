@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
+import java.awt.geom.GeneralPath;
 import java.util.LinkedList;
 
 import guicomponents.HotSpot.HSrect;
@@ -27,8 +28,15 @@ public class FTextField extends FTextComponent {
 		tx = ty = pad;
 		tw = width - 2 * pad;
 		th = height - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 11 : 0);
+		gpTextDisplayArea = new GeneralPath();
+		gpTextDisplayArea.moveTo( 0,  0);
+		gpTextDisplayArea.lineTo( 0, th);
+		gpTextDisplayArea.lineTo(tw, th);
+		gpTextDisplayArea.lineTo(tw,  0);
+		gpTextDisplayArea.closePath();
+
 		// The image buffer is just for the typing area
-		buffer = (PGraphicsJava2D) winApp.createGraphics((int)tw, (int)th, PApplet.JAVA2D);
+		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(fLocalFont);
 		hotspots = new HotSpot[]{
@@ -41,12 +49,12 @@ public class FTextField extends FTextComponent {
 			hsb.addEventHandler(this, "hsbEventHandler");
 			hsb.setAutoHide(autoHide);
 		}
-		setTextOLD(" ");
+		setText(" ");
 		z = Z_STICKY;
 		registerAutos_DMPK(true, true, false, true);
 	}
 
-	public void setTextOLD(String text){
+	public void setText(String text){
 		if(text == null || text.length() == 0)
 			text = " ";
 		this.text = text;
@@ -70,9 +78,24 @@ public class FTextField extends FTextComponent {
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
 
 			buffer.beginDraw();
-			buffer.background(buffer.color(255,0));
+			// Whole control surface if opaque
+			if(opaque)
+				buffer.background(palette[6]);
+			else
+				buffer.background(buffer.color(255,0));
+
+			// Now move to top left corner of text display area
+			buffer.translate(tx,ty); 
+
+			// Typing area surface
+			buffer.noStroke();
+			buffer.fill(palette[7]);
+			buffer.rect(-1,-1,tw+2,th+2);
+
+			g2d.setClip(gpTextDisplayArea);
 			buffer.translate(-ptx, -pty);
-			buffer.strokeWeight(1.5f);
+			// Translate in preparation for display selection and text
+
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
 			boolean hasSelection = hasSelection();
 			if(hasSelection){
@@ -85,7 +108,7 @@ public class FTextField extends FTextComponent {
 					endSelTLHI = endTLHI;
 				}
 			}
-			// Draw text
+			// Display selection and text
 			if(stext.length() > 0){
 				buffer.pushMatrix();
 				System.out.println("Update Buffer no. of layouts " + lines.size() );
@@ -100,21 +123,23 @@ public class FTextField extends FTextComponent {
 						Shape selShape = layout.getLogicalHighlightShape(ss, ee);
 						g2d.fill(selShape);
 					}
+					// Draw text
 					g2d.setColor(jpalette[2]);
 					lineInfo.layout.draw(g2d, 0, 0);
 					buffer.translate(0, layout.getDescent() + layout.getLeading());
 				}
 				buffer.popMatrix();
 			}
-			// Draw caret
-			if(showCaret && endTLHI != null){
-				buffer.pushMatrix();
-				buffer.translate(0, endTLHI.tli.layout.getAscent() );
-				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
-				g2d.setColor(jpalette[15]);
-				g2d.draw(caret[0]);
-				buffer.popMatrix();
-			}
+			g2d.setClip(null);
+//			// Draw caret
+//			if(showCaret && endTLHI != null){
+//				buffer.pushMatrix();
+//				buffer.translate(0, endTLHI.tli.layout.getAscent() );
+//				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
+//				g2d.setColor(jpalette[15]);
+//				g2d.draw(caret[0]);
+//				buffer.popMatrix();
+//			}
 			buffer.endDraw();
 			bufferInvalid = false;
 		}
@@ -212,7 +237,8 @@ public class FTextField extends FTextComponent {
 		if(caretMoved){
 			if(!shiftDown)				// Not extending selection
 				startTLHI.copyFrom(endTLHI);
-			bufferInvalid = true;	
+			else
+				bufferInvalid = true;	
 		}
 		return caretMoved;
 	}
@@ -247,23 +273,37 @@ public class FTextField extends FTextComponent {
 		winApp.rotate(rotAngle);
 
 		winApp.pushMatrix();
+		// Move matrix to line up with top-left corner
 		winApp.translate(-halfWidth, -halfHeight);
-		// Whole control surface if opaque
-//		if(opaque)
-//			winApp.fill(palette[6]);
-//		else
-		winApp.fill(buffer.color(255,0));
-		winApp.noStroke();
-		winApp.rectMode(CORNER);
-		winApp.rect(0,0,width,height);		
-		// Typing area surface
-		winApp.stroke(palette[3]);
-		winApp.strokeWeight(1);
-		winApp.fill(palette[7]);
-		winApp.rect(0,0,width,th+2);
-		// Now display the text 
+		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
-		winApp.image(buffer, tx, ty);
+		winApp.image(buffer, 0, 0);
+
+		// Draw caret if text display area
+		if(showCaret && endTLHI != null){
+			float[] cinfo = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
+			float x_left =  - ptx + cinfo[0];
+			float y_top = - pty + endTLHI.tli.yPosInPara; 
+			float y_bot = y_top - cinfo[3] + cinfo[5];
+			System.out.println(x_left + "   " + y_top + "   " + y_bot+ "   " + tw+ "   " + th);
+			if(x_left >= 0 && x_left <= tw && y_top >= 0 && y_bot <= th){
+				System.out.println("CARET");
+				winApp.strokeWeight(1.9f);
+				winApp.stroke(palette[15]);
+				winApp.line(tx+x_left, ty+Math.max(0, y_top), tx+x_left, ty+Math.min(th, y_bot));
+			}
+		}
+//		// Draw caret if visible
+//		if(showCaret && endTLHI != null){
+//			float[] cinfo = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
+//			winApp.pushMatrix();
+//			winApp.translate(tx-ptx+cinfo[0], ty-pty+endTLHI.tli.yPosInPara);
+//			winApp.strokeWeight(1.9f);
+//			winApp.stroke(palette[15]);
+//			winApp.line(0, 0, 0, cinfo[5] - cinfo[3]);
+//			winApp.popMatrix();
+//		}
+		
 		winApp.popMatrix();
 
 		if(children != null){
