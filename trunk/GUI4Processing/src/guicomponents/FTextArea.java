@@ -258,14 +258,19 @@ public class FTextArea extends FTextComponent {
 		snap.beginDraw();
 		snap.image(buffer,0,0);
 		if(snapHsb != null){
-			
+			snap.pushMatrix();
+			snap.translate(hsb.getX(), hsb.getY());
+			snap.image(snapHsb, 0, 0);
+			snap.popMatrix();
 		}
 		if(snapVsb != null){
-			
-			
+			snap.pushMatrix();
+			snap.translate(vsb.getX(), vsb.getY());
+			snap.rotate(PApplet.PI);
+			snap.image(snapHsb, 0, 0);
+			snap.popMatrix();
 		}
-		
-		
+		snap.endDraw();
 		return snap;
 	}
 
