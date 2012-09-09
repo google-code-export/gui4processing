@@ -59,7 +59,7 @@ public class FTextArea extends FTextComponent {
 			vsb.addEventHandler(this, "vsbEventHandler");
 			vsb.setAutoHide(autoHide);
 		}
-		setText(" ", (int)tw);
+		setTextNew(" ", (int)tw);
 		z = Z_STICKY;
 		registerAutos_DMPK(true, true, false, true);
 	}
@@ -68,8 +68,8 @@ public class FTextArea extends FTextComponent {
 	 * Set the text to be used. The wrap width is determined by the size of the component.
 	 * @param text
 	 */
-	public void setText(String text){
-		setTextOLD(text, (int)tw);
+	public void setTextNew(String text){
+		setText(text, (int)tw);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class FTextArea extends FTextComponent {
 	 * @param text
 	 * @param wrapWidth
 	 */
-	public void setText(String text, int wrapWidth){
+	public void setTextNew(String text, int wrapWidth){
 		this.text = text;
 		stext = new StyledString(buffer.g2, text, wrapWidth);
 		float sTextHeight;

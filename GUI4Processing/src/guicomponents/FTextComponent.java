@@ -147,7 +147,7 @@ public class FTextComponent extends GComponent {
 			vsb.setLocalColorScheme(localColorScheme);
 	}
 
-	public void setFont(Font font){
+	public void setFontNew(Font font){
 		if(font != null && font != fLocalFont){
 			fLocalFont = font;
 			buffer.g2.setFont(fLocalFont);

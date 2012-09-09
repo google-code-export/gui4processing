@@ -642,7 +642,7 @@ public class GWSlider extends GSlider {
 	/**
 	 * Sets font of labels
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 	}
 

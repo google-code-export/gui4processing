@@ -77,7 +77,7 @@ public class GOption extends GComponent {
 		if(height > this.height)
 			this.height = height;
 		opaque = false;
-		setTextOLD(text);
+		setText(text);
 		z = Z_SLIPPY;
 		createEventHandler(G4P.mainWinApp, "handleOptionEvents", new Class[]{ GOption.class, GOption.class });
 		registerAutos_DMPK(true, true, false, false);
@@ -144,7 +144,7 @@ public class GOption extends GComponent {
 	 * Set the font & size for the option button changing the height (+/-) 
 	 * and width(+/-) of the button if necessary to display text.  
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
@@ -152,7 +152,7 @@ public class GOption extends GComponent {
 			height += (fontsize - fs);
 			height = Math.max(height, imgSelected.height);
 		}
-		setTextOLD(text);
+		setText(text);
 		if(textWidth != tw)
 			width += (textWidth - tw);
 	}
