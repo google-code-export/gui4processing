@@ -94,7 +94,7 @@ public class GButton extends GComponent {
 	 */
 	public GButton(PApplet theApplet, String text, int x, int y, int width, int height){
 		super(theApplet, x, y);
-		setTextOLD(text);
+		setText(text);
 		buttonCtorCore(width, height);
 	}
 
@@ -137,7 +137,7 @@ public class GButton extends GComponent {
 		super(theApplet, x, y);
 		setImages(imgFile, nbrImages);
 		btnImgWidth = getMaxButtonImageWidth();
-		setTextOLD(text);
+		setText(text);
 		buttonCtorCore(width, height);
 	}
 
@@ -325,7 +325,7 @@ public class GButton extends GComponent {
 	 * made LEFT alligment.
 	 * @param text the text to set with alignment
 	 */
-	public void setTextOLD(String text) {
+	public void setText(String text) {
 		if(text != null && text != ""){
 			if(useImages && imageAlign == GAlign.CENTER)
 				setImageAlign(GAlign.LEFT);
@@ -344,7 +344,7 @@ public class GButton extends GComponent {
 	 * @param fontname the name of the font to use (if not available use default font)
 	 * @param fontsize the font size to use
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 		setFont(fontname, fontsize, true);
 	}
 
@@ -362,7 +362,7 @@ public class GButton extends GComponent {
 		if(resize){
 			if(fontsize > fs)
 				height += (fontsize - fs);
-			setTextOLD(text);
+			setText(text);
 			if(textWidth > tw)
 				width += (textWidth - tw);
 		}

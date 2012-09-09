@@ -138,13 +138,13 @@ public class GCombo extends GComponent {
 	 * width of the button if necessary to display text. <br>
 	 * It will not shrink if the font size is decreased.  
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize > fs)
 			height += (fontsize - fs);
-		setTextOLD(text);
+		setText(text);
 		if(textWidth > tw)
 			width += (textWidth - tw);
 		ArrayList<GOption> options = optGroup.getOptions();
@@ -198,7 +198,7 @@ public class GCombo extends GComponent {
 	 */
 	public void setSelected(int index){
 		optGroup.setSelected(index);
-		setTextOLD(optGroup.selectedText());
+		setText(optGroup.selectedText());
 	}
 	
 	/**
@@ -207,7 +207,7 @@ public class GCombo extends GComponent {
 	 */
 	public void setSelected(String optText){
 		optGroup.setSelected(optText);
-		setTextOLD(optGroup.selectedText());
+		setText(optGroup.selectedText());
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class GCombo extends GComponent {
 	 */
 	public void removeAllOptions() {
 		optGroup.getOptions().clear();
-		setTextOLD("");
+		setText("");
 	}
 
 	/**

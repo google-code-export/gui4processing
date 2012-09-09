@@ -104,11 +104,11 @@ public class FPanel extends GComponent  {
 	 * Set the font & size for the tab text changing the height (+/-) 
 	 * of the tab if necessary to display text.  
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 
 		tabHeight = (int) (1.2f * localFont.getSize() + 2 * PADV);
-		setTextOLD(text);
+		setText(text);
 	}
 
 	/**

@@ -75,7 +75,7 @@ public class GLabel extends GComponent {
 			this.height = height;
 		opaque = false;
 		if(text != null)
-			setTextOLD(text);
+			setText(text);
 		registerAutos_DMPK(true, false, false, false);
 	}
 
@@ -83,18 +83,17 @@ public class GLabel extends GComponent {
 	 * Set the font & size for the label changing the height (+/-) 
 	 * and width(+/-) of the label if necessary to display text.
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
-		setTextOLD(text);
+		setText(text);
 		if(textWidth != tw)
 			width += (textWidth - tw);
 		calcAlignX();
 		calcAlignY();
-		
 	}
 
 	/**

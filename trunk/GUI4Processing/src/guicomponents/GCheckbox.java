@@ -73,7 +73,7 @@ public class GCheckbox extends GComponent {
 		this.width = width;
 		height = Math.max((int)localFont.getSize() + 2 * PADV, imgCleared.height);
 		opaque = false;
-		setTextOLD(text);
+		setText(text);
 		z = Z_SLIPPY;
 		createEventHandler(G4P.mainWinApp, "handleCheckboxEvents", new Class[]{ GCheckbox.class });
 		registerAutos_DMPK(true, true, false, false);
@@ -83,13 +83,13 @@ public class GCheckbox extends GComponent {
 	 * Set the font & size for the checkbox changing the height (+/-) 
 	 * and width(+) of the checkbox if necessary to display text. 
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 		int tw = textWidth;
 		int fs = (int) localFont.getSize();
 		localFont = GFont.getFont(winApp, fontname, fontsize);
 		if(fontsize != fs)
 			height += (fontsize - fs);
-		setTextOLD(text);
+		setText(text);
 		if(textWidth > tw)
 			width += (textWidth - tw);
 	}

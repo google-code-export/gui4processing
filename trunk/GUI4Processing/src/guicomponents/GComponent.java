@@ -983,13 +983,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * NEW version for FPanel etc.
 	 * @param text
 	 */
-	public void setText(String text){
+	public void setTextNew(String text){
 		if(text == null || text.length() == 0 )
 			text = "";
 		stext = new StyledString(text);
 	}
 	
-	public void setText(String text, int wrapWidth){
+	public void setTextNew(String text, int wrapWidth){
 		if(text == null || text.length() == 0 )
 			text = "";
 		stext = new StyledString(text);
@@ -999,7 +999,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param text use this function to set the text so that the
 	 * text length is calculated
 	 */
-	public void setTextOLD(String text) {
+	public void setText(String text) {
 		this.text = text;
 		winApp.textFont(localFont, localFont.getSize());
 		textWidth = (int) winApp.textWidth(text); 
@@ -1010,11 +1010,11 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/**
 	 * @param text the text to set with alignment
 	 */
-	public void setTextOLD(String text, int align) {
+	public void setText(String text, int align) {
 		this.text = text;
 		winApp.textFont(localFont, localFont.getSize());
 		textWidth = (int) winApp.textWidth(text);
-		setTextAlignOLD(align);
+		setTextAlign(align);
 	}
 
 	/**
@@ -1027,7 +1027,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * bitwise OR e.g. GAlign.BOTTOM | GAlign.CENTER 
 	 * @param align the alignment flag
 	 */
-	public void setTextAlignOLD(int align){
+	public void setTextAlign(int align){
 		int ha = align & GAlign.H_ALIGN;
 		int va = align & GAlign.V_ALIGN;
 		if(ha == GAlign.LEFT || ha == GAlign.CENTER || ha == GAlign.RIGHT){
@@ -1045,7 +1045,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param fontname
 	 * @param fontsize
 	 */
-	public void setFontOLD(String fontname, int fontsize){
+	public void setFont(String fontname, int fontsize){
 	}
 
 	/**
@@ -1055,7 +1055,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * 
 	 * @param font the java.awt.Font to use
 	 */
-	public void setFont(Font font){
+	public void setFontNew(Font font){
 		fLocalFont = font;
 	}
 	
@@ -1066,13 +1066,13 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * 
 	 * @param pfont the Processing font to use
 	 */
-	public void setFont(PFont pfont){
+	public void setFontNew(PFont pfont){
 //		Font font = pfont.getNative();
 //		if(font == null){
 //			
 //		}
 //		
-		fLocalFont = pfont.getFont();
+		fLocalFont = (Font) pfont.getNative();
 	}
 	
 	
