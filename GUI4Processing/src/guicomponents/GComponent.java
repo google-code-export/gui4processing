@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
+import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 
 
@@ -374,6 +375,30 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		c.parent = this;
 		children.addLast(c);
 	}
+
+	/**
+	 * This method should be used sparingly since it is heavy on resources.
+	 * 
+	 * @return
+	 */
+	public PGraphics getSnapshot(){
+		if(buffer != null){
+			updateBuffer();
+			PGraphicsJava2D snap = (PGraphicsJava2D) winApp.createGraphics(buffer.width, buffer.height, PApplet.JAVA2D);
+			snap.beginDraw();
+			snap.image(buffer,0,0);
+			return snap;
+		}
+		return null;
+	}
+
+	/*
+	 * Empty method at the moment make abstract
+	 * in final version
+	 */
+	protected void updateBuffer() {};
+	
+	
 
 	/**
 	 * This will set the rotation of the control to angle overwriting

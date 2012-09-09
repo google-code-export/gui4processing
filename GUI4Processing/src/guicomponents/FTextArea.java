@@ -14,6 +14,7 @@ import java.awt.geom.GeneralPath;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 
 
@@ -124,7 +125,6 @@ public class FTextArea extends FTextComponent {
 			g2d.setClip(gpTextDisplayArea);
 			buffer.translate(-ptx, -pty);
 			// Translate in preparation for display selection and text
-//			buffer.strokeWeight(1.5f);
 
 			// Get latest version of styled text layouts
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
@@ -244,6 +244,25 @@ public class FTextArea extends FTextComponent {
 		}
 		winApp.popMatrix();
 		winApp.popStyle();
+	}
+
+	public PGraphics getSnapshot(){
+		updateBuffer();
+		PGraphicsJava2D snap = (PGraphicsJava2D) winApp.createGraphics(buffer.width, buffer.height, PApplet.JAVA2D);
+		PGraphicsJava2D snapHsb = null, snapVsb = null;
+		if(hsb != null && hsb.isVisible())
+			snapHsb = (PGraphicsJava2D) hsb.getSnapshot();
+		if(vsb != null && vsb.isVisible())
+			snapVsb = (PGraphicsJava2D) vsb.getSnapshot();
+
+		snap.beginDraw();
+		snap.image(buffer,0,0); // transparent
+		if(snapHsb != null){
+			
+		}
+		
+		
+		return snap;
 	}
 
 	protected boolean processKeyPressed(KeyEvent e, boolean shiftDown, boolean ctrlDown){
