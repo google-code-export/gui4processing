@@ -256,8 +256,12 @@ public class FTextArea extends FTextComponent {
 			snapVsb = (PGraphicsJava2D) vsb.getSnapshot();
 
 		snap.beginDraw();
-		snap.image(buffer,0,0); // transparent
+		snap.image(buffer,0,0);
 		if(snapHsb != null){
+			
+		}
+		if(snapVsb != null){
+			
 			
 		}
 		
