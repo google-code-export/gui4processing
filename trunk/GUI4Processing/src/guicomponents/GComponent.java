@@ -392,11 +392,15 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return null;
 	}
 
+	protected PGraphicsJava2D getBuffer(){
+		return buffer;
+	}
+	
 	/*
 	 * Empty method at the moment make abstract
 	 * in final version
 	 */
-	protected void updateBuffer() {};
+	protected void updateBuffer() {}
 	
 	
 

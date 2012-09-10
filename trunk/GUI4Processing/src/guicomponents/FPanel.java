@@ -23,6 +23,8 @@
 
 package guicomponents;
 
+import guicomponents.HotSpot.HSrect;
+
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
@@ -46,7 +48,7 @@ import processing.core.PGraphicsJava2D;
  * @author Peter Lager
  *
  */
-public class FPanel extends GComponent  {
+public class FPanel extends GComponent {
 	
 
 	/** Whether the panel is displayed in full or tab only */
@@ -77,7 +79,7 @@ public class FPanel extends GComponent  {
 		super(theApplet, p0, p1, p2, p3);
 		children = new LinkedList<GComponent>();
 		if(text == null || text.length() == 0)
-			text = "Tab";
+			text = "Tab Text";
 		this.text = text;
 		tabHeight = fLocalFont.getSize() + 10;
 		// The image buffer is just for the typing area
@@ -87,6 +89,7 @@ public class FPanel extends GComponent  {
 		stext = new StyledString(buffer.g2, text);
 		stext.getLines(buffer.g2);
 		tabHeight = (int) (stext.getMaxLineHeight() + 4);
+		calcHotSpots();
 		constrainPanelPosition();
 		opaque = true;
 		dockX = x;
@@ -96,10 +99,14 @@ public class FPanel extends GComponent  {
 		registerAutos_DMPK(true, true, false, false);
 	}
 
-
-	public void setFText(String text){
-		
+	private void calcHotSpots(){
+		hotspots = new HotSpot[]{
+				new HSrect(1, 0, -tabHeight, tabWidth, tabHeight),					// tab text area
+				new HSrect(2, tabWidth, -tabHeight, width - tabWidth, tabHeight),	// tab non-text area
+				new HSrect(9, 0, 0, width, height)									// panel content surface
+		};
 	}
+	
 	/**
 	 * Set the font & size for the tab text changing the height (+/-) 
 	 * of the tab if necessary to display text.  

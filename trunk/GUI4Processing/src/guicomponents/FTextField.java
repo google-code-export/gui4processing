@@ -1,18 +1,19 @@
 package guicomponents;
 
+import guicomponents.HotSpot.HSrect;
+import guicomponents.StyledString.TextLayoutHitInfo;
+import guicomponents.StyledString.TextLayoutInfo;
+
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.util.LinkedList;
 
-import guicomponents.HotSpot.HSrect;
-import guicomponents.StyledString.TextLayoutHitInfo;
-import guicomponents.StyledString.TextLayoutInfo;
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 
 public class FTextField extends FTextComponent {
@@ -65,6 +66,21 @@ public class FTextField extends FTextComponent {
 			else
 				hsb.setValue(0, tw/stext.getMaxLineLength());
 		}
+	}
+
+	public PGraphics getSnapshot(){
+		updateBuffer();
+		PGraphicsJava2D snap = (PGraphicsJava2D) winApp.createGraphics(buffer.width, buffer.height, PApplet.JAVA2D);
+		snap.beginDraw();
+		snap.image(buffer,0,0);
+		if(hsb != null){
+			snap.pushMatrix();
+			snap.translate(hsb.getX(), hsb.getY());
+			snap.image(hsb.getBuffer(), 0, 0);
+			snap.popMatrix();
+		}
+		snap.endDraw();
+		return snap;
 	}
 
 	
