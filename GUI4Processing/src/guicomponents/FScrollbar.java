@@ -257,10 +257,10 @@ public class FScrollbar extends GComponent {
 		winApp.imageMode(PApplet.CENTER);
 		winApp.image(buffer, 0, 0);
 
-		if(children != null){
-			for(GComponent c : children)
-				c.draw();
-		}
+//		if(children != null){
+//			for(GComponent c : children)
+//				c.draw();
+//		}
 		winApp.popMatrix();
 		winApp.popStyle();
 

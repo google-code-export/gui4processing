@@ -22,8 +22,6 @@ public class FTextArea extends FTextComponent {
 
 	private static float pad = 6;
 
-
-
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		this(theApplet, p0, p1, p2, p3, SCROLLBARS_NONE);
 	}
@@ -46,7 +44,7 @@ public class FTextArea extends FTextComponent {
 		buffer.g2.setFont(fLocalFont);
 		hotspots = new HotSpot[]{
 				new HSrect(1, tx, ty, tw, th),			// typing area
-				new HSrect(9, 0, 0, width, height),		// control surface
+				new HSrect(9, 0, 0, width, height)		// control surface
 		};
 		if((sbPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new FScrollbar(theApplet, 0, 0, tw, 16);
@@ -249,25 +247,19 @@ public class FTextArea extends FTextComponent {
 	public PGraphics getSnapshot(){
 		updateBuffer();
 		PGraphicsJava2D snap = (PGraphicsJava2D) winApp.createGraphics(buffer.width, buffer.height, PApplet.JAVA2D);
-		PGraphicsJava2D snapHsb = null, snapVsb = null;
-		if(hsb != null && hsb.isVisible())
-			snapHsb = (PGraphicsJava2D) hsb.getSnapshot();
-		if(vsb != null && vsb.isVisible())
-			snapVsb = (PGraphicsJava2D) vsb.getSnapshot();
-
 		snap.beginDraw();
 		snap.image(buffer,0,0);
-		if(snapHsb != null){
+		if(hsb != null){
 			snap.pushMatrix();
 			snap.translate(hsb.getX(), hsb.getY());
-			snap.image(snapHsb, 0, 0);
+			snap.image(hsb.getBuffer(), 0, 0);
 			snap.popMatrix();
 		}
-		if(snapVsb != null){
+		if(vsb != null){
 			snap.pushMatrix();
 			snap.translate(vsb.getX(), vsb.getY());
-			snap.rotate(PApplet.PI);
-			snap.image(snapHsb, 0, 0);
+			snap.rotate(PApplet.PI/2);
+			snap.image(vsb.getBuffer(), 0, 0);
 			snap.popMatrix();
 		}
 		snap.endDraw();
