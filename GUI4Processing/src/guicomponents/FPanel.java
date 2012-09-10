@@ -81,7 +81,7 @@ public class FPanel extends GComponent {
 		if(text == null || text.length() == 0)
 			text = "Tab Text";
 		this.text = text;
-		tabHeight = fLocalFont.getSize() + 10;
+		tabHeight = fLocalFont.getSize() + 4;
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, tabHeight + (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
