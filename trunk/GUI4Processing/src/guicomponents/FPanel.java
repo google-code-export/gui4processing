@@ -25,8 +25,12 @@ package guicomponents;
 
 import guicomponents.HotSpot.HSrect;
 
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -49,7 +53,7 @@ import processing.core.PGraphicsJava2D;
  *
  */
 public class FPanel extends GComponent {
-	
+
 
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
@@ -81,14 +85,11 @@ public class FPanel extends GComponent {
 		if(text == null || text.length() == 0)
 			text = "Tab Text";
 		this.text = text;
-		tabHeight = fLocalFont.getSize() + 4;
 		// The image buffer is just for the typing area
-		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, tabHeight + (int)height, PApplet.JAVA2D);
+		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(fLocalFont);
-		stext = new StyledString(buffer.g2, text);
-		stext.getLines(buffer.g2);
-		tabHeight = (int) (stext.getMaxLineHeight() + 4);
+		setTextNew(text);
 		calcHotSpots();
 		constrainPanelPosition();
 		opaque = true;
@@ -99,17 +100,28 @@ public class FPanel extends GComponent {
 		registerAutos_DMPK(true, true, false, false);
 	}
 
+	public void setTextNew(String text){
+		super.setTextNew(text);
+		stext.getLines(buffer.g2);
+		tabHeight = (int) (stext.getMaxLineHeight() + 4);
+		tabWidth = (int) (stext.getMaxLineLength() + 8);
+	}
+
+	/**
+	 * This needs to be called if the tab text is changed
+	 */
 	private void calcHotSpots(){
 		hotspots = new HotSpot[]{
-				new HSrect(1, 0, -tabHeight, tabWidth, tabHeight),					// tab text area
-				new HSrect(2, tabWidth, -tabHeight, width - tabWidth, tabHeight),	// tab non-text area
-				new HSrect(9, 0, 0, width, height)									// panel content surface
+				new HSrect(1, 0, 0, tabWidth, tabHeight),					// tab text area
+				new HSrect(2, tabWidth, 0, width - tabWidth, tabHeight),	// tab non-text area
+				new HSrect(3, 0, tabHeight, width, height - tabHeight)		// panel content surface
 		};
 	}
-	
+
 	/**
 	 * Set the font & size for the tab text changing the height (+/-) 
-	 * of the tab if necessary to display text.  
+	 * of the tab if necessary to display text. 
+	 * OLD version 
 	 */
 	public void setFont(String fontname, int fontsize){
 		localFont = GFont.getFont(winApp, fontname, fontsize);
@@ -126,7 +138,7 @@ public class FPanel extends GComponent {
 			parent.bringToFront();
 		G4P.moveToFrontForDraw(this);
 	}
-	
+
 	/**
 	 * What to do when the GPanel loses focus.
 	 */
@@ -135,11 +147,11 @@ public class FPanel extends GComponent {
 		beingDragged = false;
 	}
 
-//	protected void takeFocus(){
-//		super.takeFocus();
-//		G4P.moveToFrontForDraw(this);
-//	}
-	
+	//	protected void takeFocus(){
+	//		super.takeFocus();
+	//		G4P.moveToFrontForDraw(this);
+	//	}
+
 	/**
 	 * Draw the panel.
 	 * If tabOnly == true 
@@ -150,61 +162,111 @@ public class FPanel extends GComponent {
 	public void draw(){
 		if(!visible) return;
 
-		Point pos = new Point(0,0);
-		calcAbsPosition(pos);
+		// Uodate buffer if invalid
+		updateBuffer();
+		winApp.pushStyle();
 
 		winApp.pushMatrix();
-		winApp.translate(pos.x, pos.y);
-		
-		winApp.pushStyle();
-		winApp.style(G4P.g4pStyle);
-		
-		winApp.noStroke();
-		if(border > 0){
-			winApp.strokeWeight(border);
-			winApp.stroke(localColor.pnlBorder);
-		}
-		winApp.fill(localColor.pnlTabBack);
-		// Display tab (length depends on whether panel is open or closed
-		int w = (int) ((tabOnly)? tabWidth + PADH * 4 : width);
-		winApp.rect(0, - tabHeight, w, tabHeight);
-		// Display tab text
-		winApp.fill(localColor.pnlFont);
-		winApp.textFont(localFont, localFont.getSize());
-		winApp.text(text, PADH, - (tabHeight + localFont.getSize())/2 - PADV , tabWidth, tabHeight);
-		if(!tabOnly){
-			if(opaque){
-				winApp.fill(localColor.pnlBack);
-				winApp.rect(0, 0, width, height);
-			}
-		}
-		winApp.popStyle();
+		// Perform the rotation
+		winApp.translate(cx, cy);
+		winApp.rotate(rotAngle);
+
+		winApp.pushMatrix();
+		// Move matrix to line up with top-left corner
+		winApp.translate(-halfWidth, -halfHeight);
+		// Draw buffer
+		winApp.imageMode(PApplet.CORNER);
+		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();
+
 		if(!tabOnly){
-			Iterator<GComponent> iter = children.iterator();
-			while(iter.hasNext()){
-				iter.next().draw();
+			if(children != null){
+				for(GComponent c : children)
+					c.draw();
 			}
 		}
+		winApp.popMatrix();
+		winApp.popStyle();
 	}
 
+	protected void updateBuffer(){
+		if(bufferInvalid) {
+			Graphics2D g2d = buffer.g2;
+			buffer.beginDraw();
+
+			buffer.background(buffer.color(255,0));
+			buffer.noStroke();
+			buffer.fill(palette[4]);
+			if(tabOnly){
+				buffer.rect(0, 0, tabWidth, tabHeight);	
+			}
+			else {
+				buffer.rect(0, 0, width, tabHeight);
+			}
+			stext.getLines(g2d);
+			g2d.setColor(jpalette[12]);
+			TextLayout tl = stext.getTLIforLineNo(0).layout;
+			tl.draw(g2d, 4, 2 + tl.getAscent());
+
+			if(!tabOnly){
+				//				buffer.translate(0,tabHeight);
+				buffer.noStroke();
+				buffer.fill(palette[5]);
+				buffer.rect(0, tabHeight, width, height - tabHeight);
+			}
+
+			buffer.endDraw();
+		}	
+	}
+
+	/**
+	 * This method takes a position px, py and calulates the equivalent
+	 * position [ox,oy] as if no transformations have taken place and
+	 * the origin is the top-left corner of the control.
+	 * @param px
+	 * @param py
+	 */
+//	protected void calcTransformedOrigin(float px, float py){
+//		AffineTransform aff = new AffineTransform();
+//		aff = getTransform(aff);
+//		temp[0] = px; temp[1] = py + tabHeight;
+//		try {
+//			aff.inverseTransform(temp, 0, temp, 0, 1);
+//			ox = (float) temp[0] + halfWidth;
+//			oy = (float) temp[1] + halfHeight;
+//		} catch (NoninvertibleTransformException e) {
+//		}
+//	}
 
 	/**
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
-		if(!visible || !enabled) return;
+		if(!visible  || !enabled || !available) return;
+
+		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
+
+		currSpot = whichHotSpot(ox, oy);
+		// Is mouse over the panel tab (taking into account extended with when not collapsed)
+		boolean mouseOverTab = (currSpot == 1  || (currSpot == 2 && !tabOnly));
 		
-		boolean mouseOver = isOver(winApp.mouseX, winApp.mouseY);
-//		boolean mouseOverPanel = isOverPanel(winApp.mouseX, winApp.mouseY);
-		if(mouseOver) 
+		// Is the mouse anywhere over the panel (taking into account whether the panel is
+		// collapsed or not)
+		boolean mouseOverPanel = (currSpot == 1  && tabOnly) || (currSpot > 0 && !tabOnly);
+
+		if(mouseOverPanel || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
-				cursorIsOver = null;
+			cursorIsOver = null;
+
+		if(mouseOverPanel || focusIsWith == this) 
+			cursorIsOver = this;
+		else if(cursorIsOver == this)
+			cursorIsOver = null;
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOver && z >= focusObjectZ()){
+			if(focusIsWith != this && mouseOverPanel && z >= focusObjectZ()){
 				mdx = winApp.mouseX;
 				mdy = winApp.mouseY;
 				takeFocus();
@@ -214,23 +276,17 @@ public class FPanel extends GComponent {
 			}
 			// If focus is with some other control with the same depth and the mouse is over the panel
 			// Used to ensure that GTextField controls on GPanels release focus
-			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && isOverPanel(winApp.mouseX, winApp.mouseY) )
+			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && currSpot >= 0)
 				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
 				tabOnly = !tabOnly;
-				// Perform appropriate action depending on collase state
+				// Perform appropriate action depending on collapse state
 				setCollapsed(tabOnly);
-				if(tabOnly)
-					eventType = COLLAPSED;
-				else
-					eventType = EXPANDED;
-				// fire an event
-				fireEvent();
 				if(tabOnly){
 					x = dockX;
-					y = dockY;					
+					y = dockY;
 				}
 				else {
 					dockX = x;
@@ -241,12 +297,19 @@ public class FPanel extends GComponent {
 					if(x + width > winApp.getWidth())
 						x = winApp.getWidth() - width;
 				}
+				//				constrainPanelPosition();
+				if(tabOnly)
+					eventType = COLLAPSED;
+				else
+					eventType = EXPANDED;
+				// fire an event
+				fireEvent();
 				// This component does not keep the focus when clicked
 				loseFocus(null);
 				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
-		case MouseEvent.MOUSE_RELEASED:
+		case MouseEvent.MOUSE_RELEASED: // After dragging NOT clicking
 			if(focusIsWith == this){
 				if(mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 					mdx = mdy = Integer.MAX_VALUE;
@@ -258,10 +321,10 @@ public class FPanel extends GComponent {
 			if(focusIsWith == this && parent == null){
 				x += (winApp.mouseX - winApp.pmouseX);
 				y += (winApp.mouseY - winApp.pmouseY);
+				constrainPanelPosition();
 				beingDragged = true;
 				eventType = DRAGGED;
 				fireEvent();
-				constrainPanelPosition();
 				if(!tabOnly){
 					dockX = x;
 					dockY = y;
@@ -269,6 +332,10 @@ public class FPanel extends GComponent {
 			}
 			break;
 		}
+		// `Maintain centre for drawing purposes
+		cx = x + width/2;
+		cy = y + height/2;
+
 	}
 
 	/**
@@ -285,74 +352,58 @@ public class FPanel extends GComponent {
 	 * extend off the screen.
 	 */
 	private void constrainPanelPosition(){
-		int w = (int) ((tabOnly)? tabWidth + PADH * 2 : width);
-		int h = (int) ((tabOnly)? 0 : height);
+		int w = (int) ((tabOnly)? tabWidth : width);
+		int h = (int) ((tabOnly)? tabHeight : height);
 		// Constrain horizontally
 		if(x < 0) 
 			x = 0;
 		else if(x + w > winApp.getWidth()) 
 			x = (int) (winApp.getWidth() - w);
 		// Constrain vertically
-		if(y - tabHeight  < 0) 
-			y = tabHeight;
+		if(y < 0) 
+			y = 0;
 		else if(y + h > winApp.getHeight()) 
 			y = winApp.getHeight() - h;
 	}
 
-	/**
-	 * Determines whether the position ax, ay is over the tab
-	 * of this GPanel.
-	 * @param ax x position
-	 * @param ay y position
-	 * @return true if mouse is over the panel tab else false
-	 */
-	public boolean isOver(int ax, int ay){
-		Point p = new Point(0,0);
-		calcAbsPosition(p);
-		int w = (int) ((tabOnly)? tabWidth + PADH * 2 : width);
-		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y)
-			return true;
-		else
-			return false;
-	}
-	
-	/**
-	 * Determines whether the position ax, ay is over the panel, takimg
-	 * into account whether the panel is collapsed or not. <br>
-	 * 
-	 * @param ax x position
-	 * @param ay y position
-	 * @return true if mouse is over the panel surface else false
-	 */
-	public boolean isOverPanel(int ax, int ay){
-		if(tabOnly)
-			return isOver(ax,ay);
-		else {
-			Point p = new Point(0,0);
-			calcAbsPosition(p);
-			if(ax >= p.x && ax <= p.x + width && ay >= p.y - tabHeight && ay <= p.y + height)
-				return true;
-			else 
-				return false;
-		}
-	}
+//	/**
+//	 * Determines whether the position ax, ay is over the tab
+//	 * of this GPanel.
+//	 * @param ax x position
+//	 * @param ay y position
+//	 * @return true if mouse is over the panel tab else false
+//	 */
+//	public boolean isOver(int ax, int ay){
+//		Point p = new Point(0,0);
+//		calcAbsPosition(p);
+//		int w = (int) ((tabOnly)? tabWidth + PADH * 2 : width);
+//		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y)
+//			return true;
+//		else
+//			return false;
+//	}
+//
+//	/**
+//	 * Determines whether the position ax, ay is over the panel, takimg
+//	 * into account whether the panel is collapsed or not. <br>
+//	 * 
+//	 * @param ax x position
+//	 * @param ay y position
+//	 * @return true if mouse is over the panel surface else false
+//	 */
+//	public boolean isOverPanel(int ax, int ay){
+//		if(tabOnly)
+//			return isOver(ax,ay);
+//		else {
+//			Point p = new Point(0,0);
+//			calcAbsPosition(p);
+//			if(ax >= p.x && ax <= p.x + width && ay >= p.y - tabHeight && ay <= p.y + height)
+//				return true;
+//			else 
+//				return false;
+//		}
+//	}
 
-	public void setControlsEnabled(boolean enable){
-		if(children != null){
-			for(GComponent c : children)
-				c.setEnabled(enable);
-		}
-	}
-
-	/**
-	 * If the panel is made invisible then disable the controls
-	 * @param visible the visible to set
-	 */
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-		if(!visible)
-			setControlsEnabled(false);
-	}
 
 	/**
 	 * Controls the transparency of this panel and all the
@@ -379,10 +430,13 @@ public class FPanel extends GComponent {
 		tabOnly = collapse;
 		// If we open the panel make sure it fits on the screen but if we
 		// collapse the panel disable the panel controls
-		if(!tabOnly)
+		if(tabOnly){
+			setAvailable(false);
+		}
+		else {
 			constrainPanelPosition();
-		else
-			setControlsEnabled(false);
+			setAvailable(true);
+		}
 	}
 
 	/**
@@ -392,7 +446,7 @@ public class FPanel extends GComponent {
 	public boolean isCollapsed(){
 		return tabOnly;
 	}
-	
+
 	public int getTabHeight(){
 		return tabHeight;
 	}
