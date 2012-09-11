@@ -24,8 +24,6 @@ public class FTextComponent extends GComponent {
 	
 	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
 
-	// Set to true when mouse is dragging : set false on button released
-	protected boolean dragging = false;
 
 	// The scrollbar policy
 	protected final int sbPolicy;

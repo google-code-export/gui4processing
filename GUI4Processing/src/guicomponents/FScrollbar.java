@@ -116,8 +116,9 @@ public class FScrollbar extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && currSpot>= 0 && z > focusObjectZ()){
-				mdx = winApp.mouseX;
-				mdy = winApp.mouseY;
+//				mdx = winApp.mouseX;
+//				mdy = winApp.mouseY;
+				dragging = false;
 				last_ox = ox; last_oy = oy;
 				takeFocus();
 			}
@@ -142,14 +143,17 @@ public class FScrollbar extends GComponent {
 					fireEvent();
 					break;
 				}
+				dragging = false;
 				loseFocus(null);
-				mdx = mdy = Integer.MAX_VALUE;
+//				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
+//			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
+			if(focusIsWith == this && dragging){
 				loseFocus(parent);
-				mdx = mdy = Integer.MAX_VALUE;
+				dragging = false;
+//				mdx = mdy = Integer.MAX_VALUE;
 				isValueChanging = false;
 				bufferInvalid = true;
 			}
@@ -163,6 +167,7 @@ public class FScrollbar extends GComponent {
 				value = PApplet.constrain(value, 0, 1.0f - filler);
 				isValueChanging = true;
 				bufferInvalid = true;
+				dragging = true;
 				eventType = CHANGED;
 				fireEvent();
 			}
