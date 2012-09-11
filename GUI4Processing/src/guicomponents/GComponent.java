@@ -253,6 +253,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * Is the component available for mouse and keyboard events.
 	 * This is on;y used internally to prevent user input being
 	 * processed during animation. new to V3
+	 * Will preserve enabled and visible flags
 	 */
 	protected boolean available = true;
 
@@ -433,6 +434,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			aff.transform(c.temp, 0, c.temp, 0, 1);
 			c.cx = (float)c.temp[0] + x - halfWidth;
 			c.cy = (float)c.temp[1] + y - halfHeight;
+			c.x = c.cx - c.halfWidth;
+			c.y = c.cy - c.halfHeight;
 			break;
 		case PApplet.CENTER:
 			// Rotate about centre
@@ -494,7 +497,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 
 	/**
 	 * This method takes a position px, py and calulates the equivalent
-	 * position [ox,oy] as is no transformations have taken place and
+	 * position [ox,oy] as if no transformations have taken place and
 	 * the origin is the top-left corner of the control.
 	 * @param px
 	 * @param py
@@ -1014,7 +1017,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 */
 	public void setTextNew(String text){
 		if(text == null || text.length() == 0 )
-			text = "";
+			text = " ";
 		stext = new StyledString(text);
 	}
 	
@@ -1222,6 +1225,14 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		if(children != null){
 			for(GComponent c : children)
 				c.setEnabled(enable);
+		}
+	}
+
+	public void setAvailable(boolean avail){
+		available = avail;
+		if(children != null){
+			for(GComponent c : children)
+				c.setAvailable(avail);
 		}
 	}
 

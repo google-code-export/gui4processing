@@ -213,6 +213,10 @@ public class FTextField extends FTextComponent {
 				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
 			}
+			else { // Not over this control so if we have focus loose it
+				if(focusIsWith == this)
+					loseFocus(null);
+			}		
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			dragging = false;

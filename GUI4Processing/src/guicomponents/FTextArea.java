@@ -222,7 +222,7 @@ public class FTextArea extends FTextComponent {
 		winApp.image(buffer, 0, 0);
 		
 		// Draw caret if text display area
-		if(showCaret && endTLHI != null){
+		if(focusIsWith == this && showCaret && endTLHI != null){
 			float[] cinfo = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
 			float x_left =  - ptx + cinfo[0];
 			float y_top = - pty + endTLHI.tli.yPosInPara; 
@@ -379,7 +379,6 @@ public class FTextArea extends FTextComponent {
 		return true;
 	}
 
-
 	protected boolean moveCaretUp(TextLayoutHitInfo currPos){
 		if(currPos.tli.lineNo == 0)
 			return false;
@@ -462,6 +461,7 @@ public class FTextArea extends FTextComponent {
 
 		currSpot = whichHotSpot(ox, oy);
 
+		// currSpot == 1 for text display area
 		if(currSpot == 1 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -470,7 +470,7 @@ public class FTextArea extends FTextComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(currSpot == 1){
-				if(focusIsWith != this && z > focusObjectZ()){
+				if(focusIsWith != this && z >= focusObjectZ()){
 					takeFocus();
 				}
 				mdx = winApp.mouseX;
@@ -479,6 +479,10 @@ public class FTextArea extends FTextComponent {
 				startTLHI = new TextLayoutHitInfo(endTLHI);
 				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
+			}
+			else { // Not over this control so if we have focus loose it
+				if(focusIsWith == this)
+					loseFocus(null);
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
