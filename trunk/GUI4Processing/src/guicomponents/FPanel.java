@@ -140,7 +140,7 @@ public class FPanel extends GComponent {
 	}
 
 	/**
-	 * What to do when the GPanel loses focus.
+	 * What to do when the FPanel loses focus.
 	 */
 	protected void loseFocus(GComponent grabber){
 		focusIsWith = null;
@@ -209,34 +209,13 @@ public class FPanel extends GComponent {
 			tl.draw(g2d, 4, 2 + tl.getAscent());
 
 			if(!tabOnly){
-				//				buffer.translate(0,tabHeight);
 				buffer.noStroke();
 				buffer.fill(palette[5]);
 				buffer.rect(0, tabHeight, width, height - tabHeight);
 			}
-
 			buffer.endDraw();
 		}	
 	}
-
-	/**
-	 * This method takes a position px, py and calulates the equivalent
-	 * position [ox,oy] as if no transformations have taken place and
-	 * the origin is the top-left corner of the control.
-	 * @param px
-	 * @param py
-	 */
-//	protected void calcTransformedOrigin(float px, float py){
-//		AffineTransform aff = new AffineTransform();
-//		aff = getTransform(aff);
-//		temp[0] = px; temp[1] = py + tabHeight;
-//		try {
-//			aff.inverseTransform(temp, 0, temp, 0, 1);
-//			ox = (float) temp[0] + halfWidth;
-//			oy = (float) temp[1] + halfHeight;
-//		} catch (NoninvertibleTransformException e) {
-//		}
-//	}
 
 	/**
 	 * All GUI components are registered for mouseEvents
@@ -249,7 +228,6 @@ public class FPanel extends GComponent {
 		currSpot = whichHotSpot(ox, oy);
 		// Is mouse over the panel tab (taking into account extended with when not collapsed)
 		boolean mouseOverTab = (currSpot == 1  || (currSpot == 2 && !tabOnly));
-		
 		// Is the mouse anywhere over the panel (taking into account whether the panel is
 		// collapsed or not)
 		boolean mouseOverPanel = (currSpot == 1  && tabOnly) || (currSpot > 0 && !tabOnly);
@@ -267,12 +245,10 @@ public class FPanel extends GComponent {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && mouseOverPanel && z >= focusObjectZ()){
-				mdx = winApp.mouseX;
-				mdy = winApp.mouseY;
+//				mdx = winApp.mouseX;
+//				mdy = winApp.mouseY;
 				takeFocus();
-				// May become true but will soon be set to false when
-				// we lose focus
-				beingDragged = true;
+				beingDragged = false;
 			}
 			// If focus is with some other control with the same depth and the mouse is over the panel
 			// Used to ensure that GTextField controls on GPanels release focus
@@ -280,7 +256,7 @@ public class FPanel extends GComponent {
 				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == this){
+			if(focusIsWith == this && mouseOverTab){
 				tabOnly = !tabOnly;
 				// Perform appropriate action depending on collapse state
 				setCollapsed(tabOnly);
@@ -306,13 +282,13 @@ public class FPanel extends GComponent {
 				fireEvent();
 				// This component does not keep the focus when clicked
 				loseFocus(null);
-				mdx = mdy = Integer.MAX_VALUE;
+//				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED: // After dragging NOT clicking
 			if(focusIsWith == this){
-				if(mouseHasMoved(winApp.mouseX, winApp.mouseY)){
-					mdx = mdy = Integer.MAX_VALUE;
+				if(beingDragged){
+					beingDragged = false;
 					loseFocus(null);
 				}
 			}
@@ -332,10 +308,9 @@ public class FPanel extends GComponent {
 			}
 			break;
 		}
-		// `Maintain centre for drawing purposes
+		// Maintain centre for drawing purposes
 		cx = x + width/2;
 		cy = y + height/2;
-
 	}
 
 	/**
@@ -366,62 +341,6 @@ public class FPanel extends GComponent {
 			y = winApp.getHeight() - h;
 	}
 
-//	/**
-//	 * Determines whether the position ax, ay is over the tab
-//	 * of this GPanel.
-//	 * @param ax x position
-//	 * @param ay y position
-//	 * @return true if mouse is over the panel tab else false
-//	 */
-//	public boolean isOver(int ax, int ay){
-//		Point p = new Point(0,0);
-//		calcAbsPosition(p);
-//		int w = (int) ((tabOnly)? tabWidth + PADH * 2 : width);
-//		if(ax >= p.x && ax <= p.x + w && ay >= p.y - tabHeight && ay <= p.y)
-//			return true;
-//		else
-//			return false;
-//	}
-//
-//	/**
-//	 * Determines whether the position ax, ay is over the panel, takimg
-//	 * into account whether the panel is collapsed or not. <br>
-//	 * 
-//	 * @param ax x position
-//	 * @param ay y position
-//	 * @return true if mouse is over the panel surface else false
-//	 */
-//	public boolean isOverPanel(int ax, int ay){
-//		if(tabOnly)
-//			return isOver(ax,ay);
-//		else {
-//			Point p = new Point(0,0);
-//			calcAbsPosition(p);
-//			if(ax >= p.x && ax <= p.x + width && ay >= p.y - tabHeight && ay <= p.y + height)
-//				return true;
-//			else 
-//				return false;
-//		}
-//	}
-
-
-	/**
-	 * Controls the transparency of this panel and all the
-	 * components on it.
-	 * 0 = fully transparent
-	 * 255 = fully opaque
-	 * 
-	 * @param alpha
-	 */
-	public void setAlpha(int alpha){
-		localColor.setAlpha(alpha);
-		if(!children.isEmpty()){
-			Iterator<GComponent> iter = children.iterator();
-			while(iter.hasNext())
-				iter.next().setAlpha(alpha);
-		}
-	}
-
 	/**
 	 * Collapse or open the panel
 	 * @param collapse
@@ -432,6 +351,7 @@ public class FPanel extends GComponent {
 		// collapse the panel disable the panel controls
 		if(tabOnly){
 			setAvailable(false);
+			available = true;
 		}
 		else {
 			constrainPanelPosition();
