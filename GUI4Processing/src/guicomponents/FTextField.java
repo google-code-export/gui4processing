@@ -16,7 +16,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 
-public class FTextField extends FTextComponent {
+public class FTextField extends FEditableTextComponent {
 
 	int pad = 2;
 	
@@ -26,6 +26,8 @@ public class FTextField extends FTextComponent {
 	
 	public FTextField(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
+		children = new LinkedList<GComponent>();
+		childLimit = 1;
 		tx = ty = pad;
 		tw = width - 2 * pad;
 		th = height - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 11 : 0);
@@ -42,7 +44,7 @@ public class FTextField extends FTextComponent {
 		buffer.g2.setFont(fLocalFont);
 		hotspots = new HotSpot[]{
 				new HSrect(1, tx, ty, tw, th),			// typing area
-				new HSrect(9, 0, 0, width, height),		// control surface
+				new HSrect(9, 0, 0, width, height)		// control surface
 		};
 		if((sbPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new FScrollbar(theApplet, 0, 0, tw, 10);

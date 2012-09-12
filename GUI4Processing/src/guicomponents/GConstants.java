@@ -111,7 +111,6 @@ public interface GConstants {
 	public static final TextAttribute FAMILY = TextAttribute.FAMILY;
 	//	public static final TextAttribute FAMILY = new TextAttribute("family");
 
-	//	public static final TextAttribute WEIGHT = new TextAttribute("weight");
 	public static final TextAttribute WEIGHT = TextAttribute.WEIGHT;
 
 	public static final Float WEIGHT_EXTRA_LIGHT = new Float(0.5f);

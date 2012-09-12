@@ -176,6 +176,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * Created and used by GPanel and GCombo classes
 	 */
 	protected LinkedList<GComponent> children = null;
+	protected int childLimit = 0;
 	
 	protected HotSpot[] hotspots = null;
 	protected int currSpot = -1;
@@ -421,19 +422,27 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param angle
 	 */
 	public void addCompoundControl(GComponent c, float x, float y, float angle){
+		if(children == null){
+			System.out.println("This is not a valid container");
+			return;
+		}
+		else if(children.size() >= childLimit){
+			System.out.println("This container is full");
+			return;
+		}
 		if(angle == 0)
 			angle = c.rotAngle;
 		// In child control reset the control so it centred about the origin
-		c.x = x; c.y = y;
-		
+		AffineTransform aff = new AffineTransform();
+		aff.setToRotation(angle);
+
 		switch(control_mode){
 		case PApplet.CORNER:
 		case PApplet.CORNERS:
 			// Rotate about top corner
+			c.x = x; c.y = y;
 			c.temp[0] = c.halfWidth;
 			c.temp[1] = c.halfHeight;
-			AffineTransform aff = new AffineTransform();
-			aff.setToRotation(angle);
 			aff.transform(c.temp, 0, c.temp, 0, 1);
 			c.cx = (float)c.temp[0] + x - halfWidth;
 			c.cy = (float)c.temp[1] + y - halfHeight;
@@ -442,11 +451,10 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 			break;
 		case PApplet.CENTER:
 			// Rotate about centre
-			// @TODO rotate about center
+			// @TODO must test this
+
 			break;
-		}
-		
-		
+		}		
 		c.rotAngle = angle;
 		// Add to parent
 		c.parent = this;
@@ -1018,16 +1026,25 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * NEW version for FPanel etc.
 	 * @param text
 	 */
-	public void setTextNew(String text){
+	public void setTextNew(String ntext){
+		text = ntext;
 		if(text == null || text.length() == 0 )
 			text = " ";
 		stext = new StyledString(text);
+		bufferInvalid = true;
 	}
 	
-	public void setTextNew(String text, int wrapWidth){
+	public void setTextNew(String ntext, int wrapWidth){
+		setTextNew(ntext, wrapWidth, false);
+	}
+	
+	public void setTextNew(String ntext, int wrapWidth, boolean justify){
+		text = ntext;
 		if(text == null || text.length() == 0 )
 			text = "";
-		stext = new StyledString(text);
+		stext = new StyledString(text, wrapWidth);
+		stext.setJustify(justify);
+		bufferInvalid = true;
 	}
 	
 	/**

@@ -9,9 +9,8 @@ import guicomponents.StyledString.TextLayoutHitInfo;
 import guicomponents.StyledString.TextLayoutInfo;
 import processing.core.PApplet;
 
-public class FTextComponent extends GComponent {
+class FEditableTextComponent extends GComponent {
 
-	
 	// The typing area
 	protected float tx,ty,th,tw;
 	// Offset to display area
@@ -21,9 +20,7 @@ public class FTextComponent extends GComponent {
 	
 	protected GeneralPath gpTextDisplayArea;
 	
-	
 	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
-
 
 	// The scrollbar policy
 	protected final int sbPolicy;
@@ -34,7 +31,7 @@ public class FTextComponent extends GComponent {
 	protected boolean showCaret = false;
 
 
-	public FTextComponent(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
+	public FEditableTextComponent(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3);
 		sbPolicy = scrollbars;
 		autoHide = ((scrollbars & SCROLLBARS_AUTOHIDE) == SCROLLBARS_AUTOHIDE);
@@ -42,25 +39,6 @@ public class FTextComponent extends GComponent {
 		caretFlasher.start();
 		opaque = true;
 	}
-
-//	void setScrollbarValues(){
-//		float sTextHeight;
-//		if(vsb != null){
-//			sTextHeight = stext.getTextAreaHeight();
-//			ptx = pty = 0;
-//			if(sTextHeight < th)
-//				vsb.setValue(0.0f, 1.0f);
-//			else 
-//				vsb.setValue(0, th/sTextHeight);
-//		}
-//		// If needed update the horizontal scrollbar
-//		if(hsb != null){
-//			if(stext.getMaxLineLength() < tw)
-//				hsb.setValue(0,1);
-//			else
-//				hsb.setValue(0, tw/stext.getMaxLineLength());
-//		}
-//	}
 	
 	void setScrollbarValues(float sx, float sy){
 		if(vsb != null){
