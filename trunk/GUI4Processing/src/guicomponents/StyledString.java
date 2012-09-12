@@ -41,7 +41,6 @@ import processing.core.PApplet;
  */
 final public class StyledString implements Serializable {
 
-
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
 	transient private LineBreakMeasurer lineMeasurer = null;

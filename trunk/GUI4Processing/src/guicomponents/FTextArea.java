@@ -18,7 +18,7 @@ import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 
 
-public class FTextArea extends FTextComponent {
+public class FTextArea extends FEditableTextComponent {
 
 	private static float pad = 6;
 
@@ -28,6 +28,8 @@ public class FTextArea extends FTextComponent {
 
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
+		children = new LinkedList<GComponent>();
+		childLimit = 2;
 		tx = ty = pad;
 		tw = width - 2 * pad - ((sbPolicy & SCROLLBAR_VERTICAL) != 0 ? 18 : 0);
 		th = height - 2 * pad - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 18 : 0);

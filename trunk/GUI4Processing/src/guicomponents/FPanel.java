@@ -82,10 +82,11 @@ public class FPanel extends GComponent {
 	public FPanel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
 		children = new LinkedList<GComponent>();
+		childLimit = Integer.MAX_VALUE;
 		if(text == null || text.length() == 0)
 			text = "Tab Text";
 		this.text = text;
-		// The image buffer is just for the typing area
+		// The image buffer is just for the tab area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(fLocalFont);
@@ -162,7 +163,7 @@ public class FPanel extends GComponent {
 	public void draw(){
 		if(!visible) return;
 
-		// Uodate buffer if invalid
+		// Update buffer if invalid
 		updateBuffer();
 		winApp.pushStyle();
 
