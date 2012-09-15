@@ -128,7 +128,7 @@ public class GTextField extends GComponent {
 		winApp.textFont(localFont);
 		z = Z_STICKY;
 		createEventHandler(G4P.mainWinApp, "handleTextFieldEvents", new Class[]{ GTextField.class });
-		registerAutos_DMPK(true, true, false, false);
+		registerAutos_DMPK(true, true, false, true);
 	}
 
 	/**
