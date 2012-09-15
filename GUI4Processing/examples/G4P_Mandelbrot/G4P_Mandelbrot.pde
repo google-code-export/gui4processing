@@ -189,8 +189,8 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney,
     mydata.img = new PImage(mydata.w, mydata.h);
     window = new GWindow(this,"Main", locX, locY, mydata.w, mydata.h, false, null);
     windows.add(window);
-    locX = (locX + mydata.w + 20)%(screenWidth - MAX_WIDTH);
-    locY = (locY + 20)%(screenHeight - MAX_HEIGHT);
+    locX = (locX + mydata.w + 20)%(displayWidth - MAX_WIDTH);
+    locY = (locY + 20)%(displayHeight - MAX_HEIGHT);
     window.addData(mydata);
     window.addDrawHandler(this, "windowDraw");
     window.addMouseHandler(this, "windowMouse");
