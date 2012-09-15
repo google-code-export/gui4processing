@@ -475,8 +475,6 @@ public class FTextArea extends FEditableTextComponent {
 				if(focusIsWith != this && z >= focusObjectZ()){
 					takeFocus();
 				}
-//				mdx = winApp.mouseX;
-//				mdy = winApp.mouseY;
 				dragging = false;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				startTLHI = new TextLayoutHitInfo(endTLHI);
