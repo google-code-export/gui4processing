@@ -2,6 +2,7 @@ package guicomponents;
 
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.awt.font.TextAttribute;
 import java.awt.font.TextHitInfo;
 import java.awt.geom.GeneralPath;
 
@@ -40,6 +41,32 @@ class FEditableTextComponent extends GComponent {
 		opaque = true;
 	}
 	
+	/**
+	 * If some text has been selected then set the style. If there is no selection then 
+	 * the text is unchanged.
+	 * 
+	 * 
+	 * @param style
+	 */
+	public void setStyle(TextAttribute style, Object value){
+		if(!hasSelection())
+			return;
+		TextLayoutHitInfo startSelTLHI;
+		TextLayoutHitInfo endSelTLHI;
+		if(endTLHI.compareTo(startTLHI) == -1){
+			startSelTLHI = endTLHI;
+			endSelTLHI = startTLHI;
+		}
+		else {
+			startSelTLHI = startTLHI;
+			endSelTLHI = endTLHI;
+		}
+		int ss = startSelTLHI.tli.startCharIndex + startSelTLHI.thi.getInsertionIndex();
+		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
+		stext.addAttribute(style, value, ss, ee);
+		bufferInvalid = true;
+	}
+
 	void setScrollbarValues(float sx, float sy){
 		if(vsb != null){
 			float sTextHeight = stext.getTextAreaHeight();
@@ -58,7 +85,6 @@ class FEditableTextComponent extends GComponent {
 				hsb.setValue(sy/sTextWidth, tw/sTextWidth);
 		}
 	}
-	
 	
 	/**
 	 * Move caret to home position
@@ -108,7 +134,6 @@ class FEditableTextComponent extends GComponent {
 		}
 		return true;
 	}
-	
 	
 	public void setJustify(boolean justify){
 		stext.setJustify(justify);

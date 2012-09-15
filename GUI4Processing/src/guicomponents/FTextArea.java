@@ -8,7 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
@@ -74,18 +73,6 @@ public class FTextArea extends FEditableTextComponent {
 		setText(text, (int)tw);
 	}
 
-	/**
-	 * If some text has been selected then set the style. If there is no selection then 
-	 * the text is unchanged.
-	 * 
-	 * 
-	 * @param style
-	 */
-	public void setStyle(TextAttribute style, Object value){
-		if(!hasSelection())
-			return;
-		
-	}
 	/**
 	 * Set the text to display and adjust any scrollbars
 	 * @param text
