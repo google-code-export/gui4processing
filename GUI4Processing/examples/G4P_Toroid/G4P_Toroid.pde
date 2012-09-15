@@ -8,7 +8,7 @@
  
  The toroid code has been abstracted to its own class to 
  separate it from the GUI code for clarity.
-  
+ 
  Illustrates the geometric relationship between Toroid, Sphere, and Helix
  3D primitives, as well as lathing principal.
  
@@ -26,7 +26,7 @@ GPanel p;
 
 Toroid t1;
 
-void setup(){
+void setup() {
   size(640, 480, OPENGL);
   t1 = new Toroid();
 
@@ -35,7 +35,7 @@ void setup(){
   // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
   // YELLOW_SCHEME, CYAN_SCHEME, PURPLE_SCHEME
   // Defaults to BLUE_SCHEME 
-  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.PURPLE_SCHEME);
+  GComponent.globalColor = GCScheme.getColor(this, GCScheme.GREEN_SCHEME);
   /* GFont.getFont() - parameters
    * 1) this (always)
    * 2) font name (see below)
@@ -62,17 +62,17 @@ void setup(){
   sdrSegs.setRenderMaxMinLabel(false); //hides labels
 
   sdrPts = new GWSlider(this, "purple18px", 110, 60, 325);
-  sdrPts.setLimits(32,3,32);
+  sdrPts.setLimits(32, 3, 32);
   sdrPts.setValueType(GWSlider.INTEGER);
   sdrPts.setRenderMaxMinLabel(false); //hides labels
 
   sdrERad = new GWSlider(this, 110, 100, 325);
-  sdrERad.setLimits(60,10,100);  
+  sdrERad.setLimits(60, 10, 100);  
   sdrERad.setRenderMaxMinLabel(false); //hides labels
   sdrERad.setRenderValueLabel(false); //hides labels
 
   sdrLRad = new GWSlider(this, 110, 140, 325);
-  sdrLRad.setLimits(140,0,240);
+  sdrLRad.setLimits(140, 0, 240);
   sdrLRad.setRenderMaxMinLabel(false); //hides labels
   sdrLRad.setRenderValueLabel(false); //hides labels
 
@@ -97,32 +97,32 @@ void setup(){
   optTorroid.setSelected(true);
 }
 
-public void handleSliderEvents(GSlider slider){
-  if(slider == sdrSegs)
+public void handleSliderEvents(GSlider slider) {
+  if (slider == sdrSegs)
     t1.setSegmentDetail(sdrSegs.getValue());
-  if(slider == sdrPts)
+  if (slider == sdrPts)
     t1.setEllipseDetail(sdrPts.getValue());
-  if(slider == sdrERad)
+  if (slider == sdrERad)
     t1.setEllipseRadius(sdrERad.getValue()); 
-  if(slider == sdrLRad)
-    t1.setLatheRadius(sdrLRad.getValue()); 
+  if (slider == sdrLRad)
+    t1.setLatheRadius(sdrLRad.getValue());
 }
 
-public void handleCheckboxEvents(GCheckbox cbox){
-  if(cbox == cbxWire)
+public void handleCheckboxEvents(GCheckbox cbox) {
+  if (cbox == cbxWire)
     t1.setIsWire(cbxWire.isSelected());
 }
 
-public void handleOptionEvents(GOption selected, GOption deselected){
-  if(selected == optHelix)
+public void handleOptionEvents(GOption selected, GOption deselected) {
+  if (selected == optHelix)
     t1.setIsHelix(true);
   else
-    t1.setIsHelix(false);     
+    t1.setIsHelix(false);
 }
 
-void draw(){
+void draw() {
   pushMatrix();
-  background(220, 220, 220);
+  background(220, 220, 128);
   // basic lighting setup
   lights();
   // 2 rendering styles
@@ -136,4 +136,6 @@ void draw(){
   // draw toroid
   t1.draw();
   popMatrix();
+
+  G4P.draw(this);
 }
