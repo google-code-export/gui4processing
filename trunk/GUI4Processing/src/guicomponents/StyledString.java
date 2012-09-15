@@ -699,7 +699,6 @@ final public class StyledString implements Serializable {
 		}
 
 		public int compareTo(TextLayoutInfo other) {
-			//if(layout == other.layout)
 			if(lineNo == other.lineNo)
 				return 0;
 			return (startCharIndex < other.startCharIndex) ? -1 : 1;
