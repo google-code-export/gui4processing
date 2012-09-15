@@ -94,7 +94,7 @@ public void createActivityBarSection(){
   acyBar = new GActivityBar(this,pWidth-340,pHeight-56,120,10);
   acyBar.start(0);
 
-  cbxBusy = new GCheckbox(this,"Busy?",pWidth - 180,acyBar.getY() - 2,100);
+  cbxBusy = new GCheckbox(this,"Busy?", pWidth - 180, (int)acyBar.getY() - 2, 100);
   cbxBusy.setSelected(true);
   cbxBusy.setBorder(0);
   pnlControls.add(acyBar);
