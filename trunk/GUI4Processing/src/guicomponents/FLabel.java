@@ -20,7 +20,7 @@ public class FLabel extends FTextIconComponent {
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(fLocalFont);
-		setTextNew(text, (int) width - 4);
+		setTextNew(text, (int) width - TPAD2);
 		opaque = false;
 		registerAutos_DMPK(true, false, false, false);
 	}
@@ -56,7 +56,7 @@ public class FLabel extends FTextIconComponent {
 				buffer.background(buffer.color(255,0));
 
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
-			buffer.translate(2, (height - stext.getTextAreaHeight())/2);
+			buffer.translate(TPAD, (height - stext.getTextAreaHeight())/2);
 			for(TextLayoutInfo lineInfo : lines){
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());

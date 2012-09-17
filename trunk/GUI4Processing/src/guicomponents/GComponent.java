@@ -41,6 +41,7 @@ import processing.core.PConstants;
 import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
+import processing.core.PImage;
 
 
 /**
@@ -284,6 +285,30 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected boolean regPre = false;
 	protected boolean regKey = false;
 
+	/**
+	 * Specify the PImage that contains the image{s} to be used for the button's state. <br>
+	 * This image may be a composite of 1 to 3 images tiled horizontally. 
+	 * @param img
+	 * @param nbrImages in the range 1 - 3
+	 */
+	static PImage[] loadImages(PImage img, int nbrImages){
+		if(img == null || nbrImages <= 0 || nbrImages > 3)
+			return null;
+		PImage[] bimage = new PImage[3];
+		int iw = img.width / nbrImages;
+		for(int i = 0; i < nbrImages;  i++){
+			bimage[i] = new PImage(iw, img.height, ARGB);
+			bimage[i].copy(img, 
+					i * iw, 0, iw, img.height,
+					0, 0, iw, img.height);
+		}
+		// If less than 3 images reuse last image in set
+		for(int i = nbrImages; i < 3; i++)
+			bimage[i] = bimage[nbrImages - 1];
+		return bimage;
+	}
+	
+	
 	/**
 	 * Prevent uninitialised instantiation
 	 */
@@ -1092,6 +1117,18 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		}
 	}
 
+	public GComponent setIcon(String fname, int align){
+		return this;
+	}
+	
+	public GComponent setIcon(PImage icon, int align){
+		return this;
+	}
+
+	public GComponent setTextAlignNew(int align){
+		return this;
+	}
+	
 	/**
 	 * Override in child classes
 	 * @param fontname
