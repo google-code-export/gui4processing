@@ -33,7 +33,6 @@ import java.util.Set;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.core.PMatrix;
 import processing.core.PMatrix2D;
@@ -505,12 +504,16 @@ public class G4P implements PConstants, GConstants {
 	}
 
 	// Only used inside G4P to keep track of windows and associated applets
+	/**
+	 * This class represents a 'window'. It remembers which components
+	 */
 	private static class AppletInfo {
 		public PMatrix orgMatrix;
 		public List<GComponent> paControls;
 		public boolean autoDrawOn = true;
 
 		/**
+		 * Create an applet info object
 		 * @param papplet
 		 */
 		public AppletInfo(PApplet papplet) {

@@ -35,6 +35,11 @@ public interface GConstants {
 	// 0x8???????  always display these messages
 
 
+	public static int DRAW_METHOD = 			0x00ff0001;
+	public static int MOUSE_METHOD = 			0x00ff0002;
+	public static int PRE_METHOD = 				0x00ff0004;
+	public static int KEY_METHOD = 				0x00ff0008;
+
 	// ### Event constants ###
 	// TextField component (GSlider also uses CHANGED)
 	public final static int CHANGED = 			0x00000101;	// Text has changed
@@ -64,7 +69,6 @@ public interface GConstants {
 	public final static int EXIT_APP = 			0x00000f01;
 	public final static int CLOSE_WINDOW = 		0x00000f02;
 	public final static int KEEP_OPEN = 		0x00000f03;
-
 
 	// ### GUI build constants ###
 	public final static int ADD_DUPLICATE = 	0x00010101;
@@ -108,6 +112,7 @@ public interface GConstants {
 	public final static int SCROLL_RIGHT =		0x00000114;	// Scroll text right
 
 
+	// Styled String constants
 	public static final TextAttribute FAMILY = TextAttribute.FAMILY;
 	//	public static final TextAttribute FAMILY = new TextAttribute("family");
 

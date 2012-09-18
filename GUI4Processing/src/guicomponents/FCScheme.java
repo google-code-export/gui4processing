@@ -9,8 +9,6 @@ import processing.core.PImage;
 
 public class FCScheme implements GConstants {
 
-	protected static PApplet app;
-
 	public static final int RED_SCHEME 		= 0;
 	public static final int GREEN_SCHEME 	= 1;
 	public static final int YELLOW_SCHEME	= 2;
@@ -18,7 +16,7 @@ public class FCScheme implements GConstants {
 	public static final int ORANGE_SCHEME 	= 4;
 	public static final int CYAN_SCHEME 	= 5;
 	public static final int BLUE_SCHEME 	= 6;
-	public static final int GREY_SCHEME 	= 7;
+	public static final int BROWN_SCHEME 	= 7;	
 	public static final int SCHEME_8		= 8;
 	public static final int SCHEME_9		= 9;
 	public static final int SCHEME_10		= 10;
@@ -34,44 +32,39 @@ public class FCScheme implements GConstants {
 
 	/**
 	 * Set the color scheme to one of the preset schemes
-	 * BLUE / GREEN / RED /  PURPLE / YELLOW / CYAN / GREY
+	 * BLUE / GREEN / RED /  PURPLE / YELLOW / CYAN / BROWN
 	 * or if you have created your own schemes following the instructions
 	 * at gui4processing.lagers.org.uk/colorscheme.html then you can enter
 	 * the appropriate numeric value of the scheme.
 	 * 
-	 * @param theApplet
 	 * @param schemeNo
 	 * @return the color scheme based on the scheme number
 	 */
-	public static int[] getColor(PApplet theApplet, int schemeNo){
-		app = theApplet;
+	public static int[] getColor(int schemeNo){
 		schemeNo = Math.abs(schemeNo) % 16;
-		if(palettes == null)
-			makePalettes();
 		return palettes[schemeNo];
 	}
 
 	/**
 	 * Set the color scheme to one of the preset schemes
-	 * BLUE / GREEN / RED /  PURPLE / YELLOW / CYAN / GREY
+	 * BLUE / GREEN / RED /  PURPLE / YELLOW / CYAN / BROWN
 	 * or if you have created your own schemes following the instructions
 	 * at gui4processing.lagers.org.uk/colorscheme.html then you can enter
 	 * the appropriate numeric value of the scheme.
 	 * 
-	 * @param theApplet
 	 * @param schemeNo
 	 * @return the color scheme based on the scheme number
 	 */
-	public static Color[] getJavaColor(PApplet theApplet, int schemeNo){
-		app = theApplet;
+	public static Color[] getJavaColor(int schemeNo){
 		schemeNo = Math.abs(schemeNo) % 16;
-		if(palettes == null)
-			makePalettes();
 		return jpalettes[schemeNo];
 	}
 
-	
-	private static void makePalettes(){
+	public static void makeColorSchemes(PApplet app) {
+		// If the palettes have not been created then create them
+		// otherwise do nothing
+		if(palettes != null)
+			return;
 		// Load the image
 		PImage image = null;;
 		InputStream is = app.createInput("user_gui_palette.png");
@@ -98,4 +91,5 @@ public class FCScheme implements GConstants {
 				jpalettes[p][c] = new Color((col >> 16) & 0xff, (col >> 8) & 0xff, col & 0xff);
 			}
 	}
+
 }
