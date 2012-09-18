@@ -34,15 +34,17 @@ public class FButton extends FTextIconComponent {
 		// The image buffer is just for the button surface
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
-		buffer.g2.setFont(fLocalFont);
+		buffer.g2.setFont(localFont);
 		hotspots = new HotSpot[]{
 				new HSrect(1, 0, 0, width, height)		// control surface
 		};
 		setTextNew(text, (int) width - 4);
 		opaque = false;
 		createEventHandler(G4P.mainWinApp, "handleButtonEvents", new Class[]{ FButton.class });
-		registerAutos_DMPK(true, true, false, false);
 		z = Z_SLIPPY;
+		// Now register control with applet
+		registeredMethods = DRAW_METHOD;
+		F4P.addControl(this);
 	}
 	
 	/**
@@ -139,6 +141,11 @@ public class FButton extends FTextIconComponent {
 		}
 	}
 	
+	private void calcTransformedOrigin(int mouseX, int mouseY) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public void draw(){
 		if(!visible) return;
 

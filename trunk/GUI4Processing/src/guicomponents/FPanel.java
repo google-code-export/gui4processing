@@ -52,7 +52,7 @@ import processing.core.PGraphicsJava2D;
  * @author Peter Lager
  *
  */
-public class FPanel extends GComponent {
+public class FPanel extends AbstractControl {
 
 
 	/** Whether the panel is displayed in full or tab only */

@@ -1,17 +1,15 @@
 package guicomponents;
+import java.awt.Font;
+
 import processing.core.PApplet;
 import processing.core.PImage;
 
 
-public class FTextIconComponent extends GComponent {
+public class FTextIconComponent extends FTextControl implements ITextIcon {
 
-	protected static final int TPAD = 2;
-	protected static final int TPAD2 = TPAD * 2;
-	
 	protected PImage[] bimage = null;
 	protected int imgHspace = 0, imgVspace = 0;
 	protected int iconAlign = GAlign.RIGHT | GAlign.MIDDLE;
-	protected int textAlign = GAlign.CENTER | GAlign.MIDDLE;
 	
 	protected boolean useImages = false;
 
@@ -19,17 +17,22 @@ public class FTextIconComponent extends GComponent {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
-	public void setTextNew(String ntext){
-		super.setTextNew(ntext, (int) width - TPAD2);
+	public FTextControl setTextAlignNew(int align){
+		if(align != textAlign){
+			stext = new StyledString(text, (int) width - TPAD2 - imgHspace);
+			stext.setJustify((align & GAlign.H_ALIGN) == GAlign.JUSTIFY);
+			textAlign = align;			
+		}
+		return this;
 	}
 
-	public GComponent setIcon(String fname, int nbrImages, int align){
+	public FTextIconComponent setIcon(String fname, int nbrImages, int align){
 		PImage iconImage = winApp.loadImage(fname);
 		setIcon(iconImage, nbrImages, align);
 		return this;
 	}
 	
-	public GComponent setIcon(PImage icon, int nbrImages, int align){
+	public FTextIconComponent setIcon(PImage icon, int nbrImages, int align){
 		bimage = loadImages(icon, nbrImages);
 		// Make sure we managed to load something
 		if(bimage != null){
@@ -46,13 +49,6 @@ public class FTextIconComponent extends GComponent {
 		return this;
 	}
 	
-	public GComponent setTextAlignNew(int align){
-		if(align != textAlign){
-			stext = new StyledString(text, (int) width - TPAD2 - imgHspace);
-			stext.setJustify((align & GAlign.H_ALIGN) == GAlign.JUSTIFY);
-			textAlign = align;			
-		}
-		return this;
-	}
 	
+
 }

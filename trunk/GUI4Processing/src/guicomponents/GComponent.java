@@ -127,8 +127,6 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		cs = Math.abs(cs) % 16; // Force into valid range
 		if(localColorScheme != cs || palette == null){
 			localColorScheme = cs;
-			palette = FCScheme.getColor(winApp, localColorScheme);
-			jpalette = FCScheme.getJavaColor(winApp, localColorScheme);
 			bufferInvalid = true;
 		}
 	}
@@ -182,21 +180,21 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected HotSpot[] hotspots = null;
 	protected int currSpot = -1;
 	
-	protected int whichHotSpot(float px, float py){
-		if(hotspots == null) return -1;
-		int hs = -1;
-		for(int i = 0; i < hotspots.length; i++){
-			if(hotspots[i].contains(px, py)){
-				hs = hotspots[i].id;
-				break;
-			}
-		}
-		return hs;
-	}
-	
-	protected int getCurrHotSpot(){
-		return currSpot;
-	}
+//	protected int whichHotSpot(float px, float py){
+//		if(hotspots == null) return -1;
+//		int hs = -1;
+//		for(int i = 0; i < hotspots.length; i++){
+//			if(hotspots[i].contains(px, py)){
+//				hs = hotspots[i].id;
+//				break;
+//			}
+//		}
+//		return hs;
+//	}
+//	
+//	protected int getCurrHotSpot(){
+//		return currSpot;
+//	}
 	
 	/** The object to handle the event */
 	protected Object eventHandlerObject = null;
@@ -341,17 +339,6 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		localFont = globalFont;
 		this.x = x;
 		this.y = y;
-		G4P.addComponent(winApp, this);
-	}
-
-	public GComponent(PApplet theApplet, float p0, float p1, float p2, float p3) {
-		this.winApp = theApplet;
-		setPositionAndSize(p0, p1, p2, p3);
-		rotAngle = 0;
-		z = 0;
-		palette = FCScheme.getColor(winApp, localColorScheme);
-		jpalette = FCScheme.getJavaColor(winApp, localColorScheme);
-		fLocalFont = fGlobalFont;
 		G4P.addComponent(winApp, this);
 	}
 

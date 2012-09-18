@@ -10,7 +10,17 @@ import guicomponents.StyledString.TextLayoutHitInfo;
 import guicomponents.StyledString.TextLayoutInfo;
 import processing.core.PApplet;
 
-class FEditableTextComponent extends GComponent {
+class FEditableTextComponent extends FAbstractControl {
+
+
+	/** Text value associated with component */
+	protected String text = "";
+	// The styled version of text
+	protected StyledString stext = null;
+
+	protected int textAlign = GAlign.CENTER | GAlign.MIDDLE;
+
+	protected Font localFont = F4P.globalFont;
 
 	// The typing area
 	protected float tx,ty,th,tw;
@@ -149,9 +159,9 @@ class FEditableTextComponent extends GComponent {
 	}
 
 	public void setFontNew(Font font){
-		if(font != null && font != fLocalFont){
-			fLocalFont = font;
-			buffer.g2.setFont(fLocalFont);
+		if(font != null && font != localFont){
+			localFont = font;
+			buffer.g2.setFont(localFont);
 		}
 	}
 
