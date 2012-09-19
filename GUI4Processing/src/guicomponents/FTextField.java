@@ -16,7 +16,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 
-public class FTextField extends FEditableTextComponent {
+public class FTextField extends FEditableTextControl {
 
 	int pad = 2;
 	
@@ -54,6 +54,7 @@ public class FTextField extends FEditableTextComponent {
 		}
 		setTextNew(" ");
 		z = Z_STICKY;
+		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FTextField.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
@@ -69,6 +70,7 @@ public class FTextField extends FEditableTextComponent {
 			else
 				hsb.setValue(0, tw/stext.getMaxLineLength());
 		}
+		bufferInvalid = true;
 	}
 
 	public PGraphics getSnapshot(){

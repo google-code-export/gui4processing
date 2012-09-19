@@ -10,10 +10,10 @@ public class FTextControl extends FAbstractControl implements IText {
 	protected static final int TPAD2 = TPAD * 2;
 	
 	/** Text value associated with component */
-	protected String text = "";
+	protected String ptext = "";
 	// The styled version of text
 	protected StyledString stext = null;
-
+	
 	protected int textAlign = GAlign.CENTER | GAlign.MIDDLE;
 
 	protected Font localFont = F4P.globalFont;
@@ -25,9 +25,10 @@ public class FTextControl extends FAbstractControl implements IText {
 
 	public FTextControl setTextAlignNew(int align){
 		if(align != textAlign){
-			stext = new StyledString(text, (int) width - TPAD2);
+			stext = new StyledString(ptext, (int) width - TPAD2);
 			stext.setJustify((align & GAlign.H_ALIGN) == GAlign.JUSTIFY);
-			textAlign = align;			
+			textAlign = align;	
+			bufferInvalid = true;
 		}
 		return this;
 	}
@@ -35,15 +36,10 @@ public class FTextControl extends FAbstractControl implements IText {
 	/**
 	 * Set the text to be displayed.
 	 * NEW version for FPanel etc.
-	 * @param text
+	 * @param ptext
 	 */
 	public FTextControl setTextNew(String ntext){
-		if(ntext == null || ntext.length() == 0 )
-			text = ntext;
-		else 
-			text = "???";
-		stext = new StyledString(text);
-		bufferInvalid = true;
+		setTextNew(ntext, (int)width - TPAD2, false);
 		return this;
 	}
 	
@@ -53,10 +49,11 @@ public class FTextControl extends FAbstractControl implements IText {
 	}
 	
 	public FTextControl setTextNew(String ntext, int wrapWidth, boolean justify){
-		text = ntext;
-		if(text == null || text.length() == 0 )
-			text = "";
-		stext = new StyledString(text, wrapWidth);
+		if(ntext == null || ntext.length() == 0 )
+			ptext = " ";
+		else 
+			ptext = ntext;
+		stext = new StyledString(ptext, wrapWidth);
 		stext.setJustify(justify);
 		bufferInvalid = true;
 		return this;
@@ -71,8 +68,5 @@ public class FTextControl extends FAbstractControl implements IText {
 		}
 		return this;
 	}
-
-
-
 
 }

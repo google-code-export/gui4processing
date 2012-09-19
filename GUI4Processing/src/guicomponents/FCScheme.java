@@ -16,7 +16,7 @@ public class FCScheme implements GConstants {
 	public static final int ORANGE_SCHEME 	= 4;
 	public static final int CYAN_SCHEME 	= 5;
 	public static final int BLUE_SCHEME 	= 6;
-	public static final int BROWN_SCHEME 	= 7;	
+	public static final int GOLD_SCHEME 	= 7;	
 	public static final int SCHEME_8		= 8;
 	public static final int SCHEME_9		= 9;
 	public static final int SCHEME_10		= 10;

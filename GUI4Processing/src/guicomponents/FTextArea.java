@@ -18,7 +18,7 @@ import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 
 
-public class FTextArea extends FEditableTextComponent {
+public class FTextArea extends FEditableTextControl {
 
 	private static float pad = 6;
 
@@ -62,6 +62,7 @@ public class FTextArea extends FEditableTextComponent {
 		}
 		setTextNew(" ", (int)tw);
 		z = Z_STICKY;
+		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FTextArea.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
@@ -463,7 +464,6 @@ public class FTextArea extends FEditableTextComponent {
 		ox -= tx; oy -= ty; // Remove translation
 
 		currSpot = whichHotSpot(ox, oy);
-		System.out.println("FTextArea "+winApp.mouseX + "  " + winApp.mouseY + "  " + ox + "  " + oy);
 
 		// currSpot == 1 for text display area
 		if(currSpot == 1 || focusIsWith == this)

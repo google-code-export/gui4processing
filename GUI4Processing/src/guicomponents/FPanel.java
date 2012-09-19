@@ -98,6 +98,8 @@ public class FPanel extends FTextControl {
 		dockX = x;
 		dockY = y;
 		z = Z_PANEL;
+
+		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FPanel.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
 	}
