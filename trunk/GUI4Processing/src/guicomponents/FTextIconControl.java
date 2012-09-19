@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 
-public class FTextIconComponent extends FTextControl implements ITextIcon {
+public class FTextIconControl extends FTextControl implements ITextIcon {
 
 	protected PImage[] bimage = null;
 	protected int imgHspace = 0, imgVspace = 0;
@@ -13,26 +13,26 @@ public class FTextIconComponent extends FTextControl implements ITextIcon {
 	
 	protected boolean useImages = false;
 
-	public FTextIconComponent(PApplet theApplet, float p0, float p1, float p2, float p3) {
+	public FTextIconControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
 	public FTextControl setTextAlignNew(int align){
 		if(align != textAlign){
-			stext = new StyledString(text, (int) width - TPAD2 - imgHspace);
+			stext = new StyledString(ptext, (int) width - TPAD2 - imgHspace);
 			stext.setJustify((align & GAlign.H_ALIGN) == GAlign.JUSTIFY);
 			textAlign = align;			
 		}
 		return this;
 	}
 
-	public FTextIconComponent setIcon(String fname, int nbrImages, int align){
+	public FTextIconControl setIcon(String fname, int nbrImages, int align){
 		PImage iconImage = winApp.loadImage(fname);
 		setIcon(iconImage, nbrImages, align);
 		return this;
 	}
 	
-	public FTextIconComponent setIcon(PImage icon, int nbrImages, int align){
+	public FTextIconControl setIcon(PImage icon, int nbrImages, int align){
 		bimage = loadImages(icon, nbrImages);
 		// Make sure we managed to load something
 		if(bimage != null){
@@ -41,7 +41,7 @@ public class FTextIconComponent extends FTextControl implements ITextIcon {
 			// Make sure the image will fit the space with some padding
 			if(imgHspace + TPAD2 < width && imgVspace < height){
 				// Now sort out text and justify if necessary
-				stext = new StyledString(text, (int) width - TPAD2 - imgHspace);
+				stext = new StyledString(ptext, (int) width - TPAD2 - imgHspace);
 				stext.setJustify((align & GAlign.H_ALIGN) == GAlign.JUSTIFY);
 				iconAlign = align;
 			}

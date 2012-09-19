@@ -10,8 +10,7 @@ import guicomponents.StyledString.TextLayoutHitInfo;
 import guicomponents.StyledString.TextLayoutInfo;
 import processing.core.PApplet;
 
-class FEditableTextComponent extends FAbstractControl {
-
+class FEditableTextControl extends FAbstractControl {
 
 	/** Text value associated with component */
 	protected String text = "";
@@ -42,7 +41,7 @@ class FEditableTextComponent extends FAbstractControl {
 	protected boolean showCaret = false;
 
 
-	public FEditableTextComponent(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
+	public FEditableTextControl(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3);
 		sbPolicy = scrollbars;
 		autoHide = ((scrollbars & SCROLLBARS_AUTOHIDE) == SCROLLBARS_AUTOHIDE);

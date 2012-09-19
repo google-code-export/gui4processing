@@ -10,9 +10,8 @@ import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
-import processing.core.PImage;
 
-public class FButton extends FTextIconComponent {
+public class FButton extends FTextIconControl {
 
 	// Button status values
 	static final int OFF	= 0;
@@ -28,9 +27,6 @@ public class FButton extends FTextIconComponent {
 
 	public FButton(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
-		if(text == null || text.length() == 0)
-			text = "Button Text";
-		this.text = text;
 		// The image buffer is just for the button surface
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
@@ -40,9 +36,9 @@ public class FButton extends FTextIconComponent {
 		};
 		setTextNew(text, (int) width - 4);
 		opaque = false;
-		createEventHandler(G4P.mainWinApp, "handleButtonEvents", new Class[]{ FButton.class });
 		z = Z_SLIPPY;
 		// Now register control with applet
+		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
 	}
@@ -78,7 +74,6 @@ public class FButton extends FTextIconComponent {
 
 		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
 		currSpot = whichHotSpot(ox, oy);
-//System.out.println("FButton "+winApp.mouseX + "  " + winApp.mouseY + "   hit at " + currSpot);
 		// currSpot == 1 for text display area
 		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
@@ -174,10 +169,9 @@ public class FButton extends FTextIconComponent {
 				break;
 			default:
 				buffer.background(palette[4]);
-
 			}			
+			
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
-
 			buffer.translate(2, (height - stext.getTextAreaHeight())/2);
 			for(TextLayoutInfo lineInfo : lines){
 				TextLayout layout = lineInfo.layout;

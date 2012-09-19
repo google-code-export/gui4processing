@@ -1012,7 +1012,7 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	/**
 	 * Set the text to be displayed.
 	 * NEW version for FPanel etc.
-	 * @param text
+	 * @param ptext
 	 */
 	public void setTextNew(String ntext){
 		text = ntext;
