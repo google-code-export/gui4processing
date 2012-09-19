@@ -38,9 +38,10 @@ public class FTextControl extends FAbstractControl implements IText {
 	 * @param text
 	 */
 	public FTextControl setTextNew(String ntext){
-		text = ntext;
-		if(text == null || text.length() == 0 )
-			text = " ";
+		if(ntext == null || ntext.length() == 0 )
+			text = ntext;
+		else 
+			text = "???";
 		stext = new StyledString(text);
 		bufferInvalid = true;
 		return this;

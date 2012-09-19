@@ -43,7 +43,7 @@ public class FButton extends FTextIconComponent {
 		createEventHandler(G4P.mainWinApp, "handleButtonEvents", new Class[]{ FButton.class });
 		z = Z_SLIPPY;
 		// Now register control with applet
-		registeredMethods = DRAW_METHOD;
+		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
 	}
 	
@@ -78,7 +78,7 @@ public class FButton extends FTextIconComponent {
 
 		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
 		currSpot = whichHotSpot(ox, oy);
-
+//System.out.println("FButton "+winApp.mouseX + "  " + winApp.mouseY + "   hit at " + currSpot);
 		// currSpot == 1 for text display area
 		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
@@ -141,11 +141,6 @@ public class FButton extends FTextIconComponent {
 		}
 	}
 	
-	private void calcTransformedOrigin(int mouseX, int mouseY) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public void draw(){
 		if(!visible) return;
 

@@ -177,8 +177,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	protected LinkedList<GComponent> children = null;
 	protected int childLimit = 0;
 	
-	protected HotSpot[] hotspots = null;
-	protected int currSpot = -1;
+//	protected HotSpot[] hotspots = null;
+//	protected int currSpot = -1;
 	
 //	protected int whichHotSpot(float px, float py){
 //		if(hotspots == null) return -1;
@@ -393,21 +393,21 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		children.addLast(c);
 	}
 
-	/**
-	 * This method should be used sparingly since it is heavy on resources.
-	 * 
-	 * @return
-	 */
-	public PGraphics getSnapshot(){
-		if(buffer != null){
-			updateBuffer();
-			PGraphicsJava2D snap = (PGraphicsJava2D) winApp.createGraphics(buffer.width, buffer.height, PApplet.JAVA2D);
-			snap.beginDraw();
-			snap.image(buffer,0,0);
-			return snap;
-		}
-		return null;
-	}
+//	/**
+//	 * This method should be used sparingly since it is heavy on resources.
+//	 * 
+//	 * @return
+//	 */
+//	public PGraphics getSnapshot(){
+//		if(buffer != null){
+//			updateBuffer();
+//			PGraphicsJava2D snap = (PGraphicsJava2D) winApp.createGraphics(buffer.width, buffer.height, PApplet.JAVA2D);
+//			snap.beginDraw();
+//			snap.image(buffer,0,0);
+//			return snap;
+//		}
+//		return null;
+//	}
 
 	protected PGraphicsJava2D getBuffer(){
 		return buffer;
@@ -504,65 +504,41 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		this.rotAngle = rot;
 	}
 
-	/**
-	 * Get an affine transformation that is the compound of all 
-	 * transformations including parents
-	 * @param aff
-	 * @return
-	 */
-	public AffineTransform getTransform(AffineTransform aff){
-		if(parent != null)
-			aff = parent.getTransform(aff);
-		aff.translate(cx, cy);
-		aff.rotate(rotAngle);
-		return aff;
-	}
+//	/**
+//	 * Get an affine transformation that is the compound of all 
+//	 * transformations including parents
+//	 * @param aff
+//	 * @return
+//	 */
+//	public AffineTransform getTransform(AffineTransform aff){
+//		if(parent != null)
+//			aff = parent.getTransform(aff);
+//		aff.translate(cx, cy);
+//		aff.rotate(rotAngle);
+//		return aff;
+//	}
+//
+//	/**
+//	 * This method takes a position px, py and calulates the equivalent
+//	 * position [ox,oy] as if no transformations have taken place and
+//	 * the origin is the top-left corner of the control.
+//	 * @param px
+//	 * @param py
+//	 */
+//	protected void calcTransformedOrigin(float px, float py){
+//		AffineTransform aff = new AffineTransform();
+//		aff = getTransform(aff);
+//		temp[0] = px; temp[1] = py;
+//		try {
+//			aff.inverseTransform(temp, 0, temp, 0, 1);
+//			ox = (float) temp[0] + halfWidth;
+//			oy = (float) temp[1] + halfHeight;
+//		} catch (NoninvertibleTransformException e) {
+//		}
+//	}
+//	
+//	
 
-	/**
-	 * This method takes a position px, py and calulates the equivalent
-	 * position [ox,oy] as if no transformations have taken place and
-	 * the origin is the top-left corner of the control.
-	 * @param px
-	 * @param py
-	 */
-	protected void calcTransformedOrigin(float px, float py){
-		AffineTransform aff = new AffineTransform();
-		aff = getTransform(aff);
-		temp[0] = px; temp[1] = py;
-		try {
-			aff.inverseTransform(temp, 0, temp, 0, 1);
-			ox = (float) temp[0] + halfWidth;
-			oy = (float) temp[1] + halfHeight;
-		} catch (NoninvertibleTransformException e) {
-		}
-	}
-	
-	
-	/**
-	 * NOT REQD
-	 * Remove this method from the release version performs the same task as 
-	 * calcTransformedOrigin(px,py) but also tests to see if it is over
-	 * the control.
-	 * 
-	 * @param px
-	 * @param py
-	 * @return
-	 */
-	public boolean contains(float px, float py){
-		AffineTransform aff = new AffineTransform();
-		aff = getTransform(aff);
-		temp[0] = px; temp[1] = py;
-		try {
-			aff.inverseTransform(temp, 0, temp, 0, 1);
-		} catch (NoninvertibleTransformException e) {
-			e.printStackTrace();
-			return false;
-		}
-		ox = (float) temp[0] + halfWidth;
-		oy = (float) temp[1] + halfHeight;
-		boolean over = (ox >= 0 && ox <= width && oy >= 0 && oy <= height);
-		return over;
-	}
 
 
 	/**
@@ -1258,6 +1234,15 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		return visible;
 	}
 
+	protected void setAvailable(boolean avail){
+		available = avail;
+		if(children != null){
+			for(GComponent c : children)
+				c.setAvailable(avail);
+		}
+	}
+
+
 	/**
 	 * Enable or disable the ability of the component to generate mouse events.<br>
 	 * GTextField - it also controls key press events <br>
@@ -1269,14 +1254,6 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 		if(children != null){
 			for(GComponent c : children)
 				c.setEnabled(enable);
-		}
-	}
-
-	public void setAvailable(boolean avail){
-		available = avail;
-		if(children != null){
-			for(GComponent c : children)
-				c.setAvailable(avail);
 		}
 	}
 

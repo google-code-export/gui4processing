@@ -26,7 +26,7 @@ public class FTextField extends FEditableTextComponent {
 	
 	public FTextField(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
-		children = new LinkedList<GComponent>();
+		children = new LinkedList<FAbstractControl>();
 		childLimit = 1;
 		tx = ty = pad;
 		tw = width - 2 * pad;
@@ -41,7 +41,7 @@ public class FTextField extends FEditableTextComponent {
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
-		buffer.g2.setFont(fLocalFont);
+		buffer.g2.setFont(localFont);
 		hotspots = new HotSpot[]{
 				new HSrect(1, tx, ty, tw, th),			// typing area
 				new HSrect(9, 0, 0, width, height)		// control surface
@@ -54,7 +54,8 @@ public class FTextField extends FEditableTextComponent {
 		}
 		setTextNew(" ");
 		z = Z_STICKY;
-		registerAutos_DMPK(true, true, false, true);
+		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
+		F4P.addControl(this);
 	}
 
 	public void setTextNew(String text){
@@ -315,7 +316,7 @@ public class FTextField extends FEditableTextComponent {
 		winApp.popMatrix();
 
 		if(children != null){
-			for(GComponent c : children)
+			for(FAbstractControl c : children)
 				c.draw();
 		}
 		winApp.popMatrix();

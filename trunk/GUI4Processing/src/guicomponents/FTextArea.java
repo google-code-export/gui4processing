@@ -28,7 +28,7 @@ public class FTextArea extends FEditableTextComponent {
 
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
-		children = new LinkedList<GComponent>();
+		children = new LinkedList<FAbstractControl>();
 		childLimit = 2;
 		tx = ty = pad;
 		tw = width - 2 * pad - ((sbPolicy & SCROLLBAR_VERTICAL) != 0 ? 18 : 0);
@@ -43,7 +43,7 @@ public class FTextArea extends FEditableTextComponent {
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
-		buffer.g2.setFont(fLocalFont);
+		buffer.g2.setFont(localFont);
 		hotspots = new HotSpot[]{
 				new HSrect(1, tx, ty, tw, th),			// typing area
 				new HSrect(9, 0, 0, width, height)		// control surface
@@ -62,7 +62,8 @@ public class FTextArea extends FEditableTextComponent {
 		}
 		setTextNew(" ", (int)tw);
 		z = Z_STICKY;
-		registerAutos_DMPK(true, true, false, true);
+		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
+		F4P.addControl(this);
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class FTextArea extends FEditableTextComponent {
 	 * @param text
 	 */
 	public void setTextNew(String text){
-		setText(text, (int)tw);
+		setTextNew(text, (int)tw);
 	}
 
 	/**
@@ -239,7 +240,7 @@ public class FTextArea extends FEditableTextComponent {
 		winApp.popMatrix();
 
 		if(children != null){
-			for(GComponent c : children)
+			for(FAbstractControl c : children)
 				c.draw();
 		}
 		winApp.popMatrix();
@@ -462,6 +463,7 @@ public class FTextArea extends FEditableTextComponent {
 		ox -= tx; oy -= ty; // Remove translation
 
 		currSpot = whichHotSpot(ox, oy);
+		System.out.println("FTextArea "+winApp.mouseX + "  " + winApp.mouseY + "  " + ox + "  " + oy);
 
 		// currSpot == 1 for text display area
 		if(currSpot == 1 || focusIsWith == this)

@@ -25,6 +25,7 @@ package guicomponents;
 
 import guicomponents.HotSpot.HSrect;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -52,7 +53,7 @@ import processing.core.PGraphicsJava2D;
  * @author Peter Lager
  *
  */
-public class FPanel extends AbstractControl {
+public class FPanel extends FTextControl {
 
 
 	/** Whether the panel is displayed in full or tab only */
@@ -81,15 +82,15 @@ public class FPanel extends AbstractControl {
 	 */
 	public FPanel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
-		children = new LinkedList<GComponent>();
+		children = new LinkedList<FAbstractControl>();
 		childLimit = Integer.MAX_VALUE;
-		if(text == null || text.length() == 0)
-			text = "Tab Text";
-		this.text = text;
+//		if(text == null || text.length() == 0)
+//			text = "Tab Text";
+//		this.text = text;
 		// The image buffer is just for the tab area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
-		buffer.g2.setFont(fLocalFont);
+		buffer.g2.setFont(localFont);
 		setTextNew(text);
 		calcHotSpots();
 		constrainPanelPosition();
@@ -97,15 +98,16 @@ public class FPanel extends AbstractControl {
 		dockX = x;
 		dockY = y;
 		z = Z_PANEL;
-		createEventHandler(G4P.mainWinApp, "handlePanelEvents", new Class[]{ GPanel.class });
-		registerAutos_DMPK(true, true, false, false);
+		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		F4P.addControl(this);
 	}
 
-	public void setTextNew(String text){
+	public FPanel setTextNew(String text){
 		super.setTextNew(text);
 		stext.getLines(buffer.g2);
 		tabHeight = (int) (stext.getMaxLineHeight() + 4);
 		tabWidth = (int) (stext.getMaxLineLength() + 8);
+		return this;
 	}
 
 	/**
@@ -119,31 +121,30 @@ public class FPanel extends AbstractControl {
 		};
 	}
 
-	/**
-	 * Set the font & size for the tab text changing the height (+/-) 
-	 * of the tab if necessary to display text. 
-	 * OLD version 
-	 */
-	public void setFont(String fontname, int fontsize){
-		localFont = GFont.getFont(winApp, fontname, fontsize);
-
-		tabHeight = (int) (1.2f * localFont.getSize() + 2 * PADV);
-		setText(text);
+	public FTextControl setFontNew(Font font) {
+		if(font != null)
+			localFont = font;
+		tabHeight = (int) (1.2f * localFont.getSize() + 2);
+		if(buffer != null){
+			buffer.g2.setFont(localFont);
+			bufferInvalid = true;
+		}
+		return this;
 	}
 
 	/**
 	 * Bring this panel to the front i.e. above other panels.
 	 */
-	public void bringToFront(){
-		if(parent != null)
-			parent.bringToFront();
-		G4P.moveToFrontForDraw(this);
-	}
+//	public void bringToFront(){
+//		if(parent != null)
+//			parent.bringToFront();
+//		G4P.moveToFrontForDraw(this);
+//	}
 
 	/**
 	 * What to do when the FPanel loses focus.
 	 */
-	protected void loseFocus(GComponent grabber){
+	protected void loseFocus(FAbstractControl grabber){
 		focusIsWith = null;
 		beingDragged = false;
 	}
@@ -182,7 +183,7 @@ public class FPanel extends AbstractControl {
 
 		if(!tabOnly){
 			if(children != null){
-				for(GComponent c : children)
+				for(FAbstractControl c : children)
 					c.draw();
 			}
 		}
