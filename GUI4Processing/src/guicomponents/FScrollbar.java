@@ -11,7 +11,7 @@ import java.util.Arrays;
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 
-public class FScrollbar extends GComponent {
+public class FScrollbar extends FAbstractControl {
 
 	private static final int OFF_FILL = 3;
 	private static final int OFF_STROKE = 0;
@@ -48,8 +48,8 @@ public class FScrollbar extends GComponent {
 		opaque = false;
 		
 		z = Z_SLIPPY;
-		registerAutos_DMPK(true, true, false, false);
-		createEventHandler(G4P.mainWinApp, "handleScrollbarEvents", new Class[]{ FScrollbar.class });
+		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		F4P.addControl(this);
 	}
 
 	public void setAutoHide(boolean autoHide){
@@ -96,6 +96,7 @@ public class FScrollbar extends GComponent {
 		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
 
 		int spot = whichHotSpot(ox, oy);
+
 		// If over the track then see if we are over the thumb
 		if(spot >= 9){
 			if(isOverThumb(ox, oy))

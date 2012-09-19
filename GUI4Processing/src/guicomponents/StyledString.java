@@ -139,7 +139,7 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
-	 * Get the plain text as a STring. Any line breaks will kept and will
+	 * Get the plain text as a String. Any line breaks will kept and will
 	 * be represented by the character 'backslash n' <br>
 	 * @return the associated plain text
 	 */

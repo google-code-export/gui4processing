@@ -35,11 +35,12 @@ public interface GConstants {
 	// 0x8???????  always display these messages
 
 
-	public static int DRAW_METHOD = 			0x00ff0001;
-	public static int MOUSE_METHOD = 			0x00ff0002;
-	public static int PRE_METHOD = 				0x00ff0004;
-	public static int KEY_METHOD = 				0x00ff0008;
-
+	public static int DRAW_METHOD = 			0x00000001;
+	public static int MOUSE_METHOD = 			0x00000002;
+	public static int PRE_METHOD = 				0x00000004;
+	public static int KEY_METHOD = 				0x00000008;
+	public static int ALL_METHOD =				0x0000000f;
+	
 	// ### Event constants ###
 	// TextField component (GSlider also uses CHANGED)
 	public final static int CHANGED = 			0x00000101;	// Text has changed
