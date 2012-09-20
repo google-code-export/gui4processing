@@ -1068,8 +1068,8 @@ abstract public class GComponent implements PConstants, GConstants, Comparable<O
 	 * @param align the alignment flag
 	 */
 	public void setTextAlign(int align){
-		int ha = align & GAlign.H_ALIGN;
-		int va = align & GAlign.V_ALIGN;
+		int ha = align & GAlign.HA_VALID;
+		int va = align & GAlign.VA_VALID;
 		if(ha == GAlign.LEFT || ha == GAlign.CENTER || ha == GAlign.RIGHT){
 			textAlignHorz = ha;
 			calcAlignX();

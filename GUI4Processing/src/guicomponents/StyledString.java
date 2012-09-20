@@ -122,11 +122,11 @@ final public class StyledString implements Serializable {
 	 * 
 	 * @param g2d
 	 * @param startText
-	 * @param lineWidth
+	 * @param wrapWidth
 	 */
-	public StyledString(Graphics2D g2d, String startText, int lineWidth){
-		this.wrapWidth = (lineWidth > 0 && lineWidth < Integer.MAX_VALUE) ? lineWidth : Integer.MAX_VALUE;
-		spacer = getParagraghSpacer(wrapWidth);
+	public StyledString(Graphics2D g2d, String startText, int wrapWidth){
+		this.wrapWidth = (wrapWidth > 0 && wrapWidth < Integer.MAX_VALUE) ? wrapWidth : Integer.MAX_VALUE;
+		spacer = getParagraghSpacer(this.wrapWidth);
 		plainText = startText;
 		removeBlankLines(); // just in case we merge two eol characters
 		if(plainText.length() == 0)
@@ -351,6 +351,13 @@ final public class StyledString implements Serializable {
 				baseStyle.add(new AttributeRun(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD));
 			if(font.isItalic())
 				baseStyle.add(new AttributeRun(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE));	
+		}
+	}
+	
+	public void setWrapWidth(int wrapWidth){
+		if(this.wrapWidth != wrapWidth){
+			this.wrapWidth = wrapWidth;
+			invalidLayout = true;
 		}
 	}
 	

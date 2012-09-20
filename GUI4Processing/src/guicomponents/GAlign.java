@@ -31,15 +31,15 @@ package guicomponents;
  */
 public interface GAlign {
 	// Alignment
-	public static final int LEFT	= 0x00000001;
-	public static final int RIGHT	= 0x00000002;
-	public static final int CENTER	= 0x00000004;
-	public static final int JUSTIFY	= 0x00000008;
-	public static final int H_ALIGN	= 0x0000000F;
-
-	public static final int TOP		= 0x00000010;
-	public static final int BOTTOM	= 0x00000020;
-	public static final int MIDDLE	= 0x00000040;
-	public static final int V_ALIGN	= 0x00000070;
+	public static final int LEFT		= 0x00000001;
+	public static final int CENTER		= 0x00000002;
+	public static final int RIGHT		= 0x00000004;
+	public static final int JUSTIFY		= 0x00000008;
+	public static final int HA_VALID	= 0x0000000F;
+	
+	public static final int TOP			= 0x00000010;
+	public static final int MIDDLE		= 0x00000020;
+	public static final int BOTTOM		= 0x00000040;
+	public static final int VA_VALID	= 0x00000070;
 	
 }

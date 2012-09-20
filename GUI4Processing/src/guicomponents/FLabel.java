@@ -13,15 +13,11 @@ public class FLabel extends FTextIconControl {
 
 	public FLabel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
-//
-//		if(text == null || text.length() == 0)
-//			text = "Label Text";
-//		this.text = text;
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(localFont);
-		setTextNew(text, (int) width - TPAD2);
+		setTextNew(text);
 		opaque = false;
 		// Now register control with applet
 		registeredMethods = DRAW_METHOD;
@@ -58,15 +54,38 @@ public class FLabel extends FTextIconControl {
 				buffer.background(palette[6]);
 			else
 				buffer.background(buffer.color(255,0));
-
+			// Calculate text and icon placement
+			calcAlignment();
+			if(iconW != 0){
+				buffer.image(bimage[0], siX, siY);
+			}
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
-			buffer.translate(TPAD, (height - stext.getTextAreaHeight())/2);
+			float wrapWidth = stext.getWrapWidth();
+			float sx = 0, tw = 0;
+//			buffer.translate(TPAD, (height - stext.getTextAreaHeight())/2);
+			buffer.translate(stX, stY);
 			for(TextLayoutInfo lineInfo : lines){
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
+				switch(textAlignH){
+				case GAlign.CENTER:
+					tw = layout.getAdvance();
+					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
+					sx = (wrapWidth - tw)/2;
+					break;
+				case GAlign.RIGHT:
+					tw = layout.getAdvance();
+					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
+					sx = wrapWidth - tw;
+					break;
+				case GAlign.LEFT:
+				case GAlign.JUSTIFY:
+				default:
+					sx = 0;		
+				}
 				// display text
 				g2d.setColor(jpalette[2]);
-				lineInfo.layout.draw(g2d, 0, 0);
+				lineInfo.layout.draw(g2d, sx, 0);
 				buffer.translate(0, layout.getDescent() + layout.getLeading());
 			}
 			buffer.endDraw();

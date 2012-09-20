@@ -10,9 +10,9 @@ public interface IText {
 
 	public abstract IText setTextNew(String ntext);
 
-	public abstract IText setTextNew(String ntext, int wrapWidth);
-
-	public abstract IText setTextNew(String ntext, int wrapWidth, boolean justify);
+//	public abstract IText setTextNew(String ntext, int wrapWidth);
+//
+//	public abstract IText setTextNew(String ntext, int wrapWidth, boolean justify);
 
 	public IText setTextAlignNew(int align);
 	
