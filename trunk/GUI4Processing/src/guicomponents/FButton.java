@@ -34,7 +34,7 @@ public class FButton extends FTextIconControl {
 		hotspots = new HotSpot[]{
 				new HSrect(1, 0, 0, width, height)		// control surface
 		};
-		setTextNew(text, (int) width - 4);
+		setTextNew(text);
 		opaque = false;
 		z = Z_SLIPPY;
 		// Now register control with applet
