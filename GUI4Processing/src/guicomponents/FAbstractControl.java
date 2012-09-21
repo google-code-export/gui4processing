@@ -1,7 +1,5 @@
 package guicomponents;
 
-import guicomponents.GComponent.Z_Order;
-
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -18,7 +16,7 @@ import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 import processing.core.PImage;
 
-public class FAbstractControl implements IControl, PConstants, GConstants{
+public class FAbstractControl implements IControl, PConstants, GConstants {
 
 	/**
 	 * INTERNAL USE ONLY
@@ -72,10 +70,9 @@ public class FAbstractControl implements IControl, PConstants, GConstants{
 	protected int childLimit = 0;
 
 	protected int localColorScheme = F4P.globalColorScheme;
-
 	protected int[] palette = null;
 	protected Color[] jpalette = null;
-
+	protected int alphaLevel = 255;
 
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) 
 	 * (changed form int data type in V3*/
@@ -95,11 +92,6 @@ public class FAbstractControl implements IControl, PConstants, GConstants{
 	// it has been invalidated
 	protected PGraphicsJava2D buffer = null;
 	protected boolean bufferInvalid = true;
-
-	//	/** Text value associated with component */
-	//	protected String text = "";
-	//	// The styled version of text
-	//	protected StyledString stext = null;
 
 	/** Whether to show background or not */
 	protected boolean opaque = true;
@@ -169,6 +161,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants{
 		return bimage;
 	}
 
+	
 	public FAbstractControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		winApp = theApplet;
 		FCScheme.makeColorSchemes(winApp);
@@ -240,6 +233,20 @@ public class FAbstractControl implements IControl, PConstants, GConstants{
 		}
 	}
 
+	/**
+	 * Set the transparency of the component and make it unavailable to
+	 * mouse and keyboard events if blow a reasonable threshold.
+	 * 
+	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
+	 */
+	public void setAlpha(int alpha){
+		alpha = Math.abs(alpha) % 256;
+		if(alphaLevel != alpha){
+			alphaLevel = alpha;
+			available = (alphaLevel >= ALPHA_BLOCK);
+		}
+	}
+	
 	/**
 	 * Change the way position and size parameters are interpreted when a control is created. 
 	 * There are 3 modes. <br><pre>
@@ -656,9 +663,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants{
 		c.parent = this;
 		c.setZ(z);
 		// Parent will now be responsible for drawing
-		System.out.print("Reg for " + c.registeredMethods);
 		c.registeredMethods &= (ALL_METHOD - DRAW_METHOD);
-		System.out.println("   now for " + c.registeredMethods);
 		if(children == null)
 			children = new LinkedList<FAbstractControl>();
 		children.addLast(c);

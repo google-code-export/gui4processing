@@ -13,10 +13,6 @@ import processing.core.PGraphicsJava2D;
 
 public class FButton extends FTextIconControl {
 
-	// Button status values
-	static final int OFF	= 0;
-	static final int OVER	= 1;
-	static final int DOWN	= 2;
 
 	protected int status;
 
@@ -84,7 +80,7 @@ public class FButton extends FTextIconControl {
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && currSpot >= 0  && z > focusObjectZ()){
 				dragging = false;
-				status = DOWN;
+				status = PRESS_CONTROL;
 				takeFocus();
 				eventType = PRESSED;
 				if(reportAllButtonEvents)
@@ -96,7 +92,7 @@ public class FButton extends FTextIconControl {
 			// and the mouse has not moved since MOUSE_PRESSED otherwise we 
 			// would not get the Java MouseEvent.MOUSE_CLICKED event
 			if(focusIsWith == this){
-				status = OFF;
+				status = OFF_CONTROL;
 				loseFocus(null);
 				dragging = false;
 				eventType = CLICKED;
@@ -119,19 +115,20 @@ public class FButton extends FTextIconControl {
 				}
 				dragging = false;
 				loseFocus(null);
-				status = OFF;
+				status = OFF_CONTROL;
 			}
 			break;
 		case MouseEvent.MOUSE_MOVED:
 			// If dragged state will stay as PRESSED
 			if(currSpot >= 0)
-				status = OVER;
+				status = OVER_CONTROL;
 			else
-				status = OFF;
+				status = OFF_CONTROL;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this)
-				dragging = true;
+//			if(focusIsWith == this)
+//				dragging = true;
+			dragging = (focusIsWith == this);
 			break;
 		}
 	}
@@ -151,6 +148,7 @@ public class FButton extends FTextIconControl {
 		winApp.translate(-halfWidth, -halfHeight);
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
+		winApp.tint(-1, alphaLevel);
 		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();		
 		winApp.popStyle();
@@ -160,30 +158,52 @@ public class FButton extends FTextIconControl {
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
 			buffer.beginDraw();
+			// Back ground colour
 			switch(status){
-			case OVER:
+			case OVER_CONTROL:
 				buffer.background(palette[6]);
 				break;
-			case DOWN:
+			case PRESS_CONTROL:
 				buffer.background(palette[14]);
 				break;
 			default:
 				buffer.background(palette[4]);
 			}			
-			
+			// Calculate text and icon placement
+			calcAlignment();
+			// If there is an icon draw it
+			if(iconW != 0)
+				buffer.image(bicon[0], siX, siY);
+			// Display the etxt
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
-			buffer.translate(2, (height - stext.getTextAreaHeight())/2);
+			float wrapWidth = stext.getWrapWidth();
+			float sx = 0, tw = 0;
+			buffer.translate(stX, stY);
 			for(TextLayoutInfo lineInfo : lines){
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
+				switch(textAlignH){
+				case GAlign.CENTER:
+					tw = layout.getAdvance();
+					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
+					sx = (wrapWidth - tw)/2;
+					break;
+				case GAlign.RIGHT:
+					tw = layout.getAdvance();
+					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
+					sx = wrapWidth - tw;
+					break;
+				case GAlign.LEFT:
+				case GAlign.JUSTIFY:
+				default:
+					sx = 0;		
+				}
 				// display text
 				g2d.setColor(jpalette[2]);
-				float dx = (stext.getWrapWidth() - stext.getMaxLineLength())/2;
-				lineInfo.layout.draw(g2d, dx, 0);
+				lineInfo.layout.draw(g2d, sx, 0);
 				buffer.translate(0, layout.getDescent() + layout.getLeading());
 			}
 			buffer.endDraw();
 		}	
 	}
-	
 }

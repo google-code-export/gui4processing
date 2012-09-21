@@ -41,6 +41,11 @@ public interface GConstants {
 	public static int KEY_METHOD = 				0x00000008;
 	public static int ALL_METHOD =				0x0000000f;
 	
+	// Button status values
+	public static final int OFF_CONTROL	= 		0;
+	public static final int OVER_CONTROL	= 	1;
+	public static final int PRESS_CONTROL = 	2;
+
 	// ### Event constants ###
 	// TextField component (GSlider also uses CHANGED)
 	public final static int CHANGED = 			0x00000101;	// Text has changed
@@ -76,6 +81,11 @@ public interface GConstants {
 	public final static int USER_COL_SCHEME = 	0x00010102;
 	public final static int DISABLE_AUTO_DRAW =	0x00010103;
 
+	// The min alpha level for a control to respond to mouse and keyboard
+	public final int ALPHA_BLOCK =				200;
+	// The min alpha before a pixel is considered for a hot spot
+	public final int ALPHA_PICK	=				48;
+	
 	// ### Scroll bar policy constants ###
 	/** Do not create or display any scrollbars for the text area. */
 	public static final int SCROLLBARS_NONE = 				0x0000;
