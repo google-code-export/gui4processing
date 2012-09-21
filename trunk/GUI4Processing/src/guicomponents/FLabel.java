@@ -40,6 +40,7 @@ public class FLabel extends FTextIconControl {
 		winApp.translate(-halfWidth, -halfHeight);
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
+		winApp.tint(-1, alphaLevel);
 		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();
 		
@@ -50,19 +51,20 @@ public class FLabel extends FTextIconControl {
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
 			buffer.beginDraw();
+			// Back ground colour
 			if(opaque == true)
 				buffer.background(palette[6]);
 			else
 				buffer.background(buffer.color(255,0));
 			// Calculate text and icon placement
 			calcAlignment();
-			if(iconW != 0){
-				buffer.image(bimage[0], siX, siY);
-			}
+			// If there is an icon draw it
+			if(iconW != 0)
+				buffer.image(bicon[0], siX, siY);
+			// Display the etxt
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
 			float wrapWidth = stext.getWrapWidth();
 			float sx = 0, tw = 0;
-//			buffer.translate(TPAD, (height - stext.getTextAreaHeight())/2);
 			buffer.translate(stX, stY);
 			for(TextLayoutInfo lineInfo : lines){
 				TextLayout layout = lineInfo.layout;

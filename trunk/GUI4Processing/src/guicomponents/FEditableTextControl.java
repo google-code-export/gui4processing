@@ -73,6 +73,20 @@ class FEditableTextControl extends FAbstractControl {
 		int ss = startSelTLHI.tli.startCharIndex + startSelTLHI.thi.getInsertionIndex();
 		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
 		stext.addAttribute(style, value, ss, ee);
+		
+		// recalculate startSelTLHI and endSelTLHI these change startSelTHLHI
+		stext.getLines(buffer.g2);
+		int cn;
+//		startSelTLHI.tli = stext.getTLIforCharNo(ss);
+//		cn = ss - startSelTLHI.tli.startCharIndex;
+//		startSelTLHI.thi = startSelTLHI.tli.layout.getNextLeftHit(cn);
+		
+		endSelTLHI.tli = stext.getTLIforCharNo(ee);
+		cn = ee - endSelTLHI.tli.startCharIndex;
+		endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn);
+		// =======================================================================================
+		// need to test for null when at end of line
+		
 		bufferInvalid = true;
 	}
 

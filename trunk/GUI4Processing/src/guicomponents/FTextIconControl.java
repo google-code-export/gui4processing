@@ -6,7 +6,7 @@ import processing.core.PImage;
 
 public class FTextIconControl extends FTextControl implements ITextIcon {
 
-	protected PImage[] bimage = null;
+	protected PImage[] bicon = null;
 	protected int iconW = 0, iconH = 0;
 	protected int iconAlignH = GAlign.RIGHT, iconAlignV = GAlign.MIDDLE;
 	protected int siX, siY;
@@ -45,8 +45,8 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 	}
 
 	public FTextIconControl setIcon(PImage icon, int nbrImages, int align){
-		bimage = loadImages(icon, nbrImages);
-		if(bimage == null)
+		bicon = loadImages(icon, nbrImages);
+		if(bicon == null)
 			return this;
 		// We have loaded the image so validate alignment
 		if((align & GAlign.HA_VALID) != 0){
@@ -59,8 +59,8 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 			if(iconAlignV != GAlign.TOP && iconAlignV != GAlign.MIDDLE && iconAlignV != GAlign.BOTTOM)
 				iconAlignV = GAlign.MIDDLE;
 		}
-		iconW = bimage[0].width;
-		iconH = bimage[0].height;
+		iconW = bicon[0].width;
+		iconH = bicon[0].height;
 		stext.setWrapWidth((int) width - iconW - TPAD4);
 		bufferInvalid = true;
 		return this;

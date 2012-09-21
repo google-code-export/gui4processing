@@ -261,15 +261,11 @@ public class FScrollbar extends FAbstractControl {
 		winApp.translate(cx, cy);
 		winApp.rotate(rotAngle);
 		winApp.imageMode(PApplet.CENTER);
+		winApp.tint(-1, alphaLevel);
 		winApp.image(buffer, 0, 0);
-
-//		if(children != null){
-//			for(GComponent c : children)
-//				c.draw();
-//		}
+		
 		winApp.popMatrix();
 		winApp.popStyle();
-
 	}	
 
 }
