@@ -52,25 +52,28 @@ public class FTextField extends FEditableTextControl {
 			hsb.addEventHandler(this, "hsbEventHandler");
 			hsb.setAutoHide(autoHide);
 		}
-		setTextNew(" ");
+		setText(" ");
 		z = Z_STICKY;
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FTextField.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
 
-	public void setTextNew(String text){
+	public FTextField setText(String text){
 		if(text == null || text.length() == 0)
 			text = " ";
 		this.text = text;
 		stext = new StyledString(buffer.g2, text);
-		if(hsb != null){
-			if(stext.getMaxLineLength() < tw)
-				hsb.setValue(0,1);
-			else
-				hsb.setValue(0, tw/stext.getMaxLineLength());
-		}
+		ptx = 0;
+		setScrollbarValues(0, 0);
+//		if(hsb != null){
+//			if(stext.getMaxLineLength() < tw)
+//				hsb.setValue(0,1);
+//			else
+//				hsb.setValue(0, tw/stext.getMaxLineLength());
+//		}
 		bufferInvalid = true;
+		return this;
 	}
 
 	public PGraphics getSnapshot(){
@@ -96,8 +99,10 @@ public class FTextField extends FEditableTextControl {
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
-			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
+			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
+			bufferInvalid = false;
 
+			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
 			buffer.beginDraw();
 			// Whole control surface if opaque
 			if(opaque)
@@ -117,7 +122,6 @@ public class FTextField extends FEditableTextControl {
 			buffer.translate(-ptx, -pty);
 			// Translate in preparation for display selection and text
 
-			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
 			boolean hasSelection = hasSelection();
 			if(hasSelection){
 				if(endTLHI.compareTo(startTLHI) == -1){
@@ -151,17 +155,7 @@ public class FTextField extends FEditableTextControl {
 				buffer.popMatrix();
 			}
 			g2d.setClip(null);
-//			// Draw caret
-//			if(showCaret && endTLHI != null){
-//				buffer.pushMatrix();
-//				buffer.translate(0, endTLHI.tli.layout.getAscent() );
-//				Shape[] caret = endTLHI.tli.layout.getCaretShapes(endTLHI.thi.getInsertionIndex());
-//				g2d.setColor(jpalette[15]);
-//				g2d.draw(caret[0]);
-//				buffer.popMatrix();
-//			}
 			buffer.endDraw();
-			bufferInvalid = false;
 		}
 	}
 

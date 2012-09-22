@@ -17,13 +17,12 @@ public class FLabel extends FTextIconControl {
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(localFont);
-		setTextNew(text);
+		setText(text);
 		opaque = false;
 		// Now register control with applet
 		registeredMethods = DRAW_METHOD;
 		F4P.addControl(this);
 	}
-	
 	
 	public void draw(){
 		if(!visible) return;
@@ -50,6 +49,10 @@ public class FLabel extends FTextIconControl {
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
+			// Get the latest lines of text
+			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
+			bufferInvalid = false;
+
 			buffer.beginDraw();
 			// Back ground colour
 			if(opaque == true)
@@ -61,8 +64,6 @@ public class FLabel extends FTextIconControl {
 			// If there is an icon draw it
 			if(iconW != 0)
 				buffer.image(bicon[0], siX, siY);
-			// Display the etxt
-			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
 			float wrapWidth = stext.getWrapWidth();
 			float sx = 0, tw = 0;
 			buffer.translate(stX, stY);

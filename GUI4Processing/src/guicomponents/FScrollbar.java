@@ -40,13 +40,12 @@ public class FScrollbar extends FAbstractControl {
 				new HSrect(2, width - 16, 0, 16, height),	// high cap
 				new HSrect(9, 17, 0, width - 17, height)	// thumb track
 		};
-		Arrays.sort(hotspots); // belt and braces
 
 		lowCap = new RoundRectangle2D.Float(1, 1, 15, height-2, 6, 6);
 		highCap = new RoundRectangle2D.Float(width - 15, 1, 14.5f, height-2, 6, 6);
 
 		opaque = false;
-		
+
 		z = Z_SLIPPY;
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
@@ -109,7 +108,7 @@ public class FScrollbar extends FAbstractControl {
 			bufferInvalid = true;
 		}
 
-		if(currSpot>= 0 || focusIsWith == this)
+		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
@@ -117,8 +116,6 @@ public class FScrollbar extends FAbstractControl {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(focusIsWith != this && currSpot>= 0 && z > focusObjectZ()){
-//				mdx = winApp.mouseX;
-//				mdy = winApp.mouseY;
 				dragging = false;
 				last_ox = ox; last_oy = oy;
 				takeFocus();
@@ -146,15 +143,12 @@ public class FScrollbar extends FAbstractControl {
 				}
 				dragging = false;
 				loseFocus(null);
-//				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-//			if(focusIsWith == this && mouseHasMoved(winApp.mouseX, winApp.mouseY)){
 			if(focusIsWith == this && dragging){
 				loseFocus(parent);
 				dragging = false;
-//				mdx = mdy = Integer.MAX_VALUE;
 				isValueChanging = false;
 				bufferInvalid = true;
 			}
@@ -174,10 +168,7 @@ public class FScrollbar extends FAbstractControl {
 			}
 			break;
 		}
-		if(focusIsWith != this){
-			currSpot = 0;
-			bufferInvalid = true;
-		}
+
 	}
 
 	protected boolean isOverThumb(float px, float py){
@@ -187,67 +178,69 @@ public class FScrollbar extends FAbstractControl {
 	}
 
 	protected void updateBuffer(){
-		Graphics2D g2d = buffer.g2;
-		buffer.beginDraw();
-		if(opaque) {
-			buffer.background(buffer.color(255,0));
-			buffer.fill(palette[6]);
+		if(bufferInvalid) {
+			bufferInvalid = false;
+			Graphics2D g2d = buffer.g2;
+			buffer.beginDraw();
+			if(opaque) {
+				buffer.background(buffer.color(255,0));
+				buffer.fill(palette[6]);
+				buffer.noStroke();
+				buffer.rect(8,0,width-16,height);
+			}
+			else
+				buffer.background(buffer.color(255,0));
+			// Draw the track
+			buffer.fill(palette[TRACK]);
 			buffer.noStroke();
-			buffer.rect(8,0,width-16,height);
-		}
-		else
-			buffer.background(buffer.color(255,0));
-		// Draw the track
-		buffer.fill(palette[TRACK]);
-		buffer.noStroke();
-		buffer.rect(8,3,width-8,height-5);
-		g2d.setStroke(pen);
+			buffer.rect(8,3,width-8,height-5);
+			g2d.setStroke(pen);
 
-		// Draw the low cap
-		buffer.strokeWeight(1.2f);
-		if(currSpot == 1){
-			g2d.setColor(jpalette[OVER_FILL]);
-			g2d.fill(lowCap);
-			g2d.setColor(jpalette[OVER_STROKE]);
-			g2d.draw(lowCap);
+			// Draw the low cap
+			buffer.strokeWeight(1.2f);
+			if(currSpot == 1){
+				g2d.setColor(jpalette[OVER_FILL]);
+				g2d.fill(lowCap);
+				g2d.setColor(jpalette[OVER_STROKE]);
+				g2d.draw(lowCap);
+			}
+			else {
+				g2d.setColor(jpalette[OFF_FILL]);
+				g2d.fill(lowCap);
+				g2d.setColor(jpalette[OFF_STROKE]);
+				g2d.draw(lowCap);
+			}
+			// Draw the high cap
+			if(currSpot == 2){
+				g2d.setColor(jpalette[OVER_FILL]);
+				g2d.fill(highCap);
+				g2d.setColor(jpalette[OVER_STROKE]);
+				g2d.draw(highCap);
+			}
+			else {
+				g2d.setColor(jpalette[OFF_FILL]);
+				g2d.fill(highCap);
+				g2d.setColor(jpalette[OFF_STROKE]);
+				g2d.draw(highCap);
+			}
+			// draw thumb
+			float thumbWidth = (width - 32) * filler;
+			RoundRectangle2D thumb = new RoundRectangle2D.Float(1,1,thumbWidth-1, height-2,6,6);
+			buffer.translate((width - 32) * value + 16, 0);
+			if(currSpot == 10 || isValueChanging){
+				g2d.setColor(jpalette[OVER_FILL]);
+				g2d.fill(thumb);
+				g2d.setColor(jpalette[OVER_STROKE]);
+				g2d.draw(thumb);
+			}
+			else {
+				g2d.setColor(jpalette[OFF_FILL]);
+				g2d.fill(thumb);
+				g2d.setColor(jpalette[OFF_STROKE]);
+				g2d.draw(thumb);
+			}
+			buffer.endDraw();
 		}
-		else {
-			g2d.setColor(jpalette[OFF_FILL]);
-			g2d.fill(lowCap);
-			g2d.setColor(jpalette[OFF_STROKE]);
-			g2d.draw(lowCap);
-		}
-		// Draw the high cap
-		if(currSpot == 2){
-			g2d.setColor(jpalette[OVER_FILL]);
-			g2d.fill(highCap);
-			g2d.setColor(jpalette[OVER_STROKE]);
-			g2d.draw(highCap);
-		}
-		else {
-			g2d.setColor(jpalette[OFF_FILL]);
-			g2d.fill(highCap);
-			g2d.setColor(jpalette[OFF_STROKE]);
-			g2d.draw(highCap);
-		}
-		// draw thumb
-		float thumbWidth = (width - 32) * filler;
-		RoundRectangle2D thumb = new RoundRectangle2D.Float(1,1,thumbWidth-1, height-2,6,6);
-		buffer.translate((width - 32) * value + 16, 0);
-		if(currSpot == 10 || isValueChanging){
-			g2d.setColor(jpalette[OVER_FILL]);
-			g2d.fill(thumb);
-			g2d.setColor(jpalette[OVER_STROKE]);
-			g2d.draw(thumb);
-		}
-		else {
-			g2d.setColor(jpalette[OFF_FILL]);
-			g2d.fill(thumb);
-			g2d.setColor(jpalette[OFF_STROKE]);
-			g2d.draw(thumb);
-		}
-		buffer.endDraw();
-		bufferInvalid = false;
 	}
 
 	public void draw(){
@@ -263,7 +256,7 @@ public class FScrollbar extends FAbstractControl {
 		winApp.imageMode(PApplet.CENTER);
 		winApp.tint(-1, alphaLevel);
 		winApp.image(buffer, 0, 0);
-		
+
 		winApp.popMatrix();
 		winApp.popStyle();
 	}	
