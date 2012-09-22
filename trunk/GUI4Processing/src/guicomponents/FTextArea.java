@@ -60,7 +60,7 @@ public class FTextArea extends FEditableTextControl {
 			vsb.addEventHandler(this, "vsbEventHandler");
 			vsb.setAutoHide(autoHide);
 		}
-		setTextNew(" ", (int)tw);
+		setText(" ", (int)tw);
 		z = Z_STICKY;
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FTextArea.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
@@ -71,8 +71,9 @@ public class FTextArea extends FEditableTextControl {
 	 * Set the text to be used. The wrap width is determined by the size of the component.
 	 * @param text
 	 */
-	public void setTextNew(String text){
-		setTextNew(text, (int)tw);
+	public FTextArea setText(String text){
+		setText(text, (int)tw);
+		return this;
 	}
 
 	/**
@@ -80,9 +81,10 @@ public class FTextArea extends FEditableTextControl {
 	 * @param text
 	 * @param wrapWidth
 	 */
-	public void setTextNew(String text, int wrapWidth){
+	public void setText(String text, int wrapWidth){
 		this.text = text;
 		stext = new StyledString(buffer.g2, text, wrapWidth);
+		stext.getLines(buffer.g2);
 		float sTextHeight;
 		if(vsb != null){
 			sTextHeight = stext.getTextAreaHeight();
@@ -107,8 +109,11 @@ public class FTextArea extends FEditableTextControl {
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
-			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
+			// Get the latest lines of text
+			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
+			bufferInvalid = false;
 
+			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
 			buffer.beginDraw();
 			// Whole control surface if opaque
 			if(opaque)
@@ -127,10 +132,6 @@ public class FTextArea extends FEditableTextControl {
 			g2d.setClip(gpTextDisplayArea);
 			buffer.translate(-ptx, -pty);
 			// Translate in preparation for display selection and text
-
-			// Get latest version of styled text layouts
-			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
-
 			boolean hasSelection = hasSelection();
 			if(hasSelection){
 				if(endTLHI.compareTo(startTLHI) == -1){
@@ -164,7 +165,6 @@ public class FTextArea extends FEditableTextControl {
 			}
 			g2d.setClip(null);
 			buffer.endDraw();
-			bufferInvalid = false;
 		}
 	}
 

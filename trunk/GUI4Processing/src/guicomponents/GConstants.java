@@ -123,12 +123,12 @@ public interface GConstants {
 	public final static int SCROLL_RIGHT =		0x00000114;	// Scroll text right
 
 
-	// Styled String constants
+	// Attribute:- fontface   Value Type:- String font family name e.g. "Times New Roman"
 	public static final TextAttribute FAMILY = TextAttribute.FAMILY;
-	//	public static final TextAttribute FAMILY = new TextAttribute("family");
 
+	// Attribute:- font weight   Value Type:- Float in range (0.5 to 2.75)
 	public static final TextAttribute WEIGHT = TextAttribute.WEIGHT;
-
+	// Predefined constants for font weight
 	public static final Float WEIGHT_EXTRA_LIGHT = new Float(0.5f);
 	public static final Float WEIGHT_LIGHT = new Float(0.75f);
 	public static final Float WEIGHT_DEMILIGHT = new Float(0.875f);
@@ -141,44 +141,44 @@ public interface GConstants {
 	public static final Float WEIGHT_EXTRABOLD = new Float(2.5f);
 	public static final Float WEIGHT_ULTRABOLD = new Float(2.75f);
 
-
-	//	public static final TextAttribute WIDTH = new TextAttribute("width");
+	// Attribute:- font width   Value Type:- Float in range (0.75 to 1.5)
 	public static final TextAttribute WIDTH = TextAttribute.WIDTH;
-
+	// Predefined constants for font width
 	public static final Float WIDTH_CONDENSED = new Float(0.75f);
 	public static final Float WIDTH_SEMI_CONDENSED = new Float(0.875f);
 	public static final Float WIDTH_REGULAR = new Float(1.0f);
 	public static final Float WIDTH_SEMI_EXTENDED = new Float(1.25f);
 	public static final Float WIDTH_EXTENDED = new Float(1.5f);
 
-
+	// Attribute:- font posture   Value Type:- Float in range (0.0 to 0.20)
 	public static final TextAttribute POSTURE = TextAttribute.POSTURE;
-
+	// Predefined constants for font posture (plain or italic)
 	public static final Float POSTURE_REGULAR = new Float(0.0f);
 	public static final Float POSTURE_OBLIQUE = new Float(0.20f);
 
-	// Acceptable values - float
+	// Attribute:- font size   Value Type:- Float
 	public static final TextAttribute SIZE = TextAttribute.SIZE;
 
-
+	// Attribute:- font superscript   Value Type:- Integer (1 : super or -1 subscript)
 	public static final TextAttribute SUPERSCRIPT = TextAttribute.SUPERSCRIPT;
-
+	// Predefined constants for font super/subscript
 	public static final Integer SUPERSCRIPT_SUPER = new Integer(1);
 	public static final Integer SUPERSCRIPT_SUB = new Integer(-1);
+	public static final Integer SUPERSCRIPT_OFF = new Integer(0);
 
-
-	// Any java.awt.Color object
+	// Attribute:- font foreground snd bsckground colour   Value Type:- Color
 	public static final TextAttribute FOREGROUND = TextAttribute.FOREGROUND;
 	public static final TextAttribute BACKGROUND = TextAttribute.BACKGROUND;
 
+	// Attribute:- font strike through   Value:- Boolean
 	public static final TextAttribute STRIKETHROUGH = TextAttribute.STRIKETHROUGH;
-
+	// Predefined constants for font strike through on/off
 	public static final Boolean STRIKETHROUGH_ON = new Boolean(true);
 	public static final Boolean STRIKETHROUGH_OFF = new Boolean(false);
 
 
-	public static final TextAttribute JUSTIFICATION = TextAttribute.JUSTIFICATION;
-	public static final Float JUSTIFICATION_FULL = new Float(1.0f);
-	public static final Float JUSTIFICATION_NONE = new Float(0.0f);
+//	public static final TextAttribute JUSTIFICATION = TextAttribute.JUSTIFICATION;
+//	public static final Float JUSTIFICATION_FULL = new Float(1.0f);
+//	public static final Float JUSTIFICATION_NONE = new Float(0.0f);
 
 }

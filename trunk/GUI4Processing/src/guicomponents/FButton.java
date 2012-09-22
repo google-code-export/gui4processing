@@ -14,7 +14,7 @@ import processing.core.PGraphicsJava2D;
 public class FButton extends FTextIconControl {
 
 
-	protected int status;
+	protected int status = -1;
 
 	
 	// Only report CLICKED events
@@ -30,13 +30,14 @@ public class FButton extends FTextIconControl {
 		hotspots = new HotSpot[]{
 				new HSrect(1, 0, 0, width, height)		// control surface
 		};
-		setTextNew(text);
+		setText(text);
 		opaque = false;
 		z = Z_SLIPPY;
 		// Now register control with applet
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
+		updateBuffer();
 	}
 	
 	/**
@@ -83,6 +84,7 @@ public class FButton extends FTextIconControl {
 				status = PRESS_CONTROL;
 				takeFocus();
 				eventType = PRESSED;
+				bufferInvalid = true;
 				if(reportAllButtonEvents)
 					fireEvent();
 			}
@@ -116,18 +118,20 @@ public class FButton extends FTextIconControl {
 				dragging = false;
 				loseFocus(null);
 				status = OFF_CONTROL;
+				bufferInvalid = true;
 			}
 			break;
 		case MouseEvent.MOUSE_MOVED:
+			int currStatus = status;
 			// If dragged state will stay as PRESSED
 			if(currSpot >= 0)
 				status = OVER_CONTROL;
 			else
 				status = OFF_CONTROL;
+			if(currStatus != status)
+				bufferInvalid = true;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-//			if(focusIsWith == this)
-//				dragging = true;
 			dragging = (focusIsWith == this);
 			break;
 		}
@@ -157,6 +161,9 @@ public class FButton extends FTextIconControl {
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
+			// Get the latest lines of text
+			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
+			bufferInvalid = false;
 			buffer.beginDraw();
 			// Back ground colour
 			switch(status){
@@ -174,8 +181,6 @@ public class FButton extends FTextIconControl {
 			// If there is an icon draw it
 			if(iconW != 0)
 				buffer.image(bicon[0], siX, siY);
-			// Display the etxt
-			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
 			float wrapWidth = stext.getWrapWidth();
 			float sx = 0, tw = 0;
 			buffer.translate(stX, stY);

@@ -91,7 +91,7 @@ public class FPanel extends FTextControl {
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(localFont);
-		setTextNew(text);
+		setText(text);
 		calcHotSpots();
 		constrainPanelPosition();
 		opaque = true;
@@ -104,8 +104,8 @@ public class FPanel extends FTextControl {
 		F4P.addControl(this);
 	}
 
-	public FPanel setTextNew(String text){
-		super.setTextNew(text);
+	public FPanel setText(String text){
+		super.setText(text);
 		stext.getLines(buffer.g2);
 		tabHeight = (int) (stext.getMaxLineHeight() + 4);
 		tabWidth = (int) (stext.getMaxLineLength() + 8);
@@ -123,7 +123,7 @@ public class FPanel extends FTextControl {
 		};
 	}
 
-	public FTextControl setFontNew(Font font) {
+	public FTextControl setFont(Font font) {
 		if(font != null)
 			localFont = font;
 		tabHeight = (int) (1.2f * localFont.getSize() + 2);

@@ -20,7 +20,7 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 	 * NEW version for FPanel etc.
 	 * @param ptext
 	 */
-	public FTextControl setTextNew(String ntext){
+	public FTextControl setText(String ntext){
 		if(ntext == null || ntext.length() == 0 )
 			ptext = " ";
 		else 

@@ -40,7 +40,6 @@ class FEditableTextControl extends FAbstractControl {
 	protected GTimer caretFlasher;
 	protected boolean showCaret = false;
 
-
 	public FEditableTextControl(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3);
 		sbPolicy = scrollbars;
@@ -74,26 +73,39 @@ class FEditableTextControl extends FAbstractControl {
 		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
 		stext.addAttribute(style, value, ss, ee);
 		
-		// recalculate startSelTLHI and endSelTLHI these change startSelTHLHI
+		// We have modified the text style so the end of the selection may have
+		// moved, so it needs to be recalculated. The start will be unaffected.
 		stext.getLines(buffer.g2);
-		int cn;
-//		startSelTLHI.tli = stext.getTLIforCharNo(ss);
-//		cn = ss - startSelTLHI.tli.startCharIndex;
-//		startSelTLHI.thi = startSelTLHI.tli.layout.getNextLeftHit(cn);
-		
 		endSelTLHI.tli = stext.getTLIforCharNo(ee);
-		cn = ee - endSelTLHI.tli.startCharIndex;
-		endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn);
-		// =======================================================================================
-		// need to test for null when at end of line
-		
+		int cn = ee - endSelTLHI.tli.startCharIndex;
+		if(cn == 0) // start of line
+			endSelTLHI.thi = endSelTLHI.tli.layout.getNextLeftHit(1);
+		else 
+			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn-1);
+
+//		{ 
+//			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn);
+//			if(endSelTLHI.thi == null) // if true then at end of line
+//				endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(endSelTLHI.tli.nbrChars - 1);
+//		}
 		bufferInvalid = true;
+	}
+
+	public FEditableTextControl setFont(Font font) {
+		if(font != null && font != localFont && buffer != null){
+			localFont = font;
+			buffer.g2.setFont(localFont);
+			stext.getLines(buffer.g2);
+			ptx = pty = 0;
+			setScrollbarValues(ptx, pty);
+			bufferInvalid = true;
+		}
+		return this;
 	}
 
 	void setScrollbarValues(float sx, float sy){
 		if(vsb != null){
 			float sTextHeight = stext.getTextAreaHeight();
-			ptx = pty = 0;
 			if(sTextHeight < th)
 				vsb.setValue(0.0f, 1.0f);
 			else 
@@ -105,7 +117,7 @@ class FEditableTextControl extends FAbstractControl {
 			if(stext.getMaxLineLength() < tw)
 				hsb.setValue(0,1);
 			else
-				hsb.setValue(sy/sTextWidth, tw/sTextWidth);
+				hsb.setValue(sx/sTextWidth, tw/sTextWidth);
 		}
 	}
 	
@@ -170,13 +182,22 @@ class FEditableTextControl extends FAbstractControl {
 		if(vsb != null)
 			vsb.setLocalColorScheme(localColorScheme);
 	}
-
-	public void setFontNew(Font font){
-		if(font != null && font != localFont){
-			localFont = font;
-			buffer.g2.setFont(localFont);
-		}
-	}
+	
+//	public FEditableTextControl setFontNew(Font font) {
+//		if(font != null && font != localFont && buffer != null){
+//			localFont = font;
+//			buffer.g2.setFont(localFont);
+//			bufferInvalid = true;
+//		}
+//		return this;
+//	}
+//
+////	public void setFontNew(Font font){
+////		if(font != null && font != localFont){
+////			localFont = font;
+////			buffer.g2.setFont(localFont);
+////		}
+////	}
 
 	public boolean hasSelection(){
 		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	

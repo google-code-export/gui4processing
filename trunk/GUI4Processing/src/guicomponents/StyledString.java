@@ -46,7 +46,8 @@ final public class StyledString implements Serializable {
 	transient private LineBreakMeasurer lineMeasurer = null;
 	transient private LinkedList<TextLayoutInfo> linesInfo = new LinkedList<TextLayoutInfo>();
 	transient private Font font = null;
-	
+	transient private Graphics2D g2 = null;
+
 	// The plain text to be styled
 	private String plainText = "";
 	// List of attribute runs to match font
@@ -60,7 +61,7 @@ final public class StyledString implements Serializable {
 	private boolean invalidLayout = true;
 	// Flag to determine whether the actual character string have changed
 	private boolean invalidText = true;
-	
+
 	// Base justification
 	private boolean justify = false;
 	private float justifyRatio = 0.7f;
@@ -71,7 +72,7 @@ final public class StyledString implements Serializable {
 	private float maxLineHeight = 0;
 	private int nbrLines;
 
- 
+
 	/**
 	 * This is assumed to be a single line of text (i.e. no wrap). 
 	 * EOL characters will be stripped from the text before use.
@@ -81,7 +82,7 @@ final public class StyledString implements Serializable {
 	public StyledString(String startText){
 		this(null, startText);	
 	}
-	
+
 	/**
 	 * This is assumed to be a single line of text (i.e. no wrap). 
 	 * EOL characters will be stripped from the text before use.
@@ -100,8 +101,11 @@ final public class StyledString implements Serializable {
 			plainText = " ";
 		styledText = new AttributedString(plainText);
 		applyAttributes();
-		if(g2d != null)
-			linesInfo = getLines(g2d);		
+		invalidText = true;
+		invalidLayout = true;
+
+		//		if(g2d != null)
+		//			linesInfo = getLines(g2d);		
 	}
 
 	/**
@@ -113,7 +117,7 @@ final public class StyledString implements Serializable {
 	public StyledString(String startText, int wrapWidth){
 		this(null, startText, wrapWidth);	
 	}
-	
+
 
 	/**
 	 * Supports multiple lines of text wrapped on word boundaries. <br>
@@ -134,8 +138,10 @@ final public class StyledString implements Serializable {
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();
-		if(g2d != null)
-			linesInfo = getLines(g2d);		
+		invalidText = true;
+		invalidLayout = true;
+		//		if(g2d != null)
+		//			linesInfo = getLines(g2d);		
 	}
 
 	/**
@@ -241,6 +247,7 @@ final public class StyledString implements Serializable {
 		AttributeRun ar = new AttributeRun(type, value, charStart, charEnd);
 		atrun.addLast(ar);
 		applyAttributes();
+		invalidLayout = true;
 	}
 
 	/**
@@ -271,6 +278,11 @@ final public class StyledString implements Serializable {
 		invalidLayout = true;
 	}
 
+	public void clearAllAttributes(){
+		atrun.clear();
+		invalidLayout = true;
+	}
+
 	/**
 	 * 
 	 * @param chars
@@ -296,11 +308,6 @@ final public class StyledString implements Serializable {
 		return true;
 	}
 
-	public void clearAllAttributes(){
-		atrun.clear();
-		invalidLayout = true;
-	}
-	
 	/**
 	 * Remove a number of characters from the string
 	 * 
@@ -340,7 +347,7 @@ final public class StyledString implements Serializable {
 		invalidText = true;
 		return true;
 	}
-	
+
 	public void setFont(Font a_font){
 		if(a_font != null){
 			font = a_font;
@@ -351,16 +358,17 @@ final public class StyledString implements Serializable {
 				baseStyle.add(new AttributeRun(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD));
 			if(font.isItalic())
 				baseStyle.add(new AttributeRun(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE));	
+			invalidText = true;
 		}
 	}
-	
+
 	public void setWrapWidth(int wrapWidth){
 		if(this.wrapWidth != wrapWidth){
 			this.wrapWidth = wrapWidth;
 			invalidLayout = true;
 		}
 	}
-	
+
 	/**
 	 * Get the text layouts for display if the string has changed since last call
 	 * to this method regenerate them.
@@ -377,11 +385,10 @@ final public class StyledString implements Serializable {
 			styledText = new AttributedString(plainText);
 			styledText = insertParagraphMarkers(plainText, styledText);
 			applyAttributes();
+			invalidText = false;
 			invalidLayout = true;
 		}
 		if(invalidLayout){
-			if(plainText.length() == 0)
-				System.out.println("");
 			linesInfo.clear();
 			if(plainText.length() > 0){
 				textHeight = 0;
@@ -411,7 +418,7 @@ final public class StyledString implements Serializable {
 					textHeight += lh;
 					if(advance <= wrapWidth && advance > maxLineLength)
 						maxLineLength = advance;
-					
+
 					// Store layout and line info
 					linesInfo.add(new TextLayoutInfo(nbrLines, layout, charssofar, layout.getCharacterCount(), yposinpara));
 					charssofar += layout.getCharacterCount();
@@ -432,7 +439,7 @@ final public class StyledString implements Serializable {
 	public int getNbrLines(){
 		return nbrLines;
 	}
-	
+
 	/**
 	 * Return the height of the text line(s)
 	 */
@@ -496,7 +503,7 @@ final public class StyledString implements Serializable {
 	public TextLayoutInfo getTLIforLineNo(int ln){
 		return linesInfo.get(ln);
 	}
-	
+
 	/**
 	 * This will always return a layout.
 	 * @param y Must be >= 0
@@ -548,7 +555,7 @@ final public class StyledString implements Serializable {
 			plainText = plainText.replaceAll("\n\n", "\n");
 		}
 	}
-	
+
 	/**
 	 * Create a graphic image character to simulate paragraph breaks
 	 * 
@@ -626,7 +633,7 @@ final public class StyledString implements Serializable {
 	static class TextLayoutHitInfo implements Comparable<TextLayoutHitInfo>{
 		public TextLayoutInfo tli;
 		public TextHitInfo thi;
-		
+
 		/**
 		 * @param tli
 		 * @param thi
@@ -635,7 +642,7 @@ final public class StyledString implements Serializable {
 			this.tli = tli;
 			this.thi = thi;
 		}
-		
+
 		/**
 		 * Copy constructor
 		 * @param tlhi
@@ -649,12 +656,12 @@ final public class StyledString implements Serializable {
 			this.tli = other.tli;
 			this.thi = other.thi;
 		}
-		
+
 		public void setInfo(TextLayoutInfo tli, TextHitInfo thi) {
 			this.tli = tli;
 			this.thi = thi;
 		}
-		
+
 		public int compareTo(TextLayoutHitInfo other) {
 			int layoutComparison = tli.compareTo(other.tli);
 			if(layoutComparison != 0)
@@ -670,14 +677,14 @@ final public class StyledString implements Serializable {
 			// Same layout same char different edge hit SO test on edge hit
 			return (thi.isLeadingEdge() ? -1 : 1);			
 		}
-		
+
 		public String toString(){
 			StringBuilder s = new StringBuilder(tli.toString());
 			s.append("  Hit char = " + thi.getCharIndex());
 			return new String(s);			
 		}
 	}
-	
+
 	/**
 	 * Class to hold information about a text layout. This class helps simplify the
 	 * algorithms needed for multi-line text.
@@ -691,7 +698,7 @@ final public class StyledString implements Serializable {
 		public int startCharIndex;		// Position of the first char in text
 		public int nbrChars;			// Number of chars in this layout
 		public float yPosInPara; 		// Top-left corner of bounds
-		
+
 		/**
 		 * @param startCharIndex
 		 * @param nbrChars
@@ -710,7 +717,7 @@ final public class StyledString implements Serializable {
 				return 0;
 			return (startCharIndex < other.startCharIndex) ? -1 : 1;
 		}
-	
+
 		public String toString(){
 			StringBuilder s = new StringBuilder("{ Line starts @ " + startCharIndex);
 			s.append("  last index " + (startCharIndex+nbrChars+1));

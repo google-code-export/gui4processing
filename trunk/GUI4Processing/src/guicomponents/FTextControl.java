@@ -13,7 +13,7 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 	/** Text value associated with component */
 	protected String ptext = "";
 	/** The styled version of text */
-	protected StyledString stext = null;
+	public StyledString stext = null;
 	
 	protected int textAlignH = GAlign.CENTER, textAlignV =  GAlign.MIDDLE;
 	protected float stX, stY;
@@ -24,7 +24,7 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
-	public FTextControl setTextAlignNew(int align){
+	public FTextControl setTextAlign(int align){
 		if((align & GAlign.HA_VALID) != 0){
 			textAlignH = align & GAlign.HA_VALID;
 			switch(textAlignH){
@@ -58,7 +58,7 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 	 * NEW version for FPanel etc.
 	 * @param ptext
 	 */
-	public FTextControl setTextNew(String text){
+	public FTextControl setText(String text){
 		if(text == null || text.length() == 0 )
 			ptext = " ";
 		else 
@@ -68,10 +68,29 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 		return this;
 	}
 	
-	public FTextControl setFontNew(Font font) {
-		if(font != null)
+	public FTextControl setStyledText(StyledString stext){
+		if(stext != null) {
+			ptext = stext.getPlainText();
+			this.stext = stext;
+			this.stext.setWrapWidth((int)width - TPAD2);
+			bufferInvalid = true;
+		}
+		return this;
+	}
+	
+//	public FTextControl setFontNew(Font font) {
+//		if(font != null)
+//			localFont = font;
+//		if(buffer != null){
+//			buffer.g2.setFont(localFont);
+//			bufferInvalid = true;
+//		}
+//		return this;
+//	}
+
+	public FTextControl setFont(Font font) {
+		if(font != null && font != localFont && buffer != null){
 			localFont = font;
-		if(buffer != null){
 			buffer.g2.setFont(localFont);
 			bufferInvalid = true;
 		}

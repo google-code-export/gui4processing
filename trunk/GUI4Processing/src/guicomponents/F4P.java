@@ -5,9 +5,8 @@ import java.util.HashMap;
 
 import processing.core.PApplet;
 
-public class F4P {
+public class F4P implements GConstants {
 
-	
 	public static int globalColorScheme = FCScheme.CYAN_SCHEME;
 	public static int globalAlpha = 255;
 	public static Font globalFont = new Font("Dialog", Font.PLAIN, 11);

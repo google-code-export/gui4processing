@@ -28,7 +28,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 */
 	protected static FAbstractControl focusIsWith = null;
 
-	protected static IText keyFocusIsWith = null;
+	protected static FAbstractControl keyFocusIsWith = null;
 
 	protected PApplet winApp;
 
