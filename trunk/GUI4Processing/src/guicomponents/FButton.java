@@ -13,10 +13,9 @@ import processing.core.PGraphicsJava2D;
 
 public class FButton extends FTextIconControl {
 
-
+	// Mouse over status
 	protected int status = -1;
 
-	
 	// Only report CLICKED events
 	protected boolean reportAllButtonEvents = false;
 	
@@ -31,13 +30,14 @@ public class FButton extends FTextIconControl {
 				new HSrect(1, 0, 0, width, height)		// control surface
 		};
 		setText(text);
-		opaque = false;
+//		opaque = false;
 		z = Z_SLIPPY;
 		// Now register control with applet
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
-		updateBuffer();
+//		bufferInvalid = true;
+//		updateBuffer();
 	}
 	
 	/**
@@ -152,7 +152,8 @@ public class FButton extends FTextIconControl {
 		winApp.translate(-halfWidth, -halfHeight);
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
-		winApp.tint(-1, alphaLevel);
+		if(alphaLevel < 255)
+			winApp.tint(-1, alphaLevel);
 		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();		
 		winApp.popStyle();

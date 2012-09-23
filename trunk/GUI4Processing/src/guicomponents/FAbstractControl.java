@@ -72,7 +72,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	protected int localColorScheme = F4P.globalColorScheme;
 	protected int[] palette = null;
 	protected Color[] jpalette = null;
-	protected int alphaLevel = 255;
+	protected int alphaLevel = F4P.globalAlpha;
 
 	/** Top left position of component in pixels (relative to parent or absolute if parent is null) 
 	 * (changed form int data type in V3*/
@@ -492,6 +492,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 * @param opaque
 	 */
 	public void setOpaque(boolean opaque){
+		bufferInvalid = (opaque != this.opaque);
 		this.opaque = opaque;
 	}
 

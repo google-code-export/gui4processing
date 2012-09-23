@@ -113,4 +113,7 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 		}
 	}
 	
+	public String toString(){
+		return tag;
+	}
 }

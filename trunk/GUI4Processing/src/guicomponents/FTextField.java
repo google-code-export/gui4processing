@@ -294,7 +294,8 @@ public class FTextField extends FEditableTextControl {
 		winApp.translate(-halfWidth, -halfHeight);
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
-		winApp.tint(-1, alphaLevel);
+		if(alphaLevel < 255)
+			winApp.tint(-1, alphaLevel);
 		winApp.image(buffer, 0, 0);
 
 		// Draw caret if text display area
