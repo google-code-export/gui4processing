@@ -51,12 +51,22 @@ public abstract class FToggleControl extends FTextIconControl {
 		if(selected && group != null)
 			group.makeSelected(this);
 		this.selected = selected;
-		System.out.println("  " + tag + "  buffer invalid? " + bufferInvalid);
+//		System.out.println("  " + tag + "  buffer invalid? " + bufferInvalid);
 	}
 
-	void groupToggleSelection(){
-		
+	protected void hasBeenClicked(){
+		if(group == null){
+			// Independent action e.e. check box
+			selected = !selected;
+			bufferInvalid = true;
+		}
+		else {
+			// Only need to do something if we click on an unselected option
+			if(!selected)
+				setSelected(true);
+		}
 	}
+	
 	public void mouseEvent(MouseEvent event){
 		// If this option does not belong to a group then ignore mouseEvents
 		if(!visible || !enabled || !available) return;
@@ -80,7 +90,7 @@ public abstract class FToggleControl extends FTextIconControl {
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
-				setSelected(true);
+				hasBeenClicked();
 				loseFocus(null);
 				eventType = SELECTED;
 				fireEvent();

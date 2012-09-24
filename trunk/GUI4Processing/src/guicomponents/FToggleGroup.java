@@ -21,7 +21,7 @@ public class FToggleGroup {
 	}
 	
 	void makeSelected(FToggleControl tc){
-		System.out.println(deselected + " << " + selected + " << " + tc);
+//		System.out.println(deselected + " << " + selected + " << " + tc);
 		deselected = selected;
 		if(deselected != null)
 			deselected.setSelected(false);

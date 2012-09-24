@@ -54,7 +54,7 @@ public class FTextField extends FEditableTextControl {
 		}
 		setText(" ");
 		z = Z_STICKY;
-		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FTextField.class });
+		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ FTextField.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
@@ -101,8 +101,8 @@ public class FTextField extends FEditableTextControl {
 			Graphics2D g2d = buffer.g2;
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
 			bufferInvalid = false;
-
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
+			
 			buffer.beginDraw();
 			// Whole control surface if opaque
 			if(opaque)
