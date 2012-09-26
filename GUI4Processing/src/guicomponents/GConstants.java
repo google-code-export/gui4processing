@@ -23,6 +23,7 @@
 
 package guicomponents;
 
+import java.awt.BasicStroke;
 import java.awt.font.TextAttribute;
 
 /**
@@ -105,6 +106,11 @@ public interface GConstants {
 	public static final int SCROLLBAR_HORIZONTAL = 2;
 
 
+	// Slider / numeric display types
+	public static final int INTEGER = 0;
+	public static final int DECIMAL = 1;
+	public static final int EXPONENT = 2;
+
 	// ### Error MessageTypes ###
 	public final static int RUNTIME_ERROR = 	0xf0000000;
 	// Event method handler errors
@@ -180,5 +186,11 @@ public interface GConstants {
 //	public static final TextAttribute JUSTIFICATION = TextAttribute.JUSTIFICATION;
 //	public static final Float JUSTIFICATION_FULL = new Float(1.0f);
 //	public static final Float JUSTIFICATION_NONE = new Float(0.0f);
+
+	
+	public static BasicStroke pen_1_0 = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	public static BasicStroke pen_2_0 = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	public static BasicStroke pen_3_0 = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	public static BasicStroke pen_4_0 = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
 }

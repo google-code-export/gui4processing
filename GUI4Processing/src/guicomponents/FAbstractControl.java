@@ -206,6 +206,14 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	protected HotSpot[] hotspots = null;
 	protected int currSpot = -1;
 
+	/**
+	 * Stop when we are over a hotspot. <br>
+	 * Hotspots should be listed in order of importance.
+	 * 
+	 * @param px
+	 * @param py
+	 * @return
+	 */
 	protected int whichHotSpot(float px, float py){
 		if(hotspots == null) return -1;
 		int hs = -1;
@@ -487,12 +495,14 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	}
 	
 	/**
-	 * Determines wheher to show tha back color or not.
+	 * Determines whether to show the back colour or not.
 	 * Only applies to some components
 	 * @param opaque
 	 */
 	public void setOpaque(boolean opaque){
-		bufferInvalid = (opaque != this.opaque);
+		// Ensure that we dont't go from true >> false otherwise 
+		// it will validate an invalid buffer
+		bufferInvalid |= (opaque != this.opaque);
 		this.opaque = opaque;
 	}
 
@@ -760,6 +770,11 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
 	}
 
+
+	public String toString(){
+		return this.getClass().getSimpleName();
+	}
+	
 	/**
 	 * Comparator used for controlling the order components are drawn
 	 * @author Peter Lager
@@ -775,7 +790,4 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 
 	} // end of comparator class
 
-	public String toString(){
-		return this.getClass().getSimpleName();
-	}
 }

@@ -30,14 +30,11 @@ public class FButton extends FTextIconControl {
 				new HSrect(1, 0, 0, width, height)		// control surface
 		};
 		setText(text);
-//		opaque = false;
 		z = Z_SLIPPY;
 		// Now register control with applet
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
-//		bufferInvalid = true;
-//		updateBuffer();
 	}
 	
 	/**
