@@ -18,18 +18,19 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 		this.id = Math.abs(id);
 	}
 
-	
+	public void adjust(Object ... arguments){}
+
 	public int compareTo(HotSpot spoto) {
 		return id.compareTo(spoto.id);
 	}
-	
+
 	/**
 	 * Hit is based on being inside a rectangle.
 	 * 
 	 * @author Peter Lager
 	 */
 	static class HSrect extends HotSpot {
-		private final float x, y, w, h;
+		public float x, y, w, h;
 
 		public HSrect(int id, float x, float y, float w, float h) {
 			super(id);
@@ -46,6 +47,38 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	}
 
 	/**
+	 * Hit is based on being inside a rectangle.
+	 * 
+	 * @author Peter Lager
+	 */
+	static class HScircle extends HotSpot {
+		public float x, y, r, r2;
+
+		public HScircle(int id, float x, float y, float r) {
+			super(id);
+			this.x = x;
+			this.y = y;
+			this.r = r;
+			this.r2 = r * r;
+		}
+
+		@Override
+		public boolean contains(float px, float py) {
+			return ((px-x)*(px-x) + (py-y)*(py-y) <= r2);
+		}
+
+		public void adjust(Object ... arguments){
+			if(arguments.length > 0)
+				x = Float.valueOf(arguments[0].toString());
+		}
+
+		
+		public String toString(){
+			return "HS circle ["+x+", "+y+"]  radius = "+r;
+		}
+	}
+
+	/**
 	 * Hit depends on the mask image. non-transparent areas are black and
 	 * transparent areas are white. <br>
 	 * 
@@ -58,7 +91,7 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	 */
 	static class HSmask extends HotSpot {
 
-		PImage mask = null;
+		private PImage mask = null;
 
 		protected HSmask(int id, PImage mask) {
 			super(id);
@@ -86,7 +119,7 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	 */
 	static class HSalpha extends HotSpot {
 
-		PImage image = null;
+		private PImage image = null;
 
 		protected HSalpha(int id, PImage image) {
 			super(id);

@@ -20,7 +20,6 @@ public class FScrollbar extends FAbstractControl {
 	private static final int TRACK = 5;
 
 	protected RoundRectangle2D lowCap, highCap;
-	private BasicStroke pen = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
 	protected float value = 0.2f;
 	protected float filler = .5f;
@@ -194,7 +193,7 @@ public class FScrollbar extends FAbstractControl {
 			buffer.fill(palette[TRACK]);
 			buffer.noStroke();
 			buffer.rect(8,3,width-8,height-5);
-			g2d.setStroke(pen);
+			g2d.setStroke(pen_1_0);
 
 			// Draw the low cap
 			buffer.strokeWeight(1.2f);
