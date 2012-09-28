@@ -47,6 +47,39 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	}
 
 	/**
+	 * Hit based on an arc (pie slice)
+	 * 
+	 * @author Peter Lager
+	 *
+	 */
+	static class HSarc extends HotSpot {
+
+		public float x, y, sa, ea, r, r2;
+
+		public HSarc(int id, float x, float y, float r, float sa, float ea) {
+			super(id);
+			this.x = x;
+			this.y = y;
+			this.r = r;
+			this.r2 = r * r;
+			this.sa = sa;
+			this.ea = ea;
+		}
+
+
+		@Override
+		public boolean contains(float px, float py) {
+			if((px-x)*(px-x) + (py-y)*(py-y) > r2)
+				return false;
+			// Now check angle
+			float a = (float) Math.toDegrees(Math.atan2(py-y, px-x));
+			if(a < 0) a += 360;
+			if(a < sa) a += 360;
+			return (a >= sa && a <= ea);
+		}
+	}
+	
+	/**
 	 * Hit is based on being inside a rectangle.
 	 * 
 	 * @author Peter Lager
@@ -67,9 +100,19 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 			return ((px-x)*(px-x) + (py-y)*(py-y) <= r2);
 		}
 
+		/**
+		 * If used the parameters must be in the order x, y then r. <br>
+		 */
 		public void adjust(Object ... arguments){
-			if(arguments.length > 0)
-				x = Float.valueOf(arguments[0].toString());
+			switch(arguments.length){
+			case 3:
+				r = Float.valueOf(arguments[2].toString());
+				r2 = r * r;
+			case 2:
+				y = Float.valueOf(arguments[0].toString());
+			case 1:
+				y = Float.valueOf(arguments[0].toString());
+			}
 		}
 
 		

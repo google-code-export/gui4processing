@@ -4,7 +4,6 @@ import processing.core.PApplet;
 
 public class FValueControl extends FAbstractControl {
 
-//	static private float SLIDER_EPSILON = 0.01f;
 	static protected float HINSET = 2;
 
 	protected float startLimit = 0, endLimit = 1;
@@ -19,9 +18,9 @@ public class FValueControl extends FAbstractControl {
 	
 	protected float epsilon = 0.01f;
 	
-	protected float thumbPos = 0.5f, thumbTarget = 1.0f;
+	protected float valuePos = 0.5f, valueTarget = 0.5f;
 	protected boolean isValueChanging  = false;
-	protected float easing  = 10.0f; // must be >= 1.0
+	protected float easing  = 1.0f; // must be >= 1.0
 	
 
 	protected int nbrTicks = 2;
@@ -38,15 +37,17 @@ public class FValueControl extends FAbstractControl {
 	}
 	
 	public void pre(){
-		if(Math.abs(thumbTarget - thumbPos) > epsilon){
-			thumbPos += (thumbTarget - thumbPos) / easing;
+		if(Math.abs(valueTarget - valuePos) > epsilon){
+			valuePos += (valueTarget - valuePos) / easing;
 			isValueChanging = bufferInvalid = true;
+			fireEvent();
 		}
 		else {
-			thumbPos = thumbTarget;
+			valuePos = valueTarget;
 			if(isValueChanging){
 				bufferInvalid = true;
 				isValueChanging = false;
+				fireEvent();
 			}
 		}
 	}
@@ -104,9 +105,13 @@ public class FValueControl extends FAbstractControl {
 		if(valueType == INTEGER)
 			v = Math.round(v);
 		float p = (v - startLimit) / (endLimit - startLimit);
+		if(p < 0)
+			p = 0;
+		else if(p > 1)
+			p = 1;
 		if(stickToTicks)
 			p = findNearestTickValueTo(p);
-		thumbTarget = p;
+		valueTarget = p;
 	}
 	
 	public void setPrecision(int p){
@@ -157,7 +162,7 @@ public class FValueControl extends FAbstractControl {
 	 * Get the current value as a float
 	 */
 	public float getValueF(){
-		return startLimit + (endLimit - startLimit) * thumbPos;
+		return startLimit + (endLimit - startLimit) * valuePos;
 	}
 
 	/**
@@ -165,7 +170,7 @@ public class FValueControl extends FAbstractControl {
 	 * DECIMAL and EXPONENT value types will be rounded to the nearest integer.
 	 */
 	public float getValueI(){
-		return Math.round(startLimit + (endLimit - startLimit) * thumbPos);
+		return Math.round(startLimit + (endLimit - startLimit) * valuePos);
 	}
 	
 	/**
@@ -217,7 +222,7 @@ public class FValueControl extends FAbstractControl {
 	public void setStickToTicks(boolean stickToTicks) {
 		this.stickToTicks = stickToTicks;
 		if(stickToTicks)
-			thumbTarget = findNearestTickValueTo(thumbPos);
+			valueTarget = findNearestTickValueTo(valuePos);
 	}
 
 	/**
