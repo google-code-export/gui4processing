@@ -15,28 +15,30 @@ import processing.core.PGraphicsJava2D;
 public class FSlider extends FValueControl {
 
 	static protected float TINSET = 4;
+	static protected int THUMB_SPOT = 1;
+	static protected int TRACK_SPOT = 2;
 	
-	protected float trackStart, trackEnd, trackWidth, trackLength;
+	protected float trackStart, trackEnd, trackWidth, trackLength, trackDisplayLength;
 	protected RoundRectangle2D track;
 
-	protected boolean dragable = false;
+//	protected boolean dragable = false;
+	protected int downHotSpot = -1;
 	
 	public FSlider(PApplet theApplet, float p0, float p1, float p2, float p3, float tr_width) {
 		super(theApplet, p0, p1, p2, p3);
 		trackWidth = tr_width;
-		trackStart = HINSET + trackWidth / 2;
-		trackEnd = width - HINSET - trackWidth / 2;
-		trackLength = width - 2 * trackWidth - TINSET;
-//		float trackDisplayLength= trackLength + trackWidth;
-		track = new RoundRectangle2D.Float(-( trackLength + trackWidth)/2, -trackWidth/2, 
-				 trackLength + trackWidth, trackWidth, 
+		trackDisplayLength = width - 2 * TINSET;
+		trackLength = trackDisplayLength - trackWidth;
+		trackStart = (width - trackLength)/2;
+		trackEnd = (width + trackLength)/2;
+		track = new RoundRectangle2D.Float(-trackDisplayLength/2, -trackWidth/2, 
+				trackDisplayLength, trackWidth, 
 				trackWidth, trackWidth );
 
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
-//		buffer.rectMode(PApplet.CENTER);
 		hotspots = new HotSpot[]{
-				new HScircle(1, width/2 + (thumbPos - 0.5f) * trackLength, height/2, trackWidth/2 ),  // thumb
-				new HSrect(2, (width-trackLength)/2, (height-trackWidth)/2, trackLength, trackWidth),		// track
+				new HScircle(THUMB_SPOT, width/2 + (valuePos - 0.5f) * trackLength, height/2, trackWidth/2 ),  // thumb
+				new HSrect(TRACK_SPOT, (width-trackLength)/2, (height-trackWidth)/2, trackLength, trackWidth),		// track
 		};
 		//		opaque = false;
 		z = Z_SLIPPY;
@@ -46,7 +48,6 @@ public class FSlider extends FValueControl {
 		ssEndLimit = new StyledString(buffer.g2, "1.00");
 		ssValue = new StyledString(buffer.g2, "0.50");
 
-		//, , 
 		// Now register control with applet
 		createEventHandler(winApp, "handleSliderEvents", new Class[]{ FValueControl.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
@@ -61,7 +62,6 @@ public class FSlider extends FValueControl {
 		// Normalise ox and oy to the centre of the slider
 		ox -= width/2;
 		ox /= trackLength;
-		oy -= height/2;
 		
 //		System.out.println(currSpot);
 		// currSpot == 1 for text display area
@@ -72,55 +72,61 @@ public class FSlider extends FValueControl {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
+//			System.out.println("P " + focusIsWith);
 			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
-				offset = ox + 0.5f - thumbPos; // normalised
-//				System.out.println("Offset = "+offset);
-				dragable = (currSpot == 1);
-				dragging = false;
+				downHotSpot = currSpot;
+				offset = ox + 0.5f - valuePos; // normalised
 				takeFocus();
-				System.out.println("PRESSED " );
+//				System.out.println("PRESSED " + currSpot );
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == this){
-				System.out.println("CLICKED");
-				thumbTarget = ox + 0.5f;
+//			System.out.println("C " + focusIsWith);
+			if(focusIsWith == this ){
+				valueTarget = ox + 0.5f;
 				if(stickToTicks)
-					thumbTarget = findNearestTickValueTo(thumbTarget);
+					valueTarget = findNearestTickValueTo(valueTarget);
 				dragging = false;
 				loseFocus(null);
+//				System.out.println("CLICKED " + currSpot );
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
+//			System.out.println("R " + focusIsWith);
 			if(focusIsWith == this && dragging){
-				System.out.println("RELEASED " );
-				thumbTarget = (ox - offset) + 0.5f;
-				if(thumbTarget < 0){
-					thumbTarget = 0;
-					offset = 0;
+				if(downHotSpot == THUMB_SPOT){
+					valueTarget = (ox - offset) + 0.5f;
+					if(valueTarget < 0){
+						valueTarget = 0;
+						offset = 0;
+					}
+					else if(valueTarget > 1){
+						valueTarget = 1;
+						offset = 0;
+					}
+					if(stickToTicks)
+						valueTarget = findNearestTickValueTo(valueTarget);
 				}
-				else if(thumbTarget > 1){
-					thumbTarget = 1;
-					offset = 0;
-				}
-				if(stickToTicks)
-					thumbTarget = findNearestTickValueTo(thumbTarget);
 				loseFocus(null);				
-				dragging = false;
+//				System.out.println("RELEASED 1 " );
 			}
+			dragging = false;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this && dragable){
-				dragging = true;			
-				isValueChanging = true;
-				thumbTarget = (ox - offset) + 0.5f;
-				if(thumbTarget < 0){
-					thumbTarget = 0;
-					offset = 0;
-				}
-				else if(thumbTarget > 1){
-					thumbTarget = 1;
-					offset = 0;
+			if(focusIsWith == this){
+//				System.out.println("DRAGGED " );
+				dragging = true;
+				if(downHotSpot == THUMB_SPOT){
+					isValueChanging = true;
+					valueTarget = (ox - offset) + 0.5f;
+					if(valueTarget < 0){
+						valueTarget = 0;
+						offset = 0;
+					}
+					else if(valueTarget > 1){
+						valueTarget = 1;
+						offset = 0;
+					}
 				}
 			}
 			break;
@@ -163,7 +169,7 @@ public class FSlider extends FValueControl {
 		if(bufferInvalid) {
 //			System.out.println("Update FSlider " + System.currentTimeMillis());
 			if(isValueChanging){
-				hotspots[0].adjust(new Float(width/2  + (thumbPos - 0.5f) * trackLength));
+				hotspots[0].adjust(new Float(width/2  + (valuePos - 0.5f) * trackLength));
 //				System.out.println("Thumb at " + hotspots[0]);
 			}
 			
@@ -185,14 +191,13 @@ public class FSlider extends FValueControl {
 			// draw ticks
 			if(showTicks){
 				float delta = 1.0f / (nbrTicks - 1);
-
 				for(int i = 0; i < nbrTicks; i++){
 					int tickx = Math.round((i * delta - 0.5f)*trackLength);
 					buffer.strokeWeight(2);
-					buffer.stroke(palette[13]);
+					buffer.stroke(palette[4]);
 					buffer.line(tickx+1, -trackWidth, tickx+1, trackWidth);
-					buffer.strokeWeight(1.5f);
-					buffer.stroke(palette[2]);
+					buffer.strokeWeight(1.2f);
+					buffer.stroke(palette[1]);
 					buffer.line(tickx, -trackWidth, tickx, trackWidth);
 				}
 			}
@@ -200,7 +205,7 @@ public class FSlider extends FValueControl {
 			g2d.fill(track);
 			buffer.fill(palette[0]);
 			buffer.noStroke();
-			buffer.ellipse((thumbPos - 0.5f) * trackLength, 0, trackWidth, trackWidth);
+			buffer.ellipse((valuePos - 0.5f) * trackLength, 0, trackWidth, trackWidth);
 			g2d.setStroke(pen_2_0);
 			g2d.setColor(jpalette[3]);
 			g2d.draw(track);
@@ -225,18 +230,17 @@ public class FSlider extends FValueControl {
 				ssValue = new StyledString(g2d, getNumericDisplayString(getValueF()));
 				line = ssValue.getLines(g2d).getFirst();
 				float advance = line.layout.getVisibleAdvance();
-				px = (thumbPos - 0.5f) * trackLength - advance /2;
-				if(px < -trackLength/2)
-					px = -trackLength/2;
-				else if(px + advance > trackLength /2){
-					px = trackLength/2 - advance;
+				px = (valuePos - 0.5f) * trackLength - advance /2;
+				if(px < -trackDisplayLength/2)
+					px = -trackDisplayLength/2;
+				else if(px + advance > trackDisplayLength /2){
+					px = trackDisplayLength/2 - advance;
 				}
 				py = -trackWidth - 2 - line.layout.getDescent();
 				line.layout.draw(g2d, px, py );
 
 			}
 			buffer.popMatrix();
-
 			buffer.endDraw();
 		}
 

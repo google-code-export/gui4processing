@@ -623,6 +623,9 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 		return (focusIsWith == null) ? -1 : focusIsWith.z;
 	}
 
+	public static FAbstractControl getFocusObject(){
+		return focusIsWith;
+	}
 	/**
 	 * This will set the rotation of the control to angle overwriting
 	 * any previous rotation set. Then it calculates the centre position
