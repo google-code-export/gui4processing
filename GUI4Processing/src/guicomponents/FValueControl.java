@@ -40,14 +40,14 @@ public class FValueControl extends FAbstractControl {
 		if(Math.abs(valueTarget - valuePos) > epsilon){
 			valuePos += (valueTarget - valuePos) / easing;
 			isValueChanging = bufferInvalid = true;
-			fireEvent();
+			fireEventX(this, isValueChanging);
 		}
 		else {
 			valuePos = valueTarget;
 			if(isValueChanging){
 				bufferInvalid = true;
 				isValueChanging = false;
-				fireEvent();
+				fireEventX(this, isValueChanging);
 			}
 		}
 	}

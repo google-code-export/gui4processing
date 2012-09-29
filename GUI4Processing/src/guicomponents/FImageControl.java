@@ -40,7 +40,7 @@ public class FImageControl extends FAbstractControl {
 		}
 		else {   // no mask then use alpha channel of the OFF image
 			hotspots = new HotSpot[]{
-					new HSalpha(1, bimage[0])
+					new HSalpha(1, 0, 0, bimage[0], PApplet.CORNER)
 			};
 		}
 

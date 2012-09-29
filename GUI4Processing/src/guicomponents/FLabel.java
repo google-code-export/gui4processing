@@ -3,6 +3,7 @@ package guicomponents;
 import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.font.TextLayout;
 import java.util.LinkedList;
 
@@ -15,6 +16,8 @@ public class FLabel extends FTextIconControl {
 		super(theApplet, p0, p1, p2, p3);
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
+		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setFont(localFont);
 		setText(text);

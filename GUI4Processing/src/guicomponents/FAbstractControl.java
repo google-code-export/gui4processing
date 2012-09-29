@@ -393,10 +393,11 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 * be overridden in the child class
 	 * The method 
 	 */
-	protected void fireEvent(){
+	protected void fireEventX(Object... objects){
 		if(eventHandlerMethod != null){
 			try {
-				eventHandlerMethod.invoke(eventHandlerObject, new Object[] { this });
+//				eventHandlerMethod.invoke(eventHandlerObject, new Object[] { this });
+				eventHandlerMethod.invoke(eventHandlerObject, objects);
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, 
 						new Object[] {eventHandlerMethodName, e } );

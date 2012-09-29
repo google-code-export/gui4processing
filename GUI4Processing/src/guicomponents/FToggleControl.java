@@ -4,6 +4,7 @@ import guicomponents.HotSpot.HSrect;
 import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 import java.util.LinkedList;
@@ -22,7 +23,9 @@ public abstract class FToggleControl extends FTextIconControl {
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
-		buffer.g2.setFont(localFont);
+		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+//		buffer.g2.setFont(localFont);
 		opaque = false;
 		hotspots = new HotSpot[]{
 				new HSrect(1, 0, 0, width, height)		// control surface
@@ -93,7 +96,7 @@ public abstract class FToggleControl extends FTextIconControl {
 				hasBeenClicked();
 				loseFocus(null);
 				eventType = SELECTED;
-				fireEvent();
+				fireEventX(this);
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:

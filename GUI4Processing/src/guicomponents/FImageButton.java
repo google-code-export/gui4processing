@@ -121,7 +121,7 @@ public class FImageButton extends FImageControl {
 				takeFocus();
 				eventType = PRESSED;
 				if(reportAllButtonEvents)
-					fireEvent();
+					fireEventX(this);
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
@@ -133,7 +133,7 @@ public class FImageButton extends FImageControl {
 				loseFocus(null);
 				dragging = false;
 				eventType = CLICKED;
-				fireEvent();
+				fireEventX(this);
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:	
@@ -142,12 +142,12 @@ public class FImageButton extends FImageControl {
 			if(focusIsWith == this && dragging){
 				if(currSpot >= 0){
 					eventType = CLICKED;
-					fireEvent();
+					fireEventX(this);
 				}
 				else {
 					if(reportAllButtonEvents){
 						eventType = RELEASED;
-						fireEvent();
+						fireEventX(this);
 					}
 				}
 				dragging = false;

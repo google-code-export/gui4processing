@@ -129,7 +129,7 @@ public class FScrollbar extends FAbstractControl {
 						value = 0;
 					bufferInvalid = true;
 					eventType = CHANGED;
-					fireEvent();
+					fireEventX(this);
 					break;
 				case 2:
 					value += 0.1f;
@@ -137,7 +137,7 @@ public class FScrollbar extends FAbstractControl {
 						value = 1 - filler;
 					bufferInvalid = true;
 					eventType = CHANGED;
-					fireEvent();
+					fireEventX(this);
 					break;
 				}
 				dragging = false;
@@ -163,7 +163,7 @@ public class FScrollbar extends FAbstractControl {
 				bufferInvalid = true;
 				dragging = true;
 				eventType = CHANGED;
-				fireEvent();
+				fireEventX(this);
 			}
 			break;
 		}

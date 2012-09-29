@@ -9,7 +9,9 @@ public class F4P implements GConstants {
 
 	public static int globalColorScheme = FCScheme.CYAN_SCHEME;
 	public static int globalAlpha = 255;
-	public static Font globalFont = new Font("Dialog", Font.PLAIN, 11);
+
+	public static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
+	public static Font numericLabelFont = new Font("Dialog", Font.PLAIN, 10);
 	
 	// Store of info about windows and controls
 	static HashMap<PApplet, WindowInfo> windows = new HashMap<PApplet, WindowInfo>();
