@@ -68,7 +68,7 @@ public class FButton extends FTextIconControl {
 
 		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
 		currSpot = whichHotSpot(ox, oy);
-		// currSpot == 1 for text display area
+
 		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -83,7 +83,7 @@ public class FButton extends FTextIconControl {
 				eventType = PRESSED;
 				bufferInvalid = true;
 				if(reportAllButtonEvents)
-					fireEvent();
+					fireEventX(this);
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
@@ -95,7 +95,7 @@ public class FButton extends FTextIconControl {
 				loseFocus(null);
 				dragging = false;
 				eventType = CLICKED;
-				fireEvent();
+				fireEventX(this);
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:	
@@ -104,12 +104,12 @@ public class FButton extends FTextIconControl {
 			if(focusIsWith == this && dragging){
 				if(currSpot >= 0){
 					eventType = CLICKED;
-					fireEvent();
+					fireEventX(this);
 				}
 				else {
 					if(reportAllButtonEvents){
 						eventType = RELEASED;
-						fireEvent();
+						fireEventX(this);
 					}
 				}
 				dragging = false;

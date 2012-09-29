@@ -99,7 +99,7 @@ public class FKnob extends FValueControl {
 		//		ssValue = new StyledString(buffer.g2, "0.50");
 
 		// Now register control with applet
-		createEventHandler(winApp, "handleSliderEvents", new Class[]{ FValueControl.class });
+		createEventHandler(winApp, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD ;
 		F4P.addControl(this);
 

@@ -1,5 +1,6 @@
 package guicomponents;
 
+import processing.core.PApplet;
 import processing.core.PImage;
 
 /**
@@ -11,7 +12,8 @@ import processing.core.PImage;
 abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 
 	public final Integer id;
-
+	public float x, y;
+	
 	abstract public boolean contains(float px, float py);
 
 	protected HotSpot(int id){
@@ -30,7 +32,7 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	 * @author Peter Lager
 	 */
 	static class HSrect extends HotSpot {
-		public float x, y, w, h;
+		public float w, h;
 
 		public HSrect(int id, float x, float y, float w, float h) {
 			super(id);
@@ -54,7 +56,7 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	 */
 	static class HSarc extends HotSpot {
 
-		public float x, y, sa, ea, r, r2;
+		public float sa, ea, r, r2;
 
 		public HSarc(int id, float x, float y, float r, float sa, float ea) {
 			super(id);
@@ -85,7 +87,7 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	 * @author Peter Lager
 	 */
 	static class HScircle extends HotSpot {
-		public float x, y, r, r2;
+		public float r, r2;
 
 		public HScircle(int id, float x, float y, float r) {
 			super(id);
@@ -109,9 +111,9 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 				r = Float.valueOf(arguments[2].toString());
 				r2 = r * r;
 			case 2:
-				y = Float.valueOf(arguments[0].toString());
+				y = Float.valueOf(arguments[1].toString());
 			case 1:
-				y = Float.valueOf(arguments[0].toString());
+				x = Float.valueOf(arguments[0].toString());
 			}
 		}
 
@@ -163,16 +165,44 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 	static class HSalpha extends HotSpot {
 
 		private PImage image = null;
-
-		protected HSalpha(int id, PImage image) {
+		
+		private int offX, offY;
+		
+		protected HSalpha(int id, float x, float y, PImage image, int imageMode) {
 			super(id);
 			this.image = image;
+			this.x = x;
+			this.y = y;
+			if(imageMode == PApplet.CENTER){
+				offX = -image.width/2;
+				offY = -image.height/2;
+			}
+			else
+				offX = offY = 0;
+		}
+
+		/**
+		 * If used the parameters must be in the order x, y then r. <br>
+		 */
+		public void adjust(Object ... arguments){
+			switch(arguments.length){
+			case 3:
+				image = (PImage) arguments[2];
+			case 2:
+				y = Float.valueOf(arguments[1].toString());
+			case 1:
+				x = Float.valueOf(arguments[0].toString());
+			}
 		}
 
 		@Override
 		public boolean contains(float px, float py) {
 			if(image != null){
-				float alpha = (image.get((int)px, (int)py) >> 24) & 0xff;
+				int imgX = Math.round(px - x) - offX;
+				int imgY = Math.round(py - y) - offY;
+//				if(imgX < 0 || imgX >= image.width || imgY < 0 || imgY >= image.height )
+//					return false;
+				float alpha = (image.get(imgX, imgY) >> 24) & 0xff;
 				if(alpha >  ALPHA_PICK)
 					return true;
 			}

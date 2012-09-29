@@ -284,7 +284,7 @@ public class FPanel extends FTextControl {
 				else
 					eventType = EXPANDED;
 				// fire an event
-				fireEvent();
+				fireEventX(this);
 				// This component does not keep the focus when clicked
 				loseFocus(null);
 //				mdx = mdy = Integer.MAX_VALUE;
@@ -305,7 +305,7 @@ public class FPanel extends FTextControl {
 				constrainPanelPosition();
 				beingDragged = true;
 				eventType = DRAGGED;
-				fireEvent();
+				fireEventX(this);
 				if(!tabOnly){
 					dockX = x;
 					dockY = y;
