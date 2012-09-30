@@ -2,6 +2,12 @@ package guicomponents;
 
 import processing.core.PApplet;
 
+/**
+ * Base class for all slider and knob type controls.
+ * 
+ * @author Peter Lager
+ *
+ */
 public class FValueControl extends FAbstractControl {
 
 	static protected float HINSET = 2;
