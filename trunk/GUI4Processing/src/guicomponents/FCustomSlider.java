@@ -2,7 +2,6 @@ package guicomponents;
 
 import guicomponents.HotSpot.HSalpha;
 import guicomponents.HotSpot.HSrect;
-import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -56,19 +55,14 @@ public class FCustomSlider extends FLinearTrackControl {
 	}
 
 	protected void updateBuffer(){
-		float px, py;
 		if(bufferInvalid) {
-//			System.out.println("Update FSlider " + System.currentTimeMillis() + "    " + isValueChanging);
 			if(isValueChanging)
 				hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);		
-//			hotspots[0].adjust(new Float(width/2  + (valuePos - 0.5f) * trackLength));		
-			TextLayoutInfo line;
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
 			buffer.beginDraw();
 			// Back ground colour
 			buffer.background(buffer.color(255,0));
-
 			// Draw track, thumb, ticks etc.
 			buffer.pushMatrix();
 			buffer.translate(width/2, height/2);
@@ -99,42 +93,12 @@ public class FCustomSlider extends FLinearTrackControl {
 				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
 				break;
 			}
-
-//			if(status == OVER_CONTROL)
-//				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
-//			else // PRESSED or OVER
-//				buffer.image(thumb,(valuePos - 0.5f) * trackLength, 0);
-
+			// Set the font face colour and draw limits
 			g2d.setColor(Color.black);
-			if(showLimits){
-				if(limitsInvalid){
-					ssStartLimit = new StyledString(g2d, getNumericDisplayString(startLimit));
-					ssEndLimit = new StyledString(g2d, getNumericDisplayString(endLimit));
-					limitsInvalid = false;				}
-				line = ssStartLimit.getLines(g2d).getFirst();	
-				px = -(trackLength + trackWidth)/2;
-				py = trackWidth + 2 + line.layout.getAscent();
-				line.layout.draw(g2d, px, py );
-				line = ssEndLimit.getLines(g2d).getFirst();	
-				px = (trackLength + trackWidth)/2 - line.layout.getVisibleAdvance();
-				py = trackWidth + 2 + line.layout.getAscent();
-				line.layout.draw(g2d, px, py );
-			}
-
-			if(showValue){
-				ssValue = new StyledString(g2d, getNumericDisplayString(getValueF()));
-				line = ssValue.getLines(g2d).getFirst();
-				float advance = line.layout.getVisibleAdvance();
-				px = (valuePos - 0.5f) * trackLength - advance /2;
-				if(px < -trackDisplayLength/2)
-					px = -trackDisplayLength/2;
-				else if(px + advance > trackDisplayLength /2){
-					px = trackDisplayLength/2 - advance;
-				}
-				// Make sure it is above thumb and tick marks
-				py = -Math.max(thumb.height/2, trackWidth) - line.layout.getDescent()-2;
-				line.layout.draw(g2d, px, py );
-			}
+			if(showLimits)
+				drawLimits();
+			if(showValue)
+				drawValue();
 			buffer.popMatrix();
 			buffer.endDraw();
 		}
@@ -143,9 +107,7 @@ public class FCustomSlider extends FLinearTrackControl {
 	protected void extendCentreImage(){
 		PImage p = centre;
 		centre = new PImage((int)trackLength, p.height, ARGB);
-
 		p.loadPixels();
-		
 		int index = 0;
 		for(int h = 0; h < centre.height; h++){
 			int v = p.pixels[h];
