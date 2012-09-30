@@ -6,9 +6,10 @@ import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
+import java.awt.font.TextLayout;
 import java.awt.geom.RoundRectangle2D;
-import java.util.LinkedList;
+
+import javax.security.auth.callback.TextOutputCallback;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
@@ -27,17 +28,10 @@ import processing.core.PGraphicsJava2D;
  * @author Peter Lager
  *
  */
-public class FSlider extends FValueControl {
+public class FSlider extends FLinearTrackControl {
 
-	static protected float TINSET = 4;
-	static protected int THUMB_SPOT = 1;
-	static protected int TRACK_SPOT = 2;
-	
-	protected float trackWidth, trackLength, trackDisplayLength;
 	protected RoundRectangle2D track;
 
-	protected int downHotSpot = -1;
-	
 	public FSlider(PApplet theApplet, float p0, float p1, float p2, float p3, float tr_width) {
 		super(theApplet, p0, p1, p2, p3);
 		trackWidth = tr_width;
@@ -46,7 +40,8 @@ public class FSlider extends FValueControl {
 		track = new RoundRectangle2D.Float(-trackDisplayLength/2, -trackWidth/2, 
 				trackDisplayLength, trackWidth, 
 				trackWidth, trackWidth );
-
+		trackOffset = trackWidth + 3;
+		
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
@@ -66,109 +61,6 @@ public class FSlider extends FValueControl {
 		createEventHandler(winApp, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
-	}
-
-	public void mouseEvent(MouseEvent event){
-		if(!visible || !enabled || !available) return;
-
-		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
-		currSpot = whichHotSpot(ox, oy);
-		// Normalise ox and oy to the centre of the slider
-		ox -= width/2;
-		ox /= trackLength;
-		
-//		System.out.println("Custom slider      " + currSpot + "   thumb at " + hotspots[0].x);
-		// currSpot == 1 for text display area
-		if(currSpot >= 0 || focusIsWith == this)
-			cursorIsOver = this;
-		else if(cursorIsOver == this)
-			cursorIsOver = null;
-
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
-//			System.out.println("P " + focusIsWith);
-			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
-				downHotSpot = currSpot;
-				offset = ox + 0.5f - valuePos; // normalised
-				takeFocus();
-//				System.out.println("PRESSED " + currSpot );
-			}
-			break;
-		case MouseEvent.MOUSE_CLICKED:
-//			System.out.println("C " + focusIsWith);
-			if(focusIsWith == this ){
-				valueTarget = ox + 0.5f;
-				if(stickToTicks)
-					valueTarget = findNearestTickValueTo(valueTarget);
-				dragging = false;
-				loseFocus(null);
-//				System.out.println("CLICKED " + currSpot );
-			}
-			break;
-		case MouseEvent.MOUSE_RELEASED:
-			System.out.println("R " + focusIsWith);
-			if(focusIsWith == this && dragging){
-				if(downHotSpot == THUMB_SPOT){
-					valueTarget = (ox - offset) + 0.5f;
-					if(valueTarget < 0){
-						valueTarget = 0;
-						offset = 0;
-					}
-					else if(valueTarget > 1){
-						valueTarget = 1;
-						offset = 0;
-					}
-					if(stickToTicks)
-						valueTarget = findNearestTickValueTo(valueTarget);
-				}
-				loseFocus(null);				
-//				System.out.println("RELEASED 1 " );
-			}
-			dragging = false;
-			break;
-		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this){
-//				System.out.println("DRAGGED " + downHotSpot );
-				dragging = true;
-				if(downHotSpot == THUMB_SPOT){
-					isValueChanging = true;
-					valueTarget = (ox - offset) + 0.5f;
-					if(valueTarget < 0){
-						valueTarget = 0;
-						offset = 0;
-					}
-					else if(valueTarget > 1){
-						valueTarget = 1;
-						offset = 0;
-					}
-				}
-			}
-			break;
-		}
-	}
-	
-	public void draw(){
-		if(!visible) return;
-		// Update buffer if invalid
-		updateBuffer();
-		winApp.pushStyle();
-
-		winApp.pushMatrix();
-		// Perform the rotation
-		winApp.translate(cx, cy);
-		winApp.rotate(rotAngle);
-		winApp.pushMatrix();
-		// Move matrix to line up with top-left corner
-		winApp.translate(-halfWidth, -halfHeight);
-		// Draw buffer
-		winApp.imageMode(PApplet.CORNER);
-		if(alphaLevel < 255)
-			winApp.tint(-1, alphaLevel);
-		winApp.image(buffer, 0, 0);	
-		winApp.popMatrix();
-		winApp.popMatrix();
-
-		winApp.popStyle();
 	}
 
 	protected void updateBuffer(){
@@ -205,29 +97,46 @@ public class FSlider extends FValueControl {
 					buffer.line(tickx, -trackWidth, tickx, trackWidth);
 				}
 			}
+			// Draw track surface
 			g2d.setColor(jpalette[5]);
 			g2d.fill(track);
-			buffer.fill(palette[0]);
+			// Draw thumb
+			switch(status){
+			case OFF_CONTROL:
+				buffer.fill(palette[0]);
+				break;
+			case OVER_CONTROL:
+				buffer.fill(palette[1]);
+				break;
+			case PRESS_CONTROL:
+				buffer.fill(palette[14]);
+				break;
+			}
+
 			buffer.noStroke();
 			buffer.ellipse((valuePos - 0.5f) * trackLength, 0, trackWidth, trackWidth);
+			// Draw track border
 			g2d.setStroke(pen_2_0);
 			g2d.setColor(jpalette[3]);
 			g2d.draw(track);
 
+			// Display values
 			g2d.setColor(jpalette[2]);
 			if(showLimits){
-				if(limitsInvalid){
-					ssStartLimit = new StyledString(g2d, getNumericDisplayString(startLimit));
-					ssEndLimit = new StyledString(g2d, getNumericDisplayString(endLimit));
-					limitsInvalid = false;				}
-				line = ssStartLimit.getLines(g2d).getFirst();	
-				px = -(trackLength + trackWidth)/2;
-				py = trackWidth + 2 + line.layout.getAscent();
-				line.layout.draw(g2d, px, py );
-				line = ssEndLimit.getLines(g2d).getFirst();	
-				px = (trackLength + trackWidth)/2 - line.layout.getVisibleAdvance();
-				py = trackWidth + 2 + line.layout.getAscent();
-				line.layout.draw(g2d, px, py );
+				drawLimits();
+//				if(limitsInvalid){
+//					ssStartLimit = new StyledString(g2d, getNumericDisplayString(startLimit));
+//					ssEndLimit = new StyledString(g2d, getNumericDisplayString(endLimit));
+//					limitsInvalid = false;
+//				}
+//				line = ssStartLimit.getLines(g2d).getFirst();	
+//				px = -(trackLength + trackWidth)/2;
+//				py = trackWidth + 2 + line.layout.getAscent();
+//				line.layout.draw(g2d, px, py );
+//				line = ssEndLimit.getLines(g2d).getFirst();	
+//				px = (trackLength + trackWidth)/2 - line.layout.getVisibleAdvance();
+//				py = trackWidth + 2 + line.layout.getAscent();
+//				line.layout.draw(g2d, px, py );
 			}
 
 			if(showValue){
@@ -241,13 +150,135 @@ public class FSlider extends FValueControl {
 					px = trackDisplayLength/2 - advance;
 				}
 				py = -trackWidth - 2 - line.layout.getDescent();
-				line.layout.draw(g2d, px, py );
+				buffer.pushMatrix();
+				buffer.translate(px, py);
+				buffer.rotate(PI/2);
+				line.layout.draw(g2d, 0, 0 );
+				buffer.popMatrix();
 
 			}
 			buffer.popMatrix();
 			buffer.endDraw();
 		}
 
+	}
+
+	protected void drawValue(){
+		Graphics2D g2d = buffer.g2;
+		float px, py;
+		TextLayout line;
+		ssValue = new StyledString(g2d, getNumericDisplayString(getValueF()));
+		line = ssValue.getLines(g2d).getFirst().layout;
+		switch(textOrientation){
+		case ORIENT_LEFT:
+			line = ssStartLimit.getLines(g2d).getFirst().layout;	
+			px = -trackLength/2 + line.getDescent();
+			py = trackOffset + line.getVisibleAdvance();
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(-PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			line = ssEndLimit.getLines(g2d).getFirst().layout;	
+			px = trackLength/2  + line.getDescent();
+			py = trackOffset + line.getVisibleAdvance();
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(-PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			break;
+		case ORIENT_RIGHT:
+			line = ssStartLimit.getLines(g2d).getFirst().layout;	
+			px = -trackLength/2 - line.getDescent();
+			py = trackOffset;
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			line = ssEndLimit.getLines(g2d).getFirst().layout;	
+			px = trackLength/2  - line.getDescent();
+			py = trackOffset;
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			break;
+		case ORIENT_TRACK:
+			line = ssStartLimit.getLines(g2d).getFirst().layout;	
+			px = -(trackLength + trackWidth)/2;
+			py = trackOffset + line.getVisibleAdvance();
+			line.draw(g2d, px, py );
+			line = ssEndLimit.getLines(g2d).getFirst().layout;	
+			px = (trackLength + trackWidth)/2 - line.getVisibleAdvance();
+			py = trackOffset + line.getAscent();
+			line.draw(g2d, px, py );
+			break;
+		}
+
+		
+	}
+	protected void drawLimits(){
+		Graphics2D g2d = buffer.g2;
+		float px, py;
+		TextLayout line;
+//		float advance, ascent, descent;
+		if(limitsInvalid){
+			ssStartLimit = new StyledString(g2d, getNumericDisplayString(startLimit));
+			ssEndLimit = new StyledString(g2d, getNumericDisplayString(endLimit));
+			limitsInvalid = false;
+		}
+		switch(textOrientation){
+		case ORIENT_LEFT:
+			line = ssStartLimit.getLines(g2d).getFirst().layout;	
+			px = -trackLength/2 + line.getDescent();
+			py = trackOffset + line.getVisibleAdvance();
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(-PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			line = ssEndLimit.getLines(g2d).getFirst().layout;	
+			px = trackLength/2  + line.getDescent();
+			py = trackOffset + line.getVisibleAdvance();
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(-PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			break;
+		case ORIENT_RIGHT:
+			line = ssStartLimit.getLines(g2d).getFirst().layout;	
+			px = -trackLength/2 - line.getDescent();
+			py = trackOffset;
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			line = ssEndLimit.getLines(g2d).getFirst().layout;	
+			px = trackLength/2  - line.getDescent();
+			py = trackOffset;
+			buffer.pushMatrix();
+			buffer.translate(px, py);
+			buffer.rotate(PI/2);
+			line.draw(g2d, 0, 0 );
+			buffer.popMatrix();
+			break;
+		case ORIENT_TRACK:
+			line = ssStartLimit.getLines(g2d).getFirst().layout;	
+			px = -(trackLength + trackWidth)/2;
+			py = trackOffset + line.getVisibleAdvance();
+			line.draw(g2d, px, py );
+			line = ssEndLimit.getLines(g2d).getFirst().layout;	
+			px = (trackLength + trackWidth)/2 - line.getVisibleAdvance();
+			py = trackOffset + line.getAscent();
+			line.draw(g2d, px, py );
+			break;
+		}
+		
 	}
 
 }

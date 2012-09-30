@@ -7,17 +7,12 @@ import guicomponents.StyledString.TextLayoutInfo;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 import processing.core.PImage;
 
-public class FCustomSlider extends FValueControl {
-
-	static protected float TINSET = 4;
-	static protected int THUMB_SPOT = 1;
-	static protected int TRACK_SPOT = 2;
+public class FCustomSlider extends FLinearTrackControl {
 
 	protected PImage leftEnd;
 	protected PImage thumb;
@@ -25,19 +20,16 @@ public class FCustomSlider extends FValueControl {
 	protected PImage rightEnd;
 	protected PImage centre;
 
-	protected float trackWidth, trackLength, trackDisplayLength;
-
-	protected int downHotSpot = -1;
-	// Mouse over status
-	protected int status = -1;
 
 	public FCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String style) {
 		super(theApplet, p0, p1, p2, p3);
 		loadSkin(style);
 		float maxEndLength = Math.max(leftEnd.width, rightEnd.width);
+		maxEndLength = Math.max(maxEndLength, 10); // make sure we have enough for right limits value
 		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
 		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
 		trackWidth = centre.height;
+		trackOffset = Math.max(trackWidth, centre.height/2) + 3;
 		extendCentreImage();
 
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
@@ -61,131 +53,8 @@ public class FCustomSlider extends FValueControl {
 		createEventHandler(winApp, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
-
 	}
 
-	public void mouseEvent(MouseEvent event){
-		if(!visible || !enabled || !available) return;
-
-		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
-		currSpot = whichHotSpot(ox, oy);
-		// Normalise ox and oy to the centre of the slider
-		ox -= width/2;
-		ox /= trackLength;
-		
-//		System.out.println("Custom slider      " + currSpot + "   thumb at " + hotspots[0].x);
-		// currSpot == 1 for text display area
-		
-		if(currSpot >= 0 || focusIsWith == this)
-			cursorIsOver = this;
-		else if(cursorIsOver == this)
-			cursorIsOver = null;
-
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
-//			System.out.println("P " + focusIsWith);
-			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
-				downHotSpot = currSpot;
-				status = OVER_CONTROL;
-				offset = ox + 0.5f - valuePos; // normalised
-				takeFocus();
-//				System.out.println("PRESSED " + currSpot );
-			}
-			break;
-		case MouseEvent.MOUSE_CLICKED:
-//			System.out.println("C " + focusIsWith);
-			if(focusIsWith == this ){
-				valueTarget = ox + 0.5f;
-				if(stickToTicks)
-					valueTarget = findNearestTickValueTo(valueTarget);
-				dragging = false;
-				status = OFF_CONTROL;
-				loseFocus(null);
-//				System.out.println("CLICKED " + currSpot );
-			}
-			break;
-		case MouseEvent.MOUSE_RELEASED:
-//			System.out.println("R " + focusIsWith);
-			if(focusIsWith == this && dragging){
-				if(downHotSpot == THUMB_SPOT){
-					valueTarget = (ox - offset) + 0.5f;
-					if(valueTarget < 0){
-						valueTarget = 0;
-						offset = 0;
-					}
-					else if(valueTarget > 1){
-						valueTarget = 1;
-						offset = 0;
-					}
-					if(stickToTicks)
-						valueTarget = findNearestTickValueTo(valueTarget);
-				}
-				status = OFF_CONTROL;
-				bufferInvalid = true;
-				loseFocus(null);				
-//				System.out.println("RELEASED 1 " );
-			}
-			dragging = false;
-			break;
-		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this){
-//				System.out.println("DRAGGED " + downHotSpot );
-				dragging = true;
-				if(downHotSpot == THUMB_SPOT){
-					isValueChanging = true;
-					valueTarget = (ox - offset) + 0.5f;
-					if(valueTarget < 0){
-						valueTarget = 0;
-						offset = 0;
-					}
-					else if(valueTarget > 1){
-						valueTarget = 1;
-						offset = 0;
-					}
-				}
-			}
-			break;
-		case MouseEvent.MOUSE_MOVED:
-			int currStatus = status;
-			// If dragged state will stay as PRESSED
-			if(currSpot == THUMB_SPOT)
-				status = OVER_CONTROL;
-			else
-				status = OFF_CONTROL;
-			if(currStatus != status)
-				bufferInvalid = true;
-			break;			
-		}
-	}
-
-	
-	public void draw(){
-		if(!visible) return;
-		// Update buffer if invalid
-		updateBuffer();
-		winApp.pushStyle();
-
-		winApp.pushMatrix();
-		// Perform the rotation
-		winApp.translate(cx, cy);
-		winApp.rotate(rotAngle);
-		winApp.pushMatrix();
-		// Move matrix to line up with top-left corner
-		winApp.translate(-halfWidth, -halfHeight);
-		// Draw buffer
-		winApp.imageMode(PApplet.CORNER);
-		if(alphaLevel < 255)
-			winApp.tint(-1, alphaLevel);
-		winApp.image(buffer, 0, 0);	
-		winApp.popMatrix();
-		winApp.popMatrix();
-
-		winApp.popStyle();
-	}
-
-	
-	
-	
 	protected void updateBuffer(){
 		float px, py;
 		if(bufferInvalid) {
@@ -219,11 +88,23 @@ public class FCustomSlider extends FValueControl {
 			buffer.image(centre,0,0);
 			buffer.image(leftEnd, -(trackLength + leftEnd.width)/2, 0);
 			buffer.image(rightEnd, (trackLength + rightEnd.width)/2, 0);
-			if(status == OVER_CONTROL)
-				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
-			else
+			switch(status){
+			case OFF_CONTROL:
 				buffer.image(thumb,(valuePos - 0.5f) * trackLength, 0);
-			
+				break;
+			case OVER_CONTROL:
+				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
+				break;
+			case PRESS_CONTROL:
+				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
+				break;
+			}
+
+//			if(status == OVER_CONTROL)
+//				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
+//			else // PRESSED or OVER
+//				buffer.image(thumb,(valuePos - 0.5f) * trackLength, 0);
+
 			g2d.setColor(Color.black);
 			if(showLimits){
 				if(limitsInvalid){
