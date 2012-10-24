@@ -27,7 +27,6 @@ public class FTextField extends FEditableTextControl {
 	public FTextField(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
 		children = new LinkedList<FAbstractControl>();
-		childLimit = 1;
 		tx = ty = pad;
 		tw = width - 2 * pad;
 		th = height - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 11 : 0);
@@ -55,7 +54,7 @@ public class FTextField extends FEditableTextControl {
 		setText(" ");
 		z = Z_STICKY;
 		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ FTextField.class });
-		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
+		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
 
@@ -159,12 +158,33 @@ public class FTextField extends FEditableTextControl {
 		}
 	}
 
+	public void pre(){
+		if(keepCursorInView){
+			boolean horzScroll = false;
+			if(endTLHI != null){
+				if(caretX < ptx ){ 										// LEFT?
+					ptx--;
+					if(ptx < 0) ptx = 0;
+					horzScroll = true;
+				}
+				else if(caretX > ptx + tw - 4){ 						// RIGHT?
+					ptx++;
+					horzScroll = true;
+				}
+				if(horzScroll && hsb != null)
+					hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
+			}
+			// If we have scrolled invalidate the buffer otherwise forget it
+			if(horzScroll)
+				bufferInvalid = true;			
+		}
+	}
 	
 	/**
 	 * See if the cursor is off screen if so pan the display
 	 * @return
 	 */
-	protected boolean keepCursorInDisplay(){
+	protected boolean keepCursorInDisplayX(){
 		boolean horzScroll = false;
 		if(endTLHI != null){
 			if(caretX < ptx ){ 										// LEFT?
@@ -203,6 +223,7 @@ public class FTextField extends FEditableTextControl {
 		case MouseEvent.MOUSE_PRESSED:
 			if(currSpot == 1){
 				if(focusIsWith != this && z > focusObjectZ()){
+					keepCursorInView = true;
 					takeFocus();
 				}
 				dragging = false;
@@ -222,11 +243,12 @@ public class FTextField extends FEditableTextControl {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
+				keepCursorInView = true;
 				dragging = true;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
-				keepCursorInDisplay();
+//				keepCursorInDisplay();
 			}
 			break;
 		}
@@ -263,18 +285,19 @@ public class FTextField extends FEditableTextControl {
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 		if(focusIsWith == this && endTLHI != null){
+			keepCursorInView = true;
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
 			if(e.getID() == KeyEvent.KEY_PRESSED) {
 				processKeyPressed(e, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
-				while(keepCursorInDisplay());
+//				while(keepCursorInDisplay());
 			}
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
 				processKeyTyped(e, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
-				while(keepCursorInDisplay());
+//				while(keepCursorInDisplay());
 			}
 		}
 	}

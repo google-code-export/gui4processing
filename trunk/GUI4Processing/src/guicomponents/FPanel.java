@@ -83,7 +83,6 @@ public class FPanel extends FTextControl {
 	public FPanel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
 		children = new LinkedList<FAbstractControl>();
-		childLimit = Integer.MAX_VALUE;
 //		if(text == null || text.length() == 0)
 //			text = "Tab Text";
 //		this.text = text;

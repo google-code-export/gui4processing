@@ -29,7 +29,6 @@ public class FTextArea extends FEditableTextControl {
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
 		children = new LinkedList<FAbstractControl>();
-		childLimit = 2;
 		tx = ty = pad;
 		tw = width - 2 * pad - ((sbPolicy & SCROLLBAR_VERTICAL) != 0 ? 18 : 0);
 		th = height - 2 * pad - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 18 : 0);
@@ -63,7 +62,7 @@ public class FTextArea extends FEditableTextControl {
 		setText(" ", (int)tw);
 		z = Z_STICKY;
 		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FTextArea.class });
-		registeredMethods = DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
+		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
 
@@ -168,12 +167,8 @@ public class FTextArea extends FEditableTextControl {
 		}
 	}
 
-
-	/**
-	 * See if the cursor is off screen if so pan the display
-	 * @return
-	 */
-	protected boolean keepCursorInDisplay(){
+	public void pre(){
+		if(keepCursorInView){
 		boolean horzScroll = false, vertScroll = false;
 		if(endTLHI != null){
 			if(caretX < ptx ){ 										// LEFT?
@@ -190,7 +185,7 @@ public class FTextArea extends FEditableTextControl {
 				if(pty < 0) pty = 0;
 				vertScroll = true;
 			}
-			else if(caretY > pty + th  + stext.getMaxLineHeight()){	// DOWN?
+			else if(caretY > pty + th  - 2 *  stext.getMaxLineHeight()){	// DOWN?
 				pty++;
 				vertScroll = true;
 			}
@@ -202,9 +197,46 @@ public class FTextArea extends FEditableTextControl {
 		// If we have scrolled invalidate the buffer otherwise forget it
 		if(horzScroll || vertScroll)
 			bufferInvalid = true;
-		// Let the user know we have scrolled
-		return horzScroll | vertScroll;
+		}
+		
 	}
+
+	/**
+	 * See if the cursor is off screen if so pan the display
+	 * @return
+	 */
+//	protected boolean keepCursorInDisplayX(){
+//		boolean horzScroll = false, vertScroll = false;
+//		if(endTLHI != null){
+//			if(caretX < ptx ){ 										// LEFT?
+//				ptx--;
+//				if(ptx < 0) ptx = 0;
+//				horzScroll = true;
+//			}
+//			else if(caretX > ptx + tw - 2){ 						// RIGHT?
+//				ptx++;
+//				horzScroll = true;
+//			}
+//			if(caretY < pty){										// UP?
+//				pty--;
+//				if(pty < 0) pty = 0;
+//				vertScroll = true;
+//			}
+//			else if(caretY > pty + th  + stext.getMaxLineHeight()){	// DOWN?
+//				pty++;
+//				vertScroll = true;
+//			}
+//			if(horzScroll && hsb != null)
+//				hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
+//			if(vertScroll && vsb != null)
+//				vsb.setValue(pty / (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight()));
+//		}
+//		// If we have scrolled invalidate the buffer otherwise forget it
+//		if(horzScroll || vertScroll)
+//			bufferInvalid = true;
+//		// Let the user know we have scrolled
+//		return horzScroll | vertScroll;
+//	}
 
 	public void draw(){
 		if(!visible) return;
@@ -241,7 +273,7 @@ public class FTextArea extends FEditableTextControl {
 		}
 		
 		winApp.popMatrix();
-
+		// Draw scrollbars
 		if(children != null){
 			for(FAbstractControl c : children)
 				c.draw();
@@ -335,18 +367,19 @@ public class FTextArea extends FEditableTextControl {
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 		if(focusIsWith == this && endTLHI != null){
+			keepCursorInView = true;
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
 			if(e.getID() == KeyEvent.KEY_PRESSED) {
 				processKeyPressed(e, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
-				while(keepCursorInDisplay());
+	//			while(keepCursorInDisplay());
 			}
 			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
 				processKeyTyped(e, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
-				while(keepCursorInDisplay());
+	//			while(keepCursorInDisplay());
 			}
 		}
 	}
@@ -477,6 +510,7 @@ public class FTextArea extends FEditableTextControl {
 		case MouseEvent.MOUSE_PRESSED:
 			if(currSpot == 1){
 				if(focusIsWith != this && z >= focusObjectZ()){
+					keepCursorInView = true;
 					takeFocus();
 				}
 				dragging = false;
@@ -495,11 +529,12 @@ public class FTextArea extends FEditableTextControl {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
+				keepCursorInView = true;
 				dragging = true;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
-				keepCursorInDisplay();
+	//			keepCursorInDisplay();
 			}
 			break;
 		}

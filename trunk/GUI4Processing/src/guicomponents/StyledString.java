@@ -103,9 +103,6 @@ final public class StyledString implements Serializable {
 		applyAttributes();
 		invalidText = true;
 		invalidLayout = true;
-
-		//		if(g2d != null)
-		//			linesInfo = getLines(g2d);		
 	}
 
 	/**
@@ -425,7 +422,6 @@ final public class StyledString implements Serializable {
 					yposinpara += lh;
 					nbrLines++;
 				}
-
 			}
 			invalidLayout = false;
 		}

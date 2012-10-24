@@ -173,7 +173,10 @@ public class FButton extends FTextIconControl {
 				break;
 			default:
 				buffer.background(palette[4]);
-			}			
+			}
+			g2d.setColor(jpalette[3]);
+			g2d.setStroke(pen_1_0);
+			g2d.drawRect(0, 0, (int)width-1, (int)height-1);
 			// Calculate text and icon placement
 			calcAlignment();
 			// If there is an icon draw it
@@ -187,12 +190,12 @@ public class FButton extends FTextIconControl {
 				buffer.translate(0, layout.getAscent());
 				switch(textAlignH){
 				case GAlign.CENTER:
-					tw = layout.getAdvance();
+					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = (wrapWidth - tw)/2;
 					break;
 				case GAlign.RIGHT:
-					tw = layout.getAdvance();
+					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = wrapWidth - tw;
 					break;

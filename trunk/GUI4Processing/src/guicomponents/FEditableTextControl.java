@@ -28,6 +28,8 @@ class FEditableTextControl extends FAbstractControl {
 	// Caret position
 	protected float caretX, caretY;
 	
+	protected boolean keepCursorInView = true;
+	
 	protected GeneralPath gpTextDisplayArea;
 	
 	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
@@ -301,11 +303,13 @@ class FEditableTextControl extends FAbstractControl {
 	}
 	
 	public void hsbEventHandler(FScrollbar scrollbar){
+		keepCursorInView = false;
 		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
 		bufferInvalid = true;
 	}
 
 	public void vsbEventHandler(FScrollbar scrollbar){
+		keepCursorInView = false;
 		pty = vsb.getValue() * (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight());
 		bufferInvalid = true;
 	}

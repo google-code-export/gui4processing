@@ -67,7 +67,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 * Created and used by GPanel and GCombo classes
 	 */
 	protected LinkedList<FAbstractControl> children = null;
-	protected int childLimit = 0;
+//	protected int childLimit = 0;
 
 	protected int localColorScheme = F4P.globalColorScheme;
 	protected int[] palette = null;
@@ -640,14 +640,14 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 * @param angle
 	 */
 	public void addCompoundControl(FAbstractControl c, float x, float y, float angle){
-		if(children == null){
-			System.out.println("This is not a valid container");
-			return;
-		}
-		else if(children.size() >= childLimit){
-			System.out.println("This container is full");
-			return;
-		}
+//		if(children == null){
+//			System.out.println("This is not a valid container");
+//			return;
+//		}
+//		else if(children.size() >= childLimit){
+//			System.out.println("This container is full");
+//			return;
+//		}
 		if(angle == 0)
 			angle = c.rotAngle;
 		// In child control reset the control so it centred about the origin

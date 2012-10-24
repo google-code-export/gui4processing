@@ -2,11 +2,9 @@ package guicomponents;
 
 import guicomponents.HotSpot.HSrect;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.util.Arrays;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
@@ -58,6 +56,13 @@ public class FScrollbar extends FAbstractControl {
 			bufferInvalid = true;
 		}
 	}
+	
+	/**
+	 * Set the position of the thumb. If the value forces the thumb
+	 * past the end of the scrollbar, reduce the filler.
+	 * 
+	 * @param value  must be in the range 0.0 to 1.0
+	 */
 	public void setValue(float value){
 		if(value + filler > 1)
 			filler = 1 - value;
@@ -69,6 +74,12 @@ public class FScrollbar extends FAbstractControl {
 		bufferInvalid = true;
 	}
 
+	/**
+	 * Set the value and the thumb size. Force the value to be valid
+	 * depending on filler.
+	 * @param value must be in the range 0.0 to 1.0
+	 * @param filler must be >0 and <= 1
+	 */
 	public void setValue(float value, float filler){
 		if(value + filler > 1)
 			value = 1 - filler;
@@ -167,7 +178,6 @@ public class FScrollbar extends FAbstractControl {
 			}
 			break;
 		}
-
 	}
 
 	protected boolean isOverThumb(float px, float py){
