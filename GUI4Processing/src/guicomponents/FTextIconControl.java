@@ -26,7 +26,7 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 		else 
 			ptext = ntext;
 		if(iconW == 0)
-			stext = new StyledString(ptext, (int)width - TPAD2);
+			stext = new StyledString(ptext, (int) width - TPAD2);
 		else
 			stext = new StyledString(ptext, (int) width - iconW - TPAD4);
 			

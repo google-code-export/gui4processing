@@ -56,7 +56,6 @@ public class FLabel extends FTextIconControl {
 			// Get the latest lines of text
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
 			bufferInvalid = false;
-
 			buffer.beginDraw();
 			// Back ground colour
 			if(opaque == true)
@@ -76,12 +75,12 @@ public class FLabel extends FTextIconControl {
 				buffer.translate(0, layout.getAscent());
 				switch(textAlignH){
 				case GAlign.CENTER:
-					tw = layout.getAdvance();
+					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = (wrapWidth - tw)/2;
 					break;
 				case GAlign.RIGHT:
-					tw = layout.getAdvance();
+					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = wrapWidth - tw;
 					break;
