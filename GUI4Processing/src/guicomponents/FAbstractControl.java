@@ -238,6 +238,10 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 			palette = FCScheme.getColor(localColorScheme);
 			jpalette = FCScheme.getJavaColor(localColorScheme);
 			bufferInvalid = true;
+			if(children != null){
+				for(FAbstractControl c : children)
+					c.setLocalColorScheme(cs);
+			}
 		}
 	}
 
@@ -640,14 +644,6 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 * @param angle
 	 */
 	public void addCompoundControl(FAbstractControl c, float x, float y, float angle){
-//		if(children == null){
-//			System.out.println("This is not a valid container");
-//			return;
-//		}
-//		else if(children.size() >= childLimit){
-//			System.out.println("This container is full");
-//			return;
-//		}
 		if(angle == 0)
 			angle = c.rotAngle;
 		// In child control reset the control so it centred about the origin
