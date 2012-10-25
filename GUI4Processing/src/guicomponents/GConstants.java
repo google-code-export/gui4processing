@@ -107,14 +107,14 @@ public interface GConstants {
 
 
 	// Slider / numeric display types
-	public static final int INTEGER = 0;
-	public static final int DECIMAL = 1;
-	public static final int EXPONENT = 2;
+	public static final int INTEGER = 		0;
+	public static final int DECIMAL = 		1;
+	public static final int EXPONENT = 		2;
 
 	// Text orientation for sliders
-	public static final int ORIENT_LEFT = -1;
-	public static final int ORIENT_TRACK = 0;
-	public static final int ORIENT_RIGHT = 1;
+	public static final int ORIENT_LEFT = 	-1;
+	public static final int ORIENT_TRACK = 	0;
+	public static final int ORIENT_RIGHT = 	1;
 
 	// ### Error MessageTypes ###
 	public final static int RUNTIME_ERROR = 	0xf0000000;

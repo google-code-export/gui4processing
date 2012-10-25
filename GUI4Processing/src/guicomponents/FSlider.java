@@ -2,14 +2,10 @@ package guicomponents;
 
 import guicomponents.HotSpot.HScircle;
 import guicomponents.HotSpot.HSrect;
-import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.font.TextLayout;
 import java.awt.geom.RoundRectangle2D;
-
-import javax.security.auth.callback.TextOutputCallback;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
