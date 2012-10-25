@@ -20,7 +20,7 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 	 * NEW version for FPanel etc.
 	 * @param ptext
 	 */
-	public FTextControl setText(String ntext){
+	public void setText(String ntext){
 		if(ntext == null || ntext.length() == 0 )
 			ptext = " ";
 		else 
@@ -31,23 +31,21 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 			stext = new StyledString(ptext, (int) width - iconW - TPAD4);
 			
 		bufferInvalid = true;
-		return this;
 	}
 
 	public int getIconAlign(){
 		return iconAlignH | iconAlignV;
 	}
 	
-	public FTextIconControl setIcon(String fname, int nbrImages, int align){
+	public void setIcon(String fname, int nbrImages, int align){
 		PImage iconImage = winApp.loadImage(fname);
 		setIcon(iconImage, nbrImages, align);
-		return this;
 	}
 
-	public FTextIconControl setIcon(PImage icon, int nbrImages, int align){
+	public void setIcon(PImage icon, int nbrImages, int align){
 		bicon = loadImages(icon, nbrImages);
 		if(bicon == null)
-			return this;
+			return;
 		// We have loaded the image so validate alignment
 		if((align & GAlign.HA_VALID) != 0){
 			iconAlignH = align & GAlign.HA_VALID;
@@ -63,7 +61,6 @@ public class FTextIconControl extends FTextControl implements ITextIcon {
 		iconH = bicon[0].height;
 		stext.setWrapWidth((int) width - iconW - TPAD4);
 		bufferInvalid = true;
-		return this;
 	}
 
 	public FTextIconControl setIconAlign(int align){

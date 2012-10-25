@@ -4,7 +4,7 @@ import processing.core.PImage;
 
 public interface IIcon {
 
-	public IText setIcon(PImage icon, int nbrImages, int align);
+	public void setIcon(PImage icon, int nbrImages, int align);
 
 
 }
