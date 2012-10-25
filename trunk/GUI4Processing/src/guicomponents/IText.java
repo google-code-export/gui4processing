@@ -6,10 +6,10 @@ import java.awt.Font;
 
 public interface IText {
 
-	public abstract IText setText(String ntext);
+	public abstract void setText(String ntext);
 
-	public IText setTextAlign(int align);
+	public void setTextAlign(int align);
 	
-	public IText setFont(Font font);
+	public void setFont(Font font);
 	
 }

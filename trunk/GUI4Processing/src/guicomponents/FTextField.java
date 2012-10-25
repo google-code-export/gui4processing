@@ -62,7 +62,8 @@ public class FTextField extends FEditableTextControl {
 		if(text == null || text.length() == 0)
 			text = " ";
 		this.text = text;
-		stext = new StyledString(buffer.g2, text);
+//		stext = new StyledString(buffer.g2, text);
+		stext = new StyledString(text);
 		ptx = 0;
 		setScrollbarValues(0, 0);
 //		if(hsb != null){
@@ -277,7 +278,7 @@ public class FTextField extends FEditableTextControl {
 			if(!shiftDown)				// Not extending selection
 				startTLHI.copyFrom(endTLHI);
 			else
-				bufferInvalid = true;	
+				bufferInvalid = true;
 		}
 		return caretMoved;
 	}

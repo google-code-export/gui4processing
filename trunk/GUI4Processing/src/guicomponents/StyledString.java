@@ -46,7 +46,7 @@ final public class StyledString implements Serializable {
 	transient private LineBreakMeasurer lineMeasurer = null;
 	transient private LinkedList<TextLayoutInfo> linesInfo = new LinkedList<TextLayoutInfo>();
 	transient private Font font = null;
-	transient private Graphics2D g2 = null;
+//	transient private Graphics2D g2 = null;
 
 	// The plain text to be styled
 	private String plainText = "";
@@ -80,19 +80,6 @@ final public class StyledString implements Serializable {
 	 * @param startText
 	 */
 	public StyledString(String startText){
-		this(null, startText);	
-	}
-
-	/**
-	 * This is assumed to be a single line of text (i.e. no wrap). 
-	 * EOL characters will be stripped from the text before use.
-	 * It will use the first parameter to calculate StyledString metrics
-	 * immediately.
-	 * 
-	 * @param g2d
-	 * @param startText
-	 */
-	public StyledString(Graphics2D g2d, String startText){
 		wrapWidth = Integer.MAX_VALUE;
 		spacer = getParagraghSpacer(1); //  safety
 		// Get rid of any EOLs
@@ -104,6 +91,28 @@ final public class StyledString implements Serializable {
 		invalidText = true;
 		invalidLayout = true;
 	}
+
+	/**
+	 * This is assumed to be a single line of text (i.e. no wrap). 
+	 * EOL characters will be stripped from the text before use.
+	 * It will use the first parameter to calculate StyledString metrics
+	 * immediately.
+	 * 
+	 * @param g2d
+	 * @param startText
+	 */
+//	public StyledString(Graphics2D g2d, String startText){
+//		wrapWidth = Integer.MAX_VALUE;
+//		spacer = getParagraghSpacer(1); //  safety
+//		// Get rid of any EOLs
+//		plainText = startText.replaceAll("\n", " ");
+//		if(plainText.length() == 0)
+//			plainText = " ";
+//		styledText = new AttributedString(plainText);
+//		applyAttributes();
+//		invalidText = true;
+//		invalidLayout = true;
+//	}
 
 	/**
 	 * Supports multiple lines of text wrapped on word boundaries.

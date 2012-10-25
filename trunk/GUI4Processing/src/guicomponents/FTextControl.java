@@ -24,7 +24,7 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
-	public FTextControl setTextAlign(int align){
+	public void setTextAlign(int align){
 		if((align & GAlign.HA_VALID) != 0){
 			textAlignH = align & GAlign.HA_VALID;
 			switch(textAlignH){
@@ -38,6 +38,7 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 				break;
 			default:
 				textAlignH = GAlign.CENTER;
+				stext.setJustify(false);
 			}
 		}
 		if((align & GAlign.VA_VALID) != 0){
@@ -46,7 +47,6 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 				textAlignV = GAlign.MIDDLE;
 		}
 		bufferInvalid = true;
-		return this;
 	}
 
 	public int getTextAlign(){
@@ -58,14 +58,13 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 	 * NEW version for FPanel etc.
 	 * @param ptext
 	 */
-	public FTextControl setText(String text){
+	public void setText(String text){
 		if(text == null || text.length() == 0 )
 			ptext = " ";
 		else 
 			ptext = text;
 		stext = new StyledString(ptext, (int)width - TPAD2);
 		bufferInvalid = true;
-		return this;
 	}
 	
 	public FTextControl setStyledText(StyledString stext){
@@ -88,13 +87,12 @@ public class FTextControl extends FAbstractControl implements IText, GAlign {
 //		return this;
 //	}
 
-	public FTextControl setFont(Font font) {
+	public void setFont(Font font) {
 		if(font != null && font != localFont && buffer != null){
 			localFont = font;
 			buffer.g2.setFont(localFont);
 			bufferInvalid = true;
 		}
-		return this;
 	}
 
 	protected void calcAlignment(){

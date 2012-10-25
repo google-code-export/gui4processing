@@ -103,12 +103,11 @@ public class FPanel extends FTextControl {
 		F4P.addControl(this);
 	}
 
-	public FPanel setText(String text){
+	public void setText(String text){
 		super.setText(text);
 		stext.getLines(buffer.g2);
 		tabHeight = (int) (stext.getMaxLineHeight() + 4);
 		tabWidth = (int) (stext.getMaxLineLength() + 8);
-		return this;
 	}
 
 	/**
@@ -122,7 +121,7 @@ public class FPanel extends FTextControl {
 		};
 	}
 
-	public FTextControl setFont(Font font) {
+	public void setFont(Font font) {
 		if(font != null)
 			localFont = font;
 		tabHeight = (int) (1.2f * localFont.getSize() + 2);
@@ -130,7 +129,6 @@ public class FPanel extends FTextControl {
 			buffer.g2.setFont(localFont);
 			bufferInvalid = true;
 		}
-		return this;
 	}
 
 	/**
