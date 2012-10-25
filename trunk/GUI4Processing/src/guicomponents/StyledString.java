@@ -46,7 +46,6 @@ final public class StyledString implements Serializable {
 	transient private LineBreakMeasurer lineMeasurer = null;
 	transient private LinkedList<TextLayoutInfo> linesInfo = new LinkedList<TextLayoutInfo>();
 	transient private Font font = null;
-//	transient private Graphics2D g2 = null;
 
 	// The plain text to be styled
 	private String plainText = "";
@@ -262,7 +261,7 @@ final public class StyledString implements Serializable {
 
 	public void clearAllAttributes(){
 		atrun.clear();
-		invalidLayout = true;
+		invalidText = true;
 	}
 
 	/**
@@ -361,7 +360,7 @@ final public class StyledString implements Serializable {
 	public LinkedList<TextLayoutInfo> getLines(Graphics2D g2d){
 		if(font != g2d.getFont()){
 			setFont(g2d.getFont());
-			invalidText= true;
+			invalidText = true;
 		}
 		if(invalidText && plainText.length() > 0){
 			styledText = new AttributedString(plainText);
