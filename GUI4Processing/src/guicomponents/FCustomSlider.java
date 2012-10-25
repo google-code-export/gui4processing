@@ -2,6 +2,7 @@ package guicomponents;
 
 import guicomponents.HotSpot.HSalpha;
 import guicomponents.HotSpot.HSrect;
+import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -19,7 +20,8 @@ public class FCustomSlider extends FLinearTrackControl {
 	protected PImage rightEnd;
 	protected PImage centre;
 
-
+	protected float trackOffset;
+	
 	public FCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String style) {
 		super(theApplet, p0, p1, p2, p3);
 		loadSkin(style);
@@ -44,9 +46,9 @@ public class FCustomSlider extends FLinearTrackControl {
 		z = Z_SLIPPY;
 
 		epsilon = 0.98f / trackLength;
-		ssStartLimit = new StyledString(buffer.g2, "0.00");
-		ssEndLimit = new StyledString(buffer.g2, "1.00");
-		ssValue = new StyledString(buffer.g2, "0.50");
+		ssStartLimit = new StyledString("0.00");
+		ssEndLimit = new StyledString("1.00");
+		ssValue = new StyledString("0.50");
 
 		// Now register control with applet
 		createEventHandler(winApp, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
@@ -55,14 +57,19 @@ public class FCustomSlider extends FLinearTrackControl {
 	}
 
 	protected void updateBuffer(){
+		float px, py;
 		if(bufferInvalid) {
+//			System.out.println("Update FSlider " + System.currentTimeMillis() + "    " + isValueChanging);
 			if(isValueChanging)
 				hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);		
+//			hotspots[0].adjust(new Float(width/2  + (valuePos - 0.5f) * trackLength));		
+			TextLayoutInfo line;
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
 			buffer.beginDraw();
 			// Back ground colour
 			buffer.background(buffer.color(255,0));
+
 			// Draw track, thumb, ticks etc.
 			buffer.pushMatrix();
 			buffer.translate(width/2, height/2);
@@ -93,21 +100,67 @@ public class FCustomSlider extends FLinearTrackControl {
 				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
 				break;
 			}
-			// Set the font face colour and draw limits
-			g2d.setColor(Color.black);
+
+//			if(status == OVER_CONTROL)
+//				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
+//			else // PRESSED or OVER
+//				buffer.image(thumb,(valuePos - 0.5f) * trackLength, 0);
+
+//			g2d.setColor(Color.black);
+//			if(showLimits){
+//				if(limitsInvalid){
+//					ssStartLimit = new StyledString(getNumericDisplayString(startLimit));
+//					ssEndLimit = new StyledString(getNumericDisplayString(endLimit));
+//					limitsInvalid = false;
+//				}
+//				line = ssStartLimit.getLines(g2d).getFirst();	
+//				px = -(trackLength + trackWidth)/2;
+//				py = trackWidth + 2 + line.layout.getAscent();
+//				line.layout.draw(g2d, px, py );
+//				line = ssEndLimit.getLines(g2d).getFirst();	
+//				px = (trackLength + trackWidth)/2 - line.layout.getVisibleAdvance();
+//				py = trackWidth + 2 + line.layout.getAscent();
+//				line.layout.draw(g2d, px, py );
+//			}
+//
+//			if(showValue){
+//				ssValue = new StyledString(getNumericDisplayString(getValueF()));
+//				line = ssValue.getLines(g2d).getFirst();
+//				float advance = line.layout.getVisibleAdvance();
+//				px = (valuePos - 0.5f) * trackLength - advance /2;
+//				if(px < -trackDisplayLength/2)
+//					px = -trackDisplayLength/2;
+//				else if(px + advance > trackDisplayLength /2){
+//					px = trackDisplayLength/2 - advance;
+//				}
+//				// Make sure it is above thumb and tick marks
+//				py = -Math.max(thumb.height/2, trackWidth) - line.layout.getDescent()-2;
+//				line.layout.draw(g2d, px, py );
+//			}
+			
+			// Display slider limits
+			g2d.setColor(jpalette[2]);
 			if(showLimits)
-				drawLimits();
+				drawLimits(trackWidth + 3);
+			// Display slider value
 			if(showValue)
-				drawValue();
+				drawValue(trackWidth + 3);
+
 			buffer.popMatrix();
 			buffer.endDraw();
 		}
 	}
 	
+	/**
+	 * Stretch the centre image from 1 pixel wide to length
+	 * of track. 
+	 */
 	protected void extendCentreImage(){
 		PImage p = centre;
 		centre = new PImage((int)trackLength, p.height, ARGB);
+
 		p.loadPixels();
+		
 		int index = 0;
 		for(int h = 0; h < centre.height; h++){
 			int v = p.pixels[h];
@@ -122,7 +175,7 @@ public class FCustomSlider extends FLinearTrackControl {
 		rightEnd = winApp.loadImage(style + "/end_right.png");
 		thumb = winApp.loadImage(style +"/handle.png");
 		thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.png");
-		//	will be strcehed before use
+		//	will be stretched before use
 		centre = winApp.loadImage(style + "/centre.png");
 		boolean err = false;
 

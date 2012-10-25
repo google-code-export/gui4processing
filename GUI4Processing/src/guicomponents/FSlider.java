@@ -6,7 +6,10 @@ import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.font.TextLayout;
 import java.awt.geom.RoundRectangle2D;
+
+import javax.security.auth.callback.TextOutputCallback;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
@@ -37,8 +40,7 @@ public class FSlider extends FLinearTrackControl {
 		track = new RoundRectangle2D.Float(-trackDisplayLength/2, -trackWidth/2, 
 				trackDisplayLength, trackWidth, 
 				trackWidth, trackWidth );
-		trackOffset = trackWidth + 3;
-		
+	
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
@@ -50,9 +52,10 @@ public class FSlider extends FLinearTrackControl {
 		z = Z_SLIPPY;
 
 		epsilon = 0.98f / trackLength;
-		ssStartLimit = new StyledString(buffer.g2, "0.00");
-		ssEndLimit = new StyledString(buffer.g2, "1.00");
-		ssValue = new StyledString(buffer.g2, "0.50");
+
+		ssStartLimit = new StyledString("0.00");
+		ssEndLimit = new StyledString("1.00");
+		ssValue = new StyledString("0.50");
 
 		// Now register control with applet
 		createEventHandler(winApp, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
@@ -61,12 +64,9 @@ public class FSlider extends FLinearTrackControl {
 	}
 
 	protected void updateBuffer(){
-		float px, py;
 		if(bufferInvalid) {
-//			System.out.println("Update FSlider " + System.currentTimeMillis() + "    " + isValueChanging);
 			if(isValueChanging)
 				hotspots[0].adjust(new Float(width/2  + (valuePos - 0.5f) * trackLength));		
-			TextLayoutInfo line;
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
 			buffer.beginDraw();
@@ -115,16 +115,19 @@ public class FSlider extends FLinearTrackControl {
 			g2d.setStroke(pen_2_0);
 			g2d.setColor(jpalette[3]);
 			g2d.draw(track);
-			// Display values
+
+			// Display slider limits
 			g2d.setColor(jpalette[2]);
 			if(showLimits)
-				drawLimits();
+				drawLimits(trackWidth + 3);
+			// Display slider value
 			if(showValue)
-				drawValue();
+				drawValue(trackWidth + 3);
+
 			buffer.popMatrix();
 			buffer.endDraw();
 		}
-	}
 
+	}
 
 }
