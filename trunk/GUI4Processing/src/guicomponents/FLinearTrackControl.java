@@ -13,37 +13,41 @@ public class FLinearTrackControl extends FValueControl {
 	static protected int TRACK_SPOT = 2;
 
 	protected float trackWidth, trackLength, trackDisplayLength;
-	protected float trackOffset; // The amount to offset the labels to miss ticks and thumb
-	
+
 	protected int textOrientation = ORIENT_TRACK;
-	
+
 	protected int downHotSpot = -1;
 	// Mouse over status
-	protected int status = OFF_CONTROL;
+	protected int status = -1;
+
 
 	public FLinearTrackControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 	}
-	
-	public void setLabelDir(int direction){
-		switch(direction){
+
+	public void setTextOrientation(int orient){
+		switch(orient){
 		case ORIENT_LEFT:
 		case ORIENT_RIGHT:
 		case ORIENT_TRACK:
-			textOrientation = direction;
-			bufferInvalid = true;
+			textOrientation = orient;
+			break;
+		default:
+			textOrientation = ORIENT_TRACK;
 		}
 	}
-	
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled || !available) return;
 
 		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
 		currSpot = whichHotSpot(ox, oy);
-		// Make ox relative to the centre of the slider
+		// Normalise ox and oy to the centre of the slider
 		ox -= width/2;
 		ox /= trackLength;
-		
+
+		//		System.out.println("Custom slider      " + currSpot + "   thumb at " + hotspots[0].x);
+		// currSpot == 1 for text display area
+
 		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -51,15 +55,22 @@ public class FLinearTrackControl extends FValueControl {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
+			//			System.out.println("P " + focusIsWith);
 			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
 				downHotSpot = currSpot;
 				status = (downHotSpot == THUMB_SPOT) ? PRESS_CONTROL : OFF_CONTROL;
+				//				if(downHotSpot == THUMB_SPOT)
+				//					status = PRESS_CONTROL;
+				//				else
+				//					status = OFF_CONTROL;
 				offset = ox + 0.5f - valuePos; // normalised
 				takeFocus();
 				bufferInvalid = true;
+				System.out.println("PRESSED   state = " + status );
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
+			//			System.out.println("C " + focusIsWith);
 			if(focusIsWith == this ){
 				valueTarget = ox + 0.5f;
 				if(stickToTicks)
@@ -68,9 +79,11 @@ public class FLinearTrackControl extends FValueControl {
 				status = OFF_CONTROL;
 				loseFocus(null);
 				bufferInvalid = true;
+				System.out.println("CLICKED state = " + status  );
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
+			//			System.out.println("R " + focusIsWith);
 			if(focusIsWith == this && dragging){
 				if(downHotSpot == THUMB_SPOT){
 					valueTarget = (ox - offset) + 0.5f;
@@ -88,11 +101,13 @@ public class FLinearTrackControl extends FValueControl {
 				status = OFF_CONTROL;
 				bufferInvalid = true;
 				loseFocus(null);				
+				System.out.println("RELEASED    state = " + status );
 			}
 			dragging = false;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
+				System.out.println("DRAGGED    state = " + status );
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
 					isValueChanging = true;
@@ -117,10 +132,11 @@ public class FLinearTrackControl extends FValueControl {
 				status = OFF_CONTROL;
 			if(currStatus != status)
 				bufferInvalid = true;
+			System.out.println("MOVED   state = " + status);
 			break;			
 		}
 	}
-	
+
 	public void draw(){
 		if(!visible) return;
 		// Update buffer if invalid
@@ -141,20 +157,20 @@ public class FLinearTrackControl extends FValueControl {
 		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();
 		winApp.popMatrix();
+
 		winApp.popStyle();
 	}
 
-	protected void drawValue(){
+	protected void drawValue(float trackOffset){
 		Graphics2D g2d = buffer.g2;
 		float px, py;
 		TextLayout line;
-		ssValue = new StyledString(g2d, getNumericDisplayString(getValueF()));
+		ssValue = new StyledString(getNumericDisplayString(getValueF()));
 		line = ssValue.getLines(g2d).getFirst().layout;
 		float advance = line.getVisibleAdvance();
-		float descent = line.getDescent();
 		switch(textOrientation){
 		case ORIENT_LEFT:
-			px = (valuePos - 0.5f) * trackLength + descent;
+			px = (valuePos - 0.5f) * trackLength + line.getDescent();
 			py = -trackOffset;
 			buffer.pushMatrix();
 			buffer.translate(px, py);
@@ -163,8 +179,8 @@ public class FLinearTrackControl extends FValueControl {
 			buffer.popMatrix();
 			break;
 		case ORIENT_RIGHT:
-			px = (valuePos - 0.5f) * trackLength - descent;
-			py = -trackOffset - advance;
+			px = (valuePos - 0.5f) * trackLength - line.getDescent();
+			py = - trackOffset - advance;
 			buffer.pushMatrix();
 			buffer.translate(px, py);
 			buffer.rotate(PI/2);
@@ -177,19 +193,20 @@ public class FLinearTrackControl extends FValueControl {
 				px = -trackDisplayLength/2;
 			else if(px + advance > trackDisplayLength /2)
 				px = trackDisplayLength/2 - advance;
-			py = -trackWidth - 2 - line.getDescent();
+			py = -trackOffset - line.getDescent();
 			line.draw(g2d, px, py );
+			line = ssEndLimit.getLines(g2d).getFirst().layout;	
 			break;
-		}	
+		}
 	}
-
-	protected void drawLimits(){
+	
+	protected void drawLimits(float trackOffset){
 		Graphics2D g2d = buffer.g2;
 		float px, py;
 		TextLayout line;
 		if(limitsInvalid){
-			ssStartLimit = new StyledString(g2d, getNumericDisplayString(startLimit));
-			ssEndLimit = new StyledString(g2d, getNumericDisplayString(endLimit));
+			ssStartLimit = new StyledString(getNumericDisplayString(startLimit));
+			ssEndLimit = new StyledString(getNumericDisplayString(endLimit));
 			limitsInvalid = false;
 		}
 		switch(textOrientation){
@@ -232,16 +249,14 @@ public class FLinearTrackControl extends FValueControl {
 		case ORIENT_TRACK:
 			line = ssStartLimit.getLines(g2d).getFirst().layout;	
 			px = -(trackLength + trackWidth)/2;
-			py = trackOffset + line.getVisibleAdvance();
+			py = trackOffset + line.getAscent();
 			line.draw(g2d, px, py );
 			line = ssEndLimit.getLines(g2d).getFirst().layout;	
 			px = (trackLength + trackWidth)/2 - line.getVisibleAdvance();
 			py = trackOffset + line.getAscent();
 			line.draw(g2d, px, py );
 			break;
-		}
-		
+		}	
 	}
 
-	
 }
