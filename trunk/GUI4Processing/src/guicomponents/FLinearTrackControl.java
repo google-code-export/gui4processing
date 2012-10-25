@@ -25,6 +25,13 @@ public class FLinearTrackControl extends FValueControl {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Set the text orientation for the display of the limits and value if appropriate. <br>
+	 * Acceptable values are G4P.ORIENT_LEFT, G4P.ORIENT_RIGHT or G4P.ORIENT_TRACK <br>
+	 * If an invalid value is passed the ORIENT_TRACK is used.
+	 * 
+	 * @param orient the orientation of the number labels
+	 */
 	public void setTextOrientation(int orient){
 		switch(orient){
 		case ORIENT_LEFT:
@@ -36,6 +43,7 @@ public class FLinearTrackControl extends FValueControl {
 			textOrientation = ORIENT_TRACK;
 		}
 	}
+	
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled || !available) return;
 
