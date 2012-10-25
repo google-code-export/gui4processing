@@ -1,24 +1,25 @@
 package guicomponents;
 
 import guicomponents.HotSpot.HSrect;
-import guicomponents.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
+import java.awt.font.TextLayout;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 
-public class FCombo extends FTextControl {
+public class FDropList extends FTextControl {
 
 
 	protected String[] items;
 	protected StyledString[] sitems;
 	
 	protected int selItem = 0;
-	protected int overItem = -1;
-	
 	protected int startItem = 0;
+	protected int overItem = 0;
+	
+	
 	protected int dropListMaxSize = 4;
 	protected int dropListActualSize = 4;
 	
@@ -32,7 +33,7 @@ public class FCombo extends FTextControl {
 
 	
 
-	public FCombo(PApplet theApplet, float p0, float p1, float p2, float p3, int dropListMaxSize) {
+	public FDropList(PApplet theApplet, float p0, float p1, float p2, float p3, int dropListMaxSize) {
 		super(theApplet, p0, p1, p2, p3);
 		children = new LinkedList<FAbstractControl>();
 		this.dropListMaxSize = Math.max(dropListMaxSize, 3);
@@ -77,7 +78,15 @@ public class FCombo extends FTextControl {
 			sitems[i] = new StyledString(items[i]);
 		}
 		dropListActualSize = Math.min(items.length, dropListMaxSize);
-		vsb.setVisible(items.length > dropListActualSize);
+		if((items.length > dropListActualSize)){
+			vsb.setVisible(true);
+			float filler = ((float)dropListMaxSize)/items.length;
+			float value = ((float)startItem)/items.length;
+			vsb.setValue(value, filler);
+		}
+		else {
+			vsb.setVisible(false);
+		}
 		
 	}
 	
@@ -97,7 +106,9 @@ public class FCombo extends FTextControl {
 	
 	public void vsbEventHandler(FScrollbar scrollbar){
 		System.out.println("Scrolling");
-		float pos = vsb.getValue();
+		int newStartItem = Math.round(vsb.getValue() * items.length);
+		startItem = newStartItem;
+		System.out.println("Scrollbar value = " + newStartItem);
 		bufferInvalid = true;
 	}
 
@@ -143,11 +154,33 @@ public class FCombo extends FTextControl {
 			buffer.rect(0, 0, width, itemHeight);
 			
 			if(expanded){
-				buffer.fill(palette[LIST_BACK_COLOR]);
+				buffer.fill(palette[ITEM_BACK_COLOR]);
 				buffer.rect(0,itemHeight, width, itemHeight * dropListActualSize);
 			}
 			
+			float px = TPAD, py, yoffset;
+			TextLayout line;
+			// Get selected text
 			StyledString ss = sitems[selItem];
+			line = ss.getLines(g2d).getFirst().layout;
+			py = yoffset = (itemHeight + line.getAscent() - line.getDescent())/2;
+		
+			g2d.setColor(jpalette[FORE_COLOR]);
+			line.draw(g2d, px, py);
+			
+			if(expanded){
+				g2d.setColor(jpalette[ITEM_FORE_COLOR]);
+				for(int i = 0; i < dropListActualSize; i++){
+					py += itemHeight;
+					if(selItem == startItem + i)
+						g2d.setColor(jpalette[OVER_ITEM_FORE_COLOR]);
+					else
+						g2d.setColor(jpalette[ITEM_FORE_COLOR]);
+
+					line = sitems[startItem + i].getLines(g2d).getFirst().layout;				
+					line.draw(g2d, px, py);
+				}
+			}
 //			TextLayoutInfo tli = ss.getLines(g2d);
 			
 //			float textYadjust = 
@@ -159,9 +192,9 @@ public class FCombo extends FTextControl {
 	
 	protected static final int FORE_COLOR = 2;
 	protected static final int BACK_COLOR = 5;
-	protected static final int LIST_BACK_COLOR = 6;
 	protected static final int ITEM_FORE_COLOR = 3;
-	protected static final int ITEM_BACK_COLOR = 5;
+	protected static final int ITEM_BACK_COLOR = 6;
+	protected static final int OVER_ITEM_FORE_COLOR = 15;
 	
 
 }

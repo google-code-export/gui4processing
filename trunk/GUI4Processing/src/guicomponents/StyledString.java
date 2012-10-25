@@ -93,28 +93,6 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
-	 * This is assumed to be a single line of text (i.e. no wrap). 
-	 * EOL characters will be stripped from the text before use.
-	 * It will use the first parameter to calculate StyledString metrics
-	 * immediately.
-	 * 
-	 * @param g2d
-	 * @param startText
-	 */
-//	public StyledString(Graphics2D g2d, String startText){
-//		wrapWidth = Integer.MAX_VALUE;
-//		spacer = getParagraghSpacer(1); //  safety
-//		// Get rid of any EOLs
-//		plainText = startText.replaceAll("\n", " ");
-//		if(plainText.length() == 0)
-//			plainText = " ";
-//		styledText = new AttributedString(plainText);
-//		applyAttributes();
-//		invalidText = true;
-//		invalidLayout = true;
-//	}
-
-	/**
 	 * Supports multiple lines of text wrapped on word boundaries.
 	 * 
 	 * @param startText
@@ -146,8 +124,6 @@ final public class StyledString implements Serializable {
 		applyAttributes();
 		invalidText = true;
 		invalidLayout = true;
-		//		if(g2d != null)
-		//			linesInfo = getLines(g2d);		
 	}
 
 	/**
