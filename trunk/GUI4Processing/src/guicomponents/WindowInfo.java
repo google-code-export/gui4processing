@@ -38,19 +38,24 @@ public class WindowInfo implements PConstants, GConstants {
 			orgMatrix = papplet.getMatrix((PMatrix3D)null);
 		else
 			orgMatrix = papplet.getMatrix((PMatrix2D)null);
-		registerMethodsFor151();
+		registerMethodsForWindow();
 	}
 
-	public void registerMethodsFor151(){
+	/*
+	 * This registers this applet for V1.5.1 and V2.0
+	 */
+	public void registerMethodsForWindow(){
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 		app.registerPre(this);
 		app.registerKeyEvent(this);
 		haveRegisteredMethodsFor151 = true;
-
 	}
 
-	public void unRegisterMethodsFor151(){
+	/*
+	 * This registers this applet for V1.5.1 and V2.0
+	 */
+	public void unRegisterMethodsForWindow(){
 		if(haveRegisteredMethodsFor151){
 			app.unregisterDraw(this);
 			app.unregisterMouseEvent(this);
@@ -60,6 +65,10 @@ public class WindowInfo implements PConstants, GConstants {
 		}
 	}
 
+	public void releaseControls() {
+		windowControls.clear();
+	}
+	
 	public void draw(){
 		for(FAbstractControl control : windowControls){
 			if( (control.registeredMethods & DRAW_METHOD) == DRAW_METHOD && control.parent == null)
@@ -93,7 +102,7 @@ public class WindowInfo implements PConstants, GConstants {
 	 * to disposing of a window.
 	 */
 	public void dispose(){
-		unRegisterMethodsFor151();
+		unRegisterMethodsForWindow();
 		windowControls.clear();
 	}
 
@@ -113,12 +122,10 @@ public class WindowInfo implements PConstants, GConstants {
 			control.setLocalColorScheme(cs);
 	}
 
-
 	public void setGlobalAlpha(int alpha){
 		for(FAbstractControl control : windowControls)
 			control.setAlpha(alpha);
 	}
-
 
 
 

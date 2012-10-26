@@ -25,7 +25,6 @@ public abstract class FToggleControl extends FTextIconControl {
 		buffer.rectMode(PApplet.CORNER);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-//		buffer.g2.setFont(localFont);
 		opaque = false;
 		hotspots = new HotSpot[]{
 				new HSrect(1, 0, 0, width, height)		// control surface
@@ -40,6 +39,15 @@ public abstract class FToggleControl extends FTextIconControl {
 	}	
 	
 	/**
+	 * Get the toggle group. If null is returned then it is not part 
+	 * of the group.
+	 * @return
+	 */
+	public FToggleGroup getToggleGroup(){
+		return group;
+	}
+	
+	/**
 	 * @return the selected
 	 */
 	public boolean isSelected() {
@@ -50,16 +58,23 @@ public abstract class FToggleControl extends FTextIconControl {
 	 * @param selected the selected to set
 	 */
 	public void setSelected(boolean selected) {
-		bufferInvalid = (this.selected != selected);
+		if(this.selected != selected)
+			bufferInvalid = true;
 		if(selected && group != null)
 			group.makeSelected(this);
 		this.selected = selected;
-//		System.out.println("  " + tag + "  buffer invalid? " + bufferInvalid);
 	}
 
+	public void setSelected() {
+		setSelected(true);
+	}
+
+	/*
+	 * Only executed when clicked in the GUI.
+	 */
 	protected void hasBeenClicked(){
 		if(group == null){
-			// Independent action e.e. check box
+			// Independent action e.g. check box
 			selected = !selected;
 			bufferInvalid = true;
 		}

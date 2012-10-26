@@ -47,7 +47,7 @@ public class FTextField extends FEditableTextControl {
 		};
 		if((sbPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new FScrollbar(theApplet, 0, 0, tw, 10);
-			addCompoundControl(hsb, tx, ty + th + 2, 0);
+			addControl(hsb, tx, ty + th + 2, 0);
 			hsb.addEventHandler(this, "hsbEventHandler");
 			hsb.setAutoHide(autoHide);
 		}

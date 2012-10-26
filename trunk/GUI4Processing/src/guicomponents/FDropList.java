@@ -1,3 +1,26 @@
+/*
+  Part of the GUI for Processing library 
+  	http://www.lagers.org.uk/g4p/index.html
+	http://gui4processing.googlecode.com/svn/trunk/
+
+  Copyright (c) 2008-12 Peter Lager
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
+
 package guicomponents;
 
 import guicomponents.HotSpot.HSrect;
@@ -52,14 +75,14 @@ public class FDropList extends FTextControl {
 		
 		vsb = new FScrollbar(theApplet, 0, 0, height - itemHeight, 10);
 		vsb.setAutoHide(false);
-		addCompoundControl(vsb, width, itemHeight + 1, PI/2);
+		addControl(vsb, width, itemHeight + 1, PI/2);
 		vsb.addEventHandler(this, "scrollbarEventHandler");
 		vsb.setAutoHide(true);
 		vsb.setVisible(false);
 		
 		buttonWidth = 10;
 		showList = new FButton(theApplet, 0, 0, buttonWidth, itemHeight, ":");
-		addCompoundControl(showList, width - buttonWidth, 0, 0);
+		addControl(showList, width - buttonWidth, 0, 0);
 		showList.addEventHandler(this, "buttonEventHandler");
 		
 		buffer.g2.setFont(localFont);
@@ -165,7 +188,8 @@ public class FDropList extends FTextControl {
 		case MouseEvent.MOUSE_MOVED:
 			if(focusIsWith == this){
 				if(currSpot == 1)
-					currOverItem = startItem + Math.round(oy / itemHeight) - 1; 
+					currOverItem = startItem + (int)(oy / itemHeight)-1; 
+				//currOverItem = startItem + Math.round(oy / itemHeight) - 1; 
 				else
 					currOverItem = -1;
 				// Only invalidate the buffer if the over item has changed
