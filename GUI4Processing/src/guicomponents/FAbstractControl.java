@@ -1,3 +1,26 @@
+/*
+  Part of the GUI for Processing library 
+  	http://www.lagers.org.uk/g4p/index.html
+	http://gui4processing.googlecode.com/svn/trunk/
+
+  Copyright (c) 2008-12 Peter Lager
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General
+  Public License along with this library; if not, write to the
+  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+  Boston, MA  02111-1307  USA
+ */
+
 package guicomponents;
 
 import java.awt.Color;
@@ -16,23 +39,29 @@ import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 import processing.core.PImage;
 
-public class FAbstractControl implements IControl, PConstants, GConstants {
+/**
+ * CLASS FOR INTERNAL USE ONLY
+ * 
+ * Abstract base class for all GUI controls
+ * 
+ * @author Peter Lager
+ *
+ */
+abstract class FAbstractControl implements IControl, PConstants, GConstants {
 
-	/**
+	/*
 	 * INTERNAL USE ONLY
 	 * This holds a reference to the GComponent that currently has the
 	 * focus.
 	 * A component loses focus when another component takes focus with the
 	 * takeFocus() method. The takeFocus method should use focusIsWith.loseFocus()
-	 * before setting its value to the new component 
+	 * before setting its value to the new component. 
 	 */
 	protected static FAbstractControl focusIsWith = null;
-
 	protected static FAbstractControl keyFocusIsWith = null;
 
-	protected PApplet winApp;
 
-	/**
+	/*
 	 * INTERNAL USE ONLY
 	 * Keeps track of the component the mouse is over so the mouse
 	 * cursor can be changed if we wish.
@@ -55,6 +84,10 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	// e.g. GButton
 	protected final static int Z_SLIPPY = 24;
 
+	
+	// Reference to the PApplet object that owns this control
+	protected PApplet winApp;
+
 	// Set to true when mouse is dragging : set false on button released
 	protected boolean dragging = false;
 
@@ -62,12 +95,11 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	/** Link to the parent panel (if null then it is on main window) */
 	protected FAbstractControl parent = null;
 
-	/**
+	/*
 	 * A list of child GComponents added to this component
 	 * Created and used by GPanel and GCombo classes
 	 */
 	protected LinkedList<FAbstractControl> children = null;
-//	protected int childLimit = 0;
 
 	protected int localColorScheme = F4P.globalColorScheme;
 	protected int[] palette = null;
@@ -100,28 +132,30 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	public int eventType = 0;
 
 
-	/** 
+	/*
 	 * Position over control corrected for any transformation. <br>
-	 * [0,0] is top left corner
+	 * [0,0] is top left corner of the control.
+	 * This is used to determine the mouse position over any 
+	 * particular control or part of a control.
 	 */
 	protected float ox, oy;
 
-	/** Used to when components overlap */
-	public int z = 0;
+	/* Used to when components overlap */
+	protected int z = 0;
 
-	/** Simple tag that can be used by the user */
+	/* Simple tag that can be used by the user */
 	public String tag;
 
-	/** Allows user to specify a number for this component */
+	/* Allows user to specify a number for this component */
 	public int tagNo;
 
-	/** Is the component visible or not */
+	/* Is the component visible or not */
 	protected boolean visible = true;
 
-	/** Is the component enabled to generate mouse and keyboard events */
+	/* Is the component enabled to generate mouse and keyboard events */
 	protected boolean enabled = true;
 
-	/** 
+	/* 
 	 * Is the component available for mouse and keyboard events.
 	 * This is on;y used internally to prevent user input being
 	 * processed during animation. new to V3
@@ -129,16 +163,16 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 */
 	protected boolean available = true;
 
-	/** The object to handle the event */
+	/* The object to handle the event */
 	protected Object eventHandlerObject = null;
-	/** The method in eventHandlerObject to execute */
+	/* The method in eventHandlerObject to execute */
 	protected Method eventHandlerMethod = null;
-	/** the name of the method to handle the event */ 
+	/* the name of the method to handle the event */ 
 	protected String eventHandlerMethodName;
 
 	int registeredMethods = 0;
 
-	/**
+	/*
 	 * Specify the PImage that contains the image{s} to be used for the button's state. <br>
 	 * This image may be a composite of 1 to 3 images tiled horizontally. 
 	 * @param img
@@ -161,8 +195,16 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 		return bimage;
 	}
 
-	
+	/*
+	 * Base constructor for ALL control ctors. It will set the position and size of the
+	 * control based on controlMode. <br>
+	 * Since this is an abstract class it is not possible to use it directly
+	 * 
+	 */
 	public FAbstractControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		// The first applet must be the sketchApplet
+		if(F4P.sketchApplet == null)
+			F4P.sketchApplet = theApplet;
 		winApp = theApplet;
 		FCScheme.makeColorSchemes(winApp);
 		setPositionAndSize(p0, p1, p2, p3);
@@ -172,12 +214,12 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 		jpalette = FCScheme.getJavaColor(localColorScheme);
 	}
 
-	/**
+	/*
 	 * Calculate all the variables that determine the position and size of the
 	 * control. This depends on <pre>control_mode</pre>
 	 * 
 	 */
-	protected void setPositionAndSize(float n0, float n1, float n2, float n3){
+	private void setPositionAndSize(float n0, float n1, float n2, float n3){
 		switch(control_mode){
 		case PApplet.CORNER:	// (x,y,w,h)
 			x = n0; y = n1; width = n2; height = n3;
@@ -197,8 +239,10 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 		}
 	}
 
-	// Enable polymorphism for 1.5.1
-	public void draw(){ }
+	/*
+	 * These are empty methods to enable polymorphism
+	 */
+	public void draw(){}
 	public void mouseEvent(MouseEvent event){ }
 	public void keyEvent(KeyEvent e) { }
 	public void pre(){ }
@@ -247,7 +291,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 
 	/**
 	 * Set the transparency of the component and make it unavailable to
-	 * mouse and keyboard events if blow a reasonable threshold.
+	 * mouse and keyboard events if blow the threshold.
 	 * 
 	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
 	 */
@@ -332,6 +376,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 */
 	@SuppressWarnings("rawtypes")
 	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
+		handlerObj = F4P.sketchApplet;
 		try{
 			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, parameters );
 			eventHandlerObject = handlerObj;
@@ -643,7 +688,7 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 	 * @param y
 	 * @param angle
 	 */
-	public void addCompoundControl(FAbstractControl c, float x, float y, float angle){
+	public void addControl(FAbstractControl c, float x, float y, float angle){
 		if(angle == 0)
 			angle = c.rotAngle;
 		// In child control reset the control so it centred about the origin
@@ -679,6 +724,10 @@ public class FAbstractControl implements IControl, PConstants, GConstants {
 			children = new LinkedList<FAbstractControl>();
 		children.addLast(c);
 		Collections.sort(children, new Z_Order());
+	}
+
+	public void addControl(FAbstractControl c, float x, float y){
+		addControl(c, x, y, 0);
 	}
 
 	/**

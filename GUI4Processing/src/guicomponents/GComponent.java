@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-09 Peter Lager
+  Copyright (c) 2008-12 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,6 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +38,6 @@ import java.util.LinkedList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
-import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 import processing.core.PImage;
 
