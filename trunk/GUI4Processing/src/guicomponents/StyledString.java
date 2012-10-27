@@ -44,6 +44,7 @@ import java.io.Serializable;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.text.AttributedString;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -107,8 +108,6 @@ final public class StyledString implements Serializable {
 		spacer = getParagraghSpacer(1); //  safety
 		// Get rid of any EOLs
 		plainText = startText.replaceAll("\n", " ");
-		if(plainText.length() == 0)
-			plainText = " ";
 		styledText = new AttributedString(plainText);
 		applyAttributes();
 		invalidText = true;
@@ -116,32 +115,16 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
-	 * Supports multiple lines of text wrapped on word boundaries.
-	 * 
-	 * @param startText
-	 * @param wrapWidth the maximum size after which the text is 
-	 */
-	public StyledString(String startText, int wrapWidth){
-		this(null, startText, wrapWidth);	
-	}
-
-
-	/**
 	 * Supports multiple lines of text wrapped on word boundaries. <br>
-	 * It will use the first parameter to calculate StyledString metrics
-	 * immediately.
 	 * 
-	 * @param g2d
 	 * @param startText
 	 * @param wrapWidth
 	 */
-	public StyledString(Graphics2D g2d, String startText, int wrapWidth){
+	public StyledString(String startText, int wrapWidth){
 		this.wrapWidth = (wrapWidth > 0 && wrapWidth < Integer.MAX_VALUE) ? wrapWidth : Integer.MAX_VALUE;
 		spacer = getParagraghSpacer(this.wrapWidth);
 		plainText = startText;
-		removeBlankLines(); // just in case we merge two eol characters
-		if(plainText.length() == 0)
-			plainText = " ";
+		removeDoubleSpacing(); // just in case we merge two eol characters
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();
@@ -272,13 +255,28 @@ final public class StyledString implements Serializable {
 			for(AttributeRun bsar : baseStyle){
 				styledText.addAttribute(bsar.atype, bsar.value);
 			}
-			for(AttributeRun ar : atrun){
+			Iterator<AttributeRun> iter = atrun.iterator();
+			AttributeRun ar;
+			while(iter.hasNext()){
+				ar = iter.next();
 				if(ar.end == Integer.MAX_VALUE)
 					styledText.addAttribute(ar.atype, ar.value);
 				else {
+					try {
 					styledText.addAttribute(ar.atype, ar.value, ar.start, ar.end);
+					}
+					catch(Exception excp){
+						iter.remove();
+					}
 				}
 			}
+//			for(AttributeRun ar : atrun){
+//				if(ar.end == Integer.MAX_VALUE)
+//					styledText.addAttribute(ar.atype, ar.value);
+//				else {
+//					styledText.addAttribute(ar.atype, ar.value, ar.start, ar.end);
+//				}
+//			}
 		}
 		invalidLayout = true;
 	}
@@ -299,7 +297,7 @@ final public class StyledString implements Serializable {
 			plainText = chars;
 		else
 			plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
-		removeBlankLines(); // just in case we merge two eol characters
+		removeDoubleSpacing(); // just in case we merge two eol characters
 		for(AttributeRun ar : atrun){
 			if(ar.end < Integer.MAX_VALUE){
 				if(ar.end >= insertPos){
@@ -327,10 +325,10 @@ final public class StyledString implements Serializable {
 			plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
 		else
 			plainText = plainText.substring(fromPos + nbrToRemove);
-		removeBlankLines(); // just in case we merge two eol characters
+		removeDoubleSpacing(); // just in case we merge two eol characters
 		if(plainText.length() == 0){
 			atrun.clear();
-			plainText = " ";
+//			plainText = "";
 			styledText = null;
 		}
 		else {
@@ -386,7 +384,7 @@ final public class StyledString implements Serializable {
 			setFont(g2d.getFont());
 			invalidText = true;
 		}
-		if(invalidText && plainText.length() > 0){
+		if(invalidText){
 			styledText = new AttributedString(plainText);
 			styledText = insertParagraphMarkers(plainText, styledText);
 			applyAttributes();
@@ -553,7 +551,7 @@ final public class StyledString implements Serializable {
 	 * become EOL/EOL not the single EOL required.
 	 * 
 	 */
-	void removeBlankLines(){
+	void removeDoubleSpacing(){
 		while(plainText.indexOf("\n\n") >= 0){
 			invalidText = true;
 			plainText = plainText.replaceAll("\n\n", "\n");

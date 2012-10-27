@@ -82,7 +82,7 @@ public class FTextArea extends FEditableTextControl {
 			vsb.addEventHandler(this, "vsbEventHandler");
 			vsb.setAutoHide(autoHide);
 		}
-		setText(" ", (int)tw);
+		setText("", (int)tw);
 		z = Z_STICKY;
 		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FTextArea.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
@@ -98,14 +98,25 @@ public class FTextArea extends FEditableTextControl {
 		return this;
 	}
 
+	public void setDefaultText(String dtext){
+		if(dtext == null || dtext.length() == 0)
+			defaultText = null;
+		else {
+			defaultText = new StyledString(dtext, (int)tw);
+			defaultText.addAttribute(F4P.POSTURE, F4P.POSTURE_OBLIQUE);
+		}
+		bufferInvalid = true;
+	}
+
 	/**
 	 * Set the text to display and adjust any scrollbars
 	 * @param text
 	 * @param wrapWidth
 	 */
 	public void setText(String text, int wrapWidth){
+		startTLHI = null; endTLHI = null;
 		this.text = text;
-		stext = new StyledString(buffer.g2, text, wrapWidth);
+		stext = new StyledString(text, wrapWidth);
 		stext.getLines(buffer.g2);
 		float sTextHeight;
 		if(vsb != null){
@@ -132,7 +143,10 @@ public class FTextArea extends FEditableTextControl {
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
 			// Get the latest lines of text
-			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
+			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);
+			if(lines.isEmpty() && defaultText != null)
+				lines = defaultText.getLines(g2d);
+				
 			bufferInvalid = false;
 
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
@@ -154,8 +168,7 @@ public class FTextArea extends FEditableTextControl {
 			g2d.setClip(gpTextDisplayArea);
 			buffer.translate(-ptx, -pty);
 			// Translate in preparation for display selection and text
-			boolean hasSelection = hasSelection();
-			if(hasSelection){
+			if(hasSelection()){
 				if(endTLHI.compareTo(startTLHI) == -1){
 					startSelTLHI = endTLHI;
 					endSelTLHI = startTLHI;
@@ -171,7 +184,7 @@ public class FTextArea extends FEditableTextControl {
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
 				// Draw selection if any
-				if(hasSelection && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
+				if(hasSelection() && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
 					int ss = 0;
 					ss = (lineInfo.compareTo(startSelTLHI.tli) == 0) ? startSelTLHI.thi.getInsertionIndex()  : 0;
 					int ee = endSelTLHI.thi.getInsertionIndex();
@@ -195,21 +208,21 @@ public class FTextArea extends FEditableTextControl {
 		boolean horzScroll = false, vertScroll = false;
 		if(endTLHI != null){
 			if(caretX < ptx ){ 										// LEFT?
-				ptx--;
+				ptx -= HORZ_SCROLL_RATE;
 				if(ptx < 0) ptx = 0;
 				horzScroll = true;
 			}
 			else if(caretX > ptx + tw - 2){ 						// RIGHT?
-				ptx++;
+				ptx += HORZ_SCROLL_RATE;
 				horzScroll = true;
 			}
 			if(caretY < pty){										// UP?
-				pty--;
+				pty -= VERT_SCROLL_RATE;
 				if(pty < 0) pty = 0;
 				vertScroll = true;
 			}
 			else if(caretY > pty + th  - 2 *  stext.getMaxLineHeight()){	// DOWN?
-				pty++;
+				pty += VERT_SCROLL_RATE;
 				vertScroll = true;
 			}
 			if(horzScroll && hsb != null)
@@ -224,47 +237,10 @@ public class FTextArea extends FEditableTextControl {
 		
 	}
 
-	/**
-	 * See if the cursor is off screen if so pan the display
-	 * @return
-	 */
-//	protected boolean keepCursorInDisplayX(){
-//		boolean horzScroll = false, vertScroll = false;
-//		if(endTLHI != null){
-//			if(caretX < ptx ){ 										// LEFT?
-//				ptx--;
-//				if(ptx < 0) ptx = 0;
-//				horzScroll = true;
-//			}
-//			else if(caretX > ptx + tw - 2){ 						// RIGHT?
-//				ptx++;
-//				horzScroll = true;
-//			}
-//			if(caretY < pty){										// UP?
-//				pty--;
-//				if(pty < 0) pty = 0;
-//				vertScroll = true;
-//			}
-//			else if(caretY > pty + th  + stext.getMaxLineHeight()){	// DOWN?
-//				pty++;
-//				vertScroll = true;
-//			}
-//			if(horzScroll && hsb != null)
-//				hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
-//			if(vertScroll && vsb != null)
-//				vsb.setValue(pty / (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight()));
-//		}
-//		// If we have scrolled invalidate the buffer otherwise forget it
-//		if(horzScroll || vertScroll)
-//			bufferInvalid = true;
-//		// Let the user know we have scrolled
-//		return horzScroll | vertScroll;
-//	}
-
 	public void draw(){
 		if(!visible) return;
 
-		// Uodate buffer if invalid
+		// Update buffer if invalid
 		updateBuffer();
 		winApp.pushStyle();
 
@@ -345,18 +321,42 @@ public class FTextArea extends FEditableTextControl {
 			caretMoved = moveCaretDown(endTLHI);
 			break;
 		case KeyEvent.VK_HOME:
-			if(ctrlDown){		// move to start of text
+			if(ctrlDown)		// move to start of text
 				caretMoved = moveCaretStartOfText(endTLHI);
-			}
 			else 	// Move to start of line
 				caretMoved = moveCaretStartOfLine(endTLHI);
 			break;
 		case KeyEvent.VK_END:
-			if(ctrlDown){		// move to end of text
+			if(ctrlDown)		// move to end of text
 				caretMoved = moveCaretEndOfText(endTLHI);
-			}
 			else 	// Move to end of line
 				caretMoved = moveCaretEndOfLine(endTLHI);
+			break;
+		case KeyEvent.VK_A:
+			if(ctrlDown){
+				caretMoved = moveCaretStartOfText(startTLHI);
+				caretMoved |= moveCaretEndOfText(endTLHI);
+				// Make shift down so that the start caret position is not
+				// moved to match end caret position.
+				shiftDown = true; // Prevent copying of 
+			}
+			break;
+		case KeyEvent.VK_C:
+			if(ctrlDown)
+				FClip.copy(getSelectedText());
+			break;
+		case KeyEvent.VK_V:
+			if(ctrlDown){
+				String p = FClip.paste();
+				if(p.length() > 0){
+					// delete selection and add 
+					if(hasSelection())
+						stext.deleteCharacters(pos, nbr);
+					stext.insertCharacters(pos, p);
+					adjust = p.length();
+					textChanged = true;
+				}
+			}
 			break;
 		}
 		calculateCaretPos(endTLHI);
@@ -375,6 +375,7 @@ public class FTextArea extends FEditableTextControl {
 				caretMoved = true;
 			}
 			// Calculate new caret position
+			calculateCaretPos(startTLHI);
 			calculateCaretPos(endTLHI);
 		}
 		// After testing for cursor moving keys
@@ -385,26 +386,6 @@ public class FTextArea extends FEditableTextControl {
 				bufferInvalid = true;		// Selection changed
 		}
 		return caretMoved;
-	}
-
-	public void keyEvent(KeyEvent e) {
-		if(!visible  || !enabled || !available) return;
-		if(focusIsWith == this && endTLHI != null){
-			keepCursorInView = true;
-			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
-			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
-
-			if(e.getID() == KeyEvent.KEY_PRESSED) {
-				processKeyPressed(e, shiftDown, ctrlDown);
-				setScrollbarValues(ptx, pty);
-	//			while(keepCursorInDisplay());
-			}
-			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
-				processKeyTyped(e, shiftDown, ctrlDown);
-				setScrollbarValues(ptx, pty);
-	//			while(keepCursorInDisplay());
-			}
-		}
 	}
 
 	/**
@@ -537,6 +518,10 @@ public class FTextArea extends FEditableTextControl {
 					takeFocus();
 				}
 				dragging = false;
+				if(stext == null || stext.length() == 0){
+					stext = new StyledString(" ", (int)tw);
+					stext.getLines(buffer.g2);
+				}
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				startTLHI = new TextLayoutHitInfo(endTLHI);
 				calculateCaretPos(endTLHI);
@@ -557,7 +542,6 @@ public class FTextArea extends FEditableTextControl {
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
-	//			keepCursorInDisplay();
 			}
 			break;
 		}
