@@ -55,7 +55,7 @@ public class FButton extends FTextIconControl {
 		setText(text);
 		z = Z_SLIPPY;
 		// Now register control with applet
-		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FButton.class });
+		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
 	}

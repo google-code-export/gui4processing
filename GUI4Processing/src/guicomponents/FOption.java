@@ -34,7 +34,7 @@ public class FOption extends FToggleControl{
 		setIcon("pinhead.png", 2, GAlign.LEFT);
 		z = Z_SLIPPY;
 		// Now register control with applet
-		createEventHandler(winApp, "handleToggleControlEvents", new Class[]{ FToggleControl.class });
+		createEventHandler(F4P.sketchApplet, "handleToggleControlEvents", new Class[]{ FToggleControl.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
 	}

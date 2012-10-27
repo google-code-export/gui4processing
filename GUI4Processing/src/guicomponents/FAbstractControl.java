@@ -376,7 +376,6 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 	 */
 	@SuppressWarnings("rawtypes")
 	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
-		handlerObj = F4P.sketchApplet;
 		try{
 			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, parameters );
 			eventHandlerObject = handlerObj;

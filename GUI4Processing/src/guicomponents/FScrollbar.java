@@ -32,7 +32,7 @@ import java.awt.geom.RoundRectangle2D;
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 
-public class FScrollbar extends FAbstractControl {
+class FScrollbar extends FAbstractControl {
 
 	private static final int OFF_FILL = 3;
 	private static final int OFF_STROKE = 0;

@@ -92,7 +92,7 @@ public class FDropList extends FTextControl {
 		};
 
 		z = Z_STICKY;
-		createEventHandler(winApp, "handleDropListEvents", new Class[]{ FDropList.class });
+		createEventHandler(F4P.sketchApplet, "handleDropListEvents", new Class[]{ FDropList.class });
 
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
