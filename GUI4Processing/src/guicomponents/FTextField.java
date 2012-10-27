@@ -18,7 +18,7 @@ import processing.core.PGraphicsJava2D;
 
 public class FTextField extends FEditableTextControl {
 
-	int pad = 2;
+//	int pad = 2;
 	
 	public FTextField(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		this(theApplet, p0, p1, p2, p3, SCROLLBARS_NONE);
@@ -27,8 +27,8 @@ public class FTextField extends FEditableTextControl {
 	public FTextField(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
 		children = new LinkedList<FAbstractControl>();
-		tx = ty = pad;
-		tw = width - 2 * pad;
+		tx = ty = 2;
+		tw = width - 2 * 2;
 		th = height - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 11 : 0);
 		gpTextDisplayArea = new GeneralPath();
 		gpTextDisplayArea.moveTo( 0,  0);
@@ -51,7 +51,7 @@ public class FTextField extends FEditableTextControl {
 			hsb.addEventHandler(this, "hsbEventHandler");
 			hsb.setAutoHide(autoHide);
 		}
-		setText(" ");
+		setText("");
 		z = Z_STICKY;
 		createEventHandler(F4P.sketchApplet, "handleTextFieldEvents", new Class[]{ FTextField.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
@@ -59,19 +59,19 @@ public class FTextField extends FEditableTextControl {
 	}
 
 	public FTextField setText(String text){
+		startTLHI = null; endTLHI = null;
 		if(text == null || text.length() == 0)
-			text = " ";
+			text = "";
 		this.text = text;
-//		stext = new StyledString(buffer.g2, text);
 		stext = new StyledString(text);
+//		stext.getLines(buffer.g2);
 		ptx = 0;
-		setScrollbarValues(0, 0);
-//		if(hsb != null){
-//			if(stext.getMaxLineLength() < tw)
-//				hsb.setValue(0,1);
-//			else
-//				hsb.setValue(0, tw/stext.getMaxLineLength());
-//		}
+		if(hsb != null){
+			if(stext.getMaxLineLength() < tw)
+				hsb.setValue(0,1);
+			else
+				hsb.setValue(0, tw/stext.getMaxLineLength());
+		}
 		bufferInvalid = true;
 		return this;
 	}
@@ -99,7 +99,11 @@ public class FTextField extends FEditableTextControl {
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
+			// Get the latest lines of text
 			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
+			if(lines.isEmpty() && defaultText != null)
+				lines = defaultText.getLines(g2d);
+
 			bufferInvalid = false;
 			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
 			
@@ -122,8 +126,7 @@ public class FTextField extends FEditableTextControl {
 			buffer.translate(-ptx, -pty);
 			// Translate in preparation for display selection and text
 
-			boolean hasSelection = hasSelection();
-			if(hasSelection){
+			if(hasSelection()){
 				if(endTLHI.compareTo(startTLHI) == -1){
 					startSelTLHI = endTLHI;
 					endSelTLHI = startTLHI;
@@ -134,25 +137,21 @@ public class FTextField extends FEditableTextControl {
 				}
 			}
 			// Display selection and text
-			if(stext.length() > 0){
-				buffer.pushMatrix();
-				for(TextLayoutInfo lineInfo : lines){
-					TextLayout layout = lineInfo.layout;
-					buffer.translate(0, layout.getAscent());
-					// Draw selection if any
-					if(hasSelection && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
-						int ss = startSelTLHI.thi.getInsertionIndex();
-						int ee = endSelTLHI.thi.getInsertionIndex();
-						g2d.setColor(jpalette[14]);
-						Shape selShape = layout.getLogicalHighlightShape(ss, ee);
-						g2d.fill(selShape);
-					}
-					// Draw text
-					g2d.setColor(jpalette[2]);
-					lineInfo.layout.draw(g2d, 0, 0);
-					buffer.translate(0, layout.getDescent() + layout.getLeading());
+			for(TextLayoutInfo lineInfo : lines){
+				TextLayout layout = lineInfo.layout;
+				buffer.translate(0, layout.getAscent());
+				// Draw selection if any
+				if(hasSelection() && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
+					int ss = startSelTLHI.thi.getInsertionIndex();
+					int ee = endSelTLHI.thi.getInsertionIndex();
+					g2d.setColor(jpalette[14]);
+					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
+					g2d.fill(selShape);
 				}
-				buffer.popMatrix();
+				// Draw text
+				g2d.setColor(jpalette[2]);
+				lineInfo.layout.draw(g2d, 0, 0);
+				buffer.translate(0, layout.getDescent() + layout.getLeading());
 			}
 			g2d.setClip(null);
 			buffer.endDraw();
@@ -164,12 +163,12 @@ public class FTextField extends FEditableTextControl {
 			boolean horzScroll = false;
 			if(endTLHI != null){
 				if(caretX < ptx ){ 										// LEFT?
-					ptx--;
+					ptx -= HORZ_SCROLL_RATE;
 					if(ptx < 0) ptx = 0;
 					horzScroll = true;
 				}
 				else if(caretX > ptx + tw - 4){ 						// RIGHT?
-					ptx++;
+					ptx += HORZ_SCROLL_RATE;
 					horzScroll = true;
 				}
 				if(horzScroll && hsb != null)
@@ -179,32 +178,6 @@ public class FTextField extends FEditableTextControl {
 			if(horzScroll)
 				bufferInvalid = true;			
 		}
-	}
-	
-	/**
-	 * See if the cursor is off screen if so pan the display
-	 * @return
-	 */
-	protected boolean keepCursorInDisplayX(){
-		boolean horzScroll = false;
-		if(endTLHI != null){
-			if(caretX < ptx ){ 										// LEFT?
-				ptx--;
-				if(ptx < 0) ptx = 0;
-				horzScroll = true;
-			}
-			else if(caretX > ptx + tw - 4){ 						// RIGHT?
-				ptx++;
-				horzScroll = true;
-			}
-			if(horzScroll && hsb != null)
-				hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
-		}
-		// If we have scrolled invalidate the buffer otherwise forget it
-		if(horzScroll)
-			bufferInvalid = true;
-		// Let the user know we have scrolled
-		return horzScroll;
 	}
 	
 	public void mouseEvent(MouseEvent event){
@@ -228,6 +201,10 @@ public class FTextField extends FEditableTextControl {
 					takeFocus();
 				}
 				dragging = false;
+				if(stext == null || stext.length() == 0){
+					stext = new StyledString(" ", (int)tw);
+					stext.getLines(buffer.g2);
+				}
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				startTLHI = new TextLayoutHitInfo(endTLHI);
 				calculateCaretPos(endTLHI);
@@ -249,7 +226,6 @@ public class FTextField extends FEditableTextControl {
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				calculateCaretPos(endTLHI);
 				bufferInvalid = true;
-//				keepCursorInDisplay();
 			}
 			break;
 		}
@@ -258,7 +234,7 @@ public class FTextField extends FEditableTextControl {
 	protected boolean processKeyPressed(KeyEvent e, boolean shiftDown, boolean ctrlDown){
 		int keyCode = e.getKeyCode();
 		boolean caretMoved = false;
-
+		
 		switch(keyCode){
 		case KeyEvent.VK_LEFT:
 			caretMoved = moveCaretLeft(endTLHI);
@@ -272,6 +248,33 @@ public class FTextField extends FEditableTextControl {
 		case KeyEvent.VK_END:
 			caretMoved = moveCaretEndOfLine(endTLHI);
 			break;
+		case KeyEvent.VK_A:
+			if(ctrlDown){
+				caretMoved = moveCaretStartOfLine(startTLHI);
+				caretMoved |= moveCaretEndOfLine(endTLHI);
+				// Make shift down so that the start caret position is not
+				// moved to match end caret position.
+				shiftDown = true; // Prevent copying of 
+			}
+			break;
+		case KeyEvent.VK_C:
+			if(ctrlDown)
+				FClip.copy(getSelectedText());
+			break;
+		case KeyEvent.VK_V:
+			if(ctrlDown){
+				String p = FClip.paste();
+				p.replaceAll("\n", "");
+				if(p.length() > 0){
+					// delete selection and add 
+					if(hasSelection())
+						stext.deleteCharacters(pos, nbr);
+					stext.insertCharacters(pos, p);
+					adjust = p.length();
+					textChanged = true;
+				}
+			}
+			break;
 		}
 		calculateCaretPos(endTLHI);
 		if(caretMoved){
@@ -281,26 +284,6 @@ public class FTextField extends FEditableTextControl {
 				bufferInvalid = true;
 		}
 		return caretMoved;
-	}
-
-	public void keyEvent(KeyEvent e) {
-		if(!visible  || !enabled || !available) return;
-		if(focusIsWith == this && endTLHI != null){
-			keepCursorInView = true;
-			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
-			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
-
-			if(e.getID() == KeyEvent.KEY_PRESSED) {
-				processKeyPressed(e, shiftDown, ctrlDown);
-				setScrollbarValues(ptx, pty);
-//				while(keepCursorInDisplay());
-			}
-			else if(e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED){
-				processKeyTyped(e, shiftDown, ctrlDown);
-				setScrollbarValues(ptx, pty);
-//				while(keepCursorInDisplay());
-			}
-		}
 	}
 
 	public void draw(){
