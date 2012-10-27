@@ -53,7 +53,7 @@ public class FTextField extends FEditableTextControl {
 		}
 		setText(" ");
 		z = Z_STICKY;
-		createEventHandler(winApp, "handleTextFieldEvents", new Class[]{ FTextField.class });
+		createEventHandler(F4P.sketchApplet, "handleTextFieldEvents", new Class[]{ FTextField.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}

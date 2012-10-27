@@ -84,7 +84,7 @@ public class FTextArea extends FEditableTextControl {
 		}
 		setText(" ", (int)tw);
 		z = Z_STICKY;
-		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FTextArea.class });
+		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FTextArea.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}

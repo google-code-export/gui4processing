@@ -76,9 +76,7 @@ public class FLinearTrackControl extends FValueControl {
 		ox -= width/2;
 		ox /= trackLength;
 
-		//		System.out.println("Custom slider      " + currSpot + "   thumb at " + hotspots[0].x);
 		// currSpot == 1 for text display area
-
 		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -86,22 +84,15 @@ public class FLinearTrackControl extends FValueControl {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			//			System.out.println("P " + focusIsWith);
 			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
 				downHotSpot = currSpot;
 				status = (downHotSpot == THUMB_SPOT) ? PRESS_CONTROL : OFF_CONTROL;
-				//				if(downHotSpot == THUMB_SPOT)
-				//					status = PRESS_CONTROL;
-				//				else
-				//					status = OFF_CONTROL;
 				offset = ox + 0.5f - valuePos; // normalised
 				takeFocus();
 				bufferInvalid = true;
-				System.out.println("PRESSED   state = " + status );
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			//			System.out.println("C " + focusIsWith);
 			if(focusIsWith == this ){
 				valueTarget = ox + 0.5f;
 				if(stickToTicks)
@@ -110,11 +101,9 @@ public class FLinearTrackControl extends FValueControl {
 				status = OFF_CONTROL;
 				loseFocus(null);
 				bufferInvalid = true;
-				System.out.println("CLICKED state = " + status  );
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			//			System.out.println("R " + focusIsWith);
 			if(focusIsWith == this && dragging){
 				if(downHotSpot == THUMB_SPOT){
 					valueTarget = (ox - offset) + 0.5f;
@@ -132,13 +121,11 @@ public class FLinearTrackControl extends FValueControl {
 				status = OFF_CONTROL;
 				bufferInvalid = true;
 				loseFocus(null);				
-				System.out.println("RELEASED    state = " + status );
 			}
 			dragging = false;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){
-				System.out.println("DRAGGED    state = " + status );
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
 					isValueChanging = true;
@@ -163,7 +150,6 @@ public class FLinearTrackControl extends FValueControl {
 				status = OFF_CONTROL;
 			if(currStatus != status)
 				bufferInvalid = true;
-			System.out.println("MOVED   state = " + status);
 			break;			
 		}
 	}

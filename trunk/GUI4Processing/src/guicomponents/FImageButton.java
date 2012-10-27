@@ -82,7 +82,7 @@ public class FImageButton extends FImageControl {
 		super(theApplet, p0, p1, p2, p3, fnames, fnameMask);
 		z = Z_SLIPPY;
 		// Now register control with applet
-		createEventHandler(winApp, "handleButtonEvents", new Class[]{ FImageButton.class });
+		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FImageButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		F4P.addControl(this);
 	}
