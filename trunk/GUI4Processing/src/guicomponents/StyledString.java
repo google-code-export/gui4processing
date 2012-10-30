@@ -80,7 +80,7 @@ final public class StyledString implements Serializable {
 	private LinkedList<AttributeRun> atrun = new LinkedList<AttributeRun>();
 
 	// The width to break a line
-	private int wrapWidth = 100;
+	private int wrapWidth = Integer.MAX_VALUE;
 	// Flag to determine whether the text layouts need recalculating
 	private boolean invalidLayout = true;
 	// Flag to determine whether the actual character string have changed
@@ -104,7 +104,6 @@ final public class StyledString implements Serializable {
 	 * @param startText
 	 */
 	public StyledString(String startText){
-		wrapWidth = Integer.MAX_VALUE;
 		spacer = getParagraghSpacer(1); //  safety
 		// Get rid of any EOLs
 		plainText = startText.replaceAll("\n", " ");
@@ -121,7 +120,8 @@ final public class StyledString implements Serializable {
 	 * @param wrapWidth
 	 */
 	public StyledString(String startText, int wrapWidth){
-		this.wrapWidth = (wrapWidth > 0 && wrapWidth < Integer.MAX_VALUE) ? wrapWidth : Integer.MAX_VALUE;
+		if(wrapWidth > 0 && wrapWidth < Integer.MAX_VALUE)
+			this.wrapWidth = wrapWidth;
 		spacer = getParagraghSpacer(this.wrapWidth);
 		plainText = startText;
 		removeDoubleSpacing(); // just in case we merge two eol characters
@@ -262,6 +262,7 @@ final public class StyledString implements Serializable {
 				if(ar.end == Integer.MAX_VALUE)
 					styledText.addAttribute(ar.atype, ar.value);
 				else {
+					// If an attribute run fails do not try and fix it - dump it
 					try {
 					styledText.addAttribute(ar.atype, ar.value, ar.start, ar.end);
 					}
@@ -476,7 +477,7 @@ final public class StyledString implements Serializable {
 	 * Get the break width used to create the lines.
 	 * @return
 	 */
-	public float getWrapWidth(){
+	public int getWrapWidth(){
 		return wrapWidth;
 	}
 
@@ -507,7 +508,7 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
-	 * This will always return a layout.
+	 * This will always return a layout provide there is some text.
 	 * @param y Must be >= 0
 	 * @return the first layout where y is above the upper layout bounds
 	 */
@@ -517,6 +518,18 @@ final public class StyledString implements Serializable {
 			for(int i = linesInfo.size()-1; i >= 0; i--){
 				tli = linesInfo.get(i);
 				if(tli.yPosInPara <= y)
+					break;
+			}
+		}
+		return tli;
+	}
+
+	TextLayoutInfo getLayoutFromCharPos(int charNo){
+		TextLayoutInfo tli = null;
+		if(!linesInfo.isEmpty()){
+			for(int i = linesInfo.size()-1; i >= 0; i--){
+				tli = linesInfo.get(i);
+				if(tli.startCharIndex < charNo)
 					break;
 			}
 		}
@@ -721,7 +734,7 @@ final public class StyledString implements Serializable {
 		}
 
 		public String toString(){
-			StringBuilder s = new StringBuilder("{ Line starts @ " + startCharIndex);
+			StringBuilder s = new StringBuilder("{ Line no = " + lineNo + "    starts @ char pos " + startCharIndex);
 			s.append("  last index " + (startCharIndex+nbrChars+1));
 			s.append("  (" + nbrChars +")  ");
 			return new String(s);
