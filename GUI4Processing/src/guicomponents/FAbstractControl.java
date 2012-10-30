@@ -58,7 +58,6 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 	 * before setting its value to the new component. 
 	 */
 	protected static FAbstractControl focusIsWith = null;
-	protected static FAbstractControl keyFocusIsWith = null;
 
 
 	/*
@@ -113,7 +112,7 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 	protected float width, height;
 	/** Half sizes reduces programming complexity later */
 	protected float halfWidth, halfHeight;
-	/** The cenre of the control */
+	/** The centre of the control */
 	protected float cx, cy;
 	/** The angle to control is rotated (radians) */
 	protected float rotAngle;
@@ -585,23 +584,6 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 		return enabled;
 	}
 	
-	/*
-	 * The following methods are related to handling focus.
-	 * Most components can loose focus without affecting their state
-	 * but TextComponents that support mouse text selection need to 
-	 * clear this selection when they loose focus. Also components
-	 * like GCombo that comprise other G4P components need additional
-	 * work
-	 */
-
-	/**
-	 * This method stub is overridden in GPanel
-	 */
-	protected void bringToFront(){
-		if(parent != null)
-			parent.bringToFront();
-	}
-
 	/**
 	 * Give the focus to this component but only after allowing the 
 	 * current component with focus to release it gracefully. <br>
@@ -613,8 +595,6 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 		if(focusIsWith != null && focusIsWith != this)
 			focusIsWith.loseFocus(this);
 		focusIsWith = this;
-		keyFocusIsWith = null;
-		this.bringToFront();
 	}
 
 	/**

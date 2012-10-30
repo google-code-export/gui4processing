@@ -46,15 +46,20 @@ public class FTextArea extends FEditableTextControl {
 	private static float pad = 6;
 
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3) {
-		this(theApplet, p0, p1, p2, p3, SCROLLBARS_NONE);
+		this(theApplet, p0, p1, p2, p3, SCROLLBARS_NONE, Integer.MAX_VALUE);
 	}
 
 	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
+		this(theApplet, p0, p1, p2, p3, scrollbars, Integer.MAX_VALUE);
+	}
+
+	public FTextArea(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars, int wrapWidth) {
 		super(theApplet, p0, p1, p2, p3, scrollbars);
 		children = new LinkedList<FAbstractControl>();
 		tx = ty = pad;
 		tw = width - 2 * pad - ((sbPolicy & SCROLLBAR_VERTICAL) != 0 ? 18 : 0);
 		th = height - 2 * pad - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 18 : 0);
+		this.wrapWidth = (wrapWidth == Integer.MAX_VALUE) ? (int)tw : wrapWidth;
 		gpTextDisplayArea = new GeneralPath();
 		gpTextDisplayArea.moveTo( 0,  0);
 		gpTextDisplayArea.lineTo( 0, th);
@@ -89,15 +94,6 @@ public class FTextArea extends FEditableTextControl {
 		F4P.addControl(this);
 	}
 
-	/**
-	 * Set the text to be used. The wrap width is determined by the size of the component.
-	 * @param text
-	 */
-	public FTextArea setText(String text){
-		setText(text, (int)tw);
-		return this;
-	}
-
 	public void setDefaultText(String dtext){
 		if(dtext == null || dtext.length() == 0)
 			defaultText = null;
@@ -106,6 +102,29 @@ public class FTextArea extends FEditableTextControl {
 			defaultText.addAttribute(F4P.POSTURE, F4P.POSTURE_OBLIQUE);
 		}
 		bufferInvalid = true;
+	}
+
+	/**
+	 * Give the focus to this component but only after allowing the 
+	 * current component with focus to release it gracefully. <br>
+	 * Always cancel the keyFocusIsWith irrespective of the component
+	 * type. If the component needs to retain keyFocus then override this
+	 * method in that class e.g. GCombo
+	 */
+//	protected void takeFocus(){
+//		if(focusIsWith != null && focusIsWith != this)
+//			focusIsWith.loseFocus(this);
+//		focusIsWith = this;
+//	}
+
+
+	/**
+	 * Set the text to be used. The wrap width is determined by the size of the component.
+	 * @param text
+	 */
+	public FTextArea setText(String text){
+		setText(text, wrapWidth);
+		return this;
 	}
 
 	/**
@@ -205,36 +224,40 @@ public class FTextArea extends FEditableTextControl {
 
 	public void pre(){
 		if(keepCursorInView){
-		boolean horzScroll = false, vertScroll = false;
-		if(endTLHI != null){
-			if(caretX < ptx ){ 										// LEFT?
-				ptx -= HORZ_SCROLL_RATE;
-				if(ptx < 0) ptx = 0;
-				horzScroll = true;
+//			System.out.println("SCROLL "+ caretX + " >> " + ptx + "      " + caretY + " >> " + pty);
+			boolean horzScroll = false, vertScroll = false;
+			if(endTLHI != null){
+				if(ptx > caretX){ 										// LEFT?
+					ptx -= HORZ_SCROLL_RATE;
+					if(ptx < 0) ptx = 0;
+					horzScroll = true;
+				}
+				else if(ptx  < caretX  - tw + 4){ 						// RIGHT?
+//					else if(caretX > ptx + tw - 2){ 						// RIGHT?
+					ptx += HORZ_SCROLL_RATE;
+					horzScroll = true;
+				}
+				if(pty > caretY){										// UP?
+					pty -= VERT_SCROLL_RATE;
+					if(pty < 0) pty = 0;
+					vertScroll = true;
+				}
+				else if(pty < caretY - th  + 2 *  stext.getMaxLineHeight()){	// DOWN?
+//					else if(caretY > pty + th  - 2 *  stext.getMaxLineHeight()){	// DOWN?
+					pty += VERT_SCROLL_RATE;
+					vertScroll = true;
+				}
+				if(horzScroll && hsb != null)
+					hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
+				if(vertScroll && vsb != null)
+					vsb.setValue(pty / (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight()));
 			}
-			else if(caretX > ptx + tw - 2){ 						// RIGHT?
-				ptx += HORZ_SCROLL_RATE;
-				horzScroll = true;
-			}
-			if(caretY < pty){										// UP?
-				pty -= VERT_SCROLL_RATE;
-				if(pty < 0) pty = 0;
-				vertScroll = true;
-			}
-			else if(caretY > pty + th  - 2 *  stext.getMaxLineHeight()){	// DOWN?
-				pty += VERT_SCROLL_RATE;
-				vertScroll = true;
-			}
-			if(horzScroll && hsb != null)
-				hsb.setValue(ptx / (stext.getMaxLineLength() + 4));
-			if(vertScroll && vsb != null)
-				vsb.setValue(pty / (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight()));
+			// If we have scrolled invalidate the buffer otherwise forget it
+			if(horzScroll || vertScroll)
+				bufferInvalid = true;
+			else
+				keepCursorInView = false;
 		}
-		// If we have scrolled invalidate the buffer otherwise forget it
-		if(horzScroll || vertScroll)
-			bufferInvalid = true;
-		}
-		
 	}
 
 	public void draw(){
@@ -303,39 +326,38 @@ public class FTextArea extends FEditableTextControl {
 		return snap;
 	}
 
-	protected boolean processKeyPressed(KeyEvent e, boolean shiftDown, boolean ctrlDown){
-		int keyCode = e.getKeyCode();
-		boolean caretMoved = false;
+	protected void processKeyPressed(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
+		boolean validKeyCombo = true;
 
 		switch(keyCode){
 		case KeyEvent.VK_LEFT:
-			caretMoved = moveCaretLeft(endTLHI);
+			moveCaretLeft(endTLHI);
 			break;
 		case KeyEvent.VK_RIGHT:
-			caretMoved = moveCaretRight(endTLHI);
+			moveCaretRight(endTLHI);
 			break;
 		case KeyEvent.VK_UP:
-			caretMoved = moveCaretUp(endTLHI);
+			moveCaretUp(endTLHI);
 			break;
 		case KeyEvent.VK_DOWN:
-			caretMoved = moveCaretDown(endTLHI);
+			moveCaretDown(endTLHI);
 			break;
 		case KeyEvent.VK_HOME:
 			if(ctrlDown)		// move to start of text
-				caretMoved = moveCaretStartOfText(endTLHI);
+				moveCaretStartOfText(endTLHI);
 			else 	// Move to start of line
-				caretMoved = moveCaretStartOfLine(endTLHI);
+				moveCaretStartOfLine(endTLHI);
 			break;
 		case KeyEvent.VK_END:
 			if(ctrlDown)		// move to end of text
-				caretMoved = moveCaretEndOfText(endTLHI);
+				moveCaretEndOfText(endTLHI);
 			else 	// Move to end of line
-				caretMoved = moveCaretEndOfLine(endTLHI);
+				moveCaretEndOfLine(endTLHI);
 			break;
 		case KeyEvent.VK_A:
 			if(ctrlDown){
-				caretMoved = moveCaretStartOfText(startTLHI);
-				caretMoved |= moveCaretEndOfText(endTLHI);
+				moveCaretStartOfText(startTLHI);
+				moveCaretEndOfText(endTLHI);
 				// Make shift down so that the start caret position is not
 				// moved to match end caret position.
 				shiftDown = true; // Prevent copying of 
@@ -344,6 +366,7 @@ public class FTextArea extends FEditableTextControl {
 		case KeyEvent.VK_C:
 			if(ctrlDown)
 				FClip.copy(getSelectedText());
+			validKeyCombo = false;
 			break;
 		case KeyEvent.VK_V:
 			if(ctrlDown){
@@ -358,34 +381,41 @@ public class FTextArea extends FEditableTextControl {
 				}
 			}
 			break;
+		default:
+			validKeyCombo = false;
 		}
-		calculateCaretPos(endTLHI);
-		if(caretX > stext.getWrapWidth()){
-			switch(keyCode){
-			case KeyEvent.VK_LEFT:
-			case KeyEvent.VK_UP:
-			case KeyEvent.VK_DOWN:
-			case KeyEvent.VK_END:
-				moveCaretLeft(endTLHI);
-				caretMoved = true;
-				break;
-			case KeyEvent.VK_RIGHT:
-				if(!moveCaretRight(endTLHI))
-					moveCaretLeft(endTLHI);
-				caretMoved = true;
-			}
-			// Calculate new caret position
-			calculateCaretPos(startTLHI);
+
+		if(validKeyCombo){
 			calculateCaretPos(endTLHI);
-		}
-		// After testing for cursor moving keys
-		if(caretMoved){
-			if(!shiftDown)				// Not extending selection
+			//****************************************************************
+			// If we have moved  to the end of a paragraph marker
+			if(caretX > stext.getWrapWidth()){
+				switch(keyCode){
+				case KeyEvent.VK_LEFT:
+				case KeyEvent.VK_UP:
+				case KeyEvent.VK_DOWN:
+				case KeyEvent.VK_END:
+					moveCaretLeft(endTLHI);
+					validKeyCombo = true;
+					break;
+				case KeyEvent.VK_RIGHT:
+					if(!moveCaretRight(endTLHI))
+						moveCaretLeft(endTLHI);
+					validKeyCombo = true;
+				}
+				// Calculate new caret position
+				// calculateCaretPos(startTLHI); 
+				calculateCaretPos(endTLHI);
+			}
+			//****************************************************************
+			
+			calculateCaretPos(endTLHI);	
+
+			if(!shiftDown)
 				startTLHI.copyFrom(endTLHI);
 			else
-				bufferInvalid = true;		// Selection changed
+				bufferInvalid = true;
 		}
-		return caretMoved;
 	}
 
 	/**
@@ -470,23 +500,25 @@ public class FTextArea extends FEditableTextControl {
 	}
 
 	/**
-	 * Move caret left by one character. If necessary move to the end of the line above
+	 * Move caret right by one character. If necessary move to the start of the next line 
 	 * @return true if caret was moved else false
 	 */
 	protected boolean moveCaretRight(TextLayoutHitInfo currPos){
 		TextLayoutInfo ntli;
 		TextHitInfo nthi = currPos.tli.layout.getNextRightHit(currPos.thi);
 		if(nthi == null){ 
-			// Move the caret to the end of the previous line 
+			// Move the caret to the start of the next line the previous line 
 			if(currPos.tli.lineNo >= stext.getNbrLines() - 1)
 				// Can't goto next line because this is the last line
 				return false;
 			else {
 				// Move to start of next line
+				System.out.println("NEXT LINE (FTextArea) \n"+currPos);
 				ntli = stext.getTLIforLineNo(currPos.tli.lineNo + 1);
 				nthi = ntli.layout.getNextLeftHit(1);
 				currPos.tli = ntli;
 				currPos.thi = nthi;
+				System.out.println(currPos + "\n");
 			}
 		}
 		else {
@@ -504,7 +536,6 @@ public class FTextArea extends FEditableTextControl {
 
 		currSpot = whichHotSpot(ox, oy);
 
-		// currSpot == 1 for text display area
 		if(currSpot == 1 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -534,6 +565,7 @@ public class FTextArea extends FEditableTextControl {
 			break;
 		case MouseEvent.MOUSE_RELEASED:
 			dragging = false;
+			bufferInvalid = true;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this){

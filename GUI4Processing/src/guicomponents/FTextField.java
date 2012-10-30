@@ -162,12 +162,12 @@ public class FTextField extends FEditableTextControl {
 		if(keepCursorInView){
 			boolean horzScroll = false;
 			if(endTLHI != null){
-				if(caretX < ptx ){ 										// LEFT?
+				if(ptx > caretX){ 										// LEFT?
 					ptx -= HORZ_SCROLL_RATE;
 					if(ptx < 0) ptx = 0;
 					horzScroll = true;
 				}
-				else if(caretX > ptx + tw - 4){ 						// RIGHT?
+				else if(ptx  < caretX  - tw + 4){ 						// RIGHT?
 					ptx += HORZ_SCROLL_RATE;
 					horzScroll = true;
 				}
@@ -196,7 +196,7 @@ public class FTextField extends FEditableTextControl {
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
 			if(currSpot == 1){
-				if(focusIsWith != this && z > focusObjectZ()){
+				if(focusIsWith != this && z >= focusObjectZ()){
 					keepCursorInView = true;
 					takeFocus();
 				}
@@ -231,27 +231,26 @@ public class FTextField extends FEditableTextControl {
 		}
 	}
 
-	protected boolean processKeyPressed(KeyEvent e, boolean shiftDown, boolean ctrlDown){
-		int keyCode = e.getKeyCode();
-		boolean caretMoved = false;
-		
+	protected void processKeyPressed(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
+		boolean validKeyCombo = true;
+
 		switch(keyCode){
 		case KeyEvent.VK_LEFT:
-			caretMoved = moveCaretLeft(endTLHI);
+			moveCaretLeft(endTLHI);
 			break;
 		case KeyEvent.VK_RIGHT:
-			caretMoved = moveCaretRight(endTLHI);
+			moveCaretRight(endTLHI);
 			break;
 		case KeyEvent.VK_HOME:
-			caretMoved = moveCaretStartOfLine(endTLHI);
+			moveCaretStartOfLine(endTLHI);
 			break;
 		case KeyEvent.VK_END:
-			caretMoved = moveCaretEndOfLine(endTLHI);
+			moveCaretEndOfLine(endTLHI);
 			break;
 		case KeyEvent.VK_A:
 			if(ctrlDown){
-				caretMoved = moveCaretStartOfLine(startTLHI);
-				caretMoved |= moveCaretEndOfLine(endTLHI);
+				moveCaretStartOfLine(startTLHI);
+				moveCaretEndOfLine(endTLHI);
 				// Make shift down so that the start caret position is not
 				// moved to match end caret position.
 				shiftDown = true; // Prevent copying of 
@@ -260,6 +259,7 @@ public class FTextField extends FEditableTextControl {
 		case KeyEvent.VK_C:
 			if(ctrlDown)
 				FClip.copy(getSelectedText());
+			validKeyCombo = false;
 			break;
 		case KeyEvent.VK_V:
 			if(ctrlDown){
@@ -275,15 +275,21 @@ public class FTextField extends FEditableTextControl {
 				}
 			}
 			break;
+		default:
+			validKeyCombo = false;	
 		}
 		calculateCaretPos(endTLHI);
-		if(caretMoved){
+		
+		if(validKeyCombo){
 			if(!shiftDown)				// Not extending selection
 				startTLHI.copyFrom(endTLHI);
 			else
-				bufferInvalid = true;
+				bufferInvalid = true;		// Selection changed
 		}
-		return caretMoved;
+//		else if(hasSelection() && !shiftDown){
+//			startTLHI.copyFrom(endTLHI);
+//			bufferInvalid = true;
+//		}
 	}
 
 	public void draw(){
@@ -306,7 +312,7 @@ public class FTextField extends FEditableTextControl {
 		winApp.image(buffer, 0, 0);
 
 		// Draw caret if text display area
-		if(showCaret && endTLHI != null){
+		if(focusIsWith == this && showCaret && endTLHI != null){
 			float[] cinfo = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
 			float x_left =  - ptx + cinfo[0];
 			float y_top = - pty + endTLHI.tli.yPosInPara; 
