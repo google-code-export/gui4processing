@@ -57,6 +57,7 @@ public class FButton extends FTextIconControl {
 		// Now register control with applet
 		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		cursorOver = HAND;
 		F4P.addControl(this);
 	}
 	

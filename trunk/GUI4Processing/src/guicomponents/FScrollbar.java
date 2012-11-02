@@ -68,6 +68,7 @@ class FScrollbar extends FAbstractControl {
 
 		z = Z_SLIPPY;
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		cursorOver = HAND;
 		F4P.addControl(this);
 	}
 

@@ -95,6 +95,7 @@ public class FDropList extends FTextControl {
 		createEventHandler(F4P.sketchApplet, "handleDropListEvents", new Class[]{ FDropList.class });
 
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		cursorOver = HAND;
 		F4P.addControl(this);
 	}
 	

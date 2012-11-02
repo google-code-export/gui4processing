@@ -43,17 +43,22 @@ public class WindowInfo implements PConstants, GConstants {
 
 	/*
 	 * This registers this applet for V1.5.1 and V2.0
+	 * Eventually these need to be modified to new style for
+	 * Processing V2.0
 	 */
 	public void registerMethodsForWindow(){
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 		app.registerPre(this);
 		app.registerKeyEvent(this);
+		app.registerPost(this);
 		haveRegisteredMethodsFor151 = true;
 	}
 
 	/*
 	 * This registers this applet for V1.5.1 and V2.0
+	 * Eventually these need to be modified to new style for
+	 * Processing V2.0
 	 */
 	public void unRegisterMethodsForWindow(){
 		if(haveRegisteredMethodsFor151){
@@ -61,6 +66,7 @@ public class WindowInfo implements PConstants, GConstants {
 			app.unregisterMouseEvent(this);
 			app.unregisterPre(this);
 			app.unregisterKeyEvent(this);	
+			app.unregisterPost(this);
 			haveRegisteredMethodsFor151 = false;
 		}
 	}
@@ -91,8 +97,27 @@ public class WindowInfo implements PConstants, GConstants {
 	}
 
 	public void pre(){
+		if(FAbstractControl.controlToTakeFocus != null && FAbstractControl.controlToTakeFocus.getPApplet() == app){
+			FAbstractControl.controlToTakeFocus.setFocus(true);
+			FAbstractControl.controlToTakeFocus = null;
+		}
 		for(FAbstractControl control : windowControls){
 			if( (control.registeredMethods & PRE_METHOD) == PRE_METHOD)
+				control.pre();
+		}
+	}
+
+	public void post(){
+		if(F4P.cursorChangeEnabled){
+			if(FAbstractControl.cursorIsOver != null && FAbstractControl.cursorIsOver.getPApplet() == app){
+				app.cursor(FAbstractControl.cursorIsOver.cursorOver);			
+			}
+			else {
+				app.cursor(F4P.mouseOff);
+			}
+		}
+		for(FAbstractControl control : windowControls){
+			if( (control.registeredMethods & POST_METHOD) == POST_METHOD)
 				control.pre();
 		}
 	}
@@ -126,7 +151,5 @@ public class WindowInfo implements PConstants, GConstants {
 		for(FAbstractControl control : windowControls)
 			control.setAlpha(alpha);
 	}
-
-
 
 }

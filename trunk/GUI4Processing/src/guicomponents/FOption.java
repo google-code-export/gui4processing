@@ -36,6 +36,7 @@ public class FOption extends FToggleControl{
 		// Now register control with applet
 		createEventHandler(F4P.sketchApplet, "handleToggleControlEvents", new Class[]{ FToggleControl.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		cursorOver = HAND;
 		F4P.addControl(this);
 	}
 

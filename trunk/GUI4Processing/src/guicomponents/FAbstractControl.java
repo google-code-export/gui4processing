@@ -47,7 +47,7 @@ import processing.core.PImage;
  * @author Peter Lager
  *
  */
-abstract class FAbstractControl implements IControl, PConstants, GConstants {
+public abstract class FAbstractControl implements IControl, PConstants, GConstants {
 
 	/*
 	 * INTERNAL USE ONLY
@@ -57,15 +57,16 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 	 * takeFocus() method. The takeFocus method should use focusIsWith.loseFocus()
 	 * before setting its value to the new component. 
 	 */
-	protected static FAbstractControl focusIsWith = null;
+	static FAbstractControl focusIsWith = null;
 
+	static FAbstractControl controlToTakeFocus = null;
 
 	/*
 	 * INTERNAL USE ONLY
 	 * Keeps track of the component the mouse is over so the mouse
 	 * cursor can be changed if we wish.
 	 */
-	protected static FAbstractControl cursorIsOver;
+	static FAbstractControl cursorIsOver;
 
 	// Determines how position and size parameters are interpreted when
 	// a control is created
@@ -73,15 +74,15 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 	protected static int control_mode = PApplet.CORNER;
 
 	// Increment to be used if on a GPanel
-	protected final static int Z_PANEL = 1024;
+	final static int Z_PANEL = 1024;
 
 	// Components that don't release focus automatically
 	// i.e. GTextField
-	protected final static int Z_STICKY = 0;
+	final static int Z_STICKY = 0;
 
 	// Components that automatically releases focus when appropriate
 	// e.g. GButton
-	protected final static int Z_SLIPPY = 24;
+	final static int Z_SLIPPY = 24;
 
 	
 	// Reference to the PApplet object that owns this control
@@ -130,6 +131,7 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 	// The event type use READ ONLY
 	public int eventType = 0;
 
+	protected int cursorOver = HAND;
 
 	/*
 	 * Position over control corrected for any transformation. <br>
@@ -211,6 +213,7 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 		z = 0;
 		palette = FCScheme.getColor(localColorScheme);
 		jpalette = FCScheme.getJavaColor(localColorScheme);
+		tag = this.getClass().getSimpleName();
 	}
 
 	/*
@@ -709,6 +712,23 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 		addControl(c, x, y, 0);
 	}
 
+	
+	/**
+	 * Get the shape type when the cursor is over a control
+	 * @return shape type
+	 */
+	public int getCursorOver() {
+		return cursorOver;
+	}
+
+	/**
+	 * Set the shape type to use when the cursor is over a control
+	 * @param cursorOver the shape type to use
+	 */
+	public void setCursorOver(int cursorOver) {
+		this.cursorOver = cursorOver;
+	}
+
 	/**
 	 * Get an affine transformation that is the compound of all 
 	 * transformations including parents
@@ -753,21 +773,21 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 	 * @param py
 	 * @return
 	 */
-	public boolean contains(float px, float py){
-		AffineTransform aff = new AffineTransform();
-		aff = getTransform(aff);
-		temp[0] = px; temp[1] = py;
-		try {
-			aff.inverseTransform(temp, 0, temp, 0, 1);
-		} catch (NoninvertibleTransformException e) {
-			e.printStackTrace();
-			return false;
-		}
-		ox = (float) temp[0] + halfWidth;
-		oy = (float) temp[1] + halfHeight;
-		boolean over = (ox >= 0 && ox <= width && oy >= 0 && oy <= height);
-		return over;
-	}
+//	public boolean contains(float px, float py){
+//		AffineTransform aff = new AffineTransform();
+//		aff = getTransform(aff);
+//		temp[0] = px; temp[1] = py;
+//		try {
+//			aff.inverseTransform(temp, 0, temp, 0, 1);
+//		} catch (NoninvertibleTransformException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//		ox = (float) temp[0] + halfWidth;
+//		oy = (float) temp[1] + halfHeight;
+//		boolean over = (ox >= 0 && ox <= width && oy >= 0 && oy <= height);
+//		return over;
+//	}
 
 
 	/**
@@ -789,18 +809,46 @@ abstract class FAbstractControl implements IControl, PConstants, GConstants {
 		}
 	}
 
-	/*
-	 * The following methods are used for z-ordering
-	 * (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	/**
+	 * If the control is permanently no longer required then call
+	 * this method to remove it and free up resources. <br>
+	 * The variable identifier used to create this control should 
+	 * be set to null. <br>
+	 * For example if you want to dispose of a button called 
+	 * <pre>btnDoThis</pre> then to remove the button use the
+	 * statements <br> <pre>
+	 * btnDoThis.dispose(); <br>
+	 * btnDoThis = null; <br></pre>
 	 */
-	public int compareTo(Object o) {
-		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
+	public void dispose(){
+		F4P.removeControl(this);
+		buffer = null;
+		parent = null;
+		if(children != null)
+			children.clear();
+		palette = null;
+		jpalette = null;
+		eventHandlerObject = null;
+		eventHandlerMethod = null;
+		winApp = null;
+		System.gc();
 	}
+
+//	/**
+//	 * The following methods are used to compare 2 controls
+//	 * (non-Javadoc)
+//	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+//	 */
+//	public int compareTo(Object o) {
+//		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
+//	}
 
 
 	public String toString(){
-		return this.getClass().getSimpleName();
+		if(tag == null)
+			return this.getClass().getSimpleName();
+		else
+			return tag;
 	}
 	
 	/**

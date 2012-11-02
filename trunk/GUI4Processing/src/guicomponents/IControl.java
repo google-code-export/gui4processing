@@ -11,5 +11,5 @@ public interface IControl {
 	
 	public PApplet getPApplet();
 
-	public int compareTo(Object o);
+//	public int compareTo(Object o);
 }

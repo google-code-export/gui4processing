@@ -74,6 +74,7 @@ public class FCustomSlider extends FLinearTrackControl {
 		// Now register control with applet
 		createEventHandler(F4P.sketchApplet, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
+		cursorOver = HAND;
 		F4P.addControl(this);
 	}
 
