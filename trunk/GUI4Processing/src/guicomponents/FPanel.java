@@ -64,6 +64,11 @@ public class FPanel extends FTextControl {
 	/** true if the panel is being dragged */
 	protected boolean beingDragged = false;
 
+
+	public FPanel(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		this(theApplet, p0, p1, 2, p3, "");
+	}
+
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
 	 * select and move the panel and the container window below the tab which 
@@ -79,9 +84,6 @@ public class FPanel extends FTextControl {
 	public FPanel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
 		children = new LinkedList<FAbstractControl>();
-//		if(text == null || text.length() == 0)
-//			text = "Tab Text";
-//		this.text = text;
 		// The image buffer is just for the tab area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
@@ -94,7 +96,7 @@ public class FPanel extends FTextControl {
 		dockY = y;
 		z = Z_PANEL;
 
-		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FPanel.class });
+		createEventHandler(F4P.sketchApplet, "handlePanelEvents", new Class[]{ FPanel.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		F4P.addControl(this);
@@ -129,26 +131,12 @@ public class FPanel extends FTextControl {
 	}
 
 	/**
-	 * Bring this panel to the front i.e. above other panels.
-	 */
-//	public void bringToFront(){
-//		if(parent != null)
-//			parent.bringToFront();
-//		G4P.moveToFrontForDraw(this);
-//	}
-
-	/**
 	 * What to do when the FPanel loses focus.
 	 */
 	protected void loseFocus(FAbstractControl grabber){
 		focusIsWith = null;
 		beingDragged = false;
 	}
-
-	//	protected void takeFocus(){
-	//		super.takeFocus();
-	//		G4P.moveToFrontForDraw(this);
-	//	}
 
 	/**
 	 * Draw the panel.

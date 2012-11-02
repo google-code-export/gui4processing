@@ -42,7 +42,10 @@ public class FButton extends FTextIconControl {
 	// Only report CLICKED events
 	protected boolean reportAllButtonEvents = false;
 	
-
+	public FButton(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		this(theApplet, p0, p1, p2, p3, "");
+	}
+	
 	public FButton(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
 		// The image buffer is just for the button surface

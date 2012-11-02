@@ -123,6 +123,7 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 	// New to V3 components have an image buffer which is only redrawn if 
 	// it has been invalidated
 	protected PGraphicsJava2D buffer = null;
+	protected PGraphics pad = null;
 	protected boolean bufferInvalid = true;
 
 	/** Whether to show background or not */
@@ -131,6 +132,8 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 	// The event type use READ ONLY
 	public int eventType = 0;
 
+	// The cursor image when over a control
+	// This should be set in the controls constructor
 	protected int cursorOver = HAND;
 
 	/*
@@ -339,7 +342,7 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 		return winApp;
 	}
 
-	protected PGraphicsJava2D getBuffer(){
+	protected PGraphics getBuffer(){
 		return buffer;
 	}
 
