@@ -25,7 +25,6 @@ package guicomponents;
 
 import java.awt.Font;
 import java.util.HashMap;
-import java.util.Set;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -45,12 +44,9 @@ public class F4P implements GConstants, PConstants {
 	// Used to order controls
 	static FAbstractControl.Z_Order zorder = new FAbstractControl.Z_Order();
 
-	/** INTERNAL USE ONLY  Cursor over changer */
-	private static GCursorImageChanger mcd = new GCursorImageChanger();
-	public static boolean overControl = false;
-	public static boolean cursorChangeEnabled = false;
-	public static int mouseOff = ARROW;
-	public static int mouseOver = HAND;
+	/* INTERNAL USE ONLY  Mouse over changer */
+	static boolean cursorChangeEnabled = true;
+	static int mouseOff = ARROW;
 
 	
 	/**
@@ -83,7 +79,19 @@ public class F4P implements GConstants, PConstants {
 		}
 	}
 	
-	
+	static void addControl(FAbstractControl control){
+		PApplet app = control.getPApplet();
+		// The first applet must be the sketchApplet
+		if(F4P.sketchApplet == null)
+			F4P.sketchApplet = app;
+		WindowInfo winfo = windows.get(app);
+		if(winfo == null){
+			winfo = new WindowInfo(app);
+			windows.put(app, winfo);
+		}
+		winfo.addControl(control);
+	}
+		
 	static void addWindow(FWindow window){
 		PApplet app = window.papplet;
 		// The first applet must be the sketchApplet
@@ -107,19 +115,6 @@ public class F4P implements GConstants, PConstants {
 		
 	}
 	
-	static void addControl(FAbstractControl control){
-		PApplet app = control.getPApplet();
-		// The first applet must be the sketchApplet
-		if(F4P.sketchApplet == null)
-			F4P.sketchApplet = app;
-		WindowInfo winfo = windows.get(app);
-		if(winfo == null){
-			winfo = new WindowInfo(app);
-			windows.put(app, winfo);
-		}
-		winfo.addControl(control);
-	}
-	
 	/**
 	 * Remove a control from the window. This is used in preparation 
 	 * for disposing of a control.
@@ -131,6 +126,7 @@ public class F4P implements GConstants, PConstants {
 		WindowInfo winfo = windows.get(app);
 		if(winfo != null){
 			winfo = new WindowInfo(app);
+			//control
 			winfo.removeControl(control);
 			return true;
 		}
@@ -140,18 +136,12 @@ public class F4P implements GConstants, PConstants {
 	/**
 	 * Enables or disables cursor over component change. <br>
 	 * 
-	 * Obviously there is no effect if no G4P controls have been created yet.
+	 * Calls to this method are ignored if no G4P controls have been created.
 	 * 
 	 * @param enable true to enable cursor change over components.
 	 */
 	public static void setMouseOverEnabled(boolean enable){
-		if(cursorChangeEnabled != enable){
-			if(enable == false){
-				for(WindowInfo winfo : windows.values())
-					winfo.app.cursor(mouseOff);
-			}
-			cursorChangeEnabled = enable;
-		}
+		cursorChangeEnabled = enable;
 	}
 
 	/**
@@ -161,9 +151,8 @@ public class F4P implements GConstants, PConstants {
 	 * @param cursorOff
 	 * @param cursorOver
 	 */
-	public static void setCursor(int cursorOff, int cursorOver){
+	public static void setCursorOff(int cursorOff){
 		mouseOff = cursorOff;
-		mouseOver = cursorOver;
 	}
 
 	/**
@@ -171,8 +160,8 @@ public class F4P implements GConstants, PConstants {
 	 * 
 	 * @param cursorOver
 	 */
-	public static void setCursor(int cursorOver){
-		mouseOver = cursorOver;
+	public static int getCursorOff(){
+		return mouseOff;
 	}
 
 }

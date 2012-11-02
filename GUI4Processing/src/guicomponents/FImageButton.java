@@ -84,6 +84,7 @@ public class FImageButton extends FImageControl {
 		// Now register control with applet
 		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FImageButton.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		cursorOver = HAND;
 		F4P.addControl(this);
 	}
 

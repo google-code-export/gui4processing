@@ -60,6 +60,7 @@ public class FTextArea extends FEditableTextControl {
 		tw = width - 2 * pad - ((sbPolicy & SCROLLBAR_VERTICAL) != 0 ? 18 : 0);
 		th = height - 2 * pad - ((sbPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 18 : 0);
 		this.wrapWidth = (wrapWidth == Integer.MAX_VALUE) ? (int)tw : wrapWidth;
+		// Clip zone
 		gpTextDisplayArea = new GeneralPath();
 		gpTextDisplayArea.moveTo( 0,  0);
 		gpTextDisplayArea.lineTo( 0, th);
@@ -89,7 +90,7 @@ public class FTextArea extends FEditableTextControl {
 		}
 		setText("", (int)tw);
 		z = Z_STICKY;
-		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FTextArea.class });
+		createEventHandler(F4P.sketchApplet, "handleTextEvents", new Class[]{ FEditableTextControl.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
@@ -105,21 +106,8 @@ public class FTextArea extends FEditableTextControl {
 	}
 
 	/**
-	 * Give the focus to this component but only after allowing the 
-	 * current component with focus to release it gracefully. <br>
-	 * Always cancel the keyFocusIsWith irrespective of the component
-	 * type. If the component needs to retain keyFocus then override this
-	 * method in that class e.g. GCombo
-	 */
-//	protected void takeFocus(){
-//		if(focusIsWith != null && focusIsWith != this)
-//			focusIsWith.loseFocus(this);
-//		focusIsWith = this;
-//	}
-
-
-	/**
-	 * Set the text to be used. The wrap width is determined by the size of the component.
+	 * Set the text to be used. The wrap width is determined by the size 
+	 * of the control.
 	 * @param text
 	 */
 	public FTextArea setText(String text){
@@ -133,14 +121,20 @@ public class FTextArea extends FEditableTextControl {
 	 * @param wrapWidth
 	 */
 	public void setText(String text, int wrapWidth){
-		startTLHI = null; endTLHI = null;
-		this.text = text;
 		stext = new StyledString(text, wrapWidth);
+		this.text = stext.getPlainText();
 		stext.getLines(buffer.g2);
+		if(stext.getNbrLines() > 0){
+			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
+			endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);	
+			startTLHI.copyFrom(endTLHI);
+			calculateCaretPos(endTLHI);
+			keepCursorInView = true;
+		}
+		ptx = pty = 0;
 		float sTextHeight;
 		if(vsb != null){
 			sTextHeight = stext.getTextAreaHeight();
-			ptx = pty = 0;
 			if(sTextHeight < th)
 				vsb.setValue(0.0f, 1.0f);
 			else 
@@ -152,6 +146,35 @@ public class FTextArea extends FEditableTextControl {
 				hsb.setValue(0,1);
 			else
 				hsb.setValue(0, tw/stext.getMaxLineLength());
+		}
+	}
+
+	public void appendText(String extraText){
+		if(extraText == null || extraText.equals(""))
+			return;
+		if(!stext.insertCharacters(stext.length(), extraText))
+			return;
+		text = stext.getPlainText();
+		LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
+		endTLHI.tli = lines.getLast();
+		endTLHI.thi = endTLHI.tli.layout.getNextRightHit(endTLHI.tli.nbrChars - 1);
+		startTLHI.copyFrom(endTLHI);
+		calculateCaretPos(endTLHI);
+		if(vsb != null){
+			float vfiller = Math.min(1, th/stext.getTextAreaHeight());
+			vsb.setValue(1 - vfiller, vfiller);
+			keepCursorInView = true;
+		}
+		// If needed update the horizontal scrollbar
+		if(hsb != null){
+			float hvalue = lines.getLast().layout.getVisibleAdvance();
+			float hlinelength = stext.getMaxLineLength();
+			float hfiller = Math.min(1, tw/hlinelength);
+			if(caretX < tw)
+				hsb.setValue(0,hfiller);
+			else 
+				hsb.setValue(hvalue/hlinelength, hfiller);
+			keepCursorInView = true;
 		}
 	}
 
@@ -513,12 +536,10 @@ public class FTextArea extends FEditableTextControl {
 				return false;
 			else {
 				// Move to start of next line
-				System.out.println("NEXT LINE (FTextArea) \n"+currPos);
 				ntli = stext.getTLIforLineNo(currPos.tli.lineNo + 1);
 				nthi = ntli.layout.getNextLeftHit(1);
 				currPos.tli = ntli;
 				currPos.thi = nthi;
-				System.out.println(currPos + "\n");
 			}
 		}
 		else {
@@ -528,6 +549,9 @@ public class FTextArea extends FEditableTextControl {
 		return true;
 	}
 
+	/**
+	 * Will respond to mouse events.
+	 */
 	public void mouseEvent(MouseEvent event){
 		if(!visible  || !enabled || !available) return;
 
@@ -573,6 +597,8 @@ public class FTextArea extends FEditableTextControl {
 				dragging = true;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				calculateCaretPos(endTLHI);
+				eventType = SELECTION_CHANGED;
+				fireEventX(this);
 				bufferInvalid = true;
 			}
 			break;

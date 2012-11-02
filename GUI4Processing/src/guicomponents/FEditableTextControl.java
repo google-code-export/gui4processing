@@ -34,10 +34,12 @@ import guicomponents.StyledString.TextLayoutHitInfo;
 import guicomponents.StyledString.TextLayoutInfo;
 import processing.core.PApplet;
 
-class FEditableTextControl extends FAbstractControl {
+public abstract class FEditableTextControl extends FAbstractControl {
 
 	protected static float HORZ_SCROLL_RATE = 4f;
 	protected static float VERT_SCROLL_RATE = 8;
+	
+	TabManager tabManager = null;
 	
 	/** Text value associated with component */
 	protected String text = "";
@@ -63,26 +65,29 @@ class FEditableTextControl extends FAbstractControl {
 	protected GeneralPath gpTextDisplayArea;
 	
 	// Used for identifying selection and cursor position
-	protected TextLayoutHitInfo startTLHI = null, endTLHI = null;
+	protected TextLayoutHitInfo startTLHI = new TextLayoutHitInfo();
+	protected TextLayoutHitInfo endTLHI = new TextLayoutHitInfo();
 
 	// The scrollbar policy
 	protected final int sbPolicy;
 	protected boolean autoHide = true;
 	protected FScrollbar hsb, vsb;
 
-	protected GTimer caretFlasher;
+	protected FTimer caretFlasher;
 	protected boolean showCaret = false;
+	
 	// Stuff to manage text selections
-	protected int endChar, startChar, pos = endChar, nbr = 0, adjust = 0;
-	protected boolean textChanged = false, newline = false;
+	protected int endChar = -1, startChar = -1, pos = endChar, nbr = 0, adjust = 0;
+	protected boolean textChanged = false, newline = false, selectionChanged = false;
 
 	public FEditableTextControl(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3);
 		sbPolicy = scrollbars;
 		autoHide = ((scrollbars & SCROLLBARS_AUTOHIDE) == SCROLLBARS_AUTOHIDE);
-		caretFlasher = new GTimer(theApplet, this, "flashCaret", 400);
+		caretFlasher = new FTimer(theApplet, this, "flashCaret", 400);
 		caretFlasher.start();
 		opaque = true;
+		cursorOver = TEXT;
 	}
 	
 	/**
@@ -101,7 +106,7 @@ class FEditableTextControl extends FAbstractControl {
 				stext = new StyledString(text);
 			}
 		}
-		ptx = pty = 0;
+		startTLHI.copyFrom(endTLHI);
 		keepCursorInView = false;
 		bufferInvalid = true;
 	}
@@ -136,8 +141,7 @@ class FEditableTextControl extends FAbstractControl {
 		takeFocus();
 
 	}
-
-
+	
 	public void setDefaultText(String dtext){
 		if(dtext == null || dtext.length() == 0)
 			defaultText = null;
@@ -309,7 +313,7 @@ class FEditableTextControl extends FAbstractControl {
 	}
 
 	public boolean hasSelection(){
-		return (startTLHI != null && endTLHI != null && startTLHI.compareTo(endTLHI) != 0);	
+		return (startTLHI.tli != null && endTLHI.tli != null && startTLHI.compareTo(endTLHI) != 0);	
 	}
 
 	protected void calculateCaretPos(TextLayoutHitInfo tlhi){
@@ -332,6 +336,8 @@ class FEditableTextControl extends FAbstractControl {
 			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
 			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
+			int startPos = pos, startNbr = nbr;
+			
 			// Get selection details
 			endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
 			startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
@@ -346,6 +352,13 @@ class FEditableTextControl extends FAbstractControl {
 					pos = endChar;	nbr = startChar - pos;
 				}
 			}
+			if(startPos >= 0){
+				if(startPos != pos || startNbr != nbr){
+					eventType = SELECTION_CHANGED;
+					fireEventX(this);
+				}
+			}
+			
 			if(keyID == KeyEvent.KEY_PRESSED) {
 				processKeyPressed(keyCode, keyChar, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
@@ -354,8 +367,11 @@ class FEditableTextControl extends FAbstractControl {
 				processKeyTyped(keyCode, keyChar, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
 			}
-			if(textChanged)
+			if(textChanged){
 				changeText();
+				eventType = CHANGED;
+				fireEventX(this);
+			}
 		}
 	}
 	
@@ -392,13 +408,21 @@ class FEditableTextControl extends FAbstractControl {
 		}
 		else if(keyChar == KeyEvent.VK_ENTER && stext.getWrapWidth() != Integer.MAX_VALUE) {
 			// If possible move to next text control
+			System.out.println("Enter typed");
 			stext.insertCharacters(pos, "\n");
 			adjust = 1; textChanged = true;
 			newline = true;
 		}
 		else if(keyChar == KeyEvent.VK_TAB){
 			// If possible move to next text control
-			
+			if(tabManager != null){
+				System.out.println("Tab typed " + tag + "  " + focusIsWith);
+				boolean result = (shiftDown) ? tabManager.prevControl(this) : tabManager.nextControl(this);
+				if(result){
+					startTLHI.copyFrom(endTLHI);
+					return;
+				}
+			}
 		}
 		// If we have emptied the text then recreate a one character string (space)
 		if(stext.length() == 0){
@@ -412,15 +436,16 @@ class FEditableTextControl extends FAbstractControl {
 	protected void changeText(){
 		TextLayoutInfo tli;
 		TextHitInfo thi = null, thiRight = null;
-
+		
 		pos += adjust;
 		// Force layouts to be updated
-		LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
+		stext.getLines(buffer.g2);
 
-		// Try to get position for the current position
+		// Try to get text layout info for the current position
 		tli = stext.getTLIforCharNo(pos);
 		if(tli == null){
 			// If unable to get a layout for pos then reset everything
+			System.out.println("FeditableTextControl - changeText");
 			endTLHI = null;
 			startTLHI = null;
 			ptx = pty = 0;
@@ -455,18 +480,20 @@ class FEditableTextControl extends FAbstractControl {
 			if(newline) {    ///stext.getWrapWidth() != Integer.MAX_VALUE && caretX > stext.getWrapWidth()){
 				if(pos >= stext.length()){
 					stext.insertCharacters(pos, " ");
-					lines = stext.getLines(buffer.g2);
+					stext.getLines(buffer.g2);
 				}
 				moveCaretRight(endTLHI);
 				calculateCaretPos(endTLHI);
 			}
-			
 			// Finish off by ensuring no selection, invalidate buffer etc.
 			startTLHI.copyFrom(endTLHI);
 		}
 		bufferInvalid = true;
 	}
 	
+	/**
+	 * Do not call this directly. A timer calls this method as and when required.
+	 */
 	public void flashCaret(){
 		showCaret = !showCaret;
 	}
@@ -491,4 +518,9 @@ class FEditableTextControl extends FAbstractControl {
 		bufferInvalid = true;
 	}
 
+	public void dispose(){
+		if(tabManager != null)
+			tabManager.removeControl(this);
+		super.dispose();
+	}
 }

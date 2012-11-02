@@ -35,12 +35,13 @@ public interface GConstants {
 	// 0x0???????  user can disable these messages 
 	// 0x8???????  always display these messages
 
-
+	// Constants for the control methods
 	public static int DRAW_METHOD = 			0x00000001;
 	public static int MOUSE_METHOD = 			0x00000002;
 	public static int PRE_METHOD = 				0x00000004;
 	public static int KEY_METHOD = 				0x00000008;
-	public static int ALL_METHOD =				0x0000000f;
+	public static int POST_METHOD = 			0x00000010;
+	public static int ALL_METHOD =				0x0000001f;
 	
 	// Button status values
 	public static final int OFF_CONTROL	= 		0;
@@ -50,8 +51,9 @@ public interface GConstants {
 	// ### Event constants ###
 	// TextField component (GSlider also uses CHANGED)
 	public final static int CHANGED = 			0x00000101;	// Text has changed
-	public final static int ENTERED = 			0x00000102;	// Enter key pressed
-	public final static int SET = 				0x00000103;	// setText() was used
+	public final static int SELECTION_CHANGED = 0x00000102;	// Selected text has change
+	public final static int ENTERED = 			0x00000103;	// Enter key pressed
+	public final static int SET = 				0x00000104;	// setText() was used
 
 	// GPanel component
 	public final static int COLLAPSED = 		0x00000201;	// Panel has been collapsed

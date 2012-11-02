@@ -96,6 +96,7 @@ public class FPanel extends FTextControl {
 
 		createEventHandler(F4P.sketchApplet, "handleButtonEvents", new Class[]{ FPanel.class });
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
+		cursorOver = HAND;
 		F4P.addControl(this);
 	}
 

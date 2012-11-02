@@ -53,27 +53,53 @@ public class FTextField extends FEditableTextControl {
 		}
 		setText("");
 		z = Z_STICKY;
-		createEventHandler(F4P.sketchApplet, "handleTextFieldEvents", new Class[]{ FTextField.class });
+		createEventHandler(F4P.sketchApplet, "handleTextEvents", new Class[]{ FEditableTextControl.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		F4P.addControl(this);
 	}
 
-	public FTextField setText(String text){
-		startTLHI = null; endTLHI = null;
-		if(text == null || text.length() == 0)
-			text = "";
-		this.text = text;
-		stext = new StyledString(text);
-//		stext.getLines(buffer.g2);
-		ptx = 0;
+	public void setText(String text){
+		stext = new StyledString(text, wrapWidth);
+		this.text = stext.getPlainText();
+		stext.getLines(buffer.g2);
+		if(stext.getNbrLines() > 0){
+			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
+			endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);	
+			startTLHI.copyFrom(endTLHI);
+			calculateCaretPos(endTLHI);
+			keepCursorInView = true;
+		}
+		ptx = pty = 0;
+		// If needed update the horizontal scrollbar
 		if(hsb != null){
 			if(stext.getMaxLineLength() < tw)
 				hsb.setValue(0,1);
 			else
 				hsb.setValue(0, tw/stext.getMaxLineLength());
 		}
-		bufferInvalid = true;
-		return this;
+	}
+
+	public void appendText(String extraText){
+		if(extraText == null || extraText.equals(""))
+			return;
+		if(!stext.insertCharacters(stext.length(), extraText))
+			return;
+		text = stext.getPlainText();
+		LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
+		endTLHI.tli = lines.getLast();
+		endTLHI.thi = endTLHI.tli.layout.getNextRightHit(endTLHI.tli.nbrChars - 1);
+		startTLHI.copyFrom(endTLHI);
+		calculateCaretPos(endTLHI);
+		if(hsb != null){
+			float hvalue = lines.getLast().layout.getVisibleAdvance();
+			float hlinelength = stext.getMaxLineLength();
+			float hfiller = Math.min(1, tw/hlinelength);
+			if(caretX < tw)
+				hsb.setValue(0,hfiller);
+			else 
+				hsb.setValue(hvalue/hlinelength, hfiller);
+			keepCursorInView = true;
+		}
 	}
 
 	public PGraphics getSnapshot(){
@@ -225,6 +251,8 @@ public class FTextField extends FEditableTextControl {
 				dragging = true;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				calculateCaretPos(endTLHI);
+				eventType = SELECTION_CHANGED;
+				fireEventX(this);
 				bufferInvalid = true;
 			}
 			break;
@@ -312,7 +340,7 @@ public class FTextField extends FEditableTextControl {
 		winApp.image(buffer, 0, 0);
 
 		// Draw caret if text display area
-		if(focusIsWith == this && showCaret && endTLHI != null){
+		if(focusIsWith == this && showCaret && endTLHI.tli != null){
 			float[] cinfo = endTLHI.tli.layout.getCaretInfo(endTLHI.thi);
 			float x_left =  - ptx + cinfo[0];
 			float y_top = - pty + endTLHI.tli.yPosInPara; 

@@ -104,9 +104,9 @@ final public class StyledString implements Serializable {
 	 * @param startText
 	 */
 	public StyledString(String startText){
+		plainText = removeSingleSpacing(startText);
 		spacer = getParagraghSpacer(1); //  safety
 		// Get rid of any EOLs
-		plainText = startText.replaceAll("\n", " ");
 		styledText = new AttributedString(plainText);
 		applyAttributes();
 		invalidText = true;
@@ -122,9 +122,8 @@ final public class StyledString implements Serializable {
 	public StyledString(String startText, int wrapWidth){
 		if(wrapWidth > 0 && wrapWidth < Integer.MAX_VALUE)
 			this.wrapWidth = wrapWidth;
+		plainText = (wrapWidth == Integer.MAX_VALUE) ? removeSingleSpacing(startText) : removeDoubleSpacing(startText);
 		spacer = getParagraghSpacer(this.wrapWidth);
-		plainText = startText;
-		removeDoubleSpacing(); // just in case we merge two eol characters
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();
@@ -294,11 +293,19 @@ final public class StyledString implements Serializable {
 	 */
 	public boolean insertCharacters(int insertPos, String chars){
 		int nbrChars = chars.length();
+		if(nbrChars > 0){
+			if(wrapWidth == Integer.MAX_VALUE)
+				chars = removeSingleSpacing(chars);
+			else
+				chars = removeDoubleSpacing(chars);
+		}
+		nbrChars = chars.length();
+		if(nbrChars == 0)
+			return false;
 		if(plainText.equals(" "))
 			plainText = chars;
 		else
 			plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
-		removeDoubleSpacing(); // just in case we merge two eol characters
 		for(AttributeRun ar : atrun){
 			if(ar.end < Integer.MAX_VALUE){
 				if(ar.end >= insertPos){
@@ -326,10 +333,9 @@ final public class StyledString implements Serializable {
 			plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
 		else
 			plainText = plainText.substring(fromPos + nbrToRemove);
-		removeDoubleSpacing(); // just in case we merge two eol characters
+		plainText = removeDoubleSpacing(plainText); // just in case we merge two eol characters
 		if(plainText.length() == 0){
 			atrun.clear();
-//			plainText = "";
 			styledText = null;
 		}
 		else {
@@ -481,7 +487,7 @@ final public class StyledString implements Serializable {
 		return wrapWidth;
 	}
 
-	public TextLayoutHitInfo calculateFromXY(Graphics2D g2d, float px, float py){
+	TextLayoutHitInfo calculateFromXY(Graphics2D g2d, float px, float py){
 		TextHitInfo thi = null;
 		TextLayoutInfo tli = null;
 		TextLayoutHitInfo tlhi = null;
@@ -503,7 +509,7 @@ final public class StyledString implements Serializable {
 	 * @param ln
 	 * @return
 	 */
-	public TextLayoutInfo getTLIforLineNo(int ln){
+	TextLayoutInfo getTLIforLineNo(int ln){
 		return linesInfo.get(ln);
 	}
 
@@ -564,11 +570,20 @@ final public class StyledString implements Serializable {
 	 * become EOL/EOL not the single EOL required.
 	 * 
 	 */
-	void removeDoubleSpacing(){
-		while(plainText.indexOf("\n\n") >= 0){
+	String removeDoubleSpacing(String chars){
+		while(chars.indexOf("\n\n") >= 0){
 			invalidText = true;
-			plainText = plainText.replaceAll("\n\n", "\n");
+			chars = chars.replaceAll("\n\n", "\n");
 		}
+		return chars;
+	}
+
+	String removeSingleSpacing(String chars){
+		while(chars.indexOf("\n") >= 0){
+			invalidText = true;
+			chars = chars.replaceAll("\n", "");
+		}
+		return chars;
 	}
 
 	/**
@@ -649,6 +664,12 @@ final public class StyledString implements Serializable {
 		public TextLayoutInfo tli;
 		public TextHitInfo thi;
 
+		
+		public TextLayoutHitInfo() {
+			this.tli = null;
+			this.thi = null;
+		}
+		
 		/**
 		 * @param tli
 		 * @param thi

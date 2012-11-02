@@ -66,7 +66,6 @@ public class FWinApplet extends PApplet implements GConstants {
 	 */
 	public void setup() {
 		size(appWidth, appHeight, mode);
-		registerPost(this);
 	}
 
 	/**
@@ -136,20 +135,20 @@ public class FWinApplet extends PApplet implements GConstants {
 	 * Already active to provide cursor over component image changes
 	 * Use addDPostHandler in GWindow to activate this method for your use
 	 */
-	public void post(){
-		if(isVisible() && F4P.cursorChangeEnabled){
-			if(GComponent.cursorIsOver != null)
-				cursor(G4P.mouseOver);
-			else
-				cursor(G4P.mouseOff);
-		}
-		if(owner.postHandlerObject != null){
-			try {
-				owner.postHandlerMethod.invoke(owner.postHandlerObject, new Object[] { this, owner.data });
-			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.postHandlerObject, 
-						new Object[] {owner.postHandlerMethodName, e} );
-			}
-		}
-	}
+//	public void post(){
+//		if(isVisible() && F4P.cursorChangeEnabled){
+//			if(GComponent.cursorIsOver != null)
+//				cursor(G4P.mouseOver);
+//			else
+//				cursor(G4P.mouseOff);
+//		}
+//		if(owner.postHandlerObject != null){
+//			try {
+//				owner.postHandlerMethod.invoke(owner.postHandlerObject, new Object[] { this, owner.data });
+//			} catch (Exception e) {
+//				GMessenger.message(EXCP_IN_HANDLER, owner.postHandlerObject, 
+//						new Object[] {owner.postHandlerMethodName, e} );
+//			}
+//		}
+//	}
 }
