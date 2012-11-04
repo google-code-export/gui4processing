@@ -36,13 +36,17 @@ public class FLinearTrackControl extends FValueControl {
 	static protected int TRACK_SPOT = 2;
 
 	protected float trackWidth, trackLength, trackDisplayLength;
+	protected float trackOffset;
 
 	protected int textOrientation = ORIENT_TRACK;
 
 	protected int downHotSpot = -1;
 	// Mouse over status
 	protected int status = -1;
-
+	
+	// For labels
+	protected StyledString[] labels;
+	protected boolean labelsInvalid = true;
 
 	public FLinearTrackControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
@@ -67,6 +71,47 @@ public class FLinearTrackControl extends FValueControl {
 		}
 	}
 	
+	/**
+	 * This method is used to set the text to appear alongside the tick marks. <br>
+	 * The array passes must have a minimum of 2 elements and each label (element)
+	 * must have at least 1 character. If these two conditions are not met then
+	 * the call to this method will be ignored and no changes made to 
+	 * 
+	 * @param tickLabels
+	 */
+	public void setTickLabels(String[] tickLabels){
+		if(tickLabels == null || tickLabels.length == 0)
+			return;
+		for(String s : tickLabels)
+			if(s == null || s.length() == 0)
+				return;
+		labels = new StyledString[tickLabels.length];
+		for(int i = 0; i < tickLabels.length; i++)
+			labels[i] = new StyledString(tickLabels[i]);
+		stickToTicks = true;
+		nbrTicks = labels.length;
+		startLimit = 0;
+		endLimit = nbrTicks - 1;
+		valueType = INTEGER;
+		showLimits = false;
+		showValue = false;
+		bufferInvalid = true;			
+		// Now fix the values to prevent further changes
+		fixed = true;
+	}
+	
+	/**
+	 * If we are using labels then this will get the label text
+	 * associated with the current value. <br>
+	 * If labels have not been set then return null
+	 */
+	public String getValueS(){
+		// Use the valueTarget rather than the valuePos since intermediate values
+		// have no meaning in this case.
+		int idx = Math.round(startLimit + (endLimit - startLimit) * valueTarget);
+		return (labels == null) ? null : labels[idx].getPlainText();
+	}
+
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled || !available) return;
 
@@ -178,7 +223,7 @@ public class FLinearTrackControl extends FValueControl {
 		winApp.popStyle();
 	}
 
-	protected void drawValue(float trackOffset){
+	protected void drawValue(){
 		Graphics2D g2d = buffer.g2;
 		float px, py;
 		TextLayout line;
@@ -217,7 +262,7 @@ public class FLinearTrackControl extends FValueControl {
 		}
 	}
 	
-	protected void drawLimits(float trackOffset){
+	protected void drawLimits(){
 		Graphics2D g2d = buffer.g2;
 		float px, py;
 		TextLayout line;
@@ -276,4 +321,50 @@ public class FLinearTrackControl extends FValueControl {
 		}	
 	}
 
+	protected void drawLabels(){
+		Graphics2D g2d = buffer.g2;
+		float px, py;
+		TextLayout line;
+		if(labelsInvalid){
+			ssStartLimit = new StyledString(getNumericDisplayString(startLimit));
+			ssEndLimit = new StyledString(getNumericDisplayString(endLimit));
+			limitsInvalid = false;
+		}
+		float deltaX = 1.0f / (nbrTicks - 1);
+		switch(textOrientation){
+		case ORIENT_LEFT:
+			for(int i = 0; i < labels.length; i++){
+				line = labels[i].getLines(g2d).getFirst().layout;	
+				px = (i * deltaX - 0.5f)*trackLength + line.getDescent();
+				py = trackOffset + line.getVisibleAdvance();
+				buffer.pushMatrix();
+				buffer.translate(px, py);
+				buffer.rotate(-PI/2);
+				line.draw(g2d, 0, 0 );
+				buffer.popMatrix();
+			}
+			break;
+		case ORIENT_RIGHT:
+			for(int i = 0; i < labels.length; i++){
+				line = labels[i].getLines(g2d).getFirst().layout;	
+				px = (i * deltaX - 0.5f)*trackLength - line.getDescent();
+				py = trackOffset;
+				buffer.pushMatrix();
+				buffer.translate(px, py);
+				buffer.rotate(PI/2);
+				line.draw(g2d, 0, 0 );
+				buffer.popMatrix();
+			}
+			break;
+		case ORIENT_TRACK:
+			for(int i = 0; i < labels.length; i++){
+				line = labels[i].getLines(g2d).getFirst().layout;	
+				px = (i * deltaX - 0.5f)*trackLength - 0.5f * line.getVisibleAdvance();
+				py = trackOffset + line.getAscent();
+				line.draw(g2d, px, py );
+			}
+			break;
+		}	
+
+	}
 }

@@ -48,13 +48,29 @@ public class F4P implements GConstants, PConstants {
 	static boolean cursorChangeEnabled = true;
 	static int mouseOff = ARROW;
 
+	/**
+	 * Used to register the main sketch window with G4P. This is ignored if any
+	 * G4P controls or windows have already been created because the act of
+	 * creating a control will do this for you. <br>
+	 * 
+	 * Some controls are created without passing a reference to the sketch applet
+	 * but still need to know it. An example is the GColorChooser control which
+	 * cannot be used until this method is called or some other G4P control has
+	 * been created.
+	 * 
+	 * @param app
+	 */
+	public static void registerSketch(PApplet app){
+		if(sketchApplet == null)
+			sketchApplet = app;
+	}
 	
 	/**
 	 * Set the global colour scheme. This will change the local
 	 * colour scheme for every control.
 	 * @param cs colour scheme to use (0-15)
 	 */
-	static public void setGlobalColorScheme(int cs){
+	public static void setGlobalColorScheme(int cs){
 		cs = Math.abs(cs) % 16; // Force into valid range
 		if(globalColorScheme != cs){
 			globalColorScheme = cs;
@@ -70,7 +86,7 @@ public class F4P implements GConstants, PConstants {
 	 * 
 	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
 	 */
-	static public void setGlobalAlpha(int alpha){
+	public static void setGlobalAlpha(int alpha){
 		alpha = Math.abs(alpha) % 256; // Force into valid range
 		if(globalAlpha != alpha){
 			globalAlpha = alpha;

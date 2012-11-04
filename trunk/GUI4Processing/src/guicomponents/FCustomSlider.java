@@ -41,7 +41,6 @@ public class FCustomSlider extends FLinearTrackControl {
 	protected PImage rightEnd;
 	protected PImage centre;
 
-	protected float trackOffset;
 	
 	public FCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String style) {
 		super(theApplet, p0, p1, p2, p3);
@@ -72,7 +71,7 @@ public class FCustomSlider extends FLinearTrackControl {
 		ssValue = new StyledString("0.50");
 
 		// Now register control with applet
-		createEventHandler(F4P.sketchApplet, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
+		createEventHandler(F4P.sketchApplet, "handleSliderEvents", new Class[]{ FLinearTrackControl.class, boolean.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		F4P.addControl(this);
@@ -118,15 +117,20 @@ public class FCustomSlider extends FLinearTrackControl {
 				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
 				break;
 			}
-
-			// Display slider limits
+			
+			// Display slider values
 			g2d.setColor(jpalette[2]);
-			if(showLimits)
-				drawLimits(trackWidth + 3);
-			// Display slider value
-			if(showValue)
-				drawValue(trackWidth + 3);
+			if(labels != null){
+				drawLabels();
+			}
+			else {
 
+				if(showLimits)
+					drawLimits();
+				// Display slider value
+				if(showValue)
+					drawValue();
+			}
 			buffer.popMatrix();
 			buffer.endDraw();
 		}
