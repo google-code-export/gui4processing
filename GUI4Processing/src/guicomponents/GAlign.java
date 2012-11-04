@@ -37,7 +37,7 @@ public interface GAlign {
         public static final int JUSTIFY         = 0x00000008;
         public static final int HA_VALID        = 0x0000000F;
        
-        public static final int TOP                     = 0x00000010;
+        public static final int TOP             = 0x00000010;
         public static final int MIDDLE          = 0x00000020;
         public static final int BOTTOM          = 0x00000040;
         public static final int VA_VALID        = 0x00000070;
