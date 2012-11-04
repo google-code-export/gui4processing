@@ -27,7 +27,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 
-public class FTextIconControl extends FTextControl implements ITextIcon {
+public class FTextIconControl extends FTextControl { //implements ITextIcon {
 
 	protected PImage[] bicon = null;
 	protected int iconW = 0, iconH = 0;

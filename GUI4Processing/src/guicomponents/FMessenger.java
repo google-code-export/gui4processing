@@ -29,11 +29,11 @@ package guicomponents;
  * @author Peter Lager
  *
  */
-public class GMessenger implements GConstants {
+public class FMessenger implements GConstants {
 
 	public static void message(Integer id, Object obj, Object[] info){
 		// Display G4P messages if required
-		if(G4P.messages){
+		if(F4P.messages){
 			switch(id){
 			case MISSING:
 				missingEventHandler(obj, info);
@@ -99,7 +99,6 @@ public class GMessenger implements GConstants {
 	 * @param obj2 the method name
 	 * @param obj3 parameter types (Class[])
 	 */
-	@SuppressWarnings("unchecked")
 	private static void missingEventHandler(Object caller, Object[] info) {
 		String className = caller.getClass().getSimpleName();
 		String methodName = (String) info[0];
@@ -115,8 +114,6 @@ public class GMessenger implements GConstants {
 			for(int i = 0; i < parameters.length; i++){
 				pname = (parameters[i]).getSimpleName();
 				output.append(pname + " " + pname.substring(1).toLowerCase());
-//				if(parameters.length > 1)
-//					output.append(i);
 				if(i < parameters.length - 1)
 					output.append(", ");
 			}
@@ -131,7 +128,6 @@ public class GMessenger implements GConstants {
 	 * @param obj2 the method name
 	 * @param obj3 parameter types (Class[])
 	 */
-	@SuppressWarnings("unchecked")
 	private static void nonexistantEventHandler(Object handler, Object[] info) {
 		String className = handler.getClass().getSimpleName();
 		String methodName = (String) info[0];
@@ -147,8 +143,6 @@ public class GMessenger implements GConstants {
 			for(int i = 0; i < parameters.length; i++){
 				pname = (parameters[i]).getSimpleName();
 				output.append(pname + " " + pname.substring(1).toLowerCase());
-//				if(parameters.length > 1)
-//					output.append(i);
 				if(i < parameters.length - 1)
 					output.append(", ");
 			}

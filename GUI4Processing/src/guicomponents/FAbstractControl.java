@@ -47,7 +47,7 @@ import processing.core.PImage;
  * @author Peter Lager
  *
  */
-public abstract class FAbstractControl implements IControl, PConstants, GConstants {
+public abstract class FAbstractControl implements PConstants, GConstants {
 
 	/*
 	 * INTERNAL USE ONLY
@@ -334,7 +334,7 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 		return control_mode;
 	}
 
-	public IControl getParent() {
+	public FAbstractControl getParent() {
 		return parent;
 	}
 
@@ -386,7 +386,7 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 			eventHandlerObject = handlerObj;
 			eventHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(MISSING, this, new Object[] {methodName, parameters});
+			FMessenger.message(MISSING, this, new Object[] {methodName, parameters});
 			eventHandlerObject = null;
 		}
 	}
@@ -406,7 +406,7 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 			eventHandlerMethodName = methodName;
 			eventHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {this.getClass() } );
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			FMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
 			eventHandlerObject = null;
 			eventHandlerMethodName = "";
 		}
@@ -431,7 +431,7 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 			eventHandlerMethodName = methodName;
 			eventHandlerMethod = obj.getClass().getMethod(methodName, parameters );
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, eventHandlerObject, new Object[] {methodName, parameters } );
+			FMessenger.message(NONEXISTANT, eventHandlerObject, new Object[] {methodName, parameters } );
 			eventHandlerObject = null;
 			eventHandlerMethodName = "";
 		}
@@ -452,7 +452,7 @@ public abstract class FAbstractControl implements IControl, PConstants, GConstan
 //				eventHandlerMethod.invoke(eventHandlerObject, new Object[] { this });
 				eventHandlerMethod.invoke(eventHandlerObject, objects);
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, 
+				FMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, 
 						new Object[] {eventHandlerMethodName, e } );
 			}
 		}		

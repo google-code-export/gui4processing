@@ -220,15 +220,6 @@ public class FWindow extends Frame implements GConstants {
 	
 	
 	/**
-	 * Add a G4P component onto the window.
-	 * 
-	 * @param component
-	 */
-	public void add(GComponent component){
-		component.changeWindow(papplet);
-	}
-
-	/**
 	 * Add an object that holds the data this window needs to use.
 	 * 
 	 * Note: the object can be of any class that extends GWinData.
@@ -252,7 +243,7 @@ public class FWindow extends Frame implements GConstants {
 		try{
 			setAlwaysOnTop(onTop);
 		} catch (Exception e){
-			if(G4P.messages)
+			if(F4P.messages)
 				System.out.println("Warning: setOnTop() method will not work when the sketch is run from a remote location.");
 		}
 	}
@@ -395,7 +386,7 @@ public class FWindow extends Frame implements GConstants {
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class } } );
+			FMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class } } );
 		}
 	}
 
@@ -415,7 +406,7 @@ public class FWindow extends Frame implements GConstants {
 //			papplet.registerPre(papplet);
 			regPre = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class } } );
+			FMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class } } );
 		}
 	}
 
@@ -436,7 +427,7 @@ public class FWindow extends Frame implements GConstants {
 			papplet.registerMouseEvent(papplet);
 			regMouse = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class, MouseEvent.class } } );
+			FMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class, MouseEvent.class } } );
 		}
 	}
 
@@ -456,7 +447,7 @@ public class FWindow extends Frame implements GConstants {
 			postHandlerMethodName = methodName;
 			regPost = true;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class } } );
+			FMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { FWinApplet.class, FWinData.class } } );
 		}
 	}
 
