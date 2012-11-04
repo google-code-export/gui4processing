@@ -98,7 +98,7 @@ public class FCScheme implements GConstants {
 				e.printStackTrace();
 			}
 			image = app.loadImage("user_gui_palette.png");
-			GMessenger.message(USER_COL_SCHEME, null, null);
+			FMessenger.message(USER_COL_SCHEME, null, null);
 		}
 		else {
 			// User image not provided

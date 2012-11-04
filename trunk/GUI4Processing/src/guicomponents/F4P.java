@@ -48,6 +48,8 @@ public class F4P implements GConstants, PConstants {
 	static boolean cursorChangeEnabled = true;
 	static int mouseOff = ARROW;
 
+	static boolean messages = true;
+	
 	/**
 	 * Used to register the main sketch window with G4P. This is ignored if any
 	 * G4P controls or windows have already been created because the act of
@@ -149,6 +151,20 @@ public class F4P implements GConstants, PConstants {
 		return false;
 	}
 	
+	/**
+	 * G4P has a range of support messages eg <br>if you create a GUI component 
+	 * without an event handler or, <br>a slider where the visible size of the
+	 * slider is less than the difference between min and max values.
+	 * 
+	 * This method allows the user to enable (default) or disable this option. If
+	 * disable then it should be called before any GUI components are created.
+	 * 
+	 * @param enable
+	 */
+	public static void messagesEnabled(boolean enable){
+		messages = enable;
+	}
+
 	/**
 	 * Enables or disables cursor over component change. <br>
 	 * 

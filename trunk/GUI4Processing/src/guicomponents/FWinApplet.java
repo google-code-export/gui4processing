@@ -88,7 +88,7 @@ public class FWinApplet extends PApplet implements GConstants {
 				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
 						new Object[] { owner.papplet, owner.data });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.preHandlerObject, 
+				FMessenger.message(EXCP_IN_HANDLER, owner.preHandlerObject, 
 						new Object[] {owner.preHandlerMethodName, e} );
 			}
 		}
@@ -109,7 +109,7 @@ public class FWinApplet extends PApplet implements GConstants {
 			try {
 				owner.drawHandlerMethod.invoke(owner.drawHandlerObject, new Object[] { this, owner.data });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.drawHandlerObject, 
+				FMessenger.message(EXCP_IN_HANDLER, owner.drawHandlerObject, 
 						new Object[] {owner.drawHandlerMethodName, e} );
 			}
 		}
@@ -124,7 +124,7 @@ public class FWinApplet extends PApplet implements GConstants {
 			try {
 				owner.mouseHandlerMethod.invoke(owner.mouseHandlerObject, new Object[] { this, owner.data, event });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.mouseHandlerObject, 
+				FMessenger.message(EXCP_IN_HANDLER, owner.mouseHandlerObject, 
 						new Object[] {owner.mouseHandlerMethodName, e} );
 			}
 		}

@@ -27,7 +27,7 @@ import java.awt.Font;
 import processing.core.PApplet;
 
 
-public class FTextControl extends FAbstractControl implements IText, GAlign {
+public class FTextControl extends FAbstractControl implements GAlign {
 
 	protected static final int TPAD = 2;
 	protected static final int TPAD2 = TPAD * 2;
