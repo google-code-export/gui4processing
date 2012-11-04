@@ -12,7 +12,7 @@ import processing.core.PMatrix2D;
 import processing.core.PMatrix3D;
 
 /**
- * This class is used to remember information about a particular applet (i.e. windows).
+ * This class is used to remember information about a particular applet (i.e. window).
  * 
  * It remembers the original transformation matrix to simplify working with 3D renderers
  * and libraries such as PeasyCam.

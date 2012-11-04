@@ -207,10 +207,6 @@ public class FWindow extends Frame implements GConstants {
 		setLocation(x,y);
 		setVisible(true);
 		
-//		// At least get a blank screen
-//		papplet.registerDraw(papplet);
-//		regDraw = true;
-		
 		// Make the window always on top
 		setOnTop(true);
 		

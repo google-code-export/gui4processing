@@ -59,6 +59,7 @@ public class FSlider extends FLinearTrackControl {
 		track = new RoundRectangle2D.Float(-trackDisplayLength/2, -trackWidth/2, 
 				trackDisplayLength, trackWidth, 
 				trackWidth, trackWidth );
+		trackOffset = trackWidth + 3;
 	
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -77,7 +78,7 @@ public class FSlider extends FLinearTrackControl {
 		ssValue = new StyledString("0.50");
 
 		// Now register control with applet
-		createEventHandler(F4P.sketchApplet, "handleSliderEvents", new Class[]{ FValueControl.class, boolean.class });
+		createEventHandler(F4P.sketchApplet, "handleSliderEvents", new Class[]{ FLinearTrackControl.class, boolean.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		F4P.addControl(this);
@@ -136,13 +137,19 @@ public class FSlider extends FLinearTrackControl {
 			g2d.setColor(jpalette[3]);
 			g2d.draw(track);
 
-			// Display slider limits
+			// Display slider values
 			g2d.setColor(jpalette[2]);
-			if(showLimits)
-				drawLimits(trackWidth + 3);
-			// Display slider value
-			if(showValue)
-				drawValue(trackWidth + 3);
+			if(labels != null){
+				drawLabels();
+			}
+			else {
+
+				if(showLimits)
+					drawLimits();
+				// Display slider value
+				if(showValue)
+					drawValue();
+			}
 
 			buffer.popMatrix();
 			buffer.endDraw();
