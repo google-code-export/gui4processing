@@ -33,7 +33,7 @@ public class G4P implements GConstants, PConstants {
 
 	static PApplet sketchApplet = null;
 	
-	public static int globalColorScheme = GCScheme.CYAN_SCHEME;
+	public static int globalColorScheme = GCScheme.BLUE_SCHEME;
 	public static int globalAlpha = 255;
 
 	public static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
