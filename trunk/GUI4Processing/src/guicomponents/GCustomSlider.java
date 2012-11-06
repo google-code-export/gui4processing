@@ -30,6 +30,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 import processing.core.PImage;
 
@@ -78,12 +79,12 @@ public class GCustomSlider extends GLinearTrackControl {
 	protected PImage rightEnd;
 	protected PImage centre;
 
-	
-	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String style) {
+//	protected float 
+	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String skin) {
 		super(theApplet, p0, p1, p2, p3);
-		loadSkin(style);
+		loadSkin(skin);
 		float maxEndLength = Math.max(leftEnd.width, rightEnd.width);
-		maxEndLength = Math.max(maxEndLength, 10); // make sure we have enough for right limits value
+		maxEndLength = Math.max(maxEndLength, 10); // make sure we have enough to show limits value
 		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
 		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
 		trackWidth = centre.height;
@@ -121,8 +122,12 @@ public class GCustomSlider extends GLinearTrackControl {
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
 			buffer.beginDraw();
+			
 			// Back ground colour
-			buffer.background(buffer.color(255,0));
+			if(opaque == true)
+				buffer.background(palette[6]);
+			else
+				buffer.background(buffer.color(255,0));
 
 			// Draw track, thumb, ticks etc.
 			buffer.pushMatrix();
@@ -153,8 +158,7 @@ public class GCustomSlider extends GLinearTrackControl {
 			case PRESS_CONTROL:
 				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
 				break;
-			}
-			
+			}		
 			// Display slider values
 			g2d.setColor(jpalette[2]);
 			if(labels != null){
@@ -164,7 +168,6 @@ public class GCustomSlider extends GLinearTrackControl {
 
 				if(showLimits)
 					drawLimits();
-				// Display slider value
 				if(showValue)
 					drawValue();
 			}
@@ -173,23 +176,24 @@ public class GCustomSlider extends GLinearTrackControl {
 		}
 	}
 	
-	/**
-	 * Stretch the centre image from 1 pixel wide to length
-	 * of track. 
-	 */
 	protected void extendCentreImage(){
-		PImage p = centre;
-		centre = new PImage((int)trackLength, p.height, ARGB);
-
-		p.loadPixels();
+		int tl = (int)trackLength;
+		PGraphics pg = winApp.createGraphics(tl, centre.height, JAVA2D);
+		int rem = tl % centre.width;
+		int n = tl / centre.width;
+		n = (rem == 0) ? n : n + 1;
+		int px = (tl - centre.width * n)/2;
+		pg.beginDraw();
+		pg.background(winApp.color(255,0));
+		pg.imageMode(CORNER);
 		
-		int index = 0;
-		for(int h = 0; h < centre.height; h++){
-			int v = p.pixels[h];
-			for(int w = 0; w < centre.width; w++)
-				centre.pixels[index++] = v; 
+		while(px < tl){
+			pg.image(centre, px, 0);
+			px += centre.width;
 		}
-		centre.updatePixels();	
+		
+		pg.endDraw();
+		centre = pg;
 	}
 	
 	private void loadSkin(String style){
@@ -199,7 +203,6 @@ public class GCustomSlider extends GLinearTrackControl {
 		thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.png");
 		//	will be stretched before use
 		centre = winApp.loadImage(style + "/centre.png");
-		boolean err = false;
 
 		StringBuilder errmess = new StringBuilder();
 		if(leftEnd == null) errmess.append("end_left.png\n");
@@ -209,25 +212,11 @@ public class GCustomSlider extends GLinearTrackControl {
 		
 		// See if we have problems with the skin files
 		if(errmess.length() > 0){
-			err = true;
 			System.out.println("The following files could not be found for the skin " + style + ": \n" + errmess.toString()
 					+ "\nCheck that these files are correctly placed in the data directory under a folder with"
 					+ " the same name as the skin used.\n");
-		}
-		else {
-			if(centre != null && centre.width != 1){
-				err = true;
-				System.out.println("The supplied centre image for this skin is not of width 1px.");
-			}
-			if(centre.height != leftEnd.height || leftEnd.height != rightEnd.height){
-				err = true;
-				System.out.println("The image components of the slider are not all the same height.");
-			}
-		}
-		if(err){
 			System.out.println("Reverting to default 'grey_blue' style");
 			loadSkin("grey_blue");
 		}
-		return;
 	}
 }
