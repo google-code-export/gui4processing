@@ -111,12 +111,15 @@ public class GTextField extends GEditableTextControl {
 				new HSrect(1, tx, ty, tw, th),			// typing area
 				new HSrect(9, 0, 0, width, height)		// control surface
 		};
+		G4P.pushStyle();
+		G4P.control_mode = CORNER;
 		if((scrollbarPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new GScrollbar(theApplet, 0, 0, tw, 10);
 			addControl(hsb, tx, ty + th + 2, 0);
 			hsb.addEventHandler(this, "hsbEventHandler");
 			hsb.setAutoHide(autoHide);
 		}
+		G4P.pushStyle();
 		setText("");
 		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleTextEvents", new Class[]{ GEditableTextControl.class });

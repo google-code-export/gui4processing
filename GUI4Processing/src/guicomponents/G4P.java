@@ -25,6 +25,7 @@ package guicomponents;
 
 import java.awt.Font;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -33,6 +34,7 @@ public class G4P implements GConstants, PConstants {
 
 	static PApplet sketchApplet = null;
 	
+
 	public static int globalColorScheme = GCScheme.BLUE_SCHEME;
 	public static int globalAlpha = 255;
 
@@ -49,6 +51,13 @@ public class G4P implements GConstants, PConstants {
 	static int mouseOff = ARROW;
 
 	static boolean messages = true;
+
+	// Determines how position and size parameters are interpreted when
+	// a control is created
+	// Introduced V3.0
+	static int control_mode = PApplet.CORNER;
+
+	static LinkedList<G4Pstyle> styles = new LinkedList<G4Pstyle>();
 	
 	/**
 	 * Used to register the main sketch window with G4P. This is ignored if any
@@ -152,6 +161,33 @@ public class G4P implements GConstants, PConstants {
 	}
 	
 	/**
+	 * Change the way position and size parameters are interpreted when a control is created. 
+	 * or added to another control e.g. GPanel. <br>
+	 * There are 3 modes. <br><pre>
+	 * PApplet.CORNER	 (x, y, w, h)
+	 * PApplet.CORNERS	 (x0, y0, x1, y1)
+	 * PApplet.CENTER	 (cx, cy, w, h) </pre><br>
+	 * 
+	 * @param mode illegal values are ignored leaving the mode unchanged
+	 */
+	public static void setCtrlMode(int mode){
+		switch(mode){
+		case PApplet.CORNER:	// (x, y, w, h)
+		case PApplet.CORNERS:	// (x0, y0, x1, y1)
+		case PApplet.CENTER:	// (cx, cy, w, h)
+			control_mode = mode;
+		}
+	}
+
+	/**
+	 * Get the control creation mode @see ctrlMode(int mode)
+	 * @return
+	 */
+	public static int getCtrlMode(){
+		return control_mode;
+	}
+
+	/**
 	 * G4P has a range of support messages eg <br>if you create a GUI component 
 	 * without an event handler or, <br>a slider where the visible size of the
 	 * slider is less than the difference between min and max values.
@@ -196,4 +232,36 @@ public class G4P implements GConstants, PConstants {
 		return mouseOff;
 	}
 
+	/**
+	 * Save the current style on a stack. <br>
+	 * There should be a matching popStyle otherwise the program it will
+	 * cause a memory leakage.
+	 */
+	static void pushStyle(){
+		G4Pstyle s = new G4Pstyle();
+		s.ctrlMode = control_mode;
+		styles.addLast(s);
+	}
+	
+	/**
+	 * Remove and restore the current style from the stack. <br>
+	 * There should be a matching pushStyle otherwise the program will crash.
+	 */
+	static void popStyle(){
+		G4Pstyle s = styles.removeLast();
+		control_mode = s.ctrlMode;
+	}
+	
+	/**
+	 * This class represents the current style used by G4P. 
+	 * It can be extended to add other attributes but these should be 
+	 * included in the pushStyle and popStyle. 
+	 * @author Peter
+	 *
+	 */
+	static class G4Pstyle {
+		int ctrlMode;
+		
+	
+	}
 }

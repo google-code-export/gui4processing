@@ -66,10 +66,10 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	 */
 	static GAbstractControl cursorIsOver;
 
-	// Determines how position and size parameters are interpreted when
-	// a control is created
-	// Introduced V3.0
-	protected static int control_mode = PApplet.CORNER;
+//	// Determines how position and size parameters are interpreted when
+//	// a control is created
+//	// Introduced V3.0
+//	protected static int control_mode = PApplet.CORNER;
 
 	// Increment to be used if on a GPanel
 	final static int Z_PANEL = 1024;
@@ -223,7 +223,7 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	 * 
 	 */
 	private void setPositionAndSize(float n0, float n1, float n2, float n3){
-		switch(control_mode){
+		switch(G4P.control_mode){
 		case PApplet.CORNER:	// (x,y,w,h)
 			x = n0; y = n1; width = n2; height = n3;
 			halfWidth = width/2; halfHeight = height/2;
@@ -237,7 +237,7 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 		case PApplet.CENTER:	// (cx,cy,w,h)
 			cx = n0; cy = n1; width = n2; height = n3;
 			halfWidth = width/2; halfHeight = height/2;
-			x = cx - halfWidth; y = cy + halfHeight;
+			x = cx - halfWidth; y = cy - halfHeight;
 			break;
 		}
 	}
@@ -306,31 +306,32 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 		}
 	}
 	
-	/**
-	 * Change the way position and size parameters are interpreted when a control is created. 
-	 * There are 3 modes. <br><pre>
-	 * PApplet.CORNER	 (x, y, w, h)
-	 * PApplet.CORNERS	 (x0, y0, x1, y1)
-	 * PApplet.CENTER	 (cx, cy, w, h) </pre><br>
-	 * 
-	 * @param mode illegal values are ignored leaving the mode unchanged
-	 */
-	public static void ctrlMode(int mode){
-		switch(mode){
-		case PApplet.CORNER:	// (x, y, w, h)
-		case PApplet.CORNERS:	// (x0, y0, x1, y1)
-		case PApplet.CENTER:	// (cx, cy, w, h)
-			control_mode = mode;
-		}
-	}
-
-	/**
-	 * Get the control creation mode @see ctrlMode(int mode)
-	 * @return
-	 */
-	public static int getCtrlMode(){
-		return control_mode;
-	}
+//	/**
+//	 * Change the way position and size parameters are interpreted when a control is created. 
+//	 * or added to another control e.g. GPanel. <br>
+//	 * There are 3 modes. <br><pre>
+//	 * PApplet.CORNER	 (x, y, w, h)
+//	 * PApplet.CORNERS	 (x0, y0, x1, y1)
+//	 * PApplet.CENTER	 (cx, cy, w, h) </pre><br>
+//	 * 
+//	 * @param mode illegal values are ignored leaving the mode unchanged
+//	 */
+//	public static void setCtrlMode(int mode){
+//		switch(mode){
+//		case PApplet.CORNER:	// (x, y, w, h)
+//		case PApplet.CORNERS:	// (x0, y0, x1, y1)
+//		case PApplet.CENTER:	// (cx, cy, w, h)
+//			control_mode = mode;
+//		}
+//	}
+//
+//	/**
+//	 * Get the control creation mode @see ctrlMode(int mode)
+//	 * @return
+//	 */
+//	public static int getCtrlMode(){
+//		return control_mode;
+//	}
 
 	public GAbstractControl getParent() {
 		return parent;
@@ -676,16 +677,19 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	 * @param c
 	 * @param x
 	 * @param y
-	 * @param angle
+	 * @param angle if zero use existing rotation angle
 	 */
 	public void addControl(GAbstractControl c, float x, float y, float angle){
-		if(angle == 0)
-			angle = c.rotAngle;
+		c.rotAngle = angle; 
 		// In child control reset the control so it centred about the origin
 		AffineTransform aff = new AffineTransform();
 		aff.setToRotation(angle);
-
-		switch(control_mode){
+		/*
+		 * The following code should result in the x,y and cx,cy coordinates of
+		 * the added control (c) added being measured relative to the centre of  
+		 * this control.
+		 */
+		switch(G4P.control_mode){
 		case PApplet.CORNER:
 		case PApplet.CORNERS:
 			// Rotate about top corner
@@ -700,8 +704,14 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 			break;
 		case PApplet.CENTER:
 			// Rotate about centre
-			// @TODO must test this
-
+			c.cx = x; c.cy = y;
+			c.temp[0] = -c.halfWidth;
+			c.temp[1] = -c.halfHeight;
+			aff.transform(c.temp, 0, c.temp, 0, 1);
+			c.x = c.cx + (float)c.temp[0] - halfWidth;
+			c.y = c.cy - (float)c.temp[1] - halfHeight;
+			c.cx -= halfWidth;
+			c.cy -= halfHeight;
 			break;
 		}		
 		c.rotAngle = angle;
@@ -714,6 +724,7 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 			children = new LinkedList<GAbstractControl>();
 		children.addLast(c);
 		Collections.sort(children, new Z_Order());
+//		System.out.println(c.x + " " + c.y + "   " + c.cx + " " + c.cy + "   " + c.tag);
 	}
 
 	public void addControl(GAbstractControl c, float x, float y){

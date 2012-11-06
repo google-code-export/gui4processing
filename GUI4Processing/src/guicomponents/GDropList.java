@@ -117,16 +117,20 @@ public class GDropList extends GTextControl {
 		
 		vsb = new GScrollbar(theApplet, 0, 0, height - itemHeight, 10);
 		vsb.setAutoHide(false);
-		addControl(vsb, width, itemHeight + 1, PI/2);
 		vsb.addEventHandler(this, "scrollbarEventHandler");
 		vsb.setAutoHide(true);
 		vsb.setVisible(false);
 		
 		buttonWidth = 10;
 		showList = new GButton(theApplet, 0, 0, buttonWidth, itemHeight, ":");
+		showList.addEventHandler(this, "buttonShowListHandler");
+	
+		G4P.pushStyle();
+		G4P.control_mode = CORNER;
+		addControl(vsb, width, itemHeight + 1, PI/2);
 		addControl(showList, width - buttonWidth, 0, 0);
-		showList.addEventHandler(this, "buttonEventHandler");
-		
+		G4P.popStyle();
+
 		buffer.g2.setFont(localFont);
 		hotspots = new HotSpot[]{
 				new HSrect(1, 0, itemHeight+1, width - 11, height - itemHeight - 1),	// text list area
@@ -356,7 +360,7 @@ public class GDropList extends GTextControl {
 	 * This method should <b>not</b> be called by the user. It
 	 * is for internal library use only.
 	 */
-	public void buttonEventHandler(GButton button){
+	public void buttonShowListHandler(GButton button){
 		if(expanded){
 			loseFocus(null);
 			vsb.setVisible(false);

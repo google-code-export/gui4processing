@@ -129,6 +129,8 @@ public class GTextArea extends GEditableTextControl {
 				new HSrect(1, tx, ty, tw, th),			// typing area
 				new HSrect(9, 0, 0, width, height)		// control surface
 		};
+		G4P.pushStyle();
+		G4P.control_mode = CORNER;
 		if((scrollbarPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new GScrollbar(theApplet, 0, 0, tw, 16);
 			addControl(hsb, tx, ty + th + 2, 0);
@@ -141,6 +143,7 @@ public class GTextArea extends GEditableTextControl {
 			vsb.addEventHandler(this, "vsbEventHandler");
 			vsb.setAutoHide(autoHide);
 		}
+		G4P.popStyle();
 		setText("", (int)tw);
 		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleTextEvents", new Class[]{ GEditableTextControl.class });
