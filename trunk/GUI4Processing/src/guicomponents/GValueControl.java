@@ -156,6 +156,7 @@ public class GValueControl extends GAbstractControl {
 		if(valueType == INTEGER)
 			v = Math.round(v);
 		float p = (v - startLimit) / (endLimit - startLimit);
+		p = PApplet.constrain(p, 0.0f, 1.0f);
 		if(p < 0)
 			p = 0;
 		else if(p > 1)

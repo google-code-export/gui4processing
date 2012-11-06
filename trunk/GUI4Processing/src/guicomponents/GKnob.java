@@ -66,7 +66,6 @@ public class GKnob extends GValueControl {
 
 
 	protected float startAng = 110, endAng = 70;
-	//	protected float needleAngle = 270;
 
 	protected int mode = CTRL_HORIZONTAL;
 
@@ -82,8 +81,6 @@ public class GKnob extends GValueControl {
 	protected float startMouseX, startMouseY;
 	protected float lastMouseAngle, mouseAngle;
 
-	//	protected float targetNeedleAngle, targetNeedleValue, lastTargetNeedleAngle;
-
 	// corresponds to target and current values
 	//				valueTarget valuePos
 	protected float angleTarget, anglePos;
@@ -97,27 +94,18 @@ public class GKnob extends GValueControl {
 		gripRadius = bezelRadius - bezelWidth;
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		setKnobRange(startAng, endAng);
-		// Should not really need theese here???
-		//		valueTarget = 0.9f; easing = 200;
+		// valuePos and valueTarget will start at 0.5;
 		anglePos = scaleValueToAngle(valuePos);
 		lastAngleTarget = angleTarget = scaleValueToAngle(valueTarget);
-
-		System.out.println(startAng + "  " + endAng + "    " +anglePos);
-
 		hotspots = new HotSpot[]{
 				new HSarc(1, width/2 , height/2, gripRadius, startAng, endAng)  // over grip
 		};
-		//		opaque = false;
 		z = Z_SLIPPY;
 
 		epsilon = 0.98f / (endAng - startAng);
 
-		//		ssStartLimit = new StyledString(buffer.g2, "0.00");
-		//		ssEndLimit = new StyledString(buffer.g2, "1.00");
-		//		ssValue = new StyledString(buffer.g2, "0.50");
-
 		// Now register control with applet
-		createEventHandler(G4P.sketchApplet, "handleSliderEvents", new Class[]{ GValueControl.class, boolean.class });
+		createEventHandler(G4P.sketchApplet, "handleKnobEvents", new Class[]{ GValueControl.class, boolean.class });
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD ;
 		cursorOver = HAND;
 		G4P.addControl(this);
@@ -146,7 +134,6 @@ public class GKnob extends GValueControl {
 				startMouseX = ox;
 				startMouseY = oy;
 				lastMouseAngle = mouseAngle = getAngleFromUser(ox, oy);
-//				System.out.println("FKnob mouse pressed " + mouseAngle);
 				offset = scaleValueToAngle(valueTarget) - mouseAngle;
 				takeFocus();
 			}
@@ -193,6 +180,25 @@ public class GKnob extends GValueControl {
 			}
 			break;
 		}
+	}
+
+	/**
+	 * Set the value for the slider. <br>
+	 * The user must ensure that the value is valid for the slider range.
+	 * @param v
+	 */
+	public void setValue(float v){
+		if(valueType == INTEGER)
+			v = Math.round(v);
+		float p = (v - startLimit) / (endLimit - startLimit);
+		if(p < 0)
+			p = 0;
+		else if(p > 1)
+			p = 1;
+		if(stickToTicks)
+			p = findNearestTickValueTo(p);
+		valueTarget = p;
+		angleTarget = scaleValueToAngle(p);
 	}
 
 	public void draw(){
@@ -333,7 +339,6 @@ public class GKnob extends GValueControl {
 		this.sensitivity = (sensitivity < 0.1f) ? 0.1f : sensitivity;
 	}
 
-	
 	/**
 	 * Calculates the 'angle' from the current mouse position based on the type
 	 * of 'controller' set.
@@ -406,6 +411,12 @@ public class GKnob extends GValueControl {
 		return (a >= startAng && a <= endAng);
 	}
 
+	/**
+	 * Accept an angle and constrain it to the knob angle range.
+	 * 
+	 * @param a
+	 * @return the constrained angle
+	 */
 	protected float constrainToKnobRange(float a){
 		if(a < startAng)
 			a = startAng;
@@ -413,7 +424,12 @@ public class GKnob extends GValueControl {
 			a = endAng;
 		return a;
 	}
-
+	
+	/**
+	 * Accept an angle and constrain it to the range 0-360
+	 * @param a
+	 * @return the constrained angle
+	 */
 	protected float constrain360(float a){
 		while(a < 0)
 			a += 360;
@@ -422,6 +438,13 @@ public class GKnob extends GValueControl {
 		return a;
 	}
 
+	/**
+	 * Calculate the angle to the knob centre making sure it is in
+	 * the range 0-360
+	 * @param px
+	 * @param py
+	 * @return
+	 */
 	protected float calcRealAngleFromXY(float px, float py){
 		float a = (float) Math.toDegrees(Math.atan2(py, px));
 		if(a < 0)
