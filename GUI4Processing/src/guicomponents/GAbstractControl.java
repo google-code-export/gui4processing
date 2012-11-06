@@ -81,7 +81,6 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	// Components that automatically releases focus when appropriate
 	// e.g. GButton
 	final static int Z_SLIPPY = 24;
-
 	
 	// Reference to the PApplet object that owns this control
 	protected PApplet winApp;
