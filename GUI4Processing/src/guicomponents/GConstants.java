@@ -43,7 +43,7 @@ public interface GConstants {
 	public static int POST_METHOD = 			0x00000010;
 	public static int ALL_METHOD =				0x0000001f;
 	
-	// Button status values
+	// Button/slider status values
 	public static final int OFF_CONTROL	= 		0;
 	public static final int OVER_CONTROL	= 	1;
 	public static final int PRESS_CONTROL = 	2;

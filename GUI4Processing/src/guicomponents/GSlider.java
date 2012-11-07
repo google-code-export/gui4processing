@@ -84,10 +84,13 @@ public class GSlider extends GLinearTrackControl {
 		G4P.addControl(this);
 	}
 
+	protected void updateDueToValueChanging(){
+//		hotspots[0].adjust(new Float(width/2  + (valuePos - 0.5f) * trackLength));
+		hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);	
+	}
+
 	protected void updateBuffer(){
 		if(bufferInvalid) {
-			if(isValueChanging)
-				hotspots[0].adjust(new Float(width/2  + (valuePos - 0.5f) * trackLength));		
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
 			buffer.beginDraw();
@@ -106,10 +109,10 @@ public class GSlider extends GLinearTrackControl {
 			if(showTicks){
 				float delta = 1.0f / (nbrTicks - 1);
 				for(int i = 0; i < nbrTicks; i++){
-					int tickx = Math.round((i * delta - 0.5f)*trackLength);
+					float tickx = ((i * delta - 0.5f)*trackLength);
 					buffer.strokeWeight(2);
 					buffer.stroke(palette[4]);
-					buffer.line(tickx+1, -trackWidth, tickx+1, trackWidth);
+					buffer.line(tickx, -trackWidth, tickx, trackWidth);
 					buffer.strokeWeight(1.2f);
 					buffer.stroke(palette[1]);
 					buffer.line(tickx, -trackWidth, tickx, trackWidth);

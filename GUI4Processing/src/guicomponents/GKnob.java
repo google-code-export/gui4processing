@@ -120,7 +120,6 @@ public class GKnob extends GValueControl {
 		ox -= width/2;
 		oy -= height/2;
 
-		//		System.out.println(currSpot);
 		// currSpot == 1 for text display area
 		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
@@ -129,7 +128,6 @@ public class GKnob extends GValueControl {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			//			System.out.println("P " + focusIsWith);
 			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
 				startMouseX = ox;
 				startMouseY = oy;
@@ -138,22 +136,19 @@ public class GKnob extends GValueControl {
 				takeFocus();
 			}
 			break;
-		case MouseEvent.MOUSE_CLICKED:
-			//			System.out.println("C " + focusIsWith);
-			if(focusIsWith == this ){
-				//				System.out.println("CLICKED " + currSpot );
-			}
-			break;
+//		case MouseEvent.MOUSE_CLICKED:
+//			//			System.out.println("C " + focusIsWith);
+//			if(focusIsWith == this ){
+//				//				System.out.println("CLICKED " + currSpot );
+//			}
+//			break;
 		case MouseEvent.MOUSE_RELEASED:
-			//			System.out.println("R " + focusIsWith);
 			if(focusIsWith == this){
 				loseFocus(null);
 			}
 			// Correct for sticky ticks if needed
 			if(stickToTicks)
 				valueTarget = findNearestTickValueTo(valueTarget);
-//			lastAngleTarget = angleTarget = scaleValueToAngle(valueTarget);
-			//				System.out.println("RELEASED 1 " );
 			dragging = false;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
@@ -166,7 +161,6 @@ public class GKnob extends GValueControl {
 						deltaMangle += 360;
 					else if(deltaMangle > 180)
 						deltaMangle -= 360;
-//					System.out.println("FKnob mouse dragged " + mouseAngle + "  delta mouse angle " + deltaMangle);
 					// Calculate and adjust new needle angle so it is in the range aLow >>> aHigh
 					angleTarget = constrainToKnobRange(angleTarget + deltaMangle);
 					valueTarget = calcAngletoValue(angleTarget);
@@ -176,7 +170,7 @@ public class GKnob extends GValueControl {
 					lastAngleTarget = angleTarget;
 					lastMouseAngle = mouseAngle;
 				}
-				isValueChanging = true;
+//				isValueChanging = true;
 			}
 			break;
 		}
@@ -231,13 +225,14 @@ public class GKnob extends GValueControl {
 		winApp.popStyle();
 	}
 
+	protected void updateDueToValueChanging(){
+		anglePos = scaleValueToAngle(valuePos);		
+	}
+	
 	protected void updateBuffer(){
 		double a, sina, cosa;
 		float tickLength;
 		if(bufferInvalid) {
-			// If the value is still changing recalculate the needle angle
-			if(isValueChanging)
-				anglePos = scaleValueToAngle(valuePos);
 			bufferInvalid = false;
 			buffer.beginDraw();
 			buffer.ellipseMode(PApplet.CENTER);

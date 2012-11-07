@@ -77,16 +77,26 @@ public class GValueControl extends GAbstractControl {
 		if(Math.abs(valueTarget - valuePos) > epsilon){
 			valuePos += (valueTarget - valuePos) / easing;
 			isValueChanging = bufferInvalid = true;
-			fireEvent(this, isValueChanging);
+			updateDueToValueChanging();
+			fireEvent(this, true);
 		}
 		else {
+			// Make sure we get at least one bufferUpdate when valuePos
+			// reaches targetPos
 			valuePos = valueTarget;
 			if(isValueChanging){
 				bufferInvalid = true;
 				isValueChanging = false;
-				fireEvent(this, isValueChanging);
+				updateDueToValueChanging();
+				fireEvent(this, false);
 			}
 		}
+	}
+	
+	/**
+	 * Enable child classes to update their hotspot areas.
+	 */
+	protected void updateDueToValueChanging(){
 	}
 	
 	/**
@@ -115,8 +125,8 @@ public class GValueControl extends GAbstractControl {
 	 * Sets the range of values to be returned. This method will
 	 * assume that you want to set the valueType to INTEGER
 	 * 
-	 * @param start
-	 * @param end
+	 * @param start the start value of the range
+	 * @param end the end value of the range
 	 */
 	public void setLimits(int start, int end){
 		if(fixed) return;
@@ -125,6 +135,24 @@ public class GValueControl extends GAbstractControl {
 		valueType = INTEGER;
 		limitsInvalid = true;
 		bufferInvalid = true;
+	}
+	
+	/**
+	 * Sets the initial value and the range of values to be returned. This 
+	 * method will assume that you want to set the valueType to INTEGER.
+	 * 
+	 * @param initValue the initial value
+	 * @param start the start value of the range
+	 * @param end the end value of the range
+	 */
+	public void setLimits(int initValue, int start, int end){
+		if(fixed) return;
+		startLimit = start;
+		endLimit = end;
+		valueType = INTEGER;
+		limitsInvalid = true;
+		bufferInvalid = true;
+		setValue(initValue);
 	}
 	
 	/**
@@ -148,6 +176,28 @@ public class GValueControl extends GAbstractControl {
 	}
 	
 	/**
+	 * Sets the initial value and the range of values to be returned. This 
+	 * method will assume that you want to set the valueType to DECIMAL.
+	 * 
+	 * @param initValue the initial value
+	 * @param start the start value of the range
+	 * @param end the end value of the range
+	 */
+	public void setLimits(float initValue, float start, float end){
+		if(fixed) return;
+		startLimit = start;
+		endLimit = end;
+		if(valueType == INTEGER){
+			valueType = DECIMAL;
+			if(precision == 0)
+				precision = 1;
+		}
+		limitsInvalid = true;
+		bufferInvalid = true;
+		setValue(initValue);
+	}
+	
+	/**
 	 * Set the value for the slider. <br>
 	 * The user must ensure that the value is valid for the slider range.
 	 * @param v
@@ -157,10 +207,10 @@ public class GValueControl extends GAbstractControl {
 			v = Math.round(v);
 		float p = (v - startLimit) / (endLimit - startLimit);
 		p = PApplet.constrain(p, 0.0f, 1.0f);
-		if(p < 0)
-			p = 0;
-		else if(p > 1)
-			p = 1;
+//		if(p < 0)
+//			p = 0;
+//		else if(p > 1)
+//			p = 1;
 		if(stickToTicks)
 			p = findNearestTickValueTo(p);
 		valueTarget = p;
@@ -250,7 +300,7 @@ public class GValueControl extends GAbstractControl {
 	 * Get the current value as an integer. <br>
 	 * DECIMAL and EXPONENT value types will be rounded to the nearest integer.
 	 */
-	public float getValueI(){
+	public int getValueI(){
 		return Math.round(startLimit + (endLimit - startLimit) * valuePos);
 	}
 	
@@ -297,6 +347,8 @@ public class GValueControl extends GAbstractControl {
 		if(nbrTicks != noOfTicks){
 			nbrTicks = noOfTicks;
 			bufferInvalid = true;
+			if(stickToTicks)
+				valueTarget = findNearestTickValueTo(valuePos);
 		}
 	}
 
@@ -420,16 +472,4 @@ public class GValueControl extends GAbstractControl {
 		return unit;
 	}
 
-	/**
-	 * If you are using easing then this returns true if the current value
-	 * is moving towards the required value as controlled at the interface, 
-	 * otherwise it will return false.
-	 * 
-	 * @return the isValueChanging
-	 */
-	public boolean isValueChanging() {
-		return isValueChanging;
-	}
-
-	
 }

@@ -79,7 +79,6 @@ public class GCustomSlider extends GLinearTrackControl {
 	protected PImage rightEnd;
 	protected PImage centre;
 
-//	protected float 
 	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String skin) {
 		super(theApplet, p0, p1, p2, p3);
 		loadSkin(skin);
@@ -88,7 +87,7 @@ public class GCustomSlider extends GLinearTrackControl {
 		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
 		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
 		trackWidth = centre.height;
-		trackOffset = Math.max(trackWidth, centre.height/2) + 3;
+		trackOffset = Math.max(trackWidth, thumb.height/2) + 3;
 		extendCentreImage();
 
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
@@ -115,10 +114,12 @@ public class GCustomSlider extends GLinearTrackControl {
 		G4P.addControl(this);
 	}
 
+	protected void updateDueToValueChanging(){
+		hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);
+	}
+
 	protected void updateBuffer(){
 		if(bufferInvalid) {
-			if(isValueChanging)
-				hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);		
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
 			buffer.beginDraw();
@@ -136,11 +137,11 @@ public class GCustomSlider extends GLinearTrackControl {
 			if(showTicks){
 				float delta = 1.0f / (nbrTicks - 1);
 				for(int i = 0; i < nbrTicks; i++){
-					int tickx = Math.round((i * delta - 0.5f)*trackLength);
-					buffer.strokeWeight(1);
+					float tickx = Math.round((i * delta - 0.5f) * trackLength);
+					buffer.strokeWeight(2);
 					buffer.stroke(255);
 					buffer.line(tickx+1, -trackWidth, tickx+1, trackWidth);
-					buffer.strokeWeight(1.5f);
+					buffer.strokeWeight(1.0f);
 					buffer.stroke(0);
 					buffer.line(tickx, -trackWidth, tickx, trackWidth);
 				}

@@ -23,6 +23,7 @@ import processing.core.PMatrix3D;
 public class GWindowInfo implements PConstants, GConstants {
 
 	public PApplet app;
+	public boolean app_g_3d;
 	public PMatrix orgMatrix;
 	public LinkedList<GAbstractControl> windowControls = new LinkedList<GAbstractControl>();
 
@@ -34,7 +35,8 @@ public class GWindowInfo implements PConstants, GConstants {
 	 */
 	public GWindowInfo (PApplet papplet) {
 		app = papplet;
-		if(papplet.g.is3D())
+		app_g_3d = app.g.is3D();
+		if(app_g_3d)
 			orgMatrix = papplet.getMatrix((PMatrix3D)null);
 		else
 			orgMatrix = papplet.getMatrix((PMatrix2D)null);
@@ -76,10 +78,20 @@ public class GWindowInfo implements PConstants, GConstants {
 	}
 	
 	public void draw(){
+		app.pushMatrix();
+		if(app_g_3d)
+			app.hint(PConstants.DISABLE_DEPTH_TEST);
+		// Load the identity matrix.
+		app.resetMatrix();
+		// Apply the original Processing transformation matrix.
+		app.applyMatrix(orgMatrix);
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & DRAW_METHOD) == DRAW_METHOD && control.parent == null)
 				control.draw();
-		}			
+		}		
+		if(app_g_3d)
+			app.hint(PConstants.ENABLE_DEPTH_TEST);
+		app.popMatrix();
 	}
 
 	public void mouseEvent(MouseEvent event){

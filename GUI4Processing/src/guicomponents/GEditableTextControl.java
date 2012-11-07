@@ -113,8 +113,9 @@ public abstract class GEditableTextControl extends GAbstractControl {
 				stext = new StyledString(text);
 			}
 		}
+		System.out.println("GEditableTextControl losefocus");
 		startTLHI.copyFrom(endTLHI);
-		keepCursorInView = false;
+		keepCursorInView = true;
 		bufferInvalid = true;
 	}
 
@@ -173,6 +174,37 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	}
 	
 	/**
+	 * Get the text in the control
+	 * @return
+	 */
+	public String getText(){
+		return stext.getPlainText();
+	}
+	
+	/**
+	 * Get the text that has been selected (highlighted) by the user. <br>
+	 * @return
+	 */
+	public String getSelectedText(){
+		if(!hasSelection())
+			return "";
+		TextLayoutHitInfo startSelTLHI;
+		TextLayoutHitInfo endSelTLHI;
+		if(endTLHI.compareTo(startTLHI) == -1){
+			startSelTLHI = endTLHI;
+			endSelTLHI = startTLHI;
+		}
+		else {
+			startSelTLHI = startTLHI;
+			endSelTLHI = endTLHI;
+		}
+		int ss = startSelTLHI.tli.startCharIndex + startSelTLHI.thi.getInsertionIndex();
+		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
+		String s = stext.getPlainText().substring(ss, ee);
+		return s;
+	}
+	
+	/**
 	 * If some text has been selected then set the style. If there is no selection then 
 	 * the text is unchanged.
 	 * 
@@ -207,29 +239,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn-1);
 
 		bufferInvalid = true;
-	}
-
-	/**
-	 * Get the text that has been selected (highlighted) by the user. <br>
-	 * @return
-	 */
-	public String getSelectedText(){
-		if(!hasSelection())
-			return "";
-		TextLayoutHitInfo startSelTLHI;
-		TextLayoutHitInfo endSelTLHI;
-		if(endTLHI.compareTo(startTLHI) == -1){
-			startSelTLHI = endTLHI;
-			endSelTLHI = startTLHI;
-		}
-		else {
-			startSelTLHI = startTLHI;
-			endSelTLHI = endTLHI;
-		}
-		int ss = startSelTLHI.tli.startCharIndex + startSelTLHI.thi.getInsertionIndex();
-		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
-		String s = stext.getPlainText().substring(ss, ee);
-		return s;
 	}
 	
 	/**

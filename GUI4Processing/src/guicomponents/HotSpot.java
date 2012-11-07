@@ -155,6 +155,11 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 			}
 			return false;
 		}
+		
+		public String toString(){
+			return "HS mask ["+x+", "+y+"]";
+		}
+
 	}
 
 	/**
@@ -207,6 +212,10 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 					return true;
 			}
 			return false;
+		}
+
+		public String toString(){
+			return "HS alpha ["+x+", "+y+"]";
 		}
 
 	}

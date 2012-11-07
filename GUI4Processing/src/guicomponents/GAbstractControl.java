@@ -66,11 +66,6 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	 */
 	static GAbstractControl cursorIsOver;
 
-//	// Determines how position and size parameters are interpreted when
-//	// a control is created
-//	// Introduced V3.0
-//	protected static int control_mode = PApplet.CORNER;
-
 	// Increment to be used if on a GPanel
 	final static int Z_PANEL = 1024;
 
@@ -124,7 +119,7 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	protected boolean bufferInvalid = true;
 
 	/** Whether to show background or not */
-	protected boolean opaque = true;
+	protected boolean opaque = false;
 
 	// The event type use READ ONLY
 	public int eventType = 0;
@@ -196,6 +191,13 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 		return bimage;
 	}
 
+	public static String getFocusName(){
+		if(focusIsWith == null)
+			return "null";
+		else
+			return focusIsWith.toString();
+	}
+	
 	/*
 	 * Base constructor for ALL control ctors. It will set the position and size of the
 	 * control based on controlMode. <br>
@@ -537,8 +539,15 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	}
 
 
-	protected void setAvailable(boolean avail){
+	public void setAvailable(boolean avail){
 		available = avail;
+		if(children != null){
+			for(GAbstractControl c : children)
+				c.setAvailable(avail);
+		}
+	}
+
+	public void setAvailableChildren(boolean avail){
 		if(children != null){
 			for(GAbstractControl c : children)
 				c.setAvailable(avail);
@@ -634,27 +643,6 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 		return (this == focusIsWith);
 	}
 
-//	protected boolean hasParentFocus(){
-//		if(this == focusIsWith)
-//			return true;
-//		else if(parent != null)
-//			parent.hasParentFocus();
-//		return false;
-//	}
-//
-//	protected boolean hasChildFocus(){
-//		if(this == focusIsWith)
-//			return true;
-//		else if(children != null){
-//			boolean hf = false;
-//			for(GAbstractControl comp : children){
-//				hf |= comp.hasChildFocus();
-//			}
-//			return hf;
-//		}
-//		return false;
-//	}
-
 	/**
 	 * Get the Z order value for the object with focus.
 	 */
@@ -673,10 +661,10 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 	 * position indicated by x,y with respect to the top left corner of
 	 * parent
 	 * 
-	 * @param c
-	 * @param x
-	 * @param y
-	 * @param angle if zero use existing rotation angle
+	 * @param c the control to add.
+	 * @param x the leftmost or centre position depending on controlMode
+	 * @param y the topmost or centre position depending on controlMode
+	 * @param angle the rotation angle (replaces any the angle specified in control)
 	 */
 	public void addControl(GAbstractControl c, float x, float y, float angle){
 		c.rotAngle = angle; 
@@ -723,13 +711,35 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 			children = new LinkedList<GAbstractControl>();
 		children.addLast(c);
 		Collections.sort(children, new Z_Order());
-//		System.out.println(c.x + " " + c.y + "   " + c.cx + " " + c.cy + "   " + c.tag);
 	}
 
+	/**
+	 * Add a control at the given position with zero rotation angle.
+	 * 
+	 * @param c the control to add.
+	 * @param x the leftmost or centre position depending on controlMode
+	 * @param y the topmost or centre position depending on controlMode
+	 */
 	public void addControl(GAbstractControl c, float x, float y){
 		addControl(c, x, y, 0);
 	}
 
+	/**
+	 * Add a control at the position and rotation specified in the control.
+	 * 
+	 * @param c the control to add
+	 */
+	public void addControl(GAbstractControl c){
+		switch(G4P.control_mode){
+		case PApplet.CORNER:
+		case PApplet.CORNERS:
+			addControl(c, c.x, c.y, c.rotAngle);
+			break;
+		case PApplet.CENTER:
+			addControl(c, c.cx, c.cy, c.rotAngle);
+			break;
+		}		
+	}
 	
 	/**
 	 * Get the shape type when the cursor is over a control
