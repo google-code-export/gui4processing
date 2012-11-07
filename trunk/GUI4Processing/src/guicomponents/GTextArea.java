@@ -314,8 +314,8 @@ public class GTextArea extends GEditableTextControl {
 	public void pre(){
 		if(keepCursorInView){
 			boolean horzScroll = false, vertScroll = false;
-			float max_ptx = caretX  - tw + 4;
-			float max_pty = caretY - th  + 2 *  stext.getMaxLineHeight();
+			float max_ptx = caretX - tw + 2;
+			float max_pty = caretY - th + 2 * stext.getMaxLineHeight();
 			
 			if(endTLHI != null){
 				if(ptx > caretX){ 										// LEFT?
@@ -323,9 +323,11 @@ public class GTextArea extends GEditableTextControl {
 					if(ptx < 0) ptx = 0;
 					horzScroll = true;
 				}
-				else if(ptx  < max_pty){ 						// RIGHT?
+				else if(ptx < max_ptx){ 						// RIGHT?
+//				else if(ptx  < caretX  - tw + 2){ 						// RIGHT?
+//				else if(caretX > ptx + tw - 2){ 						// RIGHT?
 					ptx += HORZ_SCROLL_RATE;
-					ptx = Math.min(ptx, max_ptx);
+					if(ptx > max_ptx) ptx = max_ptx;
 					horzScroll = true;
 				}
 				if(pty > caretY){										// UP?
@@ -334,9 +336,9 @@ public class GTextArea extends GEditableTextControl {
 					vertScroll = true;
 				}
 				else if(pty < max_pty){	// DOWN?
-//					else if(caretY > pty + th  - 2 *  stext.getMaxLineHeight()){	// DOWN?
+//				else if(caretY > pty + th  - 2 * stext.getMaxLineHeight()){	// DOWN?
 					pty += VERT_SCROLL_RATE;
-					pty = Math.min(pty, max_pty);
+//					pty = Math.min(pty, max_pty);
 					vertScroll = true;
 				}
 				if(horzScroll && hsb != null)

@@ -72,8 +72,14 @@ public class G4P implements GConstants, PConstants {
 	 * @param app
 	 */
 	public static void registerSketch(PApplet app){
-		if(sketchApplet == null)
+		if(sketchApplet == null) {
 			sketchApplet = app;
+			GWindowInfo winfo = windows.get(app);
+			if(winfo == null){
+				winfo = new GWindowInfo(app);
+				windows.put(app, winfo);
+			}			
+		}
 	}
 	
 	/**
@@ -106,19 +112,6 @@ public class G4P implements GConstants, PConstants {
 		}
 	}
 	
-	static void addControl(GAbstractControl control){
-		PApplet app = control.getPApplet();
-		// The first applet must be the sketchApplet
-		if(G4P.sketchApplet == null)
-			G4P.sketchApplet = app;
-		GWindowInfo winfo = windows.get(app);
-		if(winfo == null){
-			winfo = new GWindowInfo(app);
-			windows.put(app, winfo);
-		}
-		winfo.addControl(control);
-	}
-		
 	static void addWindow(GWindow window){
 		PApplet app = window.papplet;
 		// The first applet must be the sketchApplet
@@ -142,6 +135,19 @@ public class G4P implements GConstants, PConstants {
 		
 	}
 	
+	static void addControl(GAbstractControl control){
+		PApplet app = control.getPApplet();
+		// The first applet must be the sketchApplet
+		if(G4P.sketchApplet == null)
+			G4P.sketchApplet = app;
+		GWindowInfo winfo = windows.get(app);
+		if(winfo == null){
+			winfo = new GWindowInfo(app);
+			windows.put(app, winfo);
+		}
+		winfo.addControl(control);
+	}
+		
 	/**
 	 * Remove a control from the window. This is used in preparation 
 	 * for disposing of a control.

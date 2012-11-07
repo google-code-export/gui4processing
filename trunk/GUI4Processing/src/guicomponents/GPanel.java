@@ -51,6 +51,10 @@ import processing.core.PGraphicsJava2D;
  */
 public class GPanel extends GTextControl {
 
+	static protected int COLLAPSED_BAR_SPOT = 1;
+	static protected int EXPANDED_BAR_SPOT = 2;
+	static protected int SURFACE_SPOT = 0;
+
 
 	/** Whether the panel is displayed in full or tab only */
 	protected boolean tabOnly = true;
@@ -64,6 +68,7 @@ public class GPanel extends GTextControl {
 	/** true if the panel is being dragged */
 	protected boolean beingDragged = false;
 
+	protected boolean draggable = true;
 
 	public GPanel(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		this(theApplet, p0, p1, 2, p3, "");
@@ -102,32 +107,35 @@ public class GPanel extends GTextControl {
 		G4P.addControl(this);
 	}
 
-	public void setText(String text){
-		super.setText(text);
-		stext.getLines(buffer.g2);
-		tabHeight = (int) (stext.getMaxLineHeight() + 4);
-		tabWidth = (int) (stext.getMaxLineLength() + 8);
-	}
-
 	/**
 	 * This needs to be called if the tab text is changed
 	 */
 	private void calcHotSpots(){
 		hotspots = new HotSpot[]{
-				new HSrect(1, 0, 0, tabWidth, tabHeight),					// tab text area
-				new HSrect(2, tabWidth, 0, width - tabWidth, tabHeight),	// tab non-text area
-				new HSrect(3, 0, tabHeight, width, height - tabHeight)		// panel content surface
+				new HSrect(COLLAPSED_BAR_SPOT, 0, 0, tabWidth, tabHeight),					// tab text area
+				new HSrect(EXPANDED_BAR_SPOT, 0, 0, width, tabHeight),	// tab non-text area
+				new HSrect(SURFACE_SPOT, 0, tabHeight, width, height - tabHeight)		// panel content surface
 		};
 	}
+
+	public void setText(String text){
+		super.setText(text);
+		stext.getLines(buffer.g2);
+		tabHeight = (int) (stext.getMaxLineHeight() + 4);
+		tabWidth = (int) (stext.getMaxLineLength() + 8);
+		calcHotSpots();
+		bufferInvalid = true;
+	}
+
 
 	public void setFont(Font font) {
 		if(font != null)
 			localFont = font;
 		tabHeight = (int) (1.2f * localFont.getSize() + 2);
-		if(buffer != null){
-			buffer.g2.setFont(localFont);
-			bufferInvalid = true;
-		}
+		buffer.g2.setFont(localFont);
+		bufferInvalid = true;
+		calcHotSpots();
+		bufferInvalid = true;
 	}
 
 	/**
@@ -214,33 +222,27 @@ public class GPanel extends GTextControl {
 
 		currSpot = whichHotSpot(ox, oy);
 		// Is mouse over the panel tab (taking into account extended with when not collapsed)
-		boolean mouseOverTab = (currSpot == 1  || (currSpot == 2 && !tabOnly));
+		boolean mouseOverTab = (tabOnly)? currSpot == COLLAPSED_BAR_SPOT : currSpot == EXPANDED_BAR_SPOT | currSpot == COLLAPSED_BAR_SPOT;
+//			(currSpot == 1  || (currSpot == EXAPNDED_BAR_SPOT && !tabOnly));
 		// Is the mouse anywhere over the panel (taking into account whether the panel is
 		// collapsed or not)
-		boolean mouseOverPanel = (currSpot == 1  && tabOnly) || (currSpot > 0 && !tabOnly);
+//		boolean mouseOverPanel = (currSpot == 1  && tabOnly) || (currSpot > 0 && !tabOnly);
 
-		if(mouseOverPanel || focusIsWith == this)
-			cursorIsOver = this;
-		else if(cursorIsOver == this)
-			cursorIsOver = null;
-
-		if(mouseOverPanel || focusIsWith == this) 
+		if(mouseOverTab || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && mouseOverPanel && z >= focusObjectZ()){
-//				mdx = winApp.mouseX;
-//				mdy = winApp.mouseY;
+			if(focusIsWith != this && mouseOverTab &&  z >= focusObjectZ()){
 				takeFocus();
 				beingDragged = false;
 			}
 			// If focus is with some other control with the same depth and the mouse is over the panel
 			// Used to ensure that GTextField controls on GPanels release focus
-			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && currSpot >= 0)
-				focusIsWith.loseFocus(null);
+//			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && currSpot >= 0)
+//				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this && mouseOverTab){
@@ -260,7 +262,7 @@ public class GPanel extends GTextControl {
 					if(x + width > winApp.getWidth())
 						x = winApp.getWidth() - width;
 				}
-				//				constrainPanelPosition();
+//				constrainPanelPosition();
 				if(tabOnly)
 					eventType = COLLAPSED;
 				else
@@ -269,7 +271,6 @@ public class GPanel extends GTextControl {
 				fireEvent(this);
 				// This component does not keep the focus when clicked
 				loseFocus(null);
-//				mdx = mdy = Integer.MAX_VALUE;
 			}
 			break;
 		case MouseEvent.MOUSE_RELEASED: // After dragging NOT clicking
@@ -281,7 +282,7 @@ public class GPanel extends GTextControl {
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this && parent == null){
+			if(focusIsWith == this && draggable && parent == null){
 				x += (winApp.mouseX - winApp.pmouseX);
 				y += (winApp.mouseY - winApp.pmouseY);
 				constrainPanelPosition();
@@ -309,6 +310,22 @@ public class GPanel extends GTextControl {
 		return beingDragged;
 	}
 
+	/**
+	 * Sets whether the panel can be dragged by the mouse or not.
+	 * @param draggable
+	 */
+	public void setDraggable(boolean draggable){
+		this.draggable = draggable;
+	}
+	
+	/**
+	 * Can we drag this panel with the mouse?
+	 * @return true if draggable
+	 */
+	public boolean isDraggable(){
+		return draggable;
+	}
+	
 	/**
 	 * Ensures that the panel tab and panel body if open does not
 	 * extend off the screen.

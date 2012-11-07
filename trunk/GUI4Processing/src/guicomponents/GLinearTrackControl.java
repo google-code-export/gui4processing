@@ -23,6 +23,8 @@
 
 package guicomponents;
 
+import guicomponents.HotSpot.HScircle;
+
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
@@ -42,6 +44,7 @@ import processing.core.PApplet;
 public abstract class GLinearTrackControl extends GValueControl {
 
 	static protected float TINSET = 4;
+	
 	static protected int THUMB_SPOT = 1;
 	static protected int TRACK_SPOT = 2;
 
@@ -52,7 +55,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 
 	protected int downHotSpot = -1;
 	// Mouse over status
-	protected int status = -1;
+	protected int status = OFF_CONTROL;
 	
 	// For labels
 	protected StyledString[] labels;
@@ -79,6 +82,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 		default:
 			textOrientation = ORIENT_TRACK;
 		}
+		bufferInvalid = true;
 	}
 	
 	/**
@@ -111,6 +115,25 @@ public abstract class GLinearTrackControl extends GValueControl {
 	}
 	
 	/**
+	 * The offset is the distance the value/labels are drawn from the 
+	 * centre of the track. <br>
+	 * You may wish to tweak this value for visual effect.
+	 * @param offset
+	 */
+	public void setTrackOffset(float offset){
+		trackOffset = offset;
+	}
+	
+	/**
+	 * Get the visual offset for the value/label text.
+	 * 
+	 * @return
+	 */
+	public float getTrackOffset(){
+		return trackOffset;
+	}
+	
+	/**
 	 * If we are using labels then this will get the label text
 	 * associated with the current value. <br>
 	 * If labels have not been set then return null
@@ -131,7 +154,6 @@ public abstract class GLinearTrackControl extends GValueControl {
 		ox -= width/2;
 		ox /= trackLength;
 
-		// currSpot == 1 for text display area
 		if(currSpot >= 0 || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
@@ -139,7 +161,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 
 		switch(event.getID()){
 		case MouseEvent.MOUSE_PRESSED:
-			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
+			if(focusIsWith != this && currSpot > -1 && z >= focusObjectZ()){
 				downHotSpot = currSpot;
 				status = (downHotSpot == THUMB_SPOT) ? PRESS_CONTROL : OFF_CONTROL;
 				offset = ox + 0.5f - valuePos; // normalised
@@ -183,7 +205,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 			if(focusIsWith == this){
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
-					isValueChanging = true;
+//					isValueChanging = true;
 					valueTarget = (ox - offset) + 0.5f;
 					if(valueTarget < 0){
 						valueTarget = 0;
@@ -193,6 +215,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 						valueTarget = 1;
 						offset = 0;
 					}
+					bufferInvalid = true;
 				}
 			}
 			break;

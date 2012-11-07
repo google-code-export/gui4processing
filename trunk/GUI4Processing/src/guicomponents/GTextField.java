@@ -96,6 +96,7 @@ public class GTextField extends GEditableTextControl {
 		tx = ty = 2;
 		tw = width - 2 * 2;
 		th = height - ((scrollbarPolicy & SCROLLBAR_HORIZONTAL) != 0 ? 11 : 0);
+		wrapWidth = Integer.MAX_VALUE;
 		gpTextDisplayArea = new GeneralPath();
 		gpTextDisplayArea.moveTo( 0,  0);
 		gpTextDisplayArea.lineTo( 0, th);
@@ -256,16 +257,18 @@ public class GTextField extends GEditableTextControl {
 	public void pre(){
 		if(keepCursorInView){
 			boolean horzScroll = false;
-			float max_ptx = caretX  - tw + 4;
+			float max_ptx = caretX - tw + 2;
 			if(endTLHI != null){
 				if(ptx > caretX){ 										// LEFT?
 					ptx -= HORZ_SCROLL_RATE;
 					if(ptx < 0) ptx = 0;
 					horzScroll = true;
 				}
-				else if(ptx  < max_ptx){ 						// RIGHT?
+				else if(ptx < max_ptx){ 						// RIGHT?
+//				else if(ptx < caretX - tw + 4){ 						// RIGHT?
 					ptx += HORZ_SCROLL_RATE;
-					ptx = Math.min(ptx, max_ptx);
+					if(ptx > max_ptx) ptx = max_ptx;
+//					ptx = Math.min(ptx, max_ptx);
 					horzScroll = true;
 				}
 				if(horzScroll && hsb != null)
@@ -273,7 +276,9 @@ public class GTextField extends GEditableTextControl {
 			}
 			// If we have scrolled invalidate the buffer otherwise forget it
 			if(horzScroll)
-				bufferInvalid = true;			
+				bufferInvalid = true;
+			else
+				keepCursorInView = false;
 		}
 	}
 	
@@ -299,7 +304,7 @@ public class GTextField extends GEditableTextControl {
 				}
 				dragging = false;
 				if(stext == null || stext.length() == 0){
-					stext = new StyledString(" ", (int)tw);
+					stext = new StyledString(" ");
 					stext.getLines(buffer.g2);
 				}
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
