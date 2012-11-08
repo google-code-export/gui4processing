@@ -1,8 +1,8 @@
 /**
  * PeasyCam with GUI control
  *
- * Extends PeasyCam example to use with GUI4processing by
- * providing sliders to control the angles.
+ * Extends PeasyCam example to use with G4P by providing
+ * sliders to control the angles.
  *
  * When the panel is open you can drag the sliders to rotate
  * the cube. When the panel is closed then dragging the mouse
@@ -25,7 +25,8 @@ import peasy.*;
 PeasyCam cam;
 
 GPanel pnl;
-GHorzSlider sx,sy, sz;
+GSlider sx, sy, sz;
+GLabel label;
 int ax, ay, az;
 
 // These are needed to remember PeasyCam offset and distance
@@ -40,12 +41,19 @@ double distance = 0.0f;
 int lastSx, lastSy, lastSz;
 int currSx, currSy, currSz;
 
-void setup() {
+public void setup() {
   // Change OPENGL to P3D to use Java 3D both work but OpenGL
   // gives a better font display while Java 3D is probably
   // better for applets - smaller file size but needs larger 
   // font size.
-  size(400,400,P3D);
+  size(400, 400, P3D);
+
+  // This is only required if you are going to create something
+  // that changes the initial matrix (g) BEFORE creating a G$P 
+  // control. PeasyCam is just such an object, but if it is 
+  // created after one of the G4P controls then you would not 
+  // this statement.
+  G4P.registerSketch(this);
 
   // Create a PeasyCam object
   cam = new PeasyCam(this, 100);
@@ -53,99 +61,88 @@ void setup() {
   cam.setMaximumDistance(500);
 
   // Sets the colour scheme for the GUI components 
-  // Schemes available are 
-  // BLUE_SCHEME, GREEN_SCHEME, RED_SCHEME, GREY_SCHEME
-  // YELLOW_SCHEME, CYAN_SCHEME, PURPLE_SCHEME
+  // The 8 schemes available are 
+  // RED_SCHEME, GREEN_SCHEME, YELLOW_SCHEME, PURPLE_SCHEME
+  // ORANGE_SCHEME, CYAN_SCHEME, BLUE_SCHEME, GOLD_SCHEME
   // Defaults to BLUE_SCHEME 
-  GComponent.globalColor = GCScheme.getColor(this,  GCScheme.RED_SCHEME);
-
-  /* GFont.getFont() - parameters
-   * 1) this (always)
-   * 2) font name (see below)
-   * 3) font size
-   *
-   * The font name will depend on the OS used and fonts installed. It should be the same
-   * as those listed in the 'Create Font' tool in processing. Alternatively use
-   * println(PFont.list());
-   * in a Processing sketch
-   */
-  GComponent.globalFont = GFont.getFont(this, "Lucinda", 12);
+  G4P.setGlobalColorScheme(GCScheme.RED_SCHEME);
 
   // Create a collapsible panel
   // (this, tab title, x, y, width, height)
-  pnl = new GPanel(this, "PeasyCam Control", 10,300,300,72);
-
+  pnl = new GPanel(this, 10, 300, 300, 88, "Rotate Cube");
+  pnl.setCollapsed(false);
   // Create a horizontal slider
   // (this, x, y, width, height)
   // default value limits 0-100 and initial value 50
-  sx = new GHorzSlider(this, 10, 8, 280, 16);
+  sx = new GSlider(this, 10, 22, 280, 20, 13);
   // set slider value limits (initial value, min, max)
-  sx.setLimits(0,-180,180);
-  // Set thumb inertia for nice visual effect - acceptable
-  // values 1 to 100 (default = 1  i.e. no inertia)
-  sx.setInertia(20);
+  sx.setLimits(0, -180, 180);
+  // Hide tick marks
+  sx.setShowTicks(false);
+  // Set thumb easing for nice visual effect - acceptable
+  // values 1 to 100 (default = 1  i.e. no easing)
+  sx.setEasing(15);
 
-  sy = new GHorzSlider(this, 10, 28, 280, 16);
-  sy.setLimits(0,-180,180);
-  sy.setInertia(20);
+  sy = new GSlider(this, 10, 42, 280, 20, 13);
+  sy.setLimits(0, -180, 180);
+  sy.setShowTicks(false);
+  sy.setEasing(15);
 
-  sz = new GHorzSlider(this, 10, 48, 280, 16);
-  sz.setLimits(0,-180,180);
-  sz.setInertia(20);
+  sz = new GSlider(this, 10, 62, 280, 20, 13);
+  sz.setLimits(0, -180, 180);
+  sz.setShowTicks(false);
+  sz.setEasing(15);
 
   // Add the sliders to the panel x,y coordinates are now 
   // relative to the top left of the panel open area below
   // the tab
-  pnl.add(sx);
-  pnl.add(sy);
-  pnl.add(sz);
+  pnl.addControl(sx);
+  pnl.addControl(sy);
+  pnl.addControl(sz);
 
+  // Create a label across the top of the screen
+  String s = "Drag the slider thumb or click on the ";
+  s += "track to rotate the cube. The panel can be collapsed/";
+  s += "expanded by clicking on the panel title bar";
+  label = new GLabel(this, 0, 0, width, 60, s);
+  label.setOpaque(true);
+  // Align the text both horizontally and vertically
+  label.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 }
 
-void draw() {
+public void draw() {
   // Switch off PeasyCam mouse control if the panel is being
   // dragged else turn it on
-  if(pnl.isCollapsed()){
-    // Panel is collapsed
-    cam.setMouseControlled(!pnl.isDragging());
-  }
-  else {
-    // panel open must be using sliders
-    cam.setMouseControlled(false);  
-  }
-  pushMatrix();
-  rotateX(-.5);
-  rotateY(-.5);
+  if (pnl.isCollapsed()) // Panel is collapsed
+      cam.setMouseControlled(!pnl.isDragging());
+  else // panel open must be using sliders
+  cam.setMouseControlled(false);  
+  rotateX(-.5f);
+  rotateY(-.5f);
   background(0);
   // Draw big box
   strokeWeight(2);
-  stroke(255,255,0);
-  fill(255,0,0);
+  stroke(255, 255, 0);
+  fill(255, 0, 0);
   box(30);
   // Draw little box
-  translate(0,0,20);
-  fill(0,0,255);
+  translate(0, 0, 20);
+  fill(0, 0, 255);
   box(5);
-  popMatrix();
-  
   // Synchronise the actual rotations and slider positions
   syncSliders();
-  
-  // Methods beginHUD() and endHUD() are automatically 
-  // called for you.
-  G4P.draw(this);
 }
 
 
 /*
-This function displays how we can create a HUD with PeasyCam.
+  This function displays how we can create a HUD with PeasyCam.
  */
-void syncSliders(){
+void syncSliders() {
   // Get the current PeasyCam details to restore later
   rotations = cam.getRotations();
 
   // If necessary update slider positions
-  if(pnl.isCollapsed()){
+  if (pnl.isCollapsed()) {
     // Update slider positions
     currSx = lastSx = (int)Math.toDegrees(rotations[0]);
     currSy = lastSy = (int)Math.toDegrees(rotations[1]);
@@ -156,21 +153,20 @@ void syncSliders(){
     // setValue(value, ignore); where ignore is a boolean value
     // which if true will set the value and move the thumb
     // immediately ignoring any inertia value
-    sx.setValue((int)Math.toDegrees(rotations[0]), true);
-    sy.setValue((int)Math.toDegrees(rotations[1]), true);
-    sz.setValue((int)Math.toDegrees(rotations[2]), true);
+    sx.setValue((int)Math.toDegrees(rotations[0]));
+    sy.setValue((int)Math.toDegrees(rotations[1]));
+    sz.setValue((int)Math.toDegrees(rotations[2]));
   }
-  else {
-    // Use sliders to control rotation
-    if(currSx != lastSx){
+  else { // Use sliders to control rotation
+    if (currSx != lastSx) {
       cam.rotateX(Math.toRadians(currSx - lastSx));
       lastSx = currSx;
     }
-    if(currSy != lastSy){
+    if (currSy != lastSy) {
       cam.rotateY(Math.toRadians(currSy - lastSy));
       lastSy = currSy;
     }
-    if(currSz != lastSz){
+    if (currSz != lastSz) {
       cam.rotateZ(Math.toRadians(currSz - lastSz));
       lastSz = currSz;
     }
@@ -179,22 +175,32 @@ void syncSliders(){
 
 // Handle panels events i.e. when a panel is opened or
 // collapsed
-void handlePanelEvents(GPanel panel){
+void handlePanelEvents(GPanel panel) {
   // Intended to detect panel events but ended up not
   // needing it. Left the following code as an example
-  if(pnl.isCollapsed())
+  switch(pnl.eventType) {
+  case G4P.COLLAPSED:
+    pnl.setAvailableChildren(false);
     println("Panel has collapsed");
-  else
-    println("Panel has opened");
+    break;
+  case G4P.EXPANDED:
+    pnl.setAvailableChildren(true);
+    println("Panel has expanded");
+    break;
+  case G4P.DRAGGED:
+    print("The panel has been dragged to ");
+    println(pnl.getX() + ", " + pnl.getY());
+    break;
+  }
 }
 
 // Handles slider events for both horizontal and
 // vertical sliders
-void handleSliderEvents(GSlider slider){
-  if(slider == sx)
-    currSx = slider.getValue();
-  if(slider == sy)
-    currSy = slider.getValue(); 
-  if(slider == sz)
-    currSz = slider.getValue();
+void handleSliderEvents(GLinearTrackControl slider, boolean changing) {
+  if (slider == sx)
+    currSx = slider.getValueI();
+  if (slider == sy)
+    currSy = slider.getValueI(); 
+  if (slider == sz)
+    currSz = slider.getValueI();
 }
