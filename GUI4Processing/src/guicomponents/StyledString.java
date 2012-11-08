@@ -213,11 +213,17 @@ final public class StyledString implements Serializable {
 	 * @return
 	 */
 	private AttributedString insertParagraphMarkers(String ptext, AttributedString as ){
-		plainText = ptext;
+		if(ptext != null && ptext.length() > 0)
+			plainText = ptext;
 		int fromIndex = ptext.indexOf('\n', 0);
 		while(fromIndex >= 0){
-			as.addAttribute(TextAttribute.CHAR_REPLACEMENT, spacer, fromIndex, fromIndex + 1);
-			fromIndex = ptext.indexOf('\n', fromIndex + 1);
+			try { // if text == "\n" then an exception is thrown
+				as.addAttribute(TextAttribute.CHAR_REPLACEMENT, spacer, fromIndex, fromIndex + 1);
+				fromIndex = ptext.indexOf('\n', fromIndex + 1);
+			}
+			catch(Exception excp){
+				break;
+			}
 		}
 		return as;
 	}
@@ -291,34 +297,81 @@ final public class StyledString implements Serializable {
 	 * @param chars
 	 * @param insertPos the position in the text
 	 */
-	public boolean insertCharacters(int insertPos, String chars){
-		int nbrChars = chars.length();
-		if(nbrChars > 0){
-			if(wrapWidth == Integer.MAX_VALUE)
-				chars = removeSingleSpacing(chars);
+	public int insertCharacters(int insertPos, String chars){
+		if(chars.length() > 0)
+			chars = makeStringSafeForInsert(chars);
+		if(chars.length() > 0){
+			int nbrChars = chars.length();
+			if(plainText.equals(" "))
+				plainText = chars;
 			else
-				chars = removeDoubleSpacing(chars);
-		}
-		nbrChars = chars.length();
-		if(nbrChars == 0)
-			return false;
-		if(plainText.equals(" "))
-			plainText = chars;
-		else
-			plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
-		for(AttributeRun ar : atrun){
-			if(ar.end < Integer.MAX_VALUE){
-				if(ar.end >= insertPos){
-					ar.end += nbrChars;
-					if(ar.start >= insertPos)
-						ar.start += nbrChars;
+				plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
+			insertParagraphMarkers(plainText, styledText);
+			for(AttributeRun ar : atrun){
+				if(ar.end < Integer.MAX_VALUE){
+					if(ar.end >= insertPos){
+						ar.end += nbrChars;
+						if(ar.start >= insertPos)
+							ar.start += nbrChars;
+					}
 				}
 			}
+			invalidText = true;
 		}
-		invalidText = true;
-		return true;
+		return 0;
 	}
 
+	/**
+	 * This is used when multiple characters are to be inserted. <br>
+	 * If it is single line text i.e. no wrapping then it removes all EOLs
+	 * If it is multiple line spacing it will reduce all double EOLs to single
+	 * EOLs and remove any EOLs at the start or end of the string.
+	 * 
+	 * @param chars
+	 * @return
+	 */
+	private String makeStringSafeForInsert(String chars){
+		// Get rid of single / double line spacing
+		if(chars.length() > 0){
+			if(wrapWidth == Integer.MAX_VALUE) // no wrapping remove all
+				chars = removeSingleSpacing(chars);
+			else {
+				chars = removeDoubleSpacing(chars); // wrapping remove double spacing
+				// no remove EOL at ends of string
+				while(chars.length() > 0 && chars.charAt(0) == '\n')
+					chars = chars.substring(1);
+				while(chars.length() > 0 && chars.charAt(chars.length() - 1) == '\n')
+					chars = chars.substring(0, chars.length() - 1);
+			}
+		}
+		return chars;
+	}
+	
+	public boolean insertEOL(int insertPos){
+		if(wrapWidth != Integer.MAX_VALUE){
+			if(insertPos > 0 && plainText.charAt(insertPos-1) == '\n')
+				return false;
+			if(insertPos < plainText.length()-1 && plainText.charAt(insertPos+1) == '\n'){
+				return false;
+			}
+			plainText = plainText.substring(0, insertPos) + "\n" + plainText.substring(insertPos);
+			insertParagraphMarkers(plainText, styledText);
+			for(AttributeRun ar : atrun){
+				if(ar.end < Integer.MAX_VALUE){
+					if(ar.end >= insertPos){
+						ar.end += 1;
+						if(ar.start >= insertPos)
+							ar.start += 1;
+					}
+				}
+			}
+			invalidText = true;
+			invalidText = true;		
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Remove a number of characters from the string
 	 * 
@@ -329,11 +382,22 @@ final public class StyledString implements Serializable {
 	public boolean deleteCharacters(int fromPos, int nbrToRemove){
 		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
 			return false;
+		/*
+		 * If the character preceding the selection and the charcater immediately after the selection
+		 * are both EOLs then increment the number of characters to be deleted
+		 */
+		if(wrapWidth != Integer.MAX_VALUE){
+			if(fromPos > 0 && fromPos + nbrToRemove < plainText.length() - 1){
+				if(plainText.charAt(fromPos) == '\n' && plainText.charAt(fromPos + nbrToRemove) == '\n'){
+					nbrToRemove++;
+				}
+			}
+		}
 		if(fromPos != 0)
 			plainText = plainText.substring(0, fromPos) + plainText.substring(fromPos + nbrToRemove);
 		else
 			plainText = plainText.substring(fromPos + nbrToRemove);
-		plainText = removeDoubleSpacing(plainText); // just in case we merge two eol characters
+		// For wrappable text make sure we have not created
 		if(plainText.length() == 0){
 			atrun.clear();
 			styledText = null;
@@ -344,12 +408,34 @@ final public class StyledString implements Serializable {
 			while(iter.hasPrevious()){
 				ar = iter.previous();
 				if(ar.end < Integer.MAX_VALUE){
+					// Only need to worry about this if the run ends after the deletion point
 					if(ar.end >= fromPos){
-						ar.end -= nbrToRemove;
-						if(ar.start > ar.end)
+						int lastPos = fromPos + nbrToRemove;
+						// Deletion removes entire run
+						if(fromPos <= ar.start && lastPos >= ar.end){
 							iter.remove();
-						else if(ar.start >= fromPos)
-							ar.start -= nbrToRemove;
+							continue;
+						}
+						// Deletion is entirely within the run
+						if(fromPos > ar.start && lastPos < ar.end){
+							ar.end -= nbrToRemove;
+							continue;
+						}
+						// Now we have overlap either at one end of the run
+						// Overlap at start of run?
+						if(fromPos <= ar.start){
+							ar.start = fromPos;
+							ar.end -= nbrToRemove;
+							continue;
+						}
+						// Overlap at end of run?
+						if(lastPos >= ar.end){
+							ar.end = fromPos;
+							continue;
+						}
+						System.out.println("This run was not modified");
+						System.out.println("Run from " + ar.start + " to " + ar.end);
+						System.out.println("Delete from " + fromPos + " To " + lastPos + "  (" + nbrToRemove + " to remove)");
 					}
 				}		
 			}
