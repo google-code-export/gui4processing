@@ -23,8 +23,6 @@
 
 package guicomponents;
 
-import guicomponents.HotSpot.HScircle;
-
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
