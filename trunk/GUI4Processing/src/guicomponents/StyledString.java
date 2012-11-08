@@ -712,6 +712,13 @@ final public class StyledString implements Serializable {
 		}
 	}
 
+	/**
+	 * Load and return a StyledString object from the given file.
+	 * 
+	 * @param papp
+	 * @param fname the filename of the StyledString
+	 * @return
+	 */
 	public static StyledString load(PApplet papp, String fname){
 		InputStream is;
 		StyledString ss = null;

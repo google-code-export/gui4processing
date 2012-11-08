@@ -466,59 +466,51 @@ public abstract class GAbstractControl implements PConstants, GConstants {
 		this.rotAngle = rot;
 	}
 
-//	/**
-//	 * Sets the position of a component
-//	 * @param x
-//	 * @param y
-//	 */
-//	public void setXY(int x, int y) {
-//		this.x = x;
-//		this.y = y;
-//	}
-//
-//	/**
-//	 * Sets the x position of a component
-//	 * @param x
-//	 */
-//	public void setX(int x) {
-//		this.x = x;
-//	}
-//
-//	/**
-//	 * Sets the x position of a component
-//	 * @param y
-//	 */
-//	public void setY(int y) {
-//		this.y = y;
-//	}
-
 	/**
+	 * Get the left position of the control
 	 * @return the x
 	 */
-	protected float getX() {
+	public float getX() {
 		return x;
 	}
 
 	/**
+	 * Get the left position of the control
 	 * @return the y
 	 */
-	protected float getY() {
+	public float getY() {
 		return y;
 	}
 
-//	/**
-//	 * @return the width
-//	 */
-//	public float getWidth() {
-//		return width;
-//	}
-//
-//	/**
-//	 * @return the height
-//	 */
-//	public float getHeight() {
-//		return height;
-//	}
+	/**
+	 * Get the centre x position of the control
+	 * @return the cx
+	 */
+	public float getCX() {
+		return cx;
+	}
+
+	/**
+	 * Get the centre y position of the control
+	 * @return the cy
+	 */
+	public float getCY() {
+		return cy;
+	}
+
+	/**
+	 * @return the width
+	 */
+	public float getWidth() {
+		return width;
+	}
+
+	/**
+	 * @return the height
+	 */
+	public float getHeight() {
+		return height;
+	}
 
 	/**
 	 * @param visible the visibility to set

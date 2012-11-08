@@ -43,6 +43,10 @@ import processing.core.PGraphicsJava2D;
  */
 public class GLabel extends GTextIconControl {
 
+	public GLabel(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		this(theApplet, p0, p1, p2, p3, "    ");
+	}	
+		
 	/**
 	 * Create a label control.
 	 * 
