@@ -106,15 +106,15 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			cursorIsOver = null;
 		focusIsWith = grabber;
 		// If only blank text clear it out
-		if(stext.length() > 0){
-			int tl = stext.getPlainText().trim().length();
-			if(tl == 0){
-				text = "";
-				stext = new StyledString(text);
-			}
-		}
-		System.out.println("GEditableTextControl losefocus");
-		startTLHI.copyFrom(endTLHI);
+//		if(stext.length() > 0){
+//			int tl = stext.getPlainText().trim().length();
+//			if(tl == 0){
+//				text = "";
+//				stext = new StyledString(text);
+//			}
+//		}
+//		System.out.println("GEditableTextControl losefocus");
+//		startTLHI.copyFrom(endTLHI);
 		keepCursorInView = true;
 		bufferInvalid = true;
 	}
@@ -459,16 +459,14 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			}
 		}
 		else if(keyChar == KeyEvent.VK_ENTER && stext.getWrapWidth() != Integer.MAX_VALUE) {
-			// If possible move to next text control
-			System.out.println("Enter typed");
-			stext.insertCharacters(pos, "\n");
-			adjust = 1; textChanged = true;
-			newline = true;
+			if(stext.insertEOL(pos)){
+				adjust = 1; textChanged = true;
+				newline = true;
+			}
 		}
 		else if(keyChar == KeyEvent.VK_TAB){
 			// If possible move to next text control
 			if(tabManager != null){
-				System.out.println("Tab typed " + tag + "  " + focusIsWith);
 				boolean result = (shiftDown) ? tabManager.prevControl(this) : tabManager.nextControl(this);
 				if(result){
 					startTLHI.copyFrom(endTLHI);

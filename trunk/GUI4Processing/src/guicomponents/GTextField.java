@@ -152,7 +152,7 @@ public class GTextField extends GEditableTextControl {
 	public void appendText(String extraText){
 		if(extraText == null || extraText.equals(""))
 			return;
-		if(!stext.insertCharacters(stext.length(), extraText))
+		if(stext.insertCharacters(stext.length(), extraText) == 0)
 			return;
 		text = stext.getPlainText();
 		LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
