@@ -297,9 +297,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		invalidLayout = true;
 	}
 
-	private int mergerMode(AttributeRun m, AttributeRun s){
-		if()
-	}
 	public void clearAllAttributes(){
 		atrun.clear();
 		invalidText = true;
@@ -928,29 +925,31 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		 * mode will be MM_SURROUNDS rather than MM_SURROUNDED because 
 		 * 'this' is the attribute being added.
 		 * @param m
-		 * @param s
+		 * @param o
 		 * @return
 		 */
-		private int iMode(AttributeRun s){
+		private int iMode(AttributeRun o){
 			// Different attribute types?
-			if(atype != s.atype)
+			if(atype != o.atype)
 				return MM_NONE;
+			// `If these is no overlap and no touching then we are done
+			if(start > o.end || end < o.start - 1)
+				return MM_NONE;
+
 			// Check for mode;
-			int mode = (value.equals(s.value)) ? MM_MERGE : MM_CROP;
-			// Is this a full length run?
+			int mode = (value.equals(o.value)) ? MM_MERGE : MM_CROP;
+			// ===========================================================
+			// First check for SURROUND or SURROUNDS
+			// ===========================================================			
 			if(end == Integer.MAX_VALUE)
 				return MM_SURROUNDS | mode;
 			// Is the other a full length run
-			if(s.end == Integer.MAX_VALUE)
+			if(o.end == Integer.MAX_VALUE)
 				return MM_SURROUNDED | mode;
 			
-			// Neither are full length runs so check start/end positions
-			// Test for no overlap and no touching
-			if(start > s.end + 1 || end < s.start - 1)
-				return MM_NONE;
 			// To get here the two runs must be touching or intersect
 			// See if this one surrounds the other
-			if(start >= s.start && end >= s.end)
+			if(start >= o.start && end >= o.end)
 				return MM_SURROUNDS | mode;
 
 			
