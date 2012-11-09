@@ -11,25 +11,27 @@ public interface GConstantsInternal {
 	public static final int ALL_METHOD =			0x0000001f;
 
 	
-	// Attribute run intersection constants
-	public static final int NO_INTERSECTION = 		0;
-	public static final int START_INTERSECTION = 	1;
-	public static final int END_INTERSECTION = 		2;
-	public static final int SURROUNDS =			 	3;
-	public static final int SURROUNDED =		 	4;
 	
-	// Merger Mode
-	public static final int MM_NONE = 				0;
-	public static final int MM_OVERLAP_START = 		1;
-	public static final int MM_OVERLAP_END = 		2;
-	public static final int MM_TOUCHING = 			3;
-	public static final int MM_SURROUNDS =			4;
-	public static final int MM_SURROUNDED =			5;
+	// Constants for merging attribute runs
+	public static final int I_NONE = 			0;
+	public static final int I_TL = 				1;
+	public static final int I_TR = 				2;
+	public static final int I_CL = 				4;
+	public static final int I_CT = 				8;
+	public static final int I_INSIDE =			16;
+	public static final int I_COVERED =			32;
+	public static final int I_MODES =			63;
 	
 	// Merger action
-	public static final int MM_MERGE = 				256;
-	public static final int MM_CROP = 				257;
+	public static final int TYPE_SAME = 		256;
+	public static final int TYPE_DIFFERENT = 	512;
 	
-	//  Merger action grid
+	public static final int[][] grid = new int[][] {
+		{ I_NONE,	I_TL,		I_CL,		I_COVERED,	I_COVERED },
+		{ I_NONE,	I_NONE, 	I_INSIDE, 	I_INSIDE, 	I_COVERED },
+		{ I_NONE,	I_NONE, 	I_INSIDE, 	I_INSIDE, 	I_CT },
+		{ I_NONE,	I_NONE, 	I_NONE, 	I_NONE, 	I_TR },
+		{ I_NONE,	I_NONE, 	I_NONE, 	I_NONE, 	I_NONE }
+	};
 	
 }
