@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import processing.core.PApplet;
+import sun.nio.cs.Surrogate;
 
 /**
  * This class is used to represent text with attributes. <br>
@@ -64,7 +65,7 @@ import processing.core.PApplet;
  * @author Peter Lager
  *
  */
-final public class StyledString implements Serializable {
+final public class StyledString implements GConstantsInternal, Serializable {
 
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
@@ -229,6 +230,15 @@ final public class StyledString implements Serializable {
 	}
 
 	/**
+	 * Add an attribute that affects the whole length of the string.
+	 * @param type attribute type
+	 * @param value attribute value
+	 */
+	public void addAttribute(Attribute type, Object value){
+		addAttribute(type, value, 0, Integer.MAX_VALUE);
+	}
+
+	/**
 	 * Set charStart and charEnd to <0 if full length.
 	 * 
 	 * @param type
@@ -238,19 +248,19 @@ final public class StyledString implements Serializable {
 	 */
 	public void addAttribute(Attribute type, Object value, int charStart, int charEnd){
 		AttributeRun ar = new AttributeRun(type, value, charStart, charEnd);
+		if(atrun.size() > 0){
+			ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
+			while(iter.hasPrevious()){
+				AttributeRun a = iter.previous();
+				
+			}
+		
+		}
 		atrun.addLast(ar);
 		applyAttributes();
 		invalidLayout = true;
 	}
 
-	/**
-	 * Add an attribute that affects the whole length of the string.
-	 * @param type attribute type
-	 * @param value attribute value
-	 */
-	public void addAttribute(Attribute type, Object value){
-		addAttribute(type, value, -1, Integer.MAX_VALUE);
-	}
 
 	/**
 	 * Must call this method to apply
@@ -287,12 +297,19 @@ final public class StyledString implements Serializable {
 		invalidLayout = true;
 	}
 
+	private int mergerMode(AttributeRun m, AttributeRun s){
+		if()
+	}
 	public void clearAllAttributes(){
 		atrun.clear();
 		invalidText = true;
 	}
 
 	/**
+	 * Insert 1 or more characters into the string. The inserted text will first be made
+	 * safe by removing any inappropriate EOL characters. <br>
+	 * Do not use this method to insert EOL characters, use the <pre>insertEOL(int)</pre>
+	 * method instead.
 	 * 
 	 * @param chars
 	 * @param insertPos the position in the text
@@ -347,6 +364,11 @@ final public class StyledString implements Serializable {
 		return chars;
 	}
 	
+	/**
+	 * Use this method to insert an EOL character.
+	 * @param insertPos
+	 * @return
+	 */
 	public boolean insertEOL(int insertPos){
 		if(wrapWidth != Integer.MAX_VALUE){
 			if(insertPos > 0 && plainText.charAt(insertPos-1) == '\n')
@@ -898,6 +920,48 @@ final public class StyledString implements Serializable {
 			this.end = end;
 		}
 
+		/**
+		 * If possible merge the two runs or crop the prevRun run.
+		 * 
+		 *	If both runs have the same attribute type and the represent
+		 * the same location and size in the text then the intersection
+		 * mode will be MM_SURROUNDS rather than MM_SURROUNDED because 
+		 * 'this' is the attribute being added.
+		 * @param m
+		 * @param s
+		 * @return
+		 */
+		private int iMode(AttributeRun s){
+			// Different attribute types?
+			if(atype != s.atype)
+				return MM_NONE;
+			// Check for mode;
+			int mode = (value.equals(s.value)) ? MM_MERGE : MM_CROP;
+			// Is this a full length run?
+			if(end == Integer.MAX_VALUE)
+				return MM_SURROUNDS | mode;
+			// Is the other a full length run
+			if(s.end == Integer.MAX_VALUE)
+				return MM_SURROUNDED | mode;
+			
+			// Neither are full length runs so check start/end positions
+			// Test for no overlap and no touching
+			if(start > s.end + 1 || end < s.start - 1)
+				return MM_NONE;
+			// To get here the two runs must be touching or intersect
+			// See if this one surrounds the other
+			if(start >= s.start && end >= s.end)
+				return MM_SURROUNDS | mode;
+
+			
+			int mm = MM_NONE;
+			
+			
+			
+			
+			return mm;
+		}
+		
 		public boolean sameType(AttributeRun ar){
 			return atype == ar.atype;
 		}

@@ -45,7 +45,7 @@ import processing.core.PImage;
  * @author Peter Lager
  *
  */
-public abstract class GAbstractControl implements PConstants, GConstants {
+public abstract class GAbstractControl implements PConstants, GConstants, GConstantsInternal {
 
 	/*
 	 * INTERNAL USE ONLY

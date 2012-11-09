@@ -36,12 +36,12 @@ public interface GConstants {
 	// 0x8???????  always display these messages
 
 	// Constants for the control methods
-	public static int DRAW_METHOD = 			0x00000001;
-	public static int MOUSE_METHOD = 			0x00000002;
-	public static int PRE_METHOD = 				0x00000004;
-	public static int KEY_METHOD = 				0x00000008;
-	public static int POST_METHOD = 			0x00000010;
-	public static int ALL_METHOD =				0x0000001f;
+//	public static int DRAW_METHOD = 			0x00000001;
+//	public static int MOUSE_METHOD = 			0x00000002;
+//	public static int PRE_METHOD = 				0x00000004;
+//	public static int KEY_METHOD = 				0x00000008;
+//	public static int POST_METHOD = 			0x00000010;
+//	public static int ALL_METHOD =				0x0000001f;
 	
 	// Button/slider status values
 	public static final int OFF_CONTROL	= 		0;
@@ -53,7 +53,7 @@ public interface GConstants {
 	public final static int CHANGED = 			0x00000101;	// Text has changed
 	public final static int SELECTION_CHANGED = 0x00000102;	// Selected text has change
 	public final static int ENTERED = 			0x00000103;	// Enter key pressed
-	public final static int SET = 				0x00000104;	// setText() was used
+//	public final static int SET = 				0x00000104;	// setText() was used
 
 	// GPanel component
 	public final static int COLLAPSED = 		0x00000201;	// Panel has been collapsed
@@ -80,9 +80,9 @@ public interface GConstants {
 	public final static int KEEP_OPEN = 		0x00000f03;
 
 	// ### GUI build constants ###
-	public final static int ADD_DUPLICATE = 	0x00010101;
+//	public final static int ADD_DUPLICATE = 	0x00010101;
 	public final static int USER_COL_SCHEME = 	0x00010102;
-	public final static int DISABLE_AUTO_DRAW =	0x00010103;
+//	public final static int DISABLE_AUTO_DRAW =	0x00010103;
 
 	// The min alpha level for a control to respond to mouse and keyboard
 	public final int ALPHA_BLOCK =				200;
