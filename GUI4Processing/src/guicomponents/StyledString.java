@@ -252,16 +252,18 @@ final public class StyledString implements GConstantsInternal, Serializable {
 			ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
 			while(iter.hasPrevious()){
 				AttributeRun a = iter.previous();
-				
+				int action = ar.iMode(a);
+				int mode = action & 255;
 			}
 		
 		}
-		atrun.addLast(ar);
+		if(ar != null)
+			atrun.addLast(ar);
 		applyAttributes();
 		invalidLayout = true;
 	}
 
-
+	
 	/**
 	 * Must call this method to apply
 	 */
@@ -297,6 +299,10 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		invalidLayout = true;
 	}
 
+	private int mergerMode(AttributeRun m, AttributeRun s){
+		return 0;
+	}
+	
 	public void clearAllAttributes(){
 		atrun.clear();
 		invalidText = true;
@@ -925,40 +931,38 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		 * mode will be MM_SURROUNDS rather than MM_SURROUNDED because 
 		 * 'this' is the attribute being added.
 		 * @param m
-		 * @param o
+		 * @param s
 		 * @return
 		 */
-		private int iMode(AttributeRun o){
+		private int iMode(AttributeRun ar){
 			// Different attribute types?
-			if(atype != o.atype)
-				return MM_NONE;
-			// `If these is no overlap and no touching then we are done
-			if(start > o.end || end < o.start - 1)
-				return MM_NONE;
-
+			if(atype != ar.atype)
+				return I_NONE;
 			// Check for mode;
-			int mode = (value.equals(o.value)) ? MM_MERGE : MM_CROP;
-			// ===========================================================
-			// First check for SURROUND or SURROUNDS
-			// ===========================================================			
-			if(end == Integer.MAX_VALUE)
-				return MM_SURROUNDS | mode;
-			// Is the other a full length run
-			if(o.end == Integer.MAX_VALUE)
-				return MM_SURROUNDED | mode;
-			
-			// To get here the two runs must be touching or intersect
-			// See if this one surrounds the other
-			if(start >= o.start && end >= o.end)
-				return MM_SURROUNDS | mode;
-
-			
-			int mm = MM_NONE;
-			
-			
-			
-			
-			return mm;
+			int mode = (value.equals(ar.value)) ? TYPE_SAME : TYPE_DIFFERENT;
+			int sdx = 4, edx = 0;
+			// Start index
+			if(ar.start < start)
+				sdx = 0;
+			else if(ar.start == start)
+				sdx = 1;
+			else if (ar.start < end)
+				sdx = 2;
+			else if(ar.start == end)
+				sdx = 3;
+			if(sdx < 4){
+				if(ar.end > end)
+					edx = 4;
+				else if(ar.end == end)
+					edx = 3;
+				else if(ar.end > start)
+					edx = 2;
+				else if(ar.end == start)
+					edx = 1;
+			}
+			mode |= grid[sdx][edx];
+			System.out.println( (mode & 255) + "   " + (mode & 768));
+			return mode;
 		}
 		
 		public boolean sameType(AttributeRun ar){
