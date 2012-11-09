@@ -73,7 +73,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		}
 	}
 
-	public void releaseControls() {
+	void releaseControls() {
 		windowControls.clear();
 	}
 	
@@ -138,28 +138,28 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	 * dispose of this applets GUI controls, normally used in preparation
 	 * to disposing of a window.
 	 */
-	public void dispose(){
+	void dispose(){
 		unRegisterMethodsForWindow();
 		windowControls.clear();
 	}
 
-	public void addControl(GAbstractControl control){
+	void addControl(GAbstractControl control){
 		// Make sure we avoid duplicates
 		windowControls.remove(control);
 		windowControls.add(control);
 		Collections.sort(windowControls, G4P.zorder);
 	}
 
-	public void removeControl(GAbstractControl control){
+	void removeControl(GAbstractControl control){
 		windowControls.remove(control);
 	}
 
-	public void setGlobalColorScheme(int cs){
+	void setColorScheme(int cs){
 		for(GAbstractControl control : windowControls)
 			control.setLocalColorScheme(cs);
 	}
 
-	public void setGlobalAlpha(int alpha){
+	void setAlpha(int alpha){
 		for(GAbstractControl control : windowControls)
 			control.setAlpha(alpha);
 	}

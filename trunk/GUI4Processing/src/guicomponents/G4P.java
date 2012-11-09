@@ -92,14 +92,43 @@ public class G4P implements GConstants, PConstants {
 		if(globalColorScheme != cs){
 			globalColorScheme = cs;
 			for(GWindowInfo winfo : windows.values())
-				winfo.setGlobalColorScheme(globalColorScheme);
+				winfo.setColorScheme(globalColorScheme);
 		}
 	}
 
 	/**
-	 * Set the transparency of all controls. <br>
-	 * If alpha is below GConstants.ALPHA_BLOCK then the control is no
-	 * longer available., so will not respond to mouse and keyboard events.
+	 * Set the colour scheme for all the controls drawn by the given 
+	 * PApplet. This will override any previous colour scheme for 
+	 * these controls.
+	 * @param app
+	 * @param cs
+	 */
+	public static void setWindowColorScheme(PApplet app, int cs){
+		cs = Math.abs(cs) % 16; // Force into valid range
+		GWindowInfo winfo = windows.get(app);
+		if(winfo != null)
+			winfo.setColorScheme(cs);
+	}
+	
+	/**
+	 * Set the colour scheme for all the controls drawn by the given 
+	 * GWindow. This will override any previous colour scheme for 
+	 * these controls.
+	 * @param win
+	 * @param cs
+	 */
+	public static void setWindowColorScheme(GWindow win, int cs){
+		cs = Math.abs(cs) % 16; // Force into valid range
+		GWindowInfo winfo = windows.get(win.papplet);
+		if(winfo != null)
+			winfo.setColorScheme(cs);
+	}
+	
+
+	/**
+	 * Set the transparency of all controls. If the alpha level for a 
+	 * control falls below G4P.ALPHA_BLOCK then it will no longer 
+	 * respond to mouse and keyboard events.
 	 * 
 	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
 	 */
@@ -108,9 +137,42 @@ public class G4P implements GConstants, PConstants {
 		if(globalAlpha != alpha){
 			globalAlpha = alpha;
 			for(GWindowInfo winfo : windows.values())
-				winfo.setGlobalAlpha(globalAlpha);
+				winfo.setAlpha(globalAlpha);
 		}
 	}
+	
+	/**
+	 * Set the transparency level for all controls drawn by the given
+	 * PApplet. If the alpha level for a control falls below 
+	 * G4P.ALPHA_BLOCK then it will no longer respond to mouse
+	 * and keyboard events.
+	 * 
+	 * @param app
+	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
+	 */
+	public static void setWindowAlpha(PApplet app, int alpha){
+		alpha = Math.abs(alpha) % 256; // Force into valid range
+		GWindowInfo winfo = windows.get(app);
+		if(winfo != null)
+			winfo.setAlpha(alpha);
+	}
+	
+	/**
+	 * Set the transparency level for all controls drawn by the given
+	 * GWindow. If the alpha level for a control falls below 
+	 * G4P.ALPHA_BLOCK then it will no longer respond to mouse
+	 * and keyboard events.
+	 * 
+	 * @param app
+	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
+	 */
+	public static void setWindowAlpha(GWindow win, int alpha){
+		alpha = Math.abs(alpha) % 256; // Force into valid range
+		GWindowInfo winfo = windows.get(win.papplet);
+		if(winfo != null)
+			winfo.setAlpha(alpha);
+	}
+	
 	
 	static void addWindow(GWindow window){
 		PApplet app = window.papplet;
