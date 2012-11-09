@@ -237,10 +237,38 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			endSelTLHI.thi = endSelTLHI.tli.layout.getNextLeftHit(1);
 		else 
 			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn-1);
-
 		bufferInvalid = true;
 	}
 	
+	public void clearStyle(){
+		if(!hasSelection())
+			return;
+		TextLayoutHitInfo startSelTLHI;
+		TextLayoutHitInfo endSelTLHI;
+		if(endTLHI.compareTo(startTLHI) == -1){
+			startSelTLHI = endTLHI;
+			endSelTLHI = startTLHI;
+		}
+		else {
+			startSelTLHI = startTLHI;
+			endSelTLHI = endTLHI;
+		}
+		int ss = startSelTLHI.tli.startCharIndex + startSelTLHI.thi.getInsertionIndex();
+		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
+		stext.clearAttributes(ss, ee);
+		
+		// We have modified the text style so the end of the selection may have
+		// moved, so it needs to be recalculated. The start will be unaffected.
+		stext.getLines(buffer.g2);
+		endSelTLHI.tli = stext.getTLIforCharNo(ee);
+		int cn = ee - endSelTLHI.tli.startCharIndex;
+		if(cn == 0) // start of line
+			endSelTLHI.thi = endSelTLHI.tli.layout.getNextLeftHit(1);
+		else 
+			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn-1);
+		bufferInvalid = true;
+		
+	}
 	/**
 	 * Set the font for this control.
 	 * @param font

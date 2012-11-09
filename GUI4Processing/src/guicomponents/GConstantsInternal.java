@@ -17,19 +17,20 @@ public interface GConstantsInternal {
 	public static final int I_TL = 				1;
 	public static final int I_TR = 				2;
 	public static final int I_CL = 				4;
-	public static final int I_CT = 				8;
+	public static final int I_CR = 				8;
 	public static final int I_INSIDE =			16;
 	public static final int I_COVERED =			32;
 	public static final int I_MODES =			63;
 	
 	// Merger action
-	public static final int TYPE_SAME = 		256;
-	public static final int TYPE_DIFFERENT = 	512;
+	public static final int MERGE_RUNS = 		256;
+	public static final int CLIP_RUN = 			512;
+	public static final int COMBI_MODES = 		768;
 	
 	public static final int[][] grid = new int[][] {
 		{ I_NONE,	I_TL,		I_CL,		I_COVERED,	I_COVERED },
 		{ I_NONE,	I_NONE, 	I_INSIDE, 	I_INSIDE, 	I_COVERED },
-		{ I_NONE,	I_NONE, 	I_INSIDE, 	I_INSIDE, 	I_CT },
+		{ I_NONE,	I_NONE, 	I_INSIDE, 	I_INSIDE, 	I_CR },
 		{ I_NONE,	I_NONE, 	I_NONE, 	I_NONE, 	I_TR },
 		{ I_NONE,	I_NONE, 	I_NONE, 	I_NONE, 	I_NONE }
 	};

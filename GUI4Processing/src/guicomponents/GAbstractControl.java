@@ -295,45 +295,16 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 
 	/**
 	 * Set the transparency of the component and make it unavailable to
-	 * mouse and keyboard events if blow the threshold.
+	 * mouse and keyboard events if below the threshold.
 	 * 
 	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
 	 */
 	public void setAlpha(int alpha){
 		alpha = Math.abs(alpha) % 256;
-		if(alphaLevel != alpha){
-			alphaLevel = alpha;
-			available = (alphaLevel >= ALPHA_BLOCK);
-		}
+		alphaLevel = alpha;
+		available = (alphaLevel >= ALPHA_BLOCK);
 	}
 	
-//	/**
-//	 * Change the way position and size parameters are interpreted when a control is created. 
-//	 * or added to another control e.g. GPanel. <br>
-//	 * There are 3 modes. <br><pre>
-//	 * PApplet.CORNER	 (x, y, w, h)
-//	 * PApplet.CORNERS	 (x0, y0, x1, y1)
-//	 * PApplet.CENTER	 (cx, cy, w, h) </pre><br>
-//	 * 
-//	 * @param mode illegal values are ignored leaving the mode unchanged
-//	 */
-//	public static void setCtrlMode(int mode){
-//		switch(mode){
-//		case PApplet.CORNER:	// (x, y, w, h)
-//		case PApplet.CORNERS:	// (x0, y0, x1, y1)
-//		case PApplet.CENTER:	// (cx, cy, w, h)
-//			control_mode = mode;
-//		}
-//	}
-//
-//	/**
-//	 * Get the control creation mode @see ctrlMode(int mode)
-//	 * @return
-//	 */
-//	public static int getCtrlMode(){
-//		return control_mode;
-//	}
-
 	public GAbstractControl getParent() {
 		return parent;
 	}
@@ -449,7 +420,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	protected void fireEvent(Object... objects){
 		if(eventHandlerMethod != null){
 			try {
-//				eventHandlerMethod.invoke(eventHandlerObject, new Object[] { this });
 				eventHandlerMethod.invoke(eventHandlerObject, objects);
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, 
@@ -522,7 +492,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		this.visible = visible;
 	}
 
-	
 	/**
 	 * @return the component's visibility
 	 */
@@ -530,8 +499,12 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		return visible;
 	}
 
-
-	public void setAvailable(boolean avail){
+	/**
+	 * If a control is made unavailable it will still be drawn but it not respond to user input.
+	 * 
+	 * @param avail
+	 */
+	protected void setAvailable(boolean avail){
 		available = avail;
 		if(children != null){
 			for(GAbstractControl c : children)
@@ -539,13 +512,22 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		}
 	}
 
-	public void setAvailableChildren(boolean avail){
+	/**
+	 * Set the availability for the children only.
+	 * 
+	 * @param avail
+	 */
+	protected void setAvailableChildren(boolean avail){
 		if(children != null){
 			for(GAbstractControl c : children)
 				c.setAvailable(avail);
 		}
 	}
 
+	/**
+	 * Is this control available?
+	 * @return
+	 */
 	protected boolean isAvailable(){
 		return available;
 	}

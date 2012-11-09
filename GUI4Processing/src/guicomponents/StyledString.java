@@ -49,7 +49,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import processing.core.PApplet;
-import sun.nio.cs.Surrogate;
 
 /**
  * This class is used to represent text with attributes. <br>
@@ -235,7 +234,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @param value attribute value
 	 */
 	public void addAttribute(Attribute type, Object value){
-		addAttribute(type, value, 0, Integer.MAX_VALUE);
+		addAttribute(type, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -248,15 +247,50 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 */
 	public void addAttribute(Attribute type, Object value, int charStart, int charEnd){
 		AttributeRun ar = new AttributeRun(type, value, charStart, charEnd);
+		// If we already have attributes try an rationalise the number by merging
+		// runs if possible and removing runs that no longer have a visible effect.
 		if(atrun.size() > 0){
 			ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
 			while(iter.hasPrevious()){
 				AttributeRun a = iter.previous();
-				int action = ar.iMode(a);
-				int mode = action & 255;
+				int action = ar.intersectionWith(a);
+				int intersect = action & I_MODES;
+				int combiMode = action & COMBI_MODES;
+				if(combiMode == MERGE_RUNS){
+					switch(intersect){
+					case I_TL:
+					case I_CL:
+							ar.start = a.start;
+							iter.remove();
+						break;
+					case I_TR:
+					case I_CR:
+							ar.end = a.end;
+							iter.remove();
+						break;
+					}
+				}
+				else if(combiMode == CLIP_RUN){
+					switch(intersect){
+					case I_CL:
+						a.end = ar.start;
+						break;
+					case I_CR:
+						a.start = ar.end;
+						break;
+					}
+				}
+				switch(intersect){
+				case I_INSIDE:
+					iter.remove();
+					break;
+				case I_COVERED:
+					ar = null;
+					break;				
+				}
 			}
-		
 		}
+		// If the run is still effective then add it
 		if(ar != null)
 			atrun.addLast(ar);
 		applyAttributes();
@@ -269,9 +303,8 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 */
 	private void applyAttributes(){
 		if(plainText.length() > 0){
-			for(AttributeRun bsar : baseStyle){
+			for(AttributeRun bsar : baseStyle)
 				styledText.addAttribute(bsar.atype, bsar.value);
-			}
 			Iterator<AttributeRun> iter = atrun.iterator();
 			AttributeRun ar;
 			while(iter.hasNext()){
@@ -281,26 +314,43 @@ final public class StyledString implements GConstantsInternal, Serializable {
 				else {
 					// If an attribute run fails do not try and fix it - dump it
 					try {
-					styledText.addAttribute(ar.atype, ar.value, ar.start, ar.end);
+							styledText.addAttribute(ar.atype, ar.value, ar.start, ar.end);
 					}
 					catch(Exception excp){
+						System.out.println("Dumping " + ar);
 						iter.remove();
 					}
 				}
 			}
-//			for(AttributeRun ar : atrun){
-//				if(ar.end == Integer.MAX_VALUE)
-//					styledText.addAttribute(ar.atype, ar.value);
-//				else {
-//					styledText.addAttribute(ar.atype, ar.value, ar.start, ar.end);
-//				}
-//			}
 		}
 		invalidLayout = true;
 	}
 
-	private int mergerMode(AttributeRun m, AttributeRun s){
-		return 0;
+	public void clearAttributes(int start, int end){
+		ListIterator<AttributeRun> iter = atrun.listIterator();
+		AttributeRun ar;
+		while(iter.hasNext()){
+			ar = iter.next();
+			System.out.println(ar.toString());
+			// Make sure we have intersection
+			if( !(start >= ar.end && end >= ar.start )){
+				// Find the limits to clear
+				int s = Math.max(start, ar.start);
+				int e = Math.min(end, ar.end);
+				if(ar.start == s && ar.end == e)
+					iter.remove();
+				else if(ar.start == s) // clear style from beginning
+					ar.start = e;
+				else if(ar.end == e) // clear style from end
+					ar.end = s;
+				else {	// Split attribute run
+					AttributeRun ar2 = new AttributeRun(ar.atype, ar.value, e, ar.end);
+					iter.add(ar2);
+					ar.end = s;
+				}
+			}
+		}
+		invalidText = true;
 	}
 	
 	public void clearAllAttributes(){
@@ -905,7 +955,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		public AttributeRun(Attribute atype, Object value) {
 			this.atype = atype;
 			this.value = value;
-			this.start = Integer.MIN_VALUE; // was -1
+			this.start = Integer.MIN_VALUE;
 			this.end = Integer.MAX_VALUE;
 		}
 
@@ -934,12 +984,12 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		 * @param s
 		 * @return
 		 */
-		private int iMode(AttributeRun ar){
+		private int intersectionWith(AttributeRun ar){
 			// Different attribute types?
 			if(atype != ar.atype)
 				return I_NONE;
-			// Check for mode;
-			int mode = (value.equals(ar.value)) ? TYPE_SAME : TYPE_DIFFERENT;
+			// Check for combination mode
+			int combi_mode = (value.equals(ar.value)) ? MERGE_RUNS : CLIP_RUN;
 			int sdx = 4, edx = 0;
 			// Start index
 			if(ar.start < start)
@@ -960,27 +1010,31 @@ final public class StyledString implements GConstantsInternal, Serializable {
 				else if(ar.end == start)
 					edx = 1;
 			}
-			mode |= grid[sdx][edx];
-			System.out.println( (mode & 255) + "   " + (mode & 768));
-			return mode;
+			combi_mode |= grid[sdx][edx];
+//			System.out.println( (combi_mode & 255) + "   " + (combi_mode & 768));
+			return combi_mode;
 		}
 		
-		public boolean sameType(AttributeRun ar){
-			return atype == ar.atype;
+		public String toString(){
+			String s = atype.toString() + "  value = " + value.toString() + "  from " + start + "   to " + end;
+			return s;
 		}
-
-		public boolean sameValue(AttributeRun ar){
-			if(value instanceof java.lang.Float && ar.value instanceof java.lang.Float ){
-				return ((Float)value) == ((Float)ar.value);
-			}
-			if(value instanceof java.lang.Integer && ar.value instanceof java.lang.Integer ){
-				return ((Integer)value) == ((Integer)ar.value);
-			}
-			if(value instanceof java.lang.String && ar.value instanceof java.lang.String ){
-				return ((String)value).equalsIgnoreCase((String)ar.value);
-			}
-			return false;
-		}
+//		public boolean sameType(AttributeRun ar){
+//			return atype == ar.atype;
+//		}
+//
+//		public boolean sameValue(AttributeRun ar){
+//			if(value instanceof java.lang.Float && ar.value instanceof java.lang.Float ){
+//				return ((Float)value) == ((Float)ar.value);
+//			}
+//			if(value instanceof java.lang.Integer && ar.value instanceof java.lang.Integer ){
+//				return ((Integer)value) == ((Integer)ar.value);
+//			}
+//			if(value instanceof java.lang.String && ar.value instanceof java.lang.String ){
+//				return ((String)value).equalsIgnoreCase((String)ar.value);
+//			}
+//			return false;
+//		}
 
 	}  // End of AttributeRun class
 
