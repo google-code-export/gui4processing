@@ -331,7 +331,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		AttributeRun ar;
 		while(iter.hasNext()){
 			ar = iter.next();
-			System.out.println(ar.toString());
 			// Make sure we have intersection
 			if( !(start >= ar.end && end >= ar.start )){
 				// Find the limits to clear

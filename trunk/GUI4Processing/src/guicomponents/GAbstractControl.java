@@ -504,7 +504,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 * @param avail
 	 */
-	protected void setAvailable(boolean avail){
+	public void setAvailable(boolean avail){
 		available = avail;
 		if(children != null){
 			for(GAbstractControl c : children)
@@ -517,7 +517,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 * @param avail
 	 */
-	protected void setAvailableChildren(boolean avail){
+	public void setAvailableChildren(boolean avail){
 		if(children != null){
 			for(GAbstractControl c : children)
 				c.setAvailable(avail);

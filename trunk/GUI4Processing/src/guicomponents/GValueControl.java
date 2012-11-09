@@ -76,21 +76,28 @@ public class GValueControl extends GAbstractControl {
 	public void pre(){
 		if(Math.abs(valueTarget - valuePos) > epsilon){
 			valuePos += (valueTarget - valuePos) / easing;
-			isValueChanging = bufferInvalid = true;
+			bufferInvalid = true;
 			updateDueToValueChanging();
-			fireEvent(this, true);
-		}
-		else {
-			// Make sure we get at least one bufferUpdate when valuePos
-			// reaches targetPos
-			valuePos = valueTarget;
-			if(isValueChanging){
-				bufferInvalid = true;
-				isValueChanging = false;
-				updateDueToValueChanging();
-				fireEvent(this, false);
+			if(Math.abs(valueTarget - valuePos) > epsilon){
+				isValueChanging = true;
 			}
+			else {
+				isValueChanging = false;
+				valuePos = valueTarget;
+			}
+			fireEvent(this, isValueChanging);
 		}
+//		else {
+//			// Make sure we get at least one bufferUpdate when valuePos
+//			// reaches targetPos
+//			valuePos = valueTarget;
+//			if(isValueChanging){
+//				bufferInvalid = true;
+//				isValueChanging = false;
+//				updateDueToValueChanging();
+//				fireEvent(this, false);
+//			}
+//		}
 	}
 	
 	/**
