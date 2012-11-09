@@ -19,14 +19,17 @@ public interface GConstantsInternal {
 	public static final int SURROUNDED =		 	4;
 	
 	// Merger Mode
-	public static final int MM_NONE = 		0;
-	public static final int MM_START = 		1;
-	public static final int MM_END = 		2;
-	public static final int MM_SURROUNDS =	3;
-	public static final int MM_SURROUNDED =	4;
+	public static final int MM_NONE = 				0;
+	public static final int MM_OVERLAP_START = 		1;
+	public static final int MM_OVERLAP_END = 		2;
+	public static final int MM_TOUCHING = 			3;
+	public static final int MM_SURROUNDS =			4;
+	public static final int MM_SURROUNDED =			5;
 	
 	// Merger action
-	public static final int MM_MERGE = 		256;
-	public static final int MM_CROP = 			257;
+	public static final int MM_MERGE = 				256;
+	public static final int MM_CROP = 				257;
+	
+	//  Merger action grid
 	
 }
