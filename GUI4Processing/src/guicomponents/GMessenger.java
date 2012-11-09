@@ -41,16 +41,8 @@ public class GMessenger implements GConstants {
 			case NONEXISTANT:
 				nonexistantEventHandler(obj, info);
 				break;
-			case ADD_DUPLICATE:
-				System.out.println("Component " + obj + " has already been registered!");
-				break;
 			case USER_COL_SCHEME:
 				System.out.println("USER DEFINED colour schema active");
-				break;
-			case DISABLE_AUTO_DRAW:
-				System.out.println("You have disabled autoDraw so you have to use");
-				System.out.println("G4P.draw() when you want to display the GUI" );
-				System.out.println("this is not action is not reversible." );
 				break;
 			}
 		}

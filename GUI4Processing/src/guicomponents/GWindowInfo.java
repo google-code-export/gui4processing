@@ -20,7 +20,7 @@ import processing.core.PMatrix3D;
  * @author Peter Lager
  *
  */
-public class GWindowInfo implements PConstants, GConstants {
+public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 
 	public PApplet app;
 	public boolean app_g_3d;
