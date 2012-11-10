@@ -123,7 +123,10 @@ public class GTextField extends GEditableTextControl {
 		G4P.pushStyle();
 		setText("");
 		z = Z_STICKY;
-		createEventHandler(G4P.sketchApplet, "handleTextEvents", new Class[]{ GEditableTextControl.class });
+		createEventHandler(G4P.sketchApplet, "handleTextEvents", 
+				new Class[]{ GEditableTextControl.class, GEvent.class }, 
+				new String[]{ "textarea", "event" } 
+		);
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD | KEY_METHOD;
 		G4P.addControl(this);
 	}

@@ -108,7 +108,10 @@ public class GCustomSlider extends GLinearTrackControl {
 		ssValue = new StyledString("0.50");
 
 		// Now register control with applet
-		createEventHandler(G4P.sketchApplet, "handleSliderEvents", new Class[]{ GLinearTrackControl.class, boolean.class });
+		createEventHandler(G4P.sketchApplet, "handleSliderEvents", 
+				new Class[]{ GValueControl.class, boolean.class },
+				new String[]{ "slider", "event" }
+		);
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		G4P.addControl(this);

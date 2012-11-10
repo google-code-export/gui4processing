@@ -105,7 +105,10 @@ public class GKnob extends GValueControl {
 		epsilon = 0.98f / (endAng - startAng);
 
 		// Now register control with applet
-		createEventHandler(G4P.sketchApplet, "handleKnobEvents", new Class[]{ GValueControl.class, boolean.class });
+		createEventHandler(G4P.sketchApplet, "handleKnobEvents",
+				new Class[]{ GValueControl.class, GEvent.class }, 
+				new String[]{ "button", "event" } 
+		);
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD ;
 		cursorOver = HAND;
 		G4P.addControl(this);

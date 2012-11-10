@@ -101,7 +101,10 @@ public class GPanel extends GTextControl {
 		dockY = y;
 		z = Z_PANEL;
 
-		createEventHandler(G4P.sketchApplet, "handlePanelEvents", new Class[]{ GPanel.class });
+		createEventHandler(G4P.sketchApplet, "handlePanelEvents", 
+				new Class[]{ GPanel.class, GEvent.class },
+				new String[]{ "panel", "event" } 
+		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		G4P.addControl(this);
