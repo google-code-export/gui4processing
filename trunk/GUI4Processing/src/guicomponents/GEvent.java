@@ -6,12 +6,6 @@ public enum GEvent {
 	SELECTION_CHANGED 	( "Text selection has changed" ),
 	ENTERED			 	( "Enter/return key typed" ),
 	
-	
-	
-	
-	// Selected text has change
-//	public final static int SET = 				0x00000104;	// setText() was used
-
 	// GPanel component
 	COLLAPSED  			( "Control was collapsed"),
 	EXPANDED 			( "Control was expanded"),
