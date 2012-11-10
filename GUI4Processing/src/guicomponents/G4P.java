@@ -339,7 +339,6 @@ public class G4P implements GConstants, PConstants {
 	 */
 	static class G4Pstyle {
 		int ctrlMode;
-		
-	
 	}
+	
 }

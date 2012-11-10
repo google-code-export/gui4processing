@@ -348,16 +348,17 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 * @param handlerObj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
-	 * @param parameters the parameter classes.
+	 * @param param_classes the parameter classes.
+	 * @param param_names that names of the parameters (used for error messages only)
 	 */
 	@SuppressWarnings("rawtypes")
-	protected void createEventHandler(Object handlerObj, String methodName, Class[] parameters){
+	protected void createEventHandler(Object handlerObj, String methodName, Class[] param_classes, String[] param_names){
 		try{
-			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, parameters );
+			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, param_classes );
 			eventHandlerObject = handlerObj;
 			eventHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(MISSING, this, new Object[] {methodName, parameters});
+			GMessenger.message(MISSING, new Object[] {this, methodName, param_classes, param_names});
 			eventHandlerObject = null;
 		}
 	}
@@ -375,9 +376,9 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		try{
 			eventHandlerObject = obj;
 			eventHandlerMethodName = methodName;
-			eventHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {this.getClass() } );
+			eventHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {this.getClass(), GEvent.class } );
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, this, new Object[] {methodName, new Class[] { this.getClass() } } );
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { this.getClass() } } );
 			eventHandlerObject = null;
 			eventHandlerMethodName = "";
 		}
@@ -393,20 +394,20 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param methodName the method to execute in the object handler class
 	 * @param parameters the parameter classes.
 	 */
-	@SuppressWarnings("rawtypes")
-	public void addEventHandler(Object obj, String methodName, Class[] parameters){
-		if(parameters == null)
-			parameters = new Class[0];
-		try{
-			eventHandlerObject = obj;
-			eventHandlerMethodName = methodName;
-			eventHandlerMethod = obj.getClass().getMethod(methodName, parameters );
-		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, eventHandlerObject, new Object[] {methodName, parameters } );
-			eventHandlerObject = null;
-			eventHandlerMethodName = "";
-		}
-	}
+//	@SuppressWarnings("rawtypes")
+//	public void addEventHandler(Object obj, String methodName, Class[] parameters){
+//		if(parameters == null)
+//			parameters = new Class[0];
+//		try{
+//			eventHandlerObject = obj;
+//			eventHandlerMethodName = methodName;
+//			eventHandlerMethod = obj.getClass().getMethod(methodName, parameters );
+//		} catch (Exception e) {
+//			GMessenger.message(NONEXISTANT, eventHandlerObject, new Object[] {methodName, parameters } );
+//			eventHandlerObject = null;
+//			eventHandlerMethodName = "";
+//		}
+//	}
 
 	/**
 	 * Attempt to fire an event for this component.
@@ -422,8 +423,8 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			try {
 				eventHandlerMethod.invoke(eventHandlerObject, objects);
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, eventHandlerObject, 
-						new Object[] {eventHandlerMethodName, e } );
+				GMessenger.message(EXCP_IN_HANDLER,  
+						new Object[] {eventHandlerObject, eventHandlerMethodName, e } );
 			}
 		}		
 	}
@@ -548,10 +549,14 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * Find out if the component is opaque
 	 * @return true if the background is visible
 	 */
-	public boolean getOpaque(){
+	public boolean isOpaque(){
 		return opaque;
 	}
 
+	public boolean isDragging(){
+		return dragging;
+	}
+	
 	/**
 	 * Enable or disable the ability of the component to generate mouse events.<br>
 	 * GTextField - it also controls key press events <br>
@@ -808,15 +813,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		winApp = null;
 		System.gc();
 	}
-
-//	/**
-//	 * The following methods are used to compare 2 controls
-//	 * (non-Javadoc)
-//	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-//	 */
-//	public int compareTo(Object o) {
-//		return new Integer(this.hashCode()).compareTo(new Integer(o.hashCode()));
-//	}
 
 
 	public String toString(){

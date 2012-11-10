@@ -88,8 +88,8 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
 						new Object[] { owner.papplet, owner.data });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.preHandlerObject, 
-						new Object[] {owner.preHandlerMethodName, e} );
+				GMessenger.message(EXCP_IN_HANDLER, 
+						new Object[] {owner.preHandlerObject, owner.preHandlerMethodName, e} );
 			}
 		}
 	}
@@ -109,8 +109,8 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 			try {
 				owner.drawHandlerMethod.invoke(owner.drawHandlerObject, new Object[] { this, owner.data });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.drawHandlerObject, 
-						new Object[] {owner.drawHandlerMethodName, e} );
+				GMessenger.message(EXCP_IN_HANDLER,  
+						new Object[] {owner.drawHandlerObject, owner.drawHandlerMethodName, e} );
 			}
 		}
 	}
@@ -124,8 +124,8 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 			try {
 				owner.mouseHandlerMethod.invoke(owner.mouseHandlerObject, new Object[] { this, owner.data, event });
 			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, owner.mouseHandlerObject, 
-						new Object[] {owner.mouseHandlerMethodName, e} );
+				GMessenger.message(EXCP_IN_HANDLER,
+						new Object[] {owner.drawHandlerObject, owner.mouseHandlerMethodName, e} );
 			}
 		}
 	}

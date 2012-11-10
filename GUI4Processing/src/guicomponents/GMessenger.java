@@ -29,23 +29,21 @@ package guicomponents;
  * @author Peter Lager
  *
  */
-public class GMessenger implements GConstants, GConstantsInternal {
+class GMessenger implements GConstants, GConstantsInternal {
 
 	/**
 	 * Display an error message message
-	 * @param id
-	 * @param obj
+	 * 
+	 * @param id message ID number
+	 * @param obj 
 	 * @param info
 	 */
-	static void message(Integer id, Object obj, Object[] info){
+	static void message(Integer id, Object[] info){
 		// Display G4P messages if required
 		if(G4P.messages){
 			switch(id){
 			case MISSING:
-				missingEventHandler(obj, info);
-				break;
-			case NONEXISTANT:
-				nonexistantEventHandler(obj, info);
+				missingEventHandler(info);
 				break;
 			case USER_COL_SCHEME:
 				System.out.println("USER DEFINED colour schema active");
@@ -54,8 +52,11 @@ public class GMessenger implements GConstants, GConstantsInternal {
 		}
 		// Display all runtime errors
 		switch(id){
+		case NONEXISTANT:
+			nonexistantEventHandler(info);
+			break;
 		case EXCP_IN_HANDLER:
-			eventHandlerFailed(obj, info);
+			eventHandlerFailed(info);
 			break;
 		}
 	}
@@ -65,10 +66,10 @@ public class GMessenger implements GConstants, GConstantsInternal {
 	 * @param handler
 	 * @param info
 	 */
-	private static void eventHandlerFailed(Object handler, Object[] info) {
-		String className = handler.getClass().getSimpleName();
-		String methodName = (String) info[0];
-		Exception e = (Exception) info[1];
+	private static void eventHandlerFailed(Object[] info) {
+		String className = info[0].getClass().getSimpleName();
+		String methodName = (String) info[1];
+		Exception e = (Exception) info[2];
 		Throwable t = e.getCause();
 		StackTraceElement[] calls = t.getStackTrace();
 		StringBuilder output = new StringBuilder();
@@ -84,59 +85,67 @@ public class GMessenger implements GConstants, GConstantsInternal {
 		System.out.println(output);
 	}
 
+	//			GMessenger.message(, this, new Object[] {methodName, param_classes, param_names});
+
 	/**
+	 * Unable to find the default handler method.
 	 * 
-	 * @param obj1 the object generating the method
-	 * @param obj2 the method name
-	 * @param obj3 parameter types (Class[])
+	 * info[0] event generator class
+	 * info[1] event handling method name
+	 * info[2] the parameter class names
+	 * info[3] the parameter names (identifiers)
+	 * 
+	 * @param event_generator the object creating the events
+	 * @param info method signature information.
 	 */
-	private static void missingEventHandler(Object caller, Object[] info) {
-		String className = caller.getClass().getSimpleName();
-		String methodName = (String) info[0];
-		String pname;
+	private static void missingEventHandler(Object[] info) {
+		String className = info[0].getClass().getSimpleName();
+		String methodName = (String) info[1];
 		StringBuilder output = new StringBuilder();
-		
+
 		output.append("You might want to add a method to handle " + className + " events syntax is\n");
 		output.append("void " + methodName + "(");
-		if(info != null && info.length > 1){
-			Class[] parameters = (Class[])(info[1]);
-			if(parameters == null)
-				parameters = new Class[0];
-			for(int i = 0; i < parameters.length; i++){
-				pname = (parameters[i]).getSimpleName();
-				output.append(pname + " " + pname.substring(1).toLowerCase());
-				if(i < parameters.length - 1)
+		Class[] param_classes = (Class[])(info[2]);
+		String[] param_names = (String[])(info[3]);
+		if(param_classes != null) {
+			for(int i = 0; i < param_classes.length; i++){
+				String pname = (param_classes[i]).getSimpleName();
+				output.append(pname + " " + param_names[i]);
+				if(i < param_classes.length - 1)
 					output.append(", ");
 			}
 		}
+
 		output.append(") { /* code */ }\n");
 		System.out.println(output.toString());
 	}
 
 	/**
+	 * Unable to find the user defined handler method.
+	 * 
+	 * info[0] event generator class
+	 * info[1] event handling method name
+	 * info[2] the parameter class names
+	 * 
 	 * 
 	 * @param obj1 the object generating the method
 	 * @param obj2 the method name
 	 * @param obj3 parameter types (Class[])
 	 */
-	private static void nonexistantEventHandler(Object handler, Object[] info) {
-		String className = handler.getClass().getSimpleName();
-		String methodName = (String) info[0];
+	private static void nonexistantEventHandler(Object[] info) {
+		String className = info[0].getClass().getSimpleName();
+		String methodName = (String) info[1];
 		String pname;
 		StringBuilder output = new StringBuilder();
-		
+
 		output.append("The "+className+" class cannot find this method \n");
 		output.append("\tvoid " + methodName + "(");
-		if(info != null && info.length > 1){
-			Class[] parameters = (Class[])(info[1]);
-			if(parameters == null)
-				parameters = new Class[0];
-			for(int i = 0; i < parameters.length; i++){
-				pname = (parameters[i]).getSimpleName();
-				output.append(pname + " " + pname.substring(1).toLowerCase());
-				if(i < parameters.length - 1)
+		Class[] param_names = (Class[])(info[2]);
+		for(int i = 0; i < param_names.length; i++){
+			pname = (param_names[i]).getSimpleName();
+			output.append(pname + " " + pname.substring(1).toLowerCase());
+				if(i < param_names.length - 1)
 					output.append(", ");
-			}
 		}
 		output.append(") { /* code */ }\n");
 		System.out.println(output.toString());

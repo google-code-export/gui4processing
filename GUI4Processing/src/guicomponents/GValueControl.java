@@ -59,7 +59,7 @@ public class GValueControl extends GAbstractControl {
 
 	protected int nbrTicks = 2;
 	protected boolean stickToTicks = false;
-	protected boolean showTicks = true;					//  make false for final release
+	protected boolean showTicks = false;					//  make false for final release
 	
 	protected boolean limitsInvalid = true;
 	
@@ -82,7 +82,7 @@ public class GValueControl extends GAbstractControl {
 				isValueChanging = true;
 			}
 			else {
-				isValueChanging = dragging;
+				isValueChanging = false;
 				valuePos = valueTarget;
 			}
 			fireEvent(this, isValueChanging);

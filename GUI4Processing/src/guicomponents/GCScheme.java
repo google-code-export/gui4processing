@@ -114,7 +114,7 @@ public class GCScheme implements GConstants {
 				e.printStackTrace();
 			}
 			image = app.loadImage("user_gui_palette.png");
-			GMessenger.message(USER_COL_SCHEME, null, null);
+			GMessenger.message(USER_COL_SCHEME, null);
 		}
 		else {
 			// User image not provided

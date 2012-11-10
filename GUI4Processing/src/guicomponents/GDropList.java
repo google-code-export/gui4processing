@@ -138,8 +138,10 @@ public class GDropList extends GTextControl {
 		};
 
 		z = Z_STICKY;
-		createEventHandler(G4P.sketchApplet, "handleDropListEvents", new Class[]{ GDropList.class });
-
+		createEventHandler(G4P.sketchApplet, "handleDropListEvents",
+				new Class[]{ GDropList.class, GEvent.class }, 
+				new String[]{ "list", "event" } 
+		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		G4P.addControl(this);

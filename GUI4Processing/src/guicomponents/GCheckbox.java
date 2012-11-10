@@ -66,7 +66,10 @@ public class GCheckbox extends GToggleControl {
 		setIcon("tick.png", 2, GAlign.LEFT);
 		z = Z_SLIPPY;
 		// Now register control with applet
-		createEventHandler(G4P.sketchApplet, "handleToggleControlEvents", new Class[]{ GToggleControl.class });
+		createEventHandler(G4P.sketchApplet, "handleToggleControlEvents", 
+				new Class[]{ GToggleControl.class, GEvent.class }, 
+				new String[]{ "checkbox", "event" } 
+		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		G4P.addControl(this);
