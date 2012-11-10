@@ -1,5 +1,7 @@
 package guicomponents;
 
+import java.awt.BasicStroke;
+
 public interface GConstantsInternal {
 
 	// Constants for the control methods
@@ -10,8 +12,22 @@ public interface GConstantsInternal {
 	public static final int POST_METHOD = 			0x00000010;
 	public static final int ALL_METHOD =			0x0000001f;
 
-	
-	
+	// ### Error MessageTypes ###
+	public final static int RUNTIME_ERROR = 	0xf0000000;
+	// Event method handler errors
+	public final static int MISSING = 			0x01000001;	// Can't find standard handler
+	public final static int NONEXISTANT = 		0x01000002;
+	public final static int EXCP_IN_HANDLER =	0x81000003;	// Exception in event handler
+//	// PeasyCam errors
+//	public final static int NOT_PEASYCAM =		0x82000001; // Not a PeasyCam object
+//	public final static int HUD_UNSUPPORTED = 	0x82000002; // HUD not supported
+//	public final static int INVALID_STATUS = 	0x82000003; // HUD not supported
+
+	// Button/slider status values
+	public static final int OFF_CONTROL	= 		0;
+	public static final int OVER_CONTROL	= 	1;
+	public static final int PRESS_CONTROL = 	2;
+
 	// Constants for merging attribute runs
 	public static final int I_NONE = 			0;
 	public static final int I_TL = 				1;
@@ -27,6 +43,7 @@ public interface GConstantsInternal {
 	public static final int CLIP_RUN = 			512;
 	public static final int COMBI_MODES = 		768;
 	
+	// merger decision grid
 	public static final int[][] grid = new int[][] {
 		{ I_NONE,	I_TL,		I_CL,		I_COVERED,	I_COVERED },
 		{ I_NONE,	I_NONE, 	I_INSIDE, 	I_INSIDE, 	I_COVERED },
@@ -35,4 +52,10 @@ public interface GConstantsInternal {
 		{ I_NONE,	I_NONE, 	I_NONE, 	I_NONE, 	I_NONE }
 	};
 	
+	// Basic strokes needed when using the Graphics2D object for drawing on the buffer
+	public static BasicStroke pen_1_0 = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	public static BasicStroke pen_2_0 = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	public static BasicStroke pen_3_0 = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	public static BasicStroke pen_4_0 = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
 }

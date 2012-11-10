@@ -29,9 +29,15 @@ package guicomponents;
  * @author Peter Lager
  *
  */
-public class GMessenger implements GConstants {
+public class GMessenger implements GConstants, GConstantsInternal {
 
-	public static void message(Integer id, Object obj, Object[] info){
+	/**
+	 * Display an error message message
+	 * @param id
+	 * @param obj
+	 * @param info
+	 */
+	static void message(Integer id, Object obj, Object[] info){
 		// Display G4P messages if required
 		if(G4P.messages){
 			switch(id){
@@ -51,20 +57,11 @@ public class GMessenger implements GConstants {
 		case EXCP_IN_HANDLER:
 			eventHandlerFailed(obj, info);
 			break;
-		case NOT_PEASYCAM:
-			System.out.println("G4P.draw(pcam) - pcam must be a PeasyCam object");
-			System.out.println("	you have used a " + obj.getClass().getSimpleName() + " object");
-			break;
-		case HUD_UNSUPPORTED:
-			System.out.println("Please use latest version of PeasyCam");
-			break;
-		case INVALID_STATUS:
-			System.out.println("Unknown camera status - inform Quark at www.processing.org");
 		}
 	}
 	
 	/**
-	 * 
+	 * Error message when an exception is create inside an event handler.
 	 * @param handler
 	 * @param info
 	 */
@@ -75,14 +72,16 @@ public class GMessenger implements GConstants {
 		Throwable t = e.getCause();
 		StackTraceElement[] calls = t.getStackTrace();
 		StringBuilder output = new StringBuilder();
-		output.append("#############  EXCEPTION IN EVENT HANDLER  #############");
+		output.append("################  EXCEPTION IN EVENT HANDLER  ################");
 		output.append("\nAn error occured during execution of the eventhandler:");
 		output.append("\nCLASS: "+className+"   METHOD: "+methodName);
 		output.append("\n\tCaused by " + t.toString());
-		if(calls.length > 0)
-			output.append("\n\t"+ calls[0].toString());
+		for(Object line : calls)
+			output.append("\n\t"+ line.toString());			
+//		if(calls.length > 0)
+//			output.append("\n\t"+ calls[0].toString());
+		output.append("\n##############################################################\n");
 		System.out.println(output);
-		System.out.println("########################################################\n");
 	}
 
 	/**

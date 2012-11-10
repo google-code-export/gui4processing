@@ -237,7 +237,7 @@ public class GDropList extends GTextControl {
 					fireEvent(this);
 				}
 				currOverItem = lastOverItem = -1;
-				eventType = SELECTED;
+				eventType = GEvent.SELECTED;
 			}
 			break;
 		case MouseEvent.MOUSE_MOVED:

@@ -434,7 +434,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			}
 			if(startPos >= 0){
 				if(startPos != pos || startNbr != nbr){
-					eventType = SELECTION_CHANGED;
+					eventType = GEvent.SELECTION_CHANGED;
 					fireEvent(this);
 				}
 			}
@@ -449,7 +449,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			}
 			if(textChanged){
 				changeText();
-				eventType = CHANGED;
+				eventType = GEvent.CHANGED;
 				fireEvent(this);
 			}
 		}
