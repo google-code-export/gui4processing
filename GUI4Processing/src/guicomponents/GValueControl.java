@@ -82,22 +82,11 @@ public class GValueControl extends GAbstractControl {
 				isValueChanging = true;
 			}
 			else {
-				isValueChanging = false;
+				isValueChanging = dragging;
 				valuePos = valueTarget;
 			}
 			fireEvent(this, isValueChanging);
 		}
-//		else {
-//			// Make sure we get at least one bufferUpdate when valuePos
-//			// reaches targetPos
-//			valuePos = valueTarget;
-//			if(isValueChanging){
-//				bufferInvalid = true;
-//				isValueChanging = false;
-//				updateDueToValueChanging();
-//				fireEvent(this, false);
-//			}
-//		}
 	}
 	
 	/**

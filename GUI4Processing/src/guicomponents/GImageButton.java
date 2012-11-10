@@ -143,7 +143,7 @@ public class GImageButton extends GImageControl {
 				dragging = false;
 				status = PRESS_CONTROL;
 				takeFocus();
-				eventType = PRESSED;
+				eventType = GEvent.PRESSED;
 				if(reportAllButtonEvents)
 					fireEvent(this);
 			}
@@ -156,7 +156,7 @@ public class GImageButton extends GImageControl {
 				status = OFF_CONTROL;
 				loseFocus(null);
 				dragging = false;
-				eventType = CLICKED;
+				eventType = GEvent.CLICKED;
 				fireEvent(this);
 			}
 			break;
@@ -165,12 +165,12 @@ public class GImageButton extends GImageControl {
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && dragging){
 				if(currSpot >= 0){
-					eventType = CLICKED;
+					eventType = GEvent.CLICKED;
 					fireEvent(this);
 				}
 				else {
 					if(reportAllButtonEvents){
-						eventType = RELEASED;
+						eventType = GEvent.RELEASED;
 						fireEvent(this);
 					}
 				}

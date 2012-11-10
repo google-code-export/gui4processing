@@ -46,7 +46,7 @@ import processing.core.PImage;
  *
  */
 @SuppressWarnings("serial")
-public class GWindow extends Frame implements GConstants {
+public class GWindow extends Frame implements GConstants, GConstantsInternal {
 
 	protected PApplet app;
 	

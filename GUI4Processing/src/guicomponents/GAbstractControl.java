@@ -122,7 +122,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	protected boolean opaque = false;
 
 	// The event type use READ ONLY
-	public int eventType = 0;
+	public GEvent eventType;
 
 	// The cursor image when over a control
 	// This should be set in the controls constructor

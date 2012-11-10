@@ -137,7 +137,7 @@ public class GButton extends GTextIconControl {
 				dragging = false;
 				status = PRESS_CONTROL;
 				takeFocus();
-				eventType = PRESSED;
+				eventType = GEvent.PRESSED;
 				bufferInvalid = true;
 				if(reportAllButtonEvents)
 					fireEvent(this);
@@ -151,7 +151,7 @@ public class GButton extends GTextIconControl {
 				status = OFF_CONTROL;
 				loseFocus(null);
 				dragging = false;
-				eventType = CLICKED;
+				eventType = GEvent.CLICKED;
 				fireEvent(this);
 			}
 			break;
@@ -160,12 +160,12 @@ public class GButton extends GTextIconControl {
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && dragging){
 				if(currSpot >= 0){
-					eventType = CLICKED;
+					eventType = GEvent.CLICKED;
 					fireEvent(this);
 				}
 				else {
 					if(reportAllButtonEvents){
-						eventType = RELEASED;
+						eventType = GEvent.RELEASED;
 						fireEvent(this);
 					}
 				}

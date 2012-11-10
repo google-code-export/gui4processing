@@ -203,7 +203,6 @@ public abstract class GLinearTrackControl extends GValueControl {
 			if(focusIsWith == this){
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
-//					isValueChanging = true;
 					valueTarget = (ox - offset) + 0.5f;
 					if(valueTarget < 0){
 						valueTarget = 0;

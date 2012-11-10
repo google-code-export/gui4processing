@@ -163,7 +163,7 @@ class GScrollbar extends GAbstractControl {
 					if(value < 0)
 						value = 0;
 					bufferInvalid = true;
-					eventType = CHANGED;
+					eventType = GEvent.CHANGED;
 					fireEvent(this);
 					break;
 				case 2:
@@ -171,7 +171,7 @@ class GScrollbar extends GAbstractControl {
 					if(value + filler > 1.0)
 						value = 1 - filler;
 					bufferInvalid = true;
-					eventType = CHANGED;
+					eventType = GEvent.CHANGED;
 					fireEvent(this);
 					break;
 				}
@@ -197,7 +197,7 @@ class GScrollbar extends GAbstractControl {
 				isValueChanging = true;
 				bufferInvalid = true;
 				dragging = true;
-				eventType = CHANGED;
+				eventType = GEvent.CHANGED;
 				fireEvent(this);
 			}
 			break;

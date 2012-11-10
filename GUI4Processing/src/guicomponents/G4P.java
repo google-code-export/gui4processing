@@ -186,6 +186,12 @@ public class G4P implements GConstants, PConstants {
 		}
 	}
 	
+	/**
+	 * Used internally to remove a window from the list of windows. Done when
+	 * a window is to be dispose of.
+	 * 
+	 * @param window
+	 */
 	static void removeWindow(GWindow window){
 		PApplet app = window.papplet;
 		GWindowInfo winfo = windows.get(app);
@@ -197,6 +203,10 @@ public class G4P implements GConstants, PConstants {
 		
 	}
 	
+	/**
+	 * Used internally to registera control with its applet.
+	 * @param control
+	 */
 	static void addControl(GAbstractControl control){
 		PApplet app = control.getPApplet();
 		// The first applet must be the sketchApplet
