@@ -76,7 +76,7 @@ public class GKnob extends GValueControl {
 	protected float sensitivity = 1.0f;
 
 	protected boolean showArcOnly = true;
-	protected boolean mouseOverArcOnly = false;
+//	protected boolean mouseOverArcOnly = false;
 
 	protected float startMouseX, startMouseY;
 	protected float lastMouseAngle, mouseAngle;
@@ -230,13 +230,15 @@ public class GKnob extends GValueControl {
 		if(children != null){
 			for(GAbstractControl c : children)
 				c.draw();
-
 		}
 		winApp.popMatrix();
 
 		winApp.popStyle();
 	}
 
+	/**
+	 * The value needs to be converted into an angle for the needle.
+	 */
 	protected void updateDueToValueChanging(){
 		anglePos = scaleValueToAngle(valuePos);		
 	}
@@ -312,7 +314,7 @@ public class GKnob extends GValueControl {
 	 * GKnob.CTRL_ANGULAR or GKnob.CTRL_HORIZONTAL) orGKnob.CTRL_VERTICAL
 	 * @return the mode
 	 */
-	public int getControlMode() {
+	public int getTurnMode() {
 		return mode;
 	}
 
@@ -321,7 +323,7 @@ public class GKnob extends GValueControl {
 	 * GKnob.CTRL_ANGULAR or GKnob.CTRL_HORIZONTAL) orGKnob.CTRL_VERTICAL
 	 * @param mode the mode to set
 	 */
-	public void setControlMode(int mode) {
+	public void setTurnMode(int mode) {
 		switch(mode){
 		case CTRL_ANGULAR:
 		case CTRL_HORIZONTAL:
