@@ -577,7 +577,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	 * Do not call this method directly, G4P uses it to handle input from
 	 * the horizontal scrollbar.
 	 */
-	public void hsbEventHandler(GScrollbar scrollbar){
+	public void hsbEventHandler(GScrollbar scrollbar, GEvent event){
 		keepCursorInView = false;
 		ptx = hsb.getValue() * (stext.getMaxLineLength() + 4);
 		bufferInvalid = true;
@@ -587,7 +587,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	 * Do not call this method directly, G4P uses it to handle input from
 	 * the vertical scrollbar.
 	 */
-	public void vsbEventHandler(GScrollbar scrollbar){
+	public void vsbEventHandler(GScrollbar scrollbar, GEvent event){
 		keepCursorInView = false;
 		pty = vsb.getValue() * (stext.getTextAreaHeight() + 1.5f * stext.getMaxLineHeight());
 		bufferInvalid = true;

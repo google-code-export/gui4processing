@@ -141,7 +141,10 @@ public abstract class GToggleControl extends GTextIconControl {
 			if(focusIsWith == this){
 				hasBeenClicked();
 				loseFocus(null);
-				fireEvent(this, GEvent.SELECTED);
+				if(selected)
+					fireEvent(this, GEvent.SELECTED);
+				else if(group == null)
+					fireEvent(this, GEvent.DESELECTED);
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:

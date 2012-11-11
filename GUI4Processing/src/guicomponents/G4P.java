@@ -50,7 +50,7 @@ public class G4P implements GConstants, PConstants {
 	static boolean cursorChangeEnabled = true;
 	static int mouseOff = ARROW;
 
-	static boolean messages = true;
+	static boolean showMessages = true;
 
 	// Determines how position and size parameters are interpreted when
 	// a control is created
@@ -276,7 +276,7 @@ public class G4P implements GConstants, PConstants {
 	 * @param enable
 	 */
 	public static void messagesEnabled(boolean enable){
-		messages = enable;
+		showMessages = enable;
 	}
 
 	/**
@@ -318,6 +318,8 @@ public class G4P implements GConstants, PConstants {
 	static void pushStyle(){
 		G4Pstyle s = new G4Pstyle();
 		s.ctrlMode = control_mode;
+		s.showMessages = showMessages;
+		// Now save the style for later
 		styles.addLast(s);
 	}
 	
@@ -328,6 +330,7 @@ public class G4P implements GConstants, PConstants {
 	static void popStyle(){
 		G4Pstyle s = styles.removeLast();
 		control_mode = s.ctrlMode;
+		showMessages = s.showMessages;
 	}
 	
 	/**
@@ -339,6 +342,7 @@ public class G4P implements GConstants, PConstants {
 	 */
 	static class G4Pstyle {
 		int ctrlMode;
+		boolean showMessages;
 	}
 	
 }

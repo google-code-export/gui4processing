@@ -243,7 +243,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		try{
 			setAlwaysOnTop(onTop);
 		} catch (Exception e){
-			if(G4P.messages)
+			if(G4P.showMessages)
 				System.out.println("Warning: setOnTop() method will not work when the sketch is run from a remote location.");
 		}
 	}

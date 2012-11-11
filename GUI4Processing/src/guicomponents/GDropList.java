@@ -115,6 +115,9 @@ public class GDropList extends GTextControl {
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
 		
+		G4P.pushStyle();
+		G4P.showMessages = false;
+		
 		vsb = new GScrollbar(theApplet, 0, 0, height - itemHeight, 10);
 		vsb.setAutoHide(false);
 		vsb.addEventHandler(this, "scrollbarEventHandler");
@@ -125,10 +128,10 @@ public class GDropList extends GTextControl {
 		showList = new GButton(theApplet, 0, 0, buttonWidth, itemHeight, ":");
 		showList.addEventHandler(this, "buttonShowListHandler");
 	
-		G4P.pushStyle();
 		G4P.control_mode = CORNER;
 		addControl(vsb, width, itemHeight + 1, PI/2);
 		addControl(showList, width - buttonWidth, 0, 0);
+		
 		G4P.popStyle();
 
 		buffer.g2.setFont(localFont);
@@ -351,7 +354,7 @@ public class GDropList extends GTextControl {
 	 * This method should <b>not</b> be called by the user. It
 	 * is for internal library use only.
 	 */
-	public void scrollbarEventHandler(GScrollbar scrollbar){
+	public void scrollbarEventHandler(GScrollbar scrollbar, GEvent event){
 		int newStartItem = Math.round(vsb.getValue() * items.length);
 		startItem = newStartItem;
 		bufferInvalid = true;
@@ -361,7 +364,7 @@ public class GDropList extends GTextControl {
 	 * This method should <b>not</b> be called by the user. It
 	 * is for internal library use only.
 	 */
-	public void buttonShowListHandler(GButton button){
+	public void buttonShowListHandler(GButton button, GEvent event){
 		if(expanded){
 			loseFocus(null);
 			vsb.setVisible(false);

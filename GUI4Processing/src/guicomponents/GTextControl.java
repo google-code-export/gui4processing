@@ -41,7 +41,7 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	protected static final int TPAD4 = TPAD * 4;
 	
 	/** Text value associated with component */
-	protected String ptext = "";
+//	protected String ptext = "";
 	/** The styled version of text */
 	public StyledString stext = null;
 	
@@ -90,10 +90,8 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	 */
 	public void setText(String text){
 		if(text == null || text.length() == 0 )
-			ptext = " ";
-		else 
-			ptext = text;
-		stext = new StyledString(ptext, (int)width - TPAD2);
+			text = " ";
+		stext = new StyledString(text, (int)width - TPAD2);
 		bufferInvalid = true;
 	}
 	
@@ -103,7 +101,6 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	 */
 	public void setStyledText(StyledString stext){
 		if(stext != null) {
-			ptext = stext.getPlainText();
 			this.stext = stext;
 			this.stext.setWrapWidth((int)width - TPAD2);
 			bufferInvalid = true;
