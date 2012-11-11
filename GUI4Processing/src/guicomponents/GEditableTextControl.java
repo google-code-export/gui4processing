@@ -433,10 +433,8 @@ public abstract class GEditableTextControl extends GAbstractControl {
 				}
 			}
 			if(startPos >= 0){
-				if(startPos != pos || startNbr != nbr){
-					eventType = GEvent.SELECTION_CHANGED;
-					fireEvent(this);
-				}
+				if(startPos != pos || startNbr != nbr)
+					fireEvent(this, GEvent.SELECTION_CHANGED);
 			}
 			
 			if(keyID == KeyEvent.KEY_PRESSED) {
@@ -449,8 +447,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			}
 			if(textChanged){
 				changeText();
-				eventType = GEvent.CHANGED;
-				fireEvent(this);
+				fireEvent(this, GEvent.SELECTION_CHANGED);
 			}
 		}
 	}

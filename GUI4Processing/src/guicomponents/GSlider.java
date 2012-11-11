@@ -79,7 +79,7 @@ public class GSlider extends GLinearTrackControl {
 
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleSliderEvents",
-				new Class[]{ GValueControl.class, boolean.class },
+				new Class[]{ GValueControl.class, GEvent.class },
 				new String[]{ "slider", "event" }
 		);
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;

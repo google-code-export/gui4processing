@@ -267,11 +267,9 @@ public class GPanel extends GTextControl {
 				}
 //				constrainPanelPosition();
 				if(tabOnly)
-					eventType = GEvent.COLLAPSED;
+					fireEvent(this, GEvent.COLLAPSED);
 				else
-					eventType = GEvent.EXPANDED;
-				// fire an event
-				fireEvent(this);
+					fireEvent(this, GEvent.EXPANDED);
 				// This component does not keep the focus when clicked
 				loseFocus(null);
 			}
@@ -290,8 +288,7 @@ public class GPanel extends GTextControl {
 				y += (winApp.mouseY - winApp.pmouseY);
 				constrainPanelPosition();
 				beingDragged = true;
-				eventType = GEvent.DRAGGED;
-				fireEvent(this);
+				fireEvent(this, GEvent.DRAGGED);
 				if(!tabOnly){
 					dockX = x;
 					dockY = y;

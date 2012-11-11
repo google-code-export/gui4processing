@@ -122,7 +122,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	protected boolean opaque = false;
 
 	// The event type use READ ONLY
-	public GEvent eventType;
+//	public GEvent eventType;
 
 	// The cursor image when over a control
 	// This should be set in the controls constructor
@@ -383,31 +383,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			eventHandlerMethodName = "";
 		}
 	}
-
-	/**
-	 * Attempt to create the default event handler for the component class. 
-	 * The default event handler is a method that returns void and has a single
-	 * parameter of the same type as the component class generating the
-	 * event and a method name specific for that class. 
-	 * 
-	 * @param obj the object to handle the event
-	 * @param methodName the method to execute in the object handler class
-	 * @param parameters the parameter classes.
-	 */
-//	@SuppressWarnings("rawtypes")
-//	public void addEventHandler(Object obj, String methodName, Class[] parameters){
-//		if(parameters == null)
-//			parameters = new Class[0];
-//		try{
-//			eventHandlerObject = obj;
-//			eventHandlerMethodName = methodName;
-//			eventHandlerMethod = obj.getClass().getMethod(methodName, parameters );
-//		} catch (Exception e) {
-//			GMessenger.message(NONEXISTANT, eventHandlerObject, new Object[] {methodName, parameters } );
-//			eventHandlerObject = null;
-//			eventHandlerMethodName = "";
-//		}
-//	}
 
 	/**
 	 * Attempt to fire an event for this component.

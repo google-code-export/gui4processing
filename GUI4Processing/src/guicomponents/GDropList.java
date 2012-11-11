@@ -236,10 +236,9 @@ public class GDropList extends GTextControl {
 				// it is not the same as before;
 				if(currOverItem >= 0 && currOverItem != selItem){
 					setSelected(currOverItem);
-					fireEvent(this);
+					fireEvent(this, GEvent.SELECTED);
 				}
 				currOverItem = lastOverItem = -1;
-				eventType = GEvent.SELECTED;
 			}
 			break;
 		case MouseEvent.MOUSE_MOVED:
