@@ -80,12 +80,13 @@ public class GValueControl extends GAbstractControl {
 			updateDueToValueChanging();
 			if(Math.abs(valueTarget - valuePos) > epsilon){
 				isValueChanging = true;
+				fireEvent(this, GEvent.VALUE_CHANGING);
 			}
 			else {
 				isValueChanging = false;
 				valuePos = valueTarget;
+				fireEvent(this, GEvent.VALUE_STEADY);
 			}
-			fireEvent(this, isValueChanging);
 		}
 	}
 	

@@ -27,7 +27,8 @@ import java.awt.font.TextAttribute;
 
 /**
  * 
- * These constants can all be used by 
+ * These constants can all be available to the Processor.
+ * 
  * @author Peter Lager
  *
  */

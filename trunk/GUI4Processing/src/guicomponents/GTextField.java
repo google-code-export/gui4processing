@@ -330,8 +330,7 @@ public class GTextField extends GEditableTextControl {
 				dragging = true;
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
 				calculateCaretPos(endTLHI);
-				eventType = GEvent.SELECTION_CHANGED;
-				fireEvent(this);
+				fireEvent(this, GEvent.SELECTION_CHANGED);
 				bufferInvalid = true;
 			}
 			break;
