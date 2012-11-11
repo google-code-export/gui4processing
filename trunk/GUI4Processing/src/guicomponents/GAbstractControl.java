@@ -378,7 +378,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			eventHandlerMethodName = methodName;
 			eventHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {this.getClass(), GEvent.class } );
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { this.getClass() } } );
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { this.getClass(), GEvent.class } } );
 			eventHandlerObject = null;
 			eventHandlerMethodName = "";
 		}

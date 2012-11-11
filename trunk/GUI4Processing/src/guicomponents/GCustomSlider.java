@@ -40,35 +40,43 @@ import processing.core.PImage;
  * This class replaces the GWSlider provided in pre v3 editions of this library.
  * <p>
  * The main difference to the GSlider class is the ability to skin the slider with user provided graphics.
- * The slider is broken down into 4 segments, each having a specific image file that relates
- * to them:
- * </p>
- * 
+ * The library provides a number of skins ready for use. You specify the skin to use when the slider is created 
+ * and if the library is unable to load the skin it will print a warning and load the default skin instead. </p>
+ * <p>Library skins available</p>
  * <ul>
- * <li>Left end cap of the slider(end_left.png)</li>
- * <li>Right end cap of the slider(end_right.png)</li>
- * <li>An extendible centre segment(centre.png)</li>
- * <li>Draggable thumb (handle.png and handle_mouseover.png)</li>
+ * <li>grey_blue (default skin)</li>
+ * <li>green_red20px</li>
+ * <li>red_yellow18px</li>
+ * <li>blue18px</li>
+ * <li>purple18px</li>
+ * </ul
+ * <p>
+ * A skin requires 5 image files for different parts of the slider which must be stored in their own 
+ * folder (the folder name is also used as the skin name) and this folder should be place inside the 
+ * sketch's data folder.</p>
+ * <p>The image files have specific names </p>
+ * <ul>
+ * <li>Left end cap of the slider(<b>end_left.png</b>)</li>
+ * <li>Right end cap of the slider(<b>preend_right.png</b>)</li>
+ * <li>An extendible centre segment(<b>centre.png</b>)</li>
+ * <li>Draggable thumb (<b>handle.png</b> and <b>handle_mouseover.png</b>)</li>
  * </ul>
  * 
- * <p>
- * The five images stated above define the skin that is applied to slider. A default skin is included in the library
- * and applied when no other alternative is provided. To generate a skin all these images must be included into a 
- * folder in the sketches data directory, where the name of the folder is the name of the skin. When creating a new
- * slider, there is a constructor available that allows you to specify the skin to use. Eg, if you have a folder name
- * 'ShinyRedSkin' in your data directory that has the above images in, then pass a string with "ShinyRedSkin" to the
- * constructor.
- * </p>
+ * <p>If it can't find any of the above files it will look for equivalent JPEG image e.g. <b>left_hand.jpg</b></p>
  * 
- * <p>
- * The images need to related. The end_left, end_right and centre png's must all be the same height. The height can be
- * whatever is required, though values round 20 is recommended. The end segments can both be different lengths and the
- * length of the centre images must be 1 pixel. The centre image must be just 1 pixel wide to represent the colours
- * across its width. This will be <i>stretched</i> to fit the slider track length. <br>
- * The thumb/handle can be any height and width but should be an odd number of pixels. An odd number allows a perfect
- * centre to be found as fractional pixels are not possible. Alpha channel use is recommended to generate interesting skins.
- * </p>
- *  * @author Peter Lager
+ * <p>There are very few restrictions about the images you use but when designing the images you should consider
+ * the following facts:</p>
+ * <ul>
+ * <li>the slider will be created to fit the control size (specified in the constructor)</li>
+ * <li>the horizontal space allocated for the end-caps will be the same for each end (uses the width or the larger end cap image)</li>
+ * <li>the track width will be the height of the centre image</li>
+ * <li>the centre image will be tiled along the track length</li>
+ * <li>the track will be placed in the horizontal and vertical centre of the control.</li>
+ * <li>the end cap images will be placed in the vertical centre of the control and butted against the track.</li>
+ * </ul>
+ * 
+ * 
+ * @author Peter Lager
  *
  */
 public class GCustomSlider extends GLinearTrackControl {
@@ -79,6 +87,16 @@ public class GCustomSlider extends GLinearTrackControl {
 	protected PImage rightEnd;
 	protected PImage centre;
 
+	/**
+	 * Create a custom slider using the skin specified.
+	 * 
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @param skin the name of the skin (this is also the name of the folder holding the images)
+	 */
 	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String skin) {
 		super(theApplet, p0, p1, p2, p3);
 		loadSkin(skin);
@@ -202,23 +220,28 @@ public class GCustomSlider extends GLinearTrackControl {
 	
 	private void loadSkin(String style){
 		leftEnd = winApp.loadImage(style + "/end_left.png");
+		if(leftEnd == null)
+			leftEnd = winApp.loadImage(style + "/end_left.jpg");
 		rightEnd = winApp.loadImage(style + "/end_right.png");
+		if(rightEnd == null)
+			rightEnd = winApp.loadImage(style + "/end_right.jpg");
 		thumb = winApp.loadImage(style +"/handle.png");
+		if(thumb == null)
+			thumb = winApp.loadImage(style +"/handle.jpg");
 		thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.png");
+		if(thumb_mouseover == null)
+			thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.jpg");
 		//	will be stretched before use
 		centre = winApp.loadImage(style + "/centre.png");
-
-		StringBuilder errmess = new StringBuilder();
-		if(leftEnd == null) errmess.append("end_left.png\n");
-		if(rightEnd == null) errmess.append("end_right.png\n");
-		if(thumb== null) errmess.append("handle.png\n");
-		if(thumb_mouseover == null) errmess.append("handle_mouseover.png\n");
+		if(centre == null)
+			centre = winApp.loadImage(style + "/centre.jpg");
+			
+		boolean error = (leftEnd == null || rightEnd == null || thumb == null || thumb_mouseover == null || centre == null);
 		
 		// See if we have problems with the skin files
-		if(errmess.length() > 0){
-			System.out.println("The following files could not be found for the skin " + style + ": \n" + errmess.toString()
-					+ "\nCheck that these files are correctly placed in the data directory under a folder with"
-					+ " the same name as the skin used.\n");
+		if(error){
+			System.out.println("Unable to load the skin " + style + " check the ");
+			System.out.println("skin name used and ensure all the image files are present.");
 			System.out.println("Reverting to default 'grey_blue' style");
 			loadSkin("grey_blue");
 		}

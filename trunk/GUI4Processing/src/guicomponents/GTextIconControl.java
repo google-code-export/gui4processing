@@ -53,15 +53,13 @@ public abstract class GTextIconControl extends GTextControl {
 	 * NEW version for FPanel etc.
 	 * @param ptext
 	 */
-	public void setText(String ntext){
-		if(ntext == null || ntext.length() == 0 )
-			ptext = " ";
-		else 
-			ptext = ntext;
+	public void setText(String text){
+		if(text == null || text.length() == 0 )
+			text = " ";
 		if(iconW == 0)
-			stext = new StyledString(ptext, (int) width - TPAD2);
+			stext = new StyledString(text, (int) width - TPAD2);
 		else
-			stext = new StyledString(ptext, (int) width - iconW - TPAD4);
+			stext = new StyledString(text, (int) width - iconW - TPAD4);
 			
 		bufferInvalid = true;
 	}

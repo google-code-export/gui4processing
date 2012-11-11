@@ -396,6 +396,7 @@ public class GValueControl extends GAbstractControl {
 	public void setShowTicks(boolean showTicks) {
 		if(fixed) return;
 		this.showTicks = showTicks;
+		bufferInvalid = true;
 	}
 
 	
@@ -414,6 +415,7 @@ public class GValueControl extends GAbstractControl {
 	public void setShowLimits(boolean showLimits) {
 		if(fixed) return;
 		this.showLimits = showLimits;
+		bufferInvalid = true;
 	}
 
 	/**

@@ -130,6 +130,7 @@ public class GTextArea extends GEditableTextControl {
 				new HSrect(9, 0, 0, width, height)		// control surface
 		};
 		G4P.pushStyle();
+		G4P.showMessages = false;
 		G4P.control_mode = CORNER;
 		if((scrollbarPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new GScrollbar(theApplet, 0, 0, tw, 16);

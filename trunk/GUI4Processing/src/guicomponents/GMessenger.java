@@ -40,7 +40,7 @@ class GMessenger implements GConstants, GConstantsInternal {
 	 */
 	static void message(Integer id, Object[] info){
 		// Display G4P messages if required
-		if(G4P.messages){
+		if(G4P.showMessages){
 			switch(id){
 			case MISSING:
 				missingEventHandler(info);

@@ -86,11 +86,20 @@ public class GKnob extends GValueControl {
 	protected float angleTarget, anglePos;
 	protected float lastAngleTarget;
 
-	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float borderInset) {
+	/**
+	 * 
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @param bezelWidth
+	 */
+	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float bezelWidth) {
 		super(theApplet, p0, p1, p2, p3);
-		this.inset = borderInset;
+		this.inset = 4;
 		bezelRadius = Math.min(width, height) / 2 - inset;
-		bezelWidth = 10;
+		this.bezelWidth = bezelWidth;
 		gripRadius = bezelRadius - bezelWidth;
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		setKnobRange(startAng, endAng);
@@ -107,7 +116,7 @@ public class GKnob extends GValueControl {
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleKnobEvents",
 				new Class[]{ GValueControl.class, GEvent.class }, 
-				new String[]{ "button", "event" } 
+				new String[]{ "knob", "event" } 
 		);
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD ;
 		cursorOver = HAND;
@@ -272,13 +281,14 @@ public class GKnob extends GValueControl {
 				if(showTrack){
 					buffer.noStroke();
 					buffer.fill(palette[14]);
-					buffer.arc(0,0, 2*(gripRadius + bezelWidth * 0.3f), 2*(gripRadius + bezelWidth * 0.3f), PApplet.radians(startAng), PApplet.radians(anglePos));					
+					buffer.arc(0,0, 2*(gripRadius + bezelWidth * 0.5f), 2*(gripRadius + bezelWidth * 0.5f), PApplet.radians(startAng), PApplet.radians(anglePos));					
 				}
 			}
 
 			// draw grip (inner) part of knob
 			buffer.strokeWeight(1.6f);
-			buffer.stroke(palette[14]);
+			buffer.stroke(palette[2]); // was 14
+//			buffer.noStroke();
 			buffer.fill(palette[2]);
 			if(showArcOnly)
 				buffer.arc(0,0,2*gripRadius, 2*gripRadius, PApplet.radians(startAng), PApplet.radians(endAng));
