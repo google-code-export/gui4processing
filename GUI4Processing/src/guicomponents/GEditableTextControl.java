@@ -105,14 +105,14 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		if(cursorIsOver == this)
 			cursorIsOver = null;
 		focusIsWith = grabber;
-		// If only blank text clear it out
-//		if(stext.length() > 0){
-//			int tl = stext.getPlainText().trim().length();
-//			if(tl == 0){
-//				text = "";
-//				stext = new StyledString(text);
-//			}
-//		}
+		// If only blank text clear it out allowing default text (if any) to be displayed
+		if(stext.length() > 0){
+			int tl = stext.getPlainText().trim().length();
+			if(tl == 0){
+				text = "";
+				stext = new StyledString(text);
+			}
+		}
 //		System.out.println("GEditableTextControl losefocus");
 //		startTLHI.copyFrom(endTLHI);
 		keepCursorInView = true;

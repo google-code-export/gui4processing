@@ -24,6 +24,7 @@
 package guicomponents;
 
 import guicomponents.HotSpot.HSarc;
+import guicomponents.HotSpot.HScircle;
 
 import java.awt.event.MouseEvent;
 
@@ -75,8 +76,8 @@ public class GKnob extends GValueControl {
 	protected float inset = 0;
 	protected float sensitivity = 1.0f;
 
-	protected boolean showArcOnly = true;
-//	protected boolean mouseOverArcOnly = false;
+	protected boolean showArcOnly = false;
+	protected boolean mouseOverArcOnly = false;
 
 	protected float startMouseX, startMouseY;
 	protected float lastMouseAngle, mouseAngle;
@@ -107,7 +108,7 @@ public class GKnob extends GValueControl {
 		anglePos = scaleValueToAngle(valuePos);
 		lastAngleTarget = angleTarget = scaleValueToAngle(valueTarget);
 		hotspots = new HotSpot[]{
-				new HSarc(1, width/2 , height/2, gripRadius, startAng, endAng)  // over grip
+				new HScircle(1, width/2, height/2, gripRadius)
 		};
 		z = Z_SLIPPY;
 
@@ -123,6 +124,59 @@ public class GKnob extends GValueControl {
 		G4P.addControl(this);
 	}
 
+	/**
+	 * This will decide whether the knob is draw as a full circle or as an arc.
+	 * 
+	 * @param arcOnly true for arc only
+	 */
+	public void setShowArcOnly(boolean arcOnly){
+		if(this.showArcOnly != arcOnly){
+			showArcOnly = arcOnly;
+			bufferInvalid = true;
+		}
+	}
+	
+	/**
+	 * Are we showing arc only?
+	 * @return true = yes
+	 */
+	public boolean isShowArcOnly(){
+		return showArcOnly;
+	}
+	
+	/**
+	 * Decides when the knob will respond to the mouse buttons. If set to true
+	 * it will only respond when ver the arc made by the start and end angles. If
+	 * false it will be the full circle.
+	 * @param arcOnly
+	 */
+	public void setMouseOverArcOnly(boolean arcOnly){
+		mouseOverArcOnly = arcOnly;
+		if(mouseOverArcOnly)				
+			hotspots[0] = new HSarc(1, width/2 , height/2, gripRadius, startAng, endAng);  // over grip
+		else
+			new HScircle(1, width/2, height/2, gripRadius);
+	}
+
+	/**
+	 * Does the mouse only respond when over the arc?
+	 * @return true = yes
+	 */
+	public boolean isMouseOverArcOnly(){
+		return mouseOverArcOnly;
+	}
+	
+	/**
+	 * Convenience method to set both the show and the mouse over arc only properties
+	 * for this knob
+	 * @param mouse mouse over arc only?
+	 * @param show draw arc only?
+	 */
+	public void setArcPolicy(boolean mouse, boolean show){
+		setMouseOverArcOnly(mouse);
+		setShowArcOnly(show);
+	}
+	
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled || !available) return;
 
