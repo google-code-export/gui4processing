@@ -2,8 +2,8 @@
  * Interactive Toroid
  * by Ira Greenberg. 
  * 
- * Illustrates the geometric relationship between Toroid, Sphere, and Helix
- * 3D primitives, as well as lathing principal.
+ * Illustrates the geometric relationship between Toroid, Sphere,
+ * and Helix 3D primitives, as well as lathing principal.
  */
 
 class Toroid {
@@ -43,12 +43,12 @@ class Toroid {
     fillVertexArrays();
   }
 
-  public void setEllipseRadius(int eradius){
+  public void setEllipseRadius(float eradius){
     radius = eradius;
     fillVertexArrays();
   }
 
-  public void setLatheRadius(int lradius){
+  public void setLatheRadius(float lradius){
     latheRadius = lradius;
     fillVertexArrays();
   }
@@ -94,7 +94,7 @@ class Toroid {
     } 
     else {
       noStroke();
-      fill(60, 60, 200);
+      fill(40, 40, 255);
     }
 
     // draw toroid
