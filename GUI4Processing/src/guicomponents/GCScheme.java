@@ -42,24 +42,6 @@ import processing.core.PImage;
  */
 public class GCScheme implements GConstants {
 
-	public static final int RED_SCHEME 		= 0;
-	public static final int GREEN_SCHEME 	= 1;
-	public static final int YELLOW_SCHEME	= 2;
-	public static final int PURPLE_SCHEME	= 3;
-	public static final int ORANGE_SCHEME 	= 4;
-	public static final int CYAN_SCHEME 	= 5;
-	public static final int BLUE_SCHEME 	= 6;
-	public static final int GOLD_SCHEME 	= 7;	
-	public static final int SCHEME_8		= 8;
-	public static final int SCHEME_9		= 9;
-	public static final int SCHEME_10		= 10;
-	public static final int SCHEME_11		= 11;
-	public static final int SCHEME_12		= 12;
-	public static final int SCHEME_13		= 13;
-	public static final int SCHEME_14		= 14;
-	public static final int SCHEME_15		= 15;
-
-
 	private static int[][] palettes = null;
 	private static Color[][] jpalettes = null;
 

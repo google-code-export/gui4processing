@@ -71,7 +71,7 @@ public class GSketchPad extends GAbstractControl {
 		winApp.rectMode(PApplet.CORNER);
 		winApp.imageMode(PApplet.CORNER);
 		if(alphaLevel < 255)
-			winApp.tint(-1, alphaLevel);
+			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		if(pad != null){
 			try {
 				if(scaleGraphic)

@@ -107,6 +107,18 @@ public class GButton extends GTextIconControl {
 	}
 
 	/**
+	 * Enable or disable the ability of the component to generate mouse events.<br>
+	 * GTextField - it also controls key press events <br>
+	 * GPanel - controls whether the panel can be moved/collapsed/expanded <br>
+	 * @param enable true to enable else false
+	 */
+	public void setEnabled(boolean enable){
+		super.setEnabled(enable);
+		if(!enable)
+			status = OFF_CONTROL;
+	}
+	
+	/**
 	 * 
 	 * When a button is clicked on a GButton it generates 3 events (in this order) 
 	 * mouse down, mouse up and mouse clicked. <br>
@@ -201,7 +213,7 @@ public class GButton extends GTextIconControl {
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
 		if(alphaLevel < 255)
-			winApp.tint(-1, alphaLevel);
+			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();		
 		winApp.popStyle();

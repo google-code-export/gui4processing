@@ -278,7 +278,11 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		return currSpot;
 	}
 
-	// Change local scheme v3
+	/**
+	 * Set the local colour scheme for this control. Children are ignored.
+	 * 
+	 * @param cs the colour scheme to use
+	 */
 	public void setLocalColorScheme(int cs){
 		cs = Math.abs(cs) % 16; // Force into valid range
 		if(localColorScheme != cs || palette == null){
@@ -286,16 +290,34 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			palette = GCScheme.getColor(localColorScheme);
 			jpalette = GCScheme.getJavaColor(localColorScheme);
 			bufferInvalid = true;
-			if(children != null){
+		}
+	}
+
+	/**
+	 * Set the local colour scheme for this control. Children are ignored.
+	 * If required include the children and their children.
+	 * 
+	 * @param cs the colour scheme to use
+	 * @param includeChildren if do do the same for all descendants 
+	 */
+	public void setLocalColorScheme(int cs, boolean includeChildren){
+		cs = Math.abs(cs) % 16; // Force into valid range
+		if(localColorScheme != cs || palette == null){
+			localColorScheme = cs;
+			palette = GCScheme.getColor(localColorScheme);
+			jpalette = GCScheme.getJavaColor(localColorScheme);
+			bufferInvalid = true;
+			if(includeChildren && children != null){
 				for(GAbstractControl c : children)
-					c.setLocalColorScheme(cs);
+					c.setLocalColorScheme(cs, true);
 			}
 		}
 	}
 
 	/**
 	 * Set the transparency of the component and make it unavailable to
-	 * mouse and keyboard events if below the threshold.
+	 * mouse and keyboard events if below the threshold. Child controls 
+	 * are ignored?
 	 * 
 	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
 	 */
@@ -305,10 +327,37 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		available = (alphaLevel >= ALPHA_BLOCK);
 	}
 	
+	/**
+	 * Set the transparency of the component and make it unavailable to
+	 * mouse and keyboard events if below the threshold. Child controls 
+	 * are ignored? <br>
+	 * If required include the children and their children.
+	 * 
+	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
+	 * @param includeChildren if do do the same for all descendants 
+	 */
+	public void setAlpha(int alpha, boolean includeChildren){
+		alpha = Math.abs(alpha) % 256;
+		alphaLevel = alpha;
+		available = (alphaLevel >= ALPHA_BLOCK);
+		if(includeChildren && children != null){
+			for(GAbstractControl c : children)
+				c.setAlpha(alpha, true);
+		}		
+	}
+	
+	/**
+	 * Get the parent control. If null then this is a top-level component
+	 * @return
+	 */
 	public GAbstractControl getParent() {
 		return parent;
 	}
 
+	/**
+	 * Get the PApplet that manages this component
+	 * @return
+	 */
 	public PApplet getPApplet() {
 		return winApp;
 	}

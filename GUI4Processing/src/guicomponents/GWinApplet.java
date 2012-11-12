@@ -51,7 +51,7 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 	public int bkColor;
 
 	// background image if any
-	public PImage bkImage;
+	public PImage bkImage = null;
 
 	public boolean autoClear = true;
 

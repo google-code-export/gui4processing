@@ -173,7 +173,8 @@ public class GPanel extends GTextControl {
 		winApp.translate(-halfWidth, -halfHeight);
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
-		winApp.tint(-1, alphaLevel);
+		if(alphaLevel < 255)
+			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();
 

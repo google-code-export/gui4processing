@@ -117,25 +117,8 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 */
 	public GWindow(PApplet theApplet, String name, int x, int y, int w, int h, boolean noFrame, String mode) {
 		super(name);
-		// The first applet must be the sketchApplet
-		if(G4P.sketchApplet == null)
-			G4P.sketchApplet = theApplet;
-		app = theApplet;
 		winName = name;
-
-		if(mode == null || mode.equals(""))
-			mode = PApplet.JAVA2D;
-		
-		papplet = new GWinApplet(mode);
-		papplet.owner = this;
-		papplet.frame = this;
-		papplet.frame.setResizable(true);
-
-		papplet.appWidth = w;
-		papplet.appHeight = h;
-
-		windowCtorCore(theApplet, x, y, w, h, noFrame, mode);
-		super.setResizable(true);
+		windowCtorCore(theApplet, x, y, w, h, null, noFrame, mode, name);
 	}
 
 	/**
@@ -150,27 +133,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 */
 	public GWindow(PApplet theApplet, String name, int x, int y, PImage image, boolean noFrame, String mode) {
 		super(name);
-		// The first applet must be the sketchApplet
-		if(G4P.sketchApplet == null)
-			G4P.sketchApplet = theApplet;
-		app = theApplet;
-		winName = name;
-				
-		if(mode == null || mode.equals(""))
-			mode = PApplet.JAVA2D;
-		
-		papplet = new GWinApplet(mode);
-		papplet.owner = this;
-		papplet.frame = this;
-		papplet.frame.setResizable(true);
-		
-	    /// Get image details to set size
-		papplet.bkImage = image;
-		papplet.appWidth = image.width;
-		papplet.appHeight = image.height;
-
-		windowCtorCore(theApplet, x, y, image.width, image.height, noFrame, mode);
-		super.setResizable(false);
+		windowCtorCore(theApplet, x, y, image.width, image.height, image, noFrame, mode, name);
 	}
 
 	/**
@@ -183,13 +146,37 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 * @param noFrame
 	 * @param mode
 	 */
-	private void windowCtorCore(PApplet theApplet, int x, int y, int w, int h, boolean noFrame, String mode){
+	private void windowCtorCore(PApplet theApplet, int x, int y, int w, int h, PImage image,  boolean noFrame, String mode, String name){
+		// The first applet must be the sketchApplet
+		if(G4P.sketchApplet == null)
+			G4P.sketchApplet = theApplet;
+		app = theApplet;
+		winName = name;
+
+		if(mode == null || mode.equals(""))
+			mode = PApplet.JAVA2D;
+		
+		papplet = new GWinApplet(mode);
+		papplet.owner = this;
+		papplet.frame = this;
+		// So we can resize the frame to get the sketch canvas size reqd.
+		papplet.frame.setResizable(true);
+		// Now set the window width and height
+		if(image == null){
+			papplet.appWidth = w;
+			papplet.appHeight = h;
+		} else {
+			papplet.bkImage = image;
+			papplet.appWidth = image.width;
+			papplet.appHeight = image.height;
+		}			
 		papplet.bkColor = papplet.color(180);
 		
+		// Set the papplet size preferences
 		papplet.resize(papplet.appWidth, papplet.appHeight);
 		papplet.setPreferredSize(new Dimension(papplet.appWidth, papplet.appHeight));
 		papplet.setMinimumSize(new Dimension(papplet.appWidth, papplet.appHeight));
-
+		
 		// add the PApplet to the Frame
 		setLayout(new BorderLayout());
 		add(papplet, BorderLayout.CENTER);
@@ -214,6 +201,9 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		data = new GWinData();
 		data.owner = this;
 		
+		// Not resizeable if we are using a back image
+		super.setResizable(image == null);
+
 		// Make sure G4P knows about this window
 		G4P.addWindow(this);
 	}
