@@ -60,7 +60,7 @@ public class GSlider extends GLinearTrackControl {
 				trackDisplayLength, trackWidth, 
 				trackWidth, trackWidth );
 		trackOffset = trackWidth + 3;
-	
+
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
@@ -88,8 +88,19 @@ public class GSlider extends GLinearTrackControl {
 	}
 
 	protected void updateDueToValueChanging(){
-//		hotspots[0].adjust(new Float(width/2  + (valuePos - 0.5f) * trackLength));
 		hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);	
+	}
+
+	/**
+	 * Enable or disable the ability of the component to generate mouse events.<br>
+	 * GTextField - it also controls key press events <br>
+	 * GPanel - controls whether the panel can be moved/collapsed/expanded <br>
+	 * @param enable true to enable else false
+	 */
+	public void setEnabled(boolean enable){
+		super.setEnabled(enable);
+		if(!enable)
+			status = OFF_CONTROL;
 	}
 
 	protected void updateBuffer(){

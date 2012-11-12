@@ -107,7 +107,8 @@ public class GImageButton extends GImageControl {
 		winApp.translate(-halfWidth, -halfHeight);
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
-		winApp.tint(-1, alphaLevel);
+		if(alphaLevel < 255)
+			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		winApp.image(bimage[status], 0, 0);	
 		winApp.popMatrix();		
 		winApp.popStyle();

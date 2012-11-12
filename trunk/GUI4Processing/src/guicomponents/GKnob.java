@@ -277,7 +277,7 @@ public class GKnob extends GValueControl {
 		// Draw buffer
 		winApp.imageMode(PApplet.CORNER);
 		if(alphaLevel < 255)
-			winApp.tint(-1, alphaLevel);
+			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		winApp.image(buffer, 0, 0);	
 		winApp.popMatrix();
 		// Value labels

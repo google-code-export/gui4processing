@@ -284,7 +284,8 @@ class GScrollbar extends GAbstractControl {
 		winApp.translate(cx, cy);
 		winApp.rotate(rotAngle);
 		winApp.imageMode(PApplet.CENTER);
-		winApp.tint(-1, alphaLevel);
+		if(alphaLevel < 255)
+			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		winApp.image(buffer, 0, 0);
 
 		winApp.popMatrix();
