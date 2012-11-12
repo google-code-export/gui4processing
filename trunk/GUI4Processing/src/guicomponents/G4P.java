@@ -38,8 +38,16 @@ public class G4P implements GConstants, PConstants {
 	public static int globalColorScheme = GCScheme.BLUE_SCHEME;
 	public static int globalAlpha = 255;
 
+//	public static Font globalFont = new Font("Lucida Sans Typewriter", Font.PLAIN, 12);  // non-proprtional
+//	public static Font globalFont = new Font("Lucida Sans Unicode", Font.PLAIN, 14);  // proportional 
+//	public static Font globalFont = new Font("Lucida Sans", Font.PLAIN, 12);
+//	public static Font globalFont = new Font("Lucidia Handwriting", Font.PLAIN, 12);
+//	public static Font globalFont = new Font("Lucida Calligraphy", Font.PLAIN, 12);
+//	public static Font globalFont = new Font("Lucidia Sans Console", Font.PLAIN, 12);
+//	public static Font globalFont = new Font("Lucida Bright", Font.PLAIN, 12);
+
 	public static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
-	public static Font numericLabelFont = new Font("DialogInput", Font.PLAIN, 12);
+	public static Font numericLabelFont = new Font("Dialog", Font.BOLD, 12);
 	
 	// Store of info about windows and controls
 	static HashMap<PApplet, GWindowInfo> windows = new HashMap<PApplet, GWindowInfo>();

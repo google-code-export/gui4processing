@@ -358,13 +358,15 @@ public class GValueControl extends GAbstractControl {
 	}
 
 	/**
-	 * Specify whether the values are to be constrained to the tick marks or not
+	 * Specify whether the values are to be constrained to the tick marks or not.
+	 * It will automatically display tick marks if set true.
 	 * @param stickToTicks true if you want to constrain the values else false
 	 */
 	public void setStickToTicks(boolean stickToTicks) {
 		if(fixed) return;
 		this.stickToTicks = stickToTicks;
 		if(stickToTicks){
+			setShowTicks(true);
 			valueTarget = findNearestTickValueTo(valuePos);
 			bufferInvalid = true;
 		}
