@@ -65,7 +65,7 @@ public void setup() {
   // RED_SCHEME, GREEN_SCHEME, YELLOW_SCHEME, PURPLE_SCHEME
   // ORANGE_SCHEME, CYAN_SCHEME, BLUE_SCHEME, GOLD_SCHEME
   // Defaults to BLUE_SCHEME 
-  G4P.setGlobalColorScheme(GCScheme.RED_SCHEME);
+  G4P.setGlobalColorScheme(G4P.RED_SCHEME);
 
   // Create a collapsible panel
   // (this, tab title, x, y, width, height)
@@ -175,19 +175,19 @@ void syncSliders() {
 
 // Handle panels events i.e. when a panel is opened or
 // collapsed
-void handlePanelEvents(GPanel panel) {
+void handlePanelEvents(GPanel panel, GEvent event) {
   // Intended to detect panel events but ended up not
   // needing it. Left the following code as an example
-  switch(pnl.eventType) {
-  case G4P.COLLAPSED:
+  switch(event) {
+  case COLLAPSED:
     pnl.setAvailableChildren(false);
     println("Panel has collapsed");
     break;
-  case G4P.EXPANDED:
+  case EXPANDED:
     pnl.setAvailableChildren(true);
     println("Panel has expanded");
     break;
-  case G4P.DRAGGED:
+  case DRAGGED:
     print("The panel has been dragged to ");
     println(pnl.getX() + ", " + pnl.getY());
     break;
