@@ -251,6 +251,23 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	public void keyEvent(KeyEvent e) { }
 	public void pre(){ }
 
+	/**
+	 * <b>This is for emergency use only!!!! </b><br>
+	 * In this version of the library a visual controls is drawn to off-screen buffer
+	 * and then drawn to the screen by copying the buffer. This means that the 
+	 * computationally expense routines needed to draw the control (especially text 
+	 * controls) are only done when a change has been noted. This means that single
+	 * changes need not trigger a full redraw to buffer. <br>
+	 * It does mean that an error in the library code could mena that the buffer is
+	 * not being updated after changes. If this happens then in draw() call this method
+	 * on the affected control, and report it as an issue <a href = 'http://code.google.com/p/gui4processing/issues/list'>
+	 * here</a><br>
+	 * Thanks
+	 */
+	public void forceBufferUpdate(){
+		bufferInvalid = true;
+	}
+	
 	protected HotSpot[] hotspots = null;
 	protected int currSpot = -1;
 

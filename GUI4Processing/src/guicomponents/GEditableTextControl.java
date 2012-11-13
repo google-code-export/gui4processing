@@ -569,7 +569,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	/**
 	 * Do not call this directly. A timer calls this method as and when required.
 	 */
-	public void flashCaret(){
+	public void flashCaret(GTimer timer){
 		showCaret = !showCaret;
 	}
 	
