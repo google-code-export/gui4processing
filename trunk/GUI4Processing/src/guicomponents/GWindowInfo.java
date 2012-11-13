@@ -52,6 +52,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		app.registerDraw(this);
 		app.registerMouseEvent(this);
 		app.registerPre(this);
+//		app.registerMethod("pre",this);
 		app.registerKeyEvent(this);
 		app.registerPost(this);
 		haveRegisteredMethodsFor151 = true;
