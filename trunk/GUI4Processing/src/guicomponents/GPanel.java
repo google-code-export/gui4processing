@@ -249,7 +249,7 @@ public class GPanel extends GTextControl {
 //				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
-			if(focusIsWith == this && mouseOverTab){
+			if(focusIsWith == this){
 				tabOnly = !tabOnly;
 				// Perform appropriate action depending on collapse state
 				setCollapsed(tabOnly);
@@ -258,15 +258,13 @@ public class GPanel extends GTextControl {
 					y = dockY;
 				}
 				else {
-					dockX = x;
-					dockY = y;
 					// Open panel move on screen if needed
 					if(y + height > winApp.getHeight())
 						y = winApp.getHeight() - height;
 					if(x + width > winApp.getWidth())
 						x = winApp.getWidth() - width;
 				}
-//				constrainPanelPosition();
+				constrainPanelPosition();
 				if(tabOnly)
 					fireEvent(this, GEvent.COLLAPSED);
 				else
@@ -278,6 +276,10 @@ public class GPanel extends GTextControl {
 		case MouseEvent.MOUSE_RELEASED: // After dragging NOT clicking
 			if(focusIsWith == this){
 				if(beingDragged){
+					// Remember the dock position when the mouse has
+					// been released after the panel has been dragged
+					dockX = x;
+					dockY = y;
 					beingDragged = false;
 					loseFocus(null);
 				}
@@ -290,10 +292,6 @@ public class GPanel extends GTextControl {
 				constrainPanelPosition();
 				beingDragged = true;
 				fireEvent(this, GEvent.DRAGGED);
-				if(!tabOnly){
-					dockX = x;
-					dockY = y;
-				}
 			}
 			break;
 		}
@@ -344,6 +342,9 @@ public class GPanel extends GTextControl {
 			y = 0;
 		else if(y + h > winApp.getHeight()) 
 			y = winApp.getHeight() - h;
+		// Maintain centre for
+		cx = x + width/2;
+		cy = y + height/2;
 	}
 
 	/**

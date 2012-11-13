@@ -34,25 +34,29 @@ import processing.core.PApplet;
 /**
  * This class is used to trigger events at user defined intervals. The event will
  * call a user defined method/function. The only restriction is that the method
- * used has no parameters and returns void eg 
+ * used has a single parameter of type GTimer and returns void eg <br> 
  * <pre>
- * void fireBall(){ ... }
- * </pre>
+ * void fireBall(GTimer timer){ ... }
+ * </pre><br>
+ *
+ * Each timer object must have its own handler
  * 
  * It has no visible GUI representation so will not appear in the GUI.
  * 
  * @author Peter Lager
  *
  */
-public class GTimer {
+public class GTimer implements GConstantsInternal {
 
-	/** This must be set by the constructor */
+	/* This must be set by the constructor */
 	protected PApplet app;
 
-	/** The object to handle the event */
+	/* The object to handle the event */
 	protected Object eventHandlerObject = null;
-	/** The method in eventHandlerObject to execute */
-	protected Method eventHandler = null;
+	/* The method in eventHandlerObject to execute */
+	protected Method eventHandlerMethod = null;
+	/* the name of the method to handle the event */ 
+	protected String eventHandlerMethodName;
 
 	// The number of repeats i.e. events to be fired.
 	protected int nrepeats = -1;
@@ -99,13 +103,14 @@ public class GTimer {
 	 * @param obj
 	 * @param methodName
 	 */
-	protected void createEventHandler(Object obj, String methodName){
+	protected void createEventHandler(Object handlerObj, String methodName){
 		try{
-			this.eventHandler = obj.getClass().getMethod(methodName, new Class[0] );
-			eventHandlerObject = obj;
+			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, new Class[] { GTimer.class } );
+			eventHandlerObject = handlerObj;
+			eventHandlerMethodName = methodName;			
 		} catch (Exception e) {
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GTimer.class }});
 			eventHandlerObject = null;
-			System.out.println("The class " + obj.getClass().getSimpleName() + " does not have a method called " + methodName);
 		}
 	}
 
@@ -114,14 +119,16 @@ public class GTimer {
 	 * method/function defined in the ctor.
 	 */
 	protected void fireEvent(){
-		if(eventHandler != null){
+		if(eventHandlerMethod != null){
 			try {
-				eventHandler.invoke(eventHandlerObject, (Object[]) null);
+				eventHandlerMethod.invoke(eventHandlerObject, this);
 				if(--nrepeats == 0)
 					stop();
 			} catch (Exception e) {
-				System.out.println("Disabling " + eventHandler.getName() + " due to an unknown error");
-				eventHandler = null;
+				GMessenger.message(EXCP_IN_HANDLER,  
+						new Object[] {eventHandlerObject, eventHandlerMethodName, e } );
+				System.out.println("Disabling " + eventHandlerMethod.getName() + " due to an unknown error");
+				eventHandlerMethod = null;
 				eventHandlerObject = null;
 			}
 		}

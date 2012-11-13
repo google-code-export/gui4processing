@@ -176,6 +176,7 @@ public class GTextField extends GEditableTextControl {
 				hsb.setValue(hvalue/hlinelength, hfiller);
 			keepCursorInView = true;
 		}
+		bufferInvalid = true;
 	}
 
 	public PGraphics getSnapshot(){
