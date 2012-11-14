@@ -65,7 +65,7 @@ public void setup() {
   // RED_SCHEME, GREEN_SCHEME, YELLOW_SCHEME, PURPLE_SCHEME
   // ORANGE_SCHEME, CYAN_SCHEME, BLUE_SCHEME, GOLD_SCHEME
   // Defaults to BLUE_SCHEME 
-  G4P.setGlobalColorScheme(G4P.RED_SCHEME);
+  G4P.setGlobalColorScheme(GCScheme.RED_SCHEME);
 
   // Create a collapsible panel
   // (this, tab title, x, y, width, height)
@@ -196,7 +196,7 @@ void handlePanelEvents(GPanel panel, GEvent event) {
 
 // Handles slider events for both horizontal and
 // vertical sliders
-void handleSliderEvents(GLinearTrackControl slider, boolean changing) {
+void handleSliderEvents(GValueControl slider, GEvent event) {
   if (slider == sx)
     currSx = slider.getValueI();
   if (slider == sy)
