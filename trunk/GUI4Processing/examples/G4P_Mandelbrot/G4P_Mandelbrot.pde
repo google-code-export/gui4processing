@@ -20,13 +20,16 @@ final int MIN_HEIGHT = 30;
 int[] colors = new int[MAX_ITERATE];
 
 GButton btnStart;
+GLabel label;
 
 int locX = 100, locY = 100;
 ArrayList windows = new ArrayList();
 
 String t0,t1,t2;
 
-
+/**
+A basic complex number class.
+*/
 class Complex {
   public double real;
   public double img;
@@ -86,18 +89,28 @@ class MyWinData extends GWinData {
 }
 
 void setup(){
-  size(300,200);
-  G4P.setFont(this, "Serif", 14);
-  G4P.setColorScheme(this, GCScheme.RED_SCHEME);
-  btnStart = new GButton(this, "START", (width - 80)/2,height - 30,80,20);
+  size(300,160);
+  G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
+  btnStart = new GButton(this, (width - 80)/2,height - 30,80,20, "START");
   t0 = "MANDELBROT GALORE\n";
   t1 = "Click on the START button to see the Mandelbrot set in a separate window. ";
   t2 = " To zoom into the set drag a box on the area you are interested in and ";
   t2 += "he enlarged image will appear in a new window.";
-
+  label = new GLabel(this, 20, 20, 260, 200, t0 + t1 + t2);
+  label.setTextAlign(GAlign.CENTER | GAlign.TOP);
   createColours();
 }
 
+/**
+ * Draw for the main sketch window
+ */
+void draw(){
+  background(230,230,230);
+}
+
+/**
+Create the colours to be used.
+*/
 public void createColours(){
   colors[MAX_ITERATE-1] = color(0);
   float hue = 0.0f;
@@ -206,24 +219,11 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney,
  * Click the button to create the windows.
  * @param button
  */
-public void handleButtonEvents(GButton button){
+public void handleButtonEvents(GButton button, GEvent event){
   if(btnStart == button){
     makeNewBrotWindow(-2.0f,0.5f,-1.25f,1.25f, GWindow.KEEP_OPEN);
     btnStart.setVisible(false);
-  }
-}
-
-/**
- * Draw for the main window
- */
-void draw(){
-  background(0,192,0);
-  textAlign(CENTER);
-  if(windows.isEmpty())
-    text(t0+t1+t2,10,10,width - 20,height - 40);
-  else {
-    text(t0+t2,10,10,width - 20,height - 40);
-    noLoop();
+    label.setText(t0 + t2);
   }
 }
 
@@ -308,4 +308,4 @@ public void windowDraw(GWinApplet appc, GWinData data){
       appc.rect(d.msx,d.msy,d.mex,d.mey);
     }	
   }
-}	
+}
