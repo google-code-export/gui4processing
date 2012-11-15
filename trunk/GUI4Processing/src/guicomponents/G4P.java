@@ -30,24 +30,45 @@ import java.util.LinkedList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+/**
+ * The prime 
+ * @author Peter
+ *
+ */
 public class G4P implements GConstants, PConstants {
 
 	static PApplet sketchApplet = null;
 	
+	/**
+	 * return the pretty version of the library.
+	 */
+	public static String getPrettyVersion() {
+		return "##library.prettyVersion##";
+	}
 
-	public static int globalColorScheme = GCScheme.BLUE_SCHEME;
-	public static int globalAlpha = 255;
+	/**
+	 * return the version of the library used by Processing
+	 */
+	public static String getVersion() {
+		return "##library.version##";
+	}
+	
+	static int globalColorScheme = GCScheme.BLUE_SCHEME;
+	static int globalAlpha = 255;
 
-//	public static Font globalFont = new Font("Lucida Sans Typewriter", Font.PLAIN, 12);  // non-proprtional
-//	public static Font globalFont = new Font("Lucida Sans Unicode", Font.PLAIN, 14);  // proportional 
-//	public static Font globalFont = new Font("Lucida Sans", Font.PLAIN, 12);
-//	public static Font globalFont = new Font("Lucidia Handwriting", Font.PLAIN, 12);
-//	public static Font globalFont = new Font("Lucida Calligraphy", Font.PLAIN, 12);
-//	public static Font globalFont = new Font("Lucidia Sans Console", Font.PLAIN, 12);
-//	public static Font globalFont = new Font("Lucida Bright", Font.PLAIN, 12);
-
-	public static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
-	public static Font numericLabelFont = new Font("Dialog", Font.BOLD, 12);
+	/**
+	 * Java has cross platform support for 5 logical fonts so use one of these
+	 * in preference to platform specific fonts or include them here.
+	 * <ul>
+	 * <li>Dialog </li>
+     * <li>DialogInpu </li>t
+     * <li>Monospaced </li>
+     * <li>Serif </li>
+     * <li>SansSerif </li>
+     * </ul>
+	 */
+	static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
+	static Font numericLabelFont = new Font("DialogInput", Font.BOLD, 12);
 	
 	// Store of info about windows and controls
 	static HashMap<PApplet, GWindowInfo> windows = new HashMap<PApplet, GWindowInfo>();

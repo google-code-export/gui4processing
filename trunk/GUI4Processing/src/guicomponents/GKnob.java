@@ -374,7 +374,8 @@ public class GKnob extends GValueControl {
 
 	/**
 	 * Set the mouse control mode to use, acceptable values are <br>
-	 * GKnob.CTRL_ANGULAR or GKnob.CTRL_HORIZONTAL) orGKnob.CTRL_VERTICAL
+	 * GKnob.CTRL_ANGULAR or GKnob.CTRL_HORIZONTAL) orGKnob.CTRL_VERTICAL any
+	 * other value will be ignored.
 	 * @param mode the mode to set
 	 */
 	public void setTurnMode(int mode) {
