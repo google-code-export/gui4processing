@@ -31,10 +31,16 @@ import processing.core.PApplet;
  * Buttons create from this class use a number of images to represent it's 
  * state. This means that buttons can have an irregular and/or discontinuous
  * shape. <br>
+ * <h3>Determining the control size </h3>
+ * If when creating the button you specify a particular width and height then
+ * any images that are not the same size will be scaled to fit without regard 
+ * to the original size or aspect ratio. <br>
  * 
- * Note that any images that do not fit the rectangle specified in the constructor
- * will be rescaled without regard to the original size or aspect ratio. <br>
+ * If when creating the button you do not specify the width and height then it 
+ * will use the width and height of the 'off-button' image and assume that all the
+ * other images are the same size. <br>
  * 
+ * <h3>The images </h3>
  * The image button needs 1 to 3 image files to represent the button states <br>
  * OFF mouse is not over button <br>
  * OVER mouse is over the button <br>
@@ -77,8 +83,15 @@ public class GImageButton extends GImageControl {
 	}
 
 
-	public GImageButton(PApplet theApplet, float p0, float p1, float p2,
-			float p3, String[] fnames, String fnameMask) {
+	public GImageButton(PApplet theApplet, float p0, float p1, String[] fnames, String fnameMask) {
+		this(theApplet, p0, p1, 0, 0, fnames, fnameMask);
+	}
+	
+	public GImageButton(PApplet theApplet, float p0, float p1, String[] fnames) {
+		this(theApplet, p0, p1, 0, 0, fnames, null);
+	}
+	
+	public GImageButton(PApplet theApplet, float p0, float p1, float p2, float p3, String[] fnames, String fnameMask) {
 		super(theApplet, p0, p1, p2, p3, fnames, fnameMask);
 		z = Z_SLIPPY;
 		// Now register control with applet

@@ -37,28 +37,61 @@ abstract class GImageControl extends GAbstractControl {
 			String[] fnames, String fnameMask) {
 		super(theApplet, p0, p1, p2, p3);
 		int controlWidth = (int)width, controlHeight = (int)height;
+		//=======================================================
+		// First of all load images
 		bimage = new PImage[3];
-		if(fnames == null)
+		if(fnames == null || fnames.length == 0)
 			fnames = new String[] { "err0.png", "err1.png", "err2.png" };
-		for(int i = 0; i < fnames.length; i++){
-			bimage[i] = winApp.loadImage(fnames[i]);
-			if(bimage[i] == null)
-				bimage[i] = winApp.loadImage("err"+i+".png");
-			if(bimage[i].width != controlWidth || bimage[i].height != controlHeight)
-				bimage[i].resize(controlWidth, controlHeight);
+		else {
+			for(int i = 0; i < fnames.length; i++){
+				bimage[i] = winApp.loadImage(fnames[i]);
+				if(bimage[i] == null)
+					bimage[i] = winApp.loadImage("err" + i + ".png");
+			}
+			for(int i = fnames.length; i < 3; i++)
+				bimage[i] = bimage[i-1];
 		}
-		for(int i = fnames.length; i < 3; i++)
-			bimage[i] = bimage[i-1];
-
-		// Get mask image if appropriate
+		// Get mask image if available
 		if(fnameMask != null)
 			mask = winApp.loadImage(fnameMask);
-		if(mask != null){	// if we have a mask use it for the hot spot
-			if(mask.width != controlWidth || mask.height != controlHeight){
-				mask.resize(controlWidth, controlHeight);
+		//=======================================================
+		// So now we need to decide whether to resize the images or control
+		if(width > 0 && height > 0){
+			// Resize images
+			for(int i = 0; i < bimage.length; i++){
+				if(bimage[i].width != controlWidth || bimage[i].height != height)
+					bimage[i].resize(controlWidth, controlHeight);					
 			}
+			if(mask != null && (mask.width != controlWidth || mask.height != controlHeight))
+					mask.resize(controlWidth, controlHeight);
+		}
+		else {
+			// resize control
+			width = bimage[0].width;
+			height = bimage[0].height;
+			halfWidth = width/2;
+			halfHeight = height/2;
+			// Recalculate corners or centre  depending on contro;_mode
+			switch(G4P.control_mode){
+			case PApplet.CORNER:
+			case PApplet.CORNERS:
+				x = p0;
+				y = p1;
+				cx = x + halfWidth;
+				cy = y + halfHeight;
+				break;
+			case PApplet.CENTER:
+				cx = p0;
+				cy = p1;
+				x = cx - halfWidth;
+				y = cy - halfHeight;
+				break;
+			}
+
+		}
+		if(mask != null){	// if we have a mask use it for the hot spot
 			hotspots = new HotSpot[]{
-					new HSmask(1,mask)
+					new HSmask(1, mask)
 			};
 		}
 		else {   // no mask then use alpha channel of the OFF image
