@@ -39,16 +39,16 @@ import processing.core.PApplet;
 public class GValueControl extends GAbstractControl {
 
 	static protected float HINSET = 2;
-
-	protected float startLimit = 0, endLimit = 1;
-	protected boolean showLimits = true;
-	
 	protected StyledString ssStartLimit, ssEndLimit, ssValue;
 
+
+	protected float startLimit = 0, endLimit = 1;
+	protected boolean showLimits = false;
+	
 	protected int valueType = DECIMAL;
 	protected int precision = 2;
 	protected String unit = "";
-	protected boolean showValue = true;
+	protected boolean showValue = false;
 	
 	protected float epsilon = 0.01f;
 	
@@ -434,8 +434,25 @@ public class GValueControl extends GAbstractControl {
 	 */
 	public void setShowValue(boolean showValue) {
 		this.showValue = showValue;
+		bufferInvalid = true;
 	}
 
+	/**
+	 * Convenience method to set what is to be drawn to the screen.
+	 * @param opaque show background
+	 * @param ticks show tick marks
+	 * @param value show current value
+	 * @param limits show min and max values (limits)
+	 */
+	public void setShowDecor(boolean opaque, boolean ticks, boolean value, boolean limits){
+		this.showValue = value;
+		bufferInvalid = true;
+		if(fixed) return;
+		this.opaque = opaque;
+		this.showTicks = ticks;
+		this.showLimits = limits;
+	}
+	
 	/**
 	 * @return the startLimit
 	 */
