@@ -68,7 +68,7 @@ public class G4P implements GConstants, PConstants {
      * </ul>
 	 */
 	static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
-	static Font numericLabelFont = new Font("DialogInput", Font.BOLD, 12);
+	static Font numericLabelFont = new Font("DialogInput", Font.BOLD, 10);
 	
 	// Store of info about windows and controls
 	static HashMap<PApplet, GWindowInfo> windows = new HashMap<PApplet, GWindowInfo>();

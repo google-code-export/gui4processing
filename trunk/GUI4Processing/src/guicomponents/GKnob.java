@@ -73,10 +73,10 @@ public class GKnob extends GValueControl {
 	protected boolean showTrack = true;
 
 	protected float bezelRadius, bezelWidth, gripRadius;
-	protected float inset = 0;
+	protected boolean overIncludesBezel = true;
 	protected float sensitivity = 1.0f;
 
-	protected boolean showArcOnly = false;
+	protected boolean drawArcOnly = false;
 	protected boolean mouseOverArcOnly = false;
 
 	protected float startMouseX, startMouseY;
@@ -88,20 +88,24 @@ public class GKnob extends GValueControl {
 	protected float lastAngleTarget;
 
 	/**
+	 * Will create the a circular knob control that fits the rectangle define by
+	 * the values passed as parameters. In other words the knob radius will be <br>
+	 * <pre>radius = min(width, height)/2 <pre><br>
 	 * 
+	 * The bezel width defines the amount to see
+	 * around the actual central grip part.
 	 * @param theApplet
 	 * @param p0
 	 * @param p1
 	 * @param p2
 	 * @param p3
-	 * @param bezelWidth
+	 * @param gip_radius
 	 */
-	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float bezelWidth) {
+	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float gip_radius) {
 		super(theApplet, p0, p1, p2, p3);
-		this.inset = 4;
-		bezelRadius = Math.min(width, height) / 2 - inset;
-		this.bezelWidth = bezelWidth;
-		gripRadius = bezelRadius - bezelWidth;
+		bezelRadius = Math.min(width, height) / 2;
+		gripRadius = Math.min(bezelRadius, gip_radius);
+		bezelWidth = bezelRadius - gip_radius;
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		setKnobRange(startAng, endAng);
 		// valuePos and valueTarget will start at 0.5;
@@ -124,14 +128,23 @@ public class GKnob extends GValueControl {
 		G4P.addControl(this);
 	}
 
+	protected void calculateHotSpot(){
+		float overRad = (this.overIncludesBezel) ? bezelRadius : gripRadius;
+		if(mouseOverArcOnly)				
+			hotspots[0] = new HSarc(1, width/2 , height/2, overRad, startAng, endAng);  // over grip
+		else
+			hotspots[0] = new HScircle(1, width/2, height/2, overRad);
+
+	}
+	
 	/**
 	 * This will decide whether the knob is draw as a full circle or as an arc.
 	 * 
 	 * @param arcOnly true for arc only
 	 */
-	public void setShowArcOnly(boolean arcOnly){
-		if(this.showArcOnly != arcOnly){
-			showArcOnly = arcOnly;
+	public void setDrawArcOnly(boolean arcOnly){
+		if(drawArcOnly != arcOnly){
+			drawArcOnly = arcOnly;
 			bufferInvalid = true;
 		}
 	}
@@ -141,7 +154,7 @@ public class GKnob extends GValueControl {
 	 * @return true = yes
 	 */
 	public boolean isShowArcOnly(){
-		return showArcOnly;
+		return drawArcOnly;
 	}
 	
 	/**
@@ -150,12 +163,9 @@ public class GKnob extends GValueControl {
 	 * false it will be the full circle.
 	 * @param arcOnly
 	 */
-	public void setMouseOverArcOnly(boolean arcOnly){
+	public void setOverArcOnly(boolean arcOnly){
 		mouseOverArcOnly = arcOnly;
-		if(mouseOverArcOnly)				
-			hotspots[0] = new HSarc(1, width/2 , height/2, gripRadius, startAng, endAng);  // over grip
-		else
-			new HScircle(1, width/2, height/2, gripRadius);
+		calculateHotSpot();
 	}
 
 	/**
@@ -169,12 +179,15 @@ public class GKnob extends GValueControl {
 	/**
 	 * Convenience method to set both the show and the mouse over arc only properties
 	 * for this knob
-	 * @param mouse mouse over arc only?
-	 * @param show draw arc only?
+	 * @param over_arc_only mouse over arc only?
+	 * @param draw_arc_only draw arc only?
+	 * @param overfullsize include bezel in mouse over calculations?
 	 */
-	public void setArcPolicy(boolean mouse, boolean show){
-		setMouseOverArcOnly(mouse);
-		setShowArcOnly(show);
+	public void setArcPolicy(boolean over_arc_only, boolean draw_arc_only, boolean overfullsize){
+		this.mouseOverArcOnly = over_arc_only;
+		setDrawArcOnly(draw_arc_only);
+		overIncludesBezel = overfullsize;
+		calculateHotSpot();
 	}
 	
 	public void mouseEvent(MouseEvent event){
@@ -317,7 +330,7 @@ public class GKnob extends GValueControl {
 				// Draw bezel, track,  ticks etc
 				buffer.noStroke();
 				buffer.fill(palette[5]);
-				if(showArcOnly)
+				if(drawArcOnly)
 					buffer.arc(0,0,2*bezelRadius, 2*bezelRadius, PApplet.radians(startAng), PApplet.radians(endAng));
 				else
 					buffer.ellipse(0,0,2*bezelRadius, 2*bezelRadius);
@@ -346,7 +359,7 @@ public class GKnob extends GValueControl {
 			buffer.stroke(palette[2]); // was 14
 //			buffer.noStroke();
 			buffer.fill(palette[2]);
-			if(showArcOnly)
+			if(drawArcOnly)
 				buffer.arc(0,0,2*gripRadius, 2*gripRadius, PApplet.radians(startAng), PApplet.radians(endAng));
 			else
 				buffer.ellipse(0,0,2*gripRadius, 2*gripRadius);

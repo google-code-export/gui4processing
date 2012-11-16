@@ -472,12 +472,39 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 
 	/**
 	 * Set the rotation to apply when displaying this control.
-	 * @param rot
+	 * @param angle
 	 */
-	public void setRotation(float rot){
-		this.rotAngle = rot;
+	public void setRotation(float angle, int mode){	
+		rotAngle = angle;
+		AffineTransform aff = new AffineTransform();
+		aff.setToRotation(angle);
+
+		switch(mode){
+		case PApplet.CORNER:
+		case PApplet.CORNERS:
+			// Rotate about top corner
+			temp[0] = halfWidth;
+			temp[1] = halfHeight;
+			aff.transform(temp, 0, temp, 0, 1);
+			cx = (float)temp[0] + x;// - halfWidth;
+			cy = (float)temp[1] + y;// - halfHeight;
+			break;
+		case PApplet.CENTER:
+		default:
+			// Rotate about centre
+			temp[0] = -halfWidth;
+			temp[1] = -halfHeight;
+			aff.transform(temp, 0, temp, 0, 1);
+			x = cx + (float)temp[0];
+			y = cy - (float)temp[1];
+			break;
+		}		
 	}
 
+	public void setRotation(float angle){
+		setRotation(angle, G4P.getCtrlMode());
+	}
+	
 	/**
 	 * Get the left position of the control
 	 * @return the x

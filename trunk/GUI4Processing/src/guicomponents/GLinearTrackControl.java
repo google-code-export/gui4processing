@@ -41,7 +41,7 @@ import processing.core.PApplet;
  */
 public abstract class GLinearTrackControl extends GValueControl {
 
-	static protected float TINSET = 4;
+	static protected float TINSET = 2;
 	
 	static protected int THUMB_SPOT = 1;
 	static protected int TRACK_SPOT = 2;
