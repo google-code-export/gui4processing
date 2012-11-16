@@ -68,7 +68,7 @@ public class G4P implements GConstants, PConstants {
      * </ul>
 	 */
 	static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
-	static Font numericLabelFont = new Font("DialogInput", Font.BOLD, 10);
+	static Font numericLabelFont = new Font("DialogInput", Font.BOLD, 11);
 	
 	// Store of info about windows and controls
 	static HashMap<PApplet, GWindowInfo> windows = new HashMap<PApplet, GWindowInfo>();
@@ -271,8 +271,8 @@ public class G4P implements GConstants, PConstants {
 	 * Change the way position and size parameters are interpreted when a control is created. 
 	 * or added to another control e.g. GPanel. <br>
 	 * There are 3 modes. <br><pre>
-	 * PApplet.CORNER	 (x, y, w, h)
-	 * PApplet.CORNERS	 (x0, y0, x1, y1)
+	 * PApplet.CORNER	 (x, y, w, h) <br>
+	 * PApplet.CORNERS	 (x0, y0, x1, y1) <br>
 	 * PApplet.CENTER	 (cx, cy, w, h) </pre><br>
 	 * 
 	 * @param mode illegal values are ignored leaving the mode unchanged

@@ -99,13 +99,13 @@ public class GKnob extends GValueControl {
 	 * @param p1
 	 * @param p2
 	 * @param p3
-	 * @param gip_radius
+	 * @param grip_radius
 	 */
-	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float gip_radius) {
+	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float grip_radius) {
 		super(theApplet, p0, p1, p2, p3);
 		bezelRadius = Math.min(width, height) / 2;
-		gripRadius = Math.min(bezelRadius, gip_radius);
-		bezelWidth = bezelRadius - gip_radius;
+		gripRadius = Math.min(bezelRadius, grip_radius);
+		bezelWidth = bezelRadius - grip_radius;
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		setKnobRange(startAng, endAng);
 		// valuePos and valueTarget will start at 0.5;
@@ -117,7 +117,8 @@ public class GKnob extends GValueControl {
 		z = Z_SLIPPY;
 
 		epsilon = 0.98f / (endAng - startAng);
-
+		showTicks = true;
+		
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleKnobEvents",
 				new Class[]{ GValueControl.class, GEvent.class }, 
@@ -137,24 +138,40 @@ public class GKnob extends GValueControl {
 
 	}
 	
+
 	/**
-	 * This will decide whether the knob is draw as a full circle or as an arc.
-	 * 
-	 * @param arcOnly true for arc only
+	 * Whether or not to show the circular progress bar.
+	 * @param showTrack true for visible
 	 */
-	public void setDrawArcOnly(boolean arcOnly){
-		if(drawArcOnly != arcOnly){
-			drawArcOnly = arcOnly;
+	public void setShowTrack(boolean showTrack){
+		if(this.showTrack != showTrack){
+			this.showTrack = showTrack;
 			bufferInvalid = true;
 		}
 	}
+
+	/**
+	 * Are we showing the progess bar.
+	 */
+	public boolean isShowTrack(){
+		return showTrack;
+	}
 	
 	/**
-	 * Are we showing arc only?
-	 * @return true = yes
+	 * Whether to include the bezel when deciding when the mouse is over.
+	 * @param overBezel true if bezel inclded.
 	 */
-	public boolean isShowArcOnly(){
-		return drawArcOnly;
+	public void setOverBezel(boolean overBezel){
+		overIncludesBezel = overBezel;
+		calculateHotSpot();
+	}
+	
+	/**
+	 * Is the bezel included when considering when the mouse is over.
+	 * @return true if included.
+	 */
+	public boolean includeOverBezel(){
+		return overIncludesBezel;
 	}
 	
 	/**
@@ -188,6 +205,26 @@ public class GKnob extends GValueControl {
 		setDrawArcOnly(draw_arc_only);
 		overIncludesBezel = overfullsize;
 		calculateHotSpot();
+	}
+	
+	/**
+	 * This will decide whether the knob is draw as a full circle or as an arc.
+	 * 
+	 * @param arcOnly true for arc only
+	 */
+	public void setDrawArcOnly(boolean arcOnly){
+		if(drawArcOnly != arcOnly){
+			drawArcOnly = arcOnly;
+			bufferInvalid = true;
+		}
+	}
+	
+	/**
+	 * Are we showing arc only?
+	 * @return true = yes
+	 */
+	public boolean isShowArcOnly(){
+		return drawArcOnly;
 	}
 	
 	public void mouseEvent(MouseEvent event){
@@ -335,16 +372,18 @@ public class GKnob extends GValueControl {
 				else
 					buffer.ellipse(0,0,2*bezelRadius, 2*bezelRadius);
 				// Since we have a bezel test for ticks
-				buffer.noFill();
-				buffer.strokeWeight(1.6f);
-				buffer.stroke(palette[3]);
-				float deltaA = (endAng - startAng)/(nbrTicks - 1);
-				for(int t = 0; t < nbrTicks; t++){
-					tickLength = gripRadius + ((t == 0 || t == nbrTicks - 1) ? bezelWidth : bezelWidth * 0.8f); 
-					a =  Math.toRadians(startAng + t * deltaA);
-					sina = Math.sin(a);
-					cosa = Math.cos(a);
-					buffer.line((float)(gripRadius * cosa), (float)(gripRadius * sina), (float)(tickLength * cosa), (float)(tickLength * sina));
+				if(showTicks){
+					buffer.noFill();
+					buffer.strokeWeight(1.6f);
+					buffer.stroke(palette[3]);
+					float deltaA = (endAng - startAng)/(nbrTicks - 1);
+					for(int t = 0; t < nbrTicks; t++){
+						tickLength = gripRadius + ((t == 0 || t == nbrTicks - 1) ? bezelWidth : bezelWidth * 0.8f); 
+						a =  Math.toRadians(startAng + t * deltaA);
+						sina = Math.sin(a);
+						cosa = Math.cos(a);
+						buffer.line((float)(gripRadius * cosa), (float)(gripRadius * sina), (float)(tickLength * cosa), (float)(tickLength * sina));
+					}
 				}
 				// draw track?
 				if(showTrack){

@@ -96,9 +96,9 @@ public abstract class GToggleControl extends GTextIconControl {
 		this.selected = selected;
 	}
 
-	public void setSelected() {
-		setSelected(true);
-	}
+//	public void setSelected() {
+//		setSelected(true);
+//	}
 
 	/*
 	 * Only executed when clicked in the GUI.

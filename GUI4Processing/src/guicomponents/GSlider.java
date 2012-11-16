@@ -59,8 +59,8 @@ public class GSlider extends GLinearTrackControl {
 		track = new RoundRectangle2D.Float(-trackDisplayLength/2, -trackWidth/2, 
 				trackDisplayLength, trackWidth, 
 				trackWidth, trackWidth );
-		trackOffset = trackWidth + 3;
-
+		trackOffset = calcTrackOffset();
+		
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);

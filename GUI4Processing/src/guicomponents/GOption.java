@@ -65,6 +65,7 @@ public class GOption extends GToggleControl{
 		opaque = false;
 		setText(text);
 		setIcon("pinhead.png", 2, GAlign.LEFT);
+		setTextAlign(GAlign.LEFT);
 		z = Z_SLIPPY;
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleToggleControlEvents", 

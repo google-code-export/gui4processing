@@ -105,7 +105,7 @@ public class GCustomSlider extends GLinearTrackControl {
 		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
 		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
 		trackWidth = centre.height;
-		trackOffset = Math.max(trackWidth, thumb.height/2) + 3;
+		trackOffset = calcTrackOffset();
 		extendCentreImage();
 
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
@@ -134,6 +134,19 @@ public class GCustomSlider extends GLinearTrackControl {
 		cursorOver = HAND;
 		G4P.addControl(this);
 	}
+
+	/**
+	 * Calculates the amount of offset for the labels
+	 */
+	protected float calcTrackOffset(){
+		float adjustedTrackOffset = (showTicks) ? trackWidth: trackWidth/2;
+		adjustedTrackOffset = Math.max(adjustedTrackOffset, thumb.height/2) + 2;
+		if(adjustedTrackOffset != trackOffset){
+			bufferInvalid = true;
+		}
+		return adjustedTrackOffset;
+	}
+
 
 	protected void updateDueToValueChanging(){
 		hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);

@@ -66,9 +66,6 @@ public class GValueControl extends GAbstractControl {
 	// Offset to between mouse and thumb centre
 	protected float offset;
 	
-	// Can be used to prevent changes
-	protected boolean fixed = false;
-	
 	public GValueControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 	}
@@ -126,7 +123,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param end the end value of the range
 	 */
 	public void setLimits(int start, int end){
-		if(fixed) return;
 		startLimit = start;
 		endLimit = end;
 		valueType = INTEGER;
@@ -143,7 +139,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param end the end value of the range
 	 */
 	public void setLimits(int initValue, int start, int end){
-		if(fixed) return;
 		startLimit = start;
 		endLimit = end;
 		valueType = INTEGER;
@@ -160,7 +155,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param end
 	 */
 	public void setLimits(float start, float end){
-		if(fixed) return;
 		startLimit = start;
 		endLimit = end;
 		if(valueType == INTEGER){
@@ -181,7 +175,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param end the end value of the range
 	 */
 	public void setLimits(float initValue, float start, float end){
-		if(fixed) return;
 		startLimit = start;
 		endLimit = end;
 		if(valueType == INTEGER){
@@ -204,10 +197,6 @@ public class GValueControl extends GAbstractControl {
 			v = Math.round(v);
 		float p = (v - startLimit) / (endLimit - startLimit);
 		p = PApplet.constrain(p, 0.0f, 1.0f);
-//		if(p < 0)
-//			p = 0;
-//		else if(p > 1)
-//			p = 1;
 		if(stickToTicks)
 			p = findNearestTickValueTo(p);
 		valueTarget = p;
@@ -219,7 +208,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param p must be >= 1 otherwise will use 1
 	 */
 	public void setPrecision(int p){
-		if(fixed) return;
 		if(p < 1)
 			p = 1;
 		if(p != precision){
@@ -238,7 +226,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param units for example  kg, m, ($), fps
 	 */
 	public void setUnits(String units){
-		if(fixed) return;
 		if(units == null)
 			units = "";
 		if(!unit.equals(units)){
@@ -258,7 +245,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param units for example  kg, m, ($), fps
 	 */
 	public void setNumberFormat(int numberFormat, int precision, String unit){
-		if(fixed) return;
 		this.unit = (unit == null) ? "" : unit;
 		setNumberFormat(numberFormat, precision);
 	}
@@ -272,7 +258,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param precision must be >= 1
 	 */
 	public void setNumberFormat(int numberFormat, int precision){
-		if(fixed) return;
 		switch(numberFormat){
 		case INTEGER:
 		case DECIMAL:
@@ -301,6 +286,15 @@ public class GValueControl extends GAbstractControl {
 		return Math.round(startLimit + (endLimit - startLimit) * valuePos);
 	}
 	
+	/**
+	 * If we are using labels then this will get the label text
+	 * associated with the current value. <br>
+	 * If labels have not been set then return null
+	 */
+	public String getValueS(){
+		return getNumericDisplayString(valuePos);
+	}
+
 	/**
 	 * Get the current value used for easing.
 	 * @return the easing
@@ -338,7 +332,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param noOfTicks the nbrTicks to set
 	 */
 	public void setNbrTicks(int noOfTicks) {
-		if(fixed) return;
 		if(noOfTicks < 2)
 			noOfTicks = 2;
 		if(nbrTicks != noOfTicks){
@@ -363,7 +356,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param stickToTicks true if you want to constrain the values else false
 	 */
 	public void setStickToTicks(boolean stickToTicks) {
-		if(fixed) return;
 		this.stickToTicks = stickToTicks;
 		if(stickToTicks){
 			setShowTicks(true);
@@ -396,11 +388,11 @@ public class GValueControl extends GAbstractControl {
 	 * @param showTicks the showTicks to set
 	 */
 	public void setShowTicks(boolean showTicks) {
-		if(fixed) return;
-		this.showTicks = showTicks;
-		bufferInvalid = true;
+		if(this.showTicks != showTicks){
+			this.showTicks = showTicks;
+			bufferInvalid = true;			
+		}
 	}
-
 	
 	/**
 	 * Are the limit values visible?
@@ -415,7 +407,6 @@ public class GValueControl extends GAbstractControl {
 	 * @param showLimits the showLimits to set
 	 */
 	public void setShowLimits(boolean showLimits) {
-		if(fixed) return;
 		this.showLimits = showLimits;
 		bufferInvalid = true;
 	}
@@ -447,7 +438,6 @@ public class GValueControl extends GAbstractControl {
 	public void setShowDecor(boolean opaque, boolean ticks, boolean value, boolean limits){
 		this.showValue = value;
 		bufferInvalid = true;
-		if(fixed) return;
 		this.opaque = opaque;
 		this.showTicks = ticks;
 		this.showLimits = limits;
