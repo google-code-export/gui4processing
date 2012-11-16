@@ -23,6 +23,7 @@
 
 package guicomponents;
 import java.awt.Font;
+import java.awt.font.TextAttribute;
 
 import processing.core.PApplet;
 
@@ -40,8 +41,6 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	protected static final int TPAD2 = TPAD * 2;
 	protected static final int TPAD4 = TPAD * 4;
 	
-	/** Text value associated with component */
-//	protected String ptext = "";
 	/** The styled version of text */
 	public StyledString stext = null;
 	
@@ -105,6 +104,49 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 			this.stext.setWrapWidth((int)width - TPAD2);
 			bufferInvalid = true;
 		}
+	}
+	
+	/**
+	 * Make the selected characters bold. <br>
+	 * Characters affected are >= start and < end
+	 * 
+	 * @param s the first character to style
+	 * @param e the first character not to style
+	 */
+	public void setTextBold(int start, int end){
+		addAttribute(G4P.WEIGHT, G4P.WEIGHT_BOLD, start, end);
+	}
+
+	/**
+	 * Make all the characters bold. <br>
+	 */
+	public void setTextBold(){
+		stext.addAttribute(G4P.WEIGHT, G4P.WEIGHT_BOLD);
+	}
+
+	/**
+	 * Make the selected characters italic. <br>
+	 * Characters affected are >= start and < end
+	 * 
+	 * @param s the first character to style
+	 * @param e the first character not to style
+	 */
+	public void setTextItalic(int start, int end){
+		addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE, start, end);
+	}
+
+	/**
+	 * Make all the characters italic. <br>
+	 */
+	public void setTextItalic(){
+		stext.addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE);
+	}
+
+	protected void addAttribute(TextAttribute style, Object value, int s, int e){
+		if(s >= e) return;
+		if(s < 0) s = 0;
+		if(e > stext.length()) e = stext.length();
+		stext.addAttribute(style, value, s, e);
 	}
 	
 	/** 

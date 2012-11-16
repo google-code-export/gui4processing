@@ -211,7 +211,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	 * 
 	 * @param style
 	 */
-	public void setStyle(TextAttribute style, Object value){
+	public void setSelectedTextStyle(TextAttribute style, Object value){
 		if(!hasSelection())
 			return;
 		TextLayoutHitInfo startSelTLHI;

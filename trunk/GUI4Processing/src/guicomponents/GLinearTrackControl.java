@@ -85,14 +85,14 @@ public abstract class GLinearTrackControl extends GValueControl {
 	
 	/**
 	 * This method is used to set the text to appear alongside the tick marks. <br>
-	 * The array passes must have a minimum of 2 elements and each label (element)
+	 * The array passed must have a minimum of 2 elements and each label (element)
 	 * must have at least 1 character. If these two conditions are not met then
-	 * the call to this method will be ignored and no changes made to 
+	 * the call to this method will be ignored and no changes are made.
 	 * 
-	 * @param tickLabels
+	 * @param tickLabels an array of strings for the labels
 	 */
 	public void setTickLabels(String[] tickLabels){
-		if(tickLabels == null || tickLabels.length == 0)
+		if(tickLabels == null || tickLabels.length < 2)
 			return;
 		for(String s : tickLabels)
 			if(s == null || s.length() == 0)
@@ -108,8 +108,28 @@ public abstract class GLinearTrackControl extends GValueControl {
 		showLimits = false;
 		showValue = false;
 		bufferInvalid = true;			
-		// Now fix the values to prevent further changes
-		fixed = true;
+	}
+	
+	/**
+	 * Set whether the tick marks are to be displayed or not. Then
+	 * recalculate the track offset for the value and limit text.
+	 * @param showTicks the showTicks to set
+	 */
+	public void setShowTicks(boolean showTicks) {
+		super.setShowTicks(showTicks);
+		float newTrackOffset = calcTrackOffset();
+		if(newTrackOffset != trackOffset){
+			trackOffset = newTrackOffset;
+			bufferInvalid = true;
+		}
+		bufferInvalid = true;
+	}
+
+	/**
+	 * Calculates the amount of offset for the labels
+	 */
+	protected float calcTrackOffset(){
+		return (showTicks) ? trackWidth + 2 : trackWidth/2 + 2;
 	}
 	
 	/**
@@ -140,7 +160,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 		// Use the valueTarget rather than the valuePos since intermediate values
 		// have no meaning in this case.
 		int idx = Math.round(startLimit + (endLimit - startLimit) * valueTarget);
-		return (labels == null) ? null : labels[idx].getPlainText();
+		return (labels == null) ? getNumericDisplayString(getValueF()) : labels[idx].getPlainText();
 	}
 
 	public void mouseEvent(MouseEvent event){

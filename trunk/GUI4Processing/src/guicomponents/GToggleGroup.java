@@ -53,6 +53,11 @@ public class GToggleGroup {
 		tc.setToggleGroup(this);
 	}
 	
+	public void addControls(GToggleControl... controls ){
+		for(GToggleControl tc : controls)
+			tc.setToggleGroup(this);			
+	}
+	
 	/*
 	 * Used internally to change selection
 	 */
