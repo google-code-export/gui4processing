@@ -88,6 +88,19 @@ public class GCustomSlider extends GLinearTrackControl {
 	protected PImage centre;
 
 	/**
+	 * Create a custom slider using the default skin.
+	 * 
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 */
+	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		this(theApplet, p0, p1, p2, p3, null);
+	}
+	
+	/**
 	 * Create a custom slider using the skin specified.
 	 * 
 	 * @param theApplet
