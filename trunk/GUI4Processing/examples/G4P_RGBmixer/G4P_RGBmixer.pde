@@ -28,26 +28,26 @@ void setup() {
   label.setOpaque(true);
   label.setLocalColorScheme(G4P.CYAN_SCHEME);
   
-  knbRed = new GKnob(this, kx, ky, 150, 150, 16);
-  knbRed.setKnobRange(150, 270);
+  knbRed = new GKnob(this, kx, ky, 150, 150, 0.8);
+  knbRed.setTurnRange(150, 270);
   knbRed.setTurnMode(G4P.CTRL_ANGULAR);
-  knbRed.setArcPolicy(true, true);
+  knbRed.setArcPolicy(true, true, true);
   knbRed.setLimits(r, 0, 255);
   knbRed.setNbrTicks(9);
   knbRed.setLocalColorScheme(G4P.RED_SCHEME);
 
-  knbGreen = new GKnob(this, kx + 8, ky, 150, 150, 16);
-  knbGreen.setKnobRange(270, 30);
+  knbGreen = new GKnob(this, kx + 8, ky, 150, 150, 0.8);
+  knbGreen.setTurnRange(270, 30);
   knbGreen.setTurnMode(G4P.CTRL_ANGULAR);
-  knbGreen.setArcPolicy(true, true);
+  knbGreen.setArcPolicy(true, true, true);
   knbGreen.setLimits(g, 0, 255);
   knbGreen.setNbrTicks(9);
   knbGreen.setLocalColorScheme(G4P.GREEN_SCHEME);
 
-  knbBlue = new GKnob(this, kx + 4, ky + 9, 150, 150, 16);
-  knbBlue.setKnobRange(30, 150);
+  knbBlue = new GKnob(this, kx + 4, ky + 9, 150, 150, 0.8);
+  knbBlue.setTurnRange(30, 150);
   knbBlue.setTurnMode(G4P.CTRL_ANGULAR);
-  knbBlue.setArcPolicy(true, true);
+  knbBlue.setArcPolicy(true, true, true);
   knbBlue.setLimits(b, 0, 255);
   knbBlue.setNbrTicks(9);
   knbBlue.setLocalColorScheme(G4P.BLUE_SCHEME);

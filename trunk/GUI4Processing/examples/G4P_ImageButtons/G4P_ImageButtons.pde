@@ -11,7 +11,6 @@ import guicomponents.*;
 GImageButton btnGhost, btnCoins, btnTJ, btnInfo;
 GLabel lblOut;
 long timer;
-String[] files;
 
 void setup() {
   size(580, 220);

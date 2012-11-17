@@ -11,7 +11,7 @@ library.
 
 import guicomponents.*;
 
-GHorzSlider sdrRate;
+GSlider sdrRate;
 GButton btnStart, btnStop;
 GTimer timer;
 
@@ -24,14 +24,14 @@ PImage rear, front;
 void setup(){
   size(768,600);
   // Create 2 buttons to start and stop the balls
-  btnStart = new GButton(this, "Start", 10,10,100,20); // (this, text, x, y, width, height)
-  btnStop = new GButton(this, "Stop", 120,10,100,20);
+  btnStart = new GButton(this, 10, 10, 100, 20, "Start");
+  btnStop = new GButton(this, 120, 10, 100, 20, "Stop");
   // Create a slider to control rate of balls erupted.
-  sdrRate = new GHorzSlider(this, 230, 10, 360, 20); // (this, x, y, width, height)
+  sdrRate = new GSlider(this, 230, 10, 360, 20, 10);
   sdrRate.setLimits(50, 10, 120); // (init, min, max)
-  sdrRate.setBorder(1);
+
   // Get timer interval based on initial slider value and limits
-  rate = (sdrRate.getMinValue() + sdrRate.getMaxValue()) - sdrRate.getValue();
+  rate = 130 - sdrRate.getValueI();
   // Create a GTimer object that will call the method
   // fireBall 
   // Parameter 1 : the PApplet class i.e. 'this'
@@ -52,11 +52,12 @@ void setup(){
   frameRate(30);
 
   // Register the pre() method for this class
-  registerPre(this);
+//  registerPre(this);
+  registerMethod("pre", this);
 }
 
 // This method is now called before each call to draw()
-void pre(){
+public void pre(){
   Ball b;
   int i;
   // Update all live balls
@@ -88,21 +89,21 @@ void draw(){
 }
 
 // This is called when the user drags on the slider
-void handleSliderEvents(GSlider slider){
-  rate = (sdrRate.getMinValue() + sdrRate.getMaxValue()) - sdrRate.getValue();
+void handleSliderEvents(GValueControl slider, GEvent event){
+  rate = 130 - sdrRate.getValueI();
   timer.setInterval(rate);
 }
 
 // This method is called when a button is clicked
-void handleButtonEvents(GButton button){
-  if(button == btnStart && button.eventType == GButton.CLICKED)
+void handleButtonEvents(GButton button, GEvent event){
+  if(button == btnStart && event == GEvent.CLICKED)
     timer.start();
-  if(button == btnStop && button.eventType == GButton.CLICKED)
+  if(button == btnStop && event == GEvent.CLICKED)
     timer.stop();
 }
 
 // This method is called by the timer
-void fireBall(){
+void fireBall(GTimer timer){
   Ball ball = new Ball();
   liveBalls.add(ball);
 }
