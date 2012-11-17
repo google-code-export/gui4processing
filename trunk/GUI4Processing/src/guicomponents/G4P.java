@@ -261,7 +261,7 @@ public class G4P implements GConstants, PConstants {
 		if(winfo != null){
 			winfo = new GWindowInfo(app);
 			//control
-			winfo.removeControl(control);
+			winfo.disposable.add(control);
 			return true;
 		}
 		return false;

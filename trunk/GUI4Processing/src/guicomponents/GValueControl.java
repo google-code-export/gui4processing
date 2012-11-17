@@ -436,11 +436,11 @@ public class GValueControl extends GAbstractControl {
 	 * @param limits show min and max values (limits)
 	 */
 	public void setShowDecor(boolean opaque, boolean ticks, boolean value, boolean limits){
-		this.showValue = value;
+		setShowValue(value);
 		bufferInvalid = true;
-		this.opaque = opaque;
-		this.showTicks = ticks;
-		this.showLimits = limits;
+		setOpaque(opaque);
+		setShowTicks(ticks);
+		setShowLimits(limits);
 	}
 	
 	/**

@@ -89,25 +89,29 @@ public class GKnob extends GValueControl {
 
 	/**
 	 * Will create the a circular knob control that fits the rectangle define by
-	 * the values passed as parameters. In other words the knob radius will be <br>
-	 * <pre>radius = min(width, height)/2 <pre><br>
-	 * 
-	 * The bezel width defines the amount to see
-	 * around the actual central grip part.
+	 * the values passed as parameters. <br>
+	 * The knob has two zones the outer bezel and the inner gripper. The radius of 
+	 * the outer bezel is calculated from <br>
+	 * <pre>bezel radius = min(width, height)/2 - 2<pre><br>
+	 * The radius of the inner griper radius is calculated from the bezel radius 
+	 * and the last parameter. <br>
+	 * <pre>grip radius = bezel radiius * gripAmount </pre><br>
+	 * The gripAmount should be in te range 0.0 to 1.0 inclusive. The actual value 
+	 * will be constrained to that range. <br>
+	 *  
 	 * @param theApplet
 	 * @param p0
 	 * @param p1
 	 * @param p2
 	 * @param p3
-	 * @param grip_radius
+	 * @param gripAmount must be >=0.0 and <=1.0
 	 */
-	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float grip_radius) {
+	public GKnob(PApplet theApplet, float p0, float p1, float p2, float p3, float gripAmount) {
 		super(theApplet, p0, p1, p2, p3);
-		bezelRadius = Math.min(width, height) / 2;
-		gripRadius = Math.min(bezelRadius, grip_radius);
-		bezelWidth = bezelRadius - grip_radius;
+		bezelRadius = Math.min(width, height) / 2 - 2;
+		setGripAmount(gripAmount);
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
-		setKnobRange(startAng, endAng);
+		setTurnRange(startAng, endAng);
 		// valuePos and valueTarget will start at 0.5;
 		anglePos = scaleValueToAngle(valuePos);
 		lastAngleTarget = angleTarget = scaleValueToAngle(valueTarget);
@@ -129,13 +133,29 @@ public class GKnob extends GValueControl {
 		G4P.addControl(this);
 	}
 
+	/**
+	 * The radius of the inner griper radius is calculated from the bezel radius 
+	 * and the parameter gripAmount using <br>
+	 * <pre>grip radius = bezel radiius * gripAmount </pre><br>
+	 * The gripAmount should be in te range 0.0 to 1.0 inclusive. The actual value 
+	 * will be constrained to that range. <br>
+	 * 
+	 * @param gripAmount must be >=0.0 and <=1.0
+	 */
+	public void setGripAmount(float gripAmount){
+		gripAmount = PApplet.constrain(gripAmount, 0.0f, 1.0f);
+		gripRadius = bezelRadius * gripAmount;
+		if(gripRadius < 2.0f) gripRadius = 0.0f;
+		bezelWidth = bezelRadius - gripRadius;
+		bufferInvalid = true;
+	}
+	
 	protected void calculateHotSpot(){
 		float overRad = (this.overIncludesBezel) ? bezelRadius : gripRadius;
 		if(mouseOverArcOnly)				
 			hotspots[0] = new HSarc(1, width/2 , height/2, overRad, startAng, endAng);  // over grip
 		else
 			hotspots[0] = new HScircle(1, width/2, height/2, overRad);
-
 	}
 	
 
@@ -151,7 +171,7 @@ public class GKnob extends GValueControl {
 	}
 
 	/**
-	 * Are we showing the progess bar.
+	 * Are we showing the the value track bar.
 	 */
 	public boolean isShowTrack(){
 		return showTrack;
@@ -161,7 +181,7 @@ public class GKnob extends GValueControl {
 	 * Whether to include the bezel when deciding when the mouse is over.
 	 * @param overBezel true if bezel inclded.
 	 */
-	public void setOverBezel(boolean overBezel){
+	public void setIncludeOverBezel(boolean overBezel){
 		overIncludesBezel = overBezel;
 		calculateHotSpot();
 	}
@@ -170,7 +190,7 @@ public class GKnob extends GValueControl {
 	 * Is the bezel included when considering when the mouse is over.
 	 * @return true if included.
 	 */
-	public boolean includeOverBezel(){
+	public boolean isIncludeOverBezel(){
 		return overIncludesBezel;
 	}
 	
@@ -189,7 +209,7 @@ public class GKnob extends GValueControl {
 	 * Does the mouse only respond when over the arc?
 	 * @return true = yes
 	 */
-	public boolean isMouseOverArcOnly(){
+	public boolean isOverArcOnly(){
 		return mouseOverArcOnly;
 	}
 	
@@ -202,7 +222,7 @@ public class GKnob extends GValueControl {
 	 */
 	public void setArcPolicy(boolean over_arc_only, boolean draw_arc_only, boolean overfullsize){
 		this.mouseOverArcOnly = over_arc_only;
-		setDrawArcOnly(draw_arc_only);
+		setShowArcOnly(draw_arc_only);
 		overIncludesBezel = overfullsize;
 		calculateHotSpot();
 	}
@@ -212,7 +232,7 @@ public class GKnob extends GValueControl {
 	 * 
 	 * @param arcOnly true for arc only
 	 */
-	public void setDrawArcOnly(boolean arcOnly){
+	public void setShowArcOnly(boolean arcOnly){
 		if(drawArcOnly != arcOnly){
 			drawArcOnly = arcOnly;
 			bufferInvalid = true;
@@ -278,7 +298,7 @@ public class GKnob extends GValueControl {
 					else if(deltaMangle > 180)
 						deltaMangle -= 360;
 					// Calculate and adjust new needle angle so it is in the range aLow >>> aHigh
-					angleTarget = constrainToKnobRange(angleTarget + deltaMangle);
+					angleTarget = constrainToTurnRange(angleTarget + deltaMangle);
 					valueTarget = calcAngletoValue(angleTarget);
 					// Update offset for use with angular mouse control
 					offset += (angleTarget - lastAngleTarget - deltaMangle);
@@ -508,11 +528,14 @@ public class GKnob extends GValueControl {
 	 * @param start the range start angle in degrees
 	 * @param end the range end angle in degrees
 	 */
-	public void setKnobRange(float start, float end){
+	public void setTurnRange(float start, float end){
 		start = constrain360(start);
 		end = constrain360(end);
 		startAng = start;
 		endAng = (startAng >= end) ? end + 360 : end;
+		setValue(getValueF());
+		anglePos = angleTarget;
+		bufferInvalid = true;
 	}
 
 	/**
@@ -521,7 +544,7 @@ public class GKnob extends GValueControl {
 	 * @param a the angle in degrees
 	 * @return
 	 */
-	protected boolean isInKnobRange(float a){
+	protected boolean isInTurnRange(float a){
 		a = constrain360(a);
 		if(a < startAng)
 			a += 360;
@@ -534,7 +557,7 @@ public class GKnob extends GValueControl {
 	 * @param a
 	 * @return the constrained angle
 	 */
-	protected float constrainToKnobRange(float a){
+	protected float constrainToTurnRange(float a){
 		if(a < startAng)
 			a = startAng;
 		else if(a > endAng)
