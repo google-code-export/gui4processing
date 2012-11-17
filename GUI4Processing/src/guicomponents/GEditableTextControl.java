@@ -596,9 +596,9 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	/**
 	 * Permanently dispose of this control.
 	 */
-	public void dispose(){
+	public void markForDisposal(){
 		if(tabManager != null)
 			tabManager.removeControl(this);
-		super.dispose();
+		super.markForDisposal();
 	}
 }

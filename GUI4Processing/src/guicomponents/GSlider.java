@@ -85,8 +85,6 @@ public class GSlider extends GLinearTrackControl {
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
 		G4P.addControl(this);
-		System.out.println(x + ", " + y + "   " + cx + ", " + cy + "   " + width + " x " + height);
-
 	}
 
 	protected void updateDueToValueChanging(){

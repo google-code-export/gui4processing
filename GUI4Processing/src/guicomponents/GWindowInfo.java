@@ -26,6 +26,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	public boolean app_g_3d;
 	public PMatrix orgMatrix;
 	public LinkedList<GAbstractControl> windowControls = new LinkedList<GAbstractControl>();
+	public LinkedList<GAbstractControl> disposable = new LinkedList<GAbstractControl>();
 
 	boolean haveRegisteredMethodsFor151 = false;
 
@@ -125,16 +126,34 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 
 	public void post(){
 		if(G4P.cursorChangeEnabled){
-			if(GAbstractControl.cursorIsOver != null && GAbstractControl.cursorIsOver.getPApplet() == app){
+			if(GAbstractControl.cursorIsOver != null && GAbstractControl.cursorIsOver.getPApplet() == app)
 				app.cursor(GAbstractControl.cursorIsOver.cursorOver);			
-			}
-			else {
+			else 
 				app.cursor(G4P.mouseOff);
-			}
 		}
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & POST_METHOD) == POST_METHOD)
-				control.pre();
+				control.post();
+		}
+		
+		// Dispose of ant unwanted controls
+		if(!disposable.isEmpty())
+		for(GAbstractControl control : disposable){
+			// Clear control resources
+			control.buffer = null;
+			if(control.parent != null){
+				control.parent.children.remove(control);
+				control.parent = null;
+			}
+			if(control.children != null)
+				control.children.clear();
+			control.palette = null;
+			control.jpalette = null;
+			control.eventHandlerObject = null;
+			control.eventHandlerMethod = null;
+			control.winApp = null;
+			windowControls.remove(control);
+			System.gc();			
 		}
 	}
 
@@ -152,10 +171,6 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		windowControls.remove(control);
 		windowControls.add(control);
 		Collections.sort(windowControls, G4P.zorder);
-	}
-
-	void removeControl(GAbstractControl control){
-		windowControls.remove(control);
 	}
 
 	void setColorScheme(int cs){

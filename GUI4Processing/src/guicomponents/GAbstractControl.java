@@ -250,6 +250,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	public void mouseEvent(MouseEvent event){ }
 	public void keyEvent(KeyEvent e) { }
 	public void pre(){ }
+	public void post(){ }
 
 	/**
 	 * <b>This is for emergency use only!!!! </b><br>
@@ -331,6 +332,14 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		}
 	}
 
+	/**
+	 * Get the local color scheme ID number.
+	 * 
+	 */
+	public int getLocalColorScheme(){
+		return localColorScheme;
+	}
+	
 	/**
 	 * Set the transparency of the component and make it unavailable to
 	 * mouse and keyboard events if below the threshold. Child controls 
@@ -819,7 +828,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	}
 
 	/**
-	 * This method takes a position px, py and calulates the equivalent
+	 * This method takes a position px, py and calculates the equivalent
 	 * position [ox,oy] as if no transformations have taken place and
 	 * the origin is the top-left corner of the control.
 	 * @param px
@@ -868,18 +877,8 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * btnDoThis.dispose(); <br>
 	 * btnDoThis = null; <br></pre>
 	 */
-	public void dispose(){
+	public void markForDisposal(){
 		G4P.removeControl(this);
-		buffer = null;
-		parent = null;
-		if(children != null)
-			children.clear();
-		palette = null;
-		jpalette = null;
-		eventHandlerObject = null;
-		eventHandlerMethod = null;
-		winApp = null;
-		System.gc();
 	}
 
 
