@@ -59,7 +59,7 @@ public class GValueControl extends GAbstractControl {
 
 	protected int nbrTicks = 2;
 	protected boolean stickToTicks = false;
-	protected boolean showTicks = false;					//  make false for final release
+	protected boolean showTicks = false;
 	
 	protected boolean limitsInvalid = true;
 	
@@ -268,6 +268,23 @@ public class GValueControl extends GAbstractControl {
 			valueType = DECIMAL;
 		}
 		this.precision = Math.max(1, precision);
+		bufferInvalid = true;
+	}
+	
+	public void setNumberFormat(int numberFormat){
+		switch(numberFormat){
+		case INTEGER:
+		case DECIMAL:
+		case EXPONENT:
+			this.valueType = numberFormat;
+			break;
+		default:
+			valueType = DECIMAL;
+		}
+//		if(valueType == INTEGER)
+//			precision = 0;
+//		else
+//			precision = 2;
 		bufferInvalid = true;
 	}
 	
