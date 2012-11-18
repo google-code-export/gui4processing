@@ -127,7 +127,7 @@ public class GCustomSlider extends GLinearTrackControl {
 		buffer.g2.setFont(G4P.numericLabelFont);
 		buffer.imageMode(PApplet.CENTER);
 		hotspots = new HotSpot[]{
-				new HSalpha(THUMB_SPOT, width/2 + (valuePos - 0.5f) * trackLength, height/2, thumb, PApplet.CENTER),  // thumb
+				new HSalpha(THUMB_SPOT, width/2 + (parametricPos - 0.5f) * trackLength, height/2, thumb, PApplet.CENTER),  // thumb
 				new HSrect(TRACK_SPOT, (width-trackLength)/2, (height-trackWidth)/2, trackLength, trackWidth),		// track
 		};
 		opaque = false;
@@ -162,7 +162,7 @@ public class GCustomSlider extends GLinearTrackControl {
 
 
 	protected void updateDueToValueChanging(){
-		hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);
+		hotspots[0].x = (width/2  + (parametricPos - 0.5f) * trackLength);
 	}
 
 	protected void updateBuffer(){
@@ -198,13 +198,13 @@ public class GCustomSlider extends GLinearTrackControl {
 			buffer.image(rightEnd, (trackLength + rightEnd.width)/2, 0);
 			switch(status){
 			case OFF_CONTROL:
-				buffer.image(thumb,(valuePos - 0.5f) * trackLength, 0);
+				buffer.image(thumb,(parametricPos - 0.5f) * trackLength, 0);
 				break;
 			case OVER_CONTROL:
-				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
+				buffer.image(thumb_mouseover,(parametricPos - 0.5f) * trackLength, 0);
 				break;
 			case PRESS_CONTROL:
-				buffer.image(thumb_mouseover,(valuePos - 0.5f) * trackLength, 0);
+				buffer.image(thumb_mouseover,(parametricPos - 0.5f) * trackLength, 0);
 				break;
 			}		
 			// Display slider values

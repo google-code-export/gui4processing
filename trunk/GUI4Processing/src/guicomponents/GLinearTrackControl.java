@@ -159,7 +159,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 	public String getValueS(){
 		// Use the valueTarget rather than the valuePos since intermediate values
 		// have no meaning in this case.
-		int idx = Math.round(startLimit + (endLimit - startLimit) * valueTarget);
+		int idx = Math.round(startLimit + (endLimit - startLimit) * parametricTarget);
 		return (labels == null) ? getNumericDisplayString(getValueF()) : labels[idx].getPlainText();
 	}
 
@@ -182,16 +182,16 @@ public abstract class GLinearTrackControl extends GValueControl {
 			if(focusIsWith != this && currSpot > -1 && z >= focusObjectZ()){
 				downHotSpot = currSpot;
 				status = (downHotSpot == THUMB_SPOT) ? PRESS_CONTROL : OFF_CONTROL;
-				offset = ox + 0.5f - valuePos; // normalised
+				offset = ox + 0.5f - parametricPos; // normalised
 				takeFocus();
 				bufferInvalid = true;
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this ){
-				valueTarget = ox + 0.5f;
+				parametricTarget = ox + 0.5f;
 				if(stickToTicks)
-					valueTarget = findNearestTickValueTo(valueTarget);
+					parametricTarget = findNearestTickValueTo(parametricTarget);
 				dragging = false;
 				status = OFF_CONTROL;
 				loseFocus(null);
@@ -201,17 +201,17 @@ public abstract class GLinearTrackControl extends GValueControl {
 		case MouseEvent.MOUSE_RELEASED:
 			if(focusIsWith == this && dragging){
 				if(downHotSpot == THUMB_SPOT){
-					valueTarget = (ox - offset) + 0.5f;
-					if(valueTarget < 0){
-						valueTarget = 0;
+					parametricTarget = (ox - offset) + 0.5f;
+					if(parametricTarget < 0){
+						parametricTarget = 0;
 						offset = 0;
 					}
-					else if(valueTarget > 1){
-						valueTarget = 1;
+					else if(parametricTarget > 1){
+						parametricTarget = 1;
 						offset = 0;
 					}
 					if(stickToTicks)
-						valueTarget = findNearestTickValueTo(valueTarget);
+						parametricTarget = findNearestTickValueTo(parametricTarget);
 				}
 				status = OFF_CONTROL;
 				bufferInvalid = true;
@@ -223,13 +223,13 @@ public abstract class GLinearTrackControl extends GValueControl {
 			if(focusIsWith == this){
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
-					valueTarget = (ox - offset) + 0.5f;
-					if(valueTarget < 0){
-						valueTarget = 0;
+					parametricTarget = (ox - offset) + 0.5f;
+					if(parametricTarget < 0){
+						parametricTarget = 0;
 						offset = 0;
 					}
-					else if(valueTarget > 1){
-						valueTarget = 1;
+					else if(parametricTarget > 1){
+						parametricTarget = 1;
 						offset = 0;
 					}
 					bufferInvalid = true;
@@ -282,7 +282,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 		float advance = line.getVisibleAdvance();
 		switch(textOrientation){
 		case ORIENT_LEFT:
-			px = (valuePos - 0.5f) * trackLength + line.getDescent();
+			px = (parametricPos - 0.5f) * trackLength + line.getDescent();
 			py = -trackOffset;
 			buffer.pushMatrix();
 			buffer.translate(px, py);
@@ -291,7 +291,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 			buffer.popMatrix();
 			break;
 		case ORIENT_RIGHT:
-			px = (valuePos - 0.5f) * trackLength - line.getDescent();
+			px = (parametricPos - 0.5f) * trackLength - line.getDescent();
 			py = - trackOffset - advance;
 			buffer.pushMatrix();
 			buffer.translate(px, py);
@@ -300,7 +300,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 			buffer.popMatrix();
 			break;
 		case ORIENT_TRACK:
-			px = (valuePos - 0.5f) * trackLength - advance /2;
+			px = (parametricPos - 0.5f) * trackLength - advance /2;
 			if(px < -trackDisplayLength/2)
 				px = -trackDisplayLength/2;
 			else if(px + advance > trackDisplayLength /2)

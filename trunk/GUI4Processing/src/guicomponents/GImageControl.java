@@ -36,6 +36,7 @@ abstract class GImageControl extends GAbstractControl {
 	public GImageControl(PApplet theApplet, float p0, float p1, float p2, float p3,
 			String[] fnames, String fnameMask) {
 		super(theApplet, p0, p1, p2, p3);
+		// These will be zero if we are to use the image size
 		int controlWidth = (int)width, controlHeight = (int)height;
 		//=======================================================
 		// First of all load images

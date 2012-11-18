@@ -50,9 +50,9 @@ public class GValueControl extends GAbstractControl {
 	protected String unit = "";
 	protected boolean showValue = false;
 	
-	protected float epsilon = 0.01f;
+	protected float epsilon = 0.002f;
 	
-	protected float valuePos = 0.5f, valueTarget = 0.5f;
+	protected float parametricPos = 0.5f, parametricTarget = 0.5f;
 	protected boolean isValueChanging  = false;
 	protected float easing  = 1.0f; // must be >= 1.0
 	
@@ -71,28 +71,30 @@ public class GValueControl extends GAbstractControl {
 	}
 	
 	public void pre(){
-		if(Math.abs(valueTarget - valuePos) > epsilon){
-			valuePos += (valueTarget - valuePos) / easing;
-			bufferInvalid = true;
+		if(Math.abs(parametricTarget - parametricPos) > epsilon){
+			parametricPos += (parametricTarget - parametricPos) / easing;
 			updateDueToValueChanging();
-			if(Math.abs(valueTarget - valuePos) > epsilon){
+			bufferInvalid = true;
+			if(Math.abs(parametricTarget - parametricPos) > epsilon){
 				isValueChanging = true;
 				fireEvent(this, GEvent.VALUE_CHANGING);
 			}
 			else {
 				isValueChanging = false;
-				valuePos = valueTarget;
+				parametricPos = parametricTarget;
 				fireEvent(this, GEvent.VALUE_STEADY);
 			}
 		}
 	}
 	
 	/**
-	 * Enable child classes to update their hotspot areas.
+	 * This should be overridden in child classes so they can perform any class specific
+	 * actions when the value changes.
+	 * Override this in GSlider to change the hotshot poaition.
 	 */
 	protected void updateDueToValueChanging(){
 	}
-	
+
 	/**
 	 * Used to format the number into a string for display.
 	 * @param number
@@ -145,6 +147,8 @@ public class GValueControl extends GAbstractControl {
 		limitsInvalid = true;
 		bufferInvalid = true;
 		setValue(initValue);
+		parametricPos = parametricTarget;
+		updateDueToValueChanging();
 	}
 	
 	/**
@@ -159,8 +163,7 @@ public class GValueControl extends GAbstractControl {
 		endLimit = end;
 		if(valueType == INTEGER){
 			valueType = DECIMAL;
-			if(precision == 0)
-				precision = 1;
+			setPrecision(1);
 		}
 		limitsInvalid = true;
 		bufferInvalid = true;
@@ -177,14 +180,16 @@ public class GValueControl extends GAbstractControl {
 	public void setLimits(float initValue, float start, float end){
 		startLimit = start;
 		endLimit = end;
+		initValue = PApplet.constrain(initValue, start, end);
 		if(valueType == INTEGER){
 			valueType = DECIMAL;
-			if(precision == 0)
-				precision = 1;
+			setPrecision(1);
 		}
 		limitsInvalid = true;
 		bufferInvalid = true;
 		setValue(initValue);
+		parametricPos = parametricTarget;
+		updateDueToValueChanging();
 	}
 	
 	/**
@@ -195,26 +200,35 @@ public class GValueControl extends GAbstractControl {
 	public void setValue(float v){
 		if(valueType == INTEGER)
 			v = Math.round(v);
-		float p = (v - startLimit) / (endLimit - startLimit);
-		p = PApplet.constrain(p, 0.0f, 1.0f);
+		float t = (v - startLimit) / (endLimit - startLimit);
+		t = PApplet.constrain(t, 0.0f, 1.0f);
 		if(stickToTicks)
-			p = findNearestTickValueTo(p);
-		valueTarget = p;
+			t = findNearestTickValueTo(t);
+		parametricTarget = t;
 	}
 	
 	/**
 	 * For DECIMAL values this sets the number of decimal places to 
 	 * be displayed.
-	 * @param p must be >= 1 otherwise will use 1
+	 * @param nd must be >= 1 otherwise will use 1
 	 */
-	public void setPrecision(int p){
-		if(p < 1)
-			p = 1;
-		if(p != precision){
-			precision = p;
+	public void setPrecision(int nd){
+		if(nd < 1)
+			nd = 1;
+		if(nd != precision){
+			precision = nd;
+			setEpsilon();
 			limitsInvalid = true;
 			bufferInvalid = true;
 		}
+	}
+	
+	/**
+	 * Make epsilon related to precision
+	 */
+	private void setEpsilon(){
+		epsilon = (float) (Math.pow(10, -precision));
+		System.out.println(epsilon);
 	}
 	
 	/**
@@ -267,7 +281,7 @@ public class GValueControl extends GAbstractControl {
 		default:
 			valueType = DECIMAL;
 		}
-		this.precision = Math.max(1, precision);
+		setPrecision(precision);
 		bufferInvalid = true;
 	}
 	
@@ -281,10 +295,6 @@ public class GValueControl extends GAbstractControl {
 		default:
 			valueType = DECIMAL;
 		}
-//		if(valueType == INTEGER)
-//			precision = 0;
-//		else
-//			precision = 2;
 		bufferInvalid = true;
 	}
 	
@@ -292,7 +302,7 @@ public class GValueControl extends GAbstractControl {
 	 * Get the current value as a float
 	 */
 	public float getValueF(){
-		return startLimit + (endLimit - startLimit) * valuePos;
+		return startLimit + (endLimit - startLimit) * parametricPos;
 	}
 
 	/**
@@ -300,7 +310,7 @@ public class GValueControl extends GAbstractControl {
 	 * DECIMAL and EXPONENT value types will be rounded to the nearest integer.
 	 */
 	public int getValueI(){
-		return Math.round(startLimit + (endLimit - startLimit) * valuePos);
+		return Math.round(startLimit + (endLimit - startLimit) * parametricPos);
 	}
 	
 	/**
@@ -309,7 +319,7 @@ public class GValueControl extends GAbstractControl {
 	 * If labels have not been set then return null
 	 */
 	public String getValueS(){
-		return getNumericDisplayString(valuePos);
+		return getNumericDisplayString(parametricPos);
 	}
 
 	/**
@@ -329,10 +339,8 @@ public class GValueControl extends GAbstractControl {
 	 * @param easeBy the easing to set
 	 */
 	public void setEasing(float easeBy) {
-		if(easeBy < 1)
-			easing = 1;
-		else
-			easing = easeBy;
+		easing = (easeBy < 1) ? 1 : easeBy;
+		setEpsilon();
 	}
 
 	/**
@@ -355,7 +363,7 @@ public class GValueControl extends GAbstractControl {
 			nbrTicks = noOfTicks;
 			bufferInvalid = true;
 			if(stickToTicks)
-				valueTarget = findNearestTickValueTo(valuePos);
+				parametricTarget = findNearestTickValueTo(parametricPos);
 		}
 	}
 
@@ -376,7 +384,7 @@ public class GValueControl extends GAbstractControl {
 		this.stickToTicks = stickToTicks;
 		if(stickToTicks){
 			setShowTicks(true);
-			valueTarget = findNearestTickValueTo(valuePos);
+			parametricTarget = findNearestTickValueTo(parametricPos);
 			bufferInvalid = true;
 		}
 	}
