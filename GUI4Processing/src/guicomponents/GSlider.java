@@ -166,11 +166,9 @@ public class GSlider extends GLinearTrackControl {
 				if(showValue)
 					drawValue();
 			}
-
 			buffer.popMatrix();
 			buffer.endDraw();
 		}
-
 	}
 
 }

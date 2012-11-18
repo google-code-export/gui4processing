@@ -112,14 +112,15 @@ public class GCustomSlider extends GLinearTrackControl {
 	 */
 	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String skin) {
 		super(theApplet, p0, p1, p2, p3);
-		loadSkin(skin);
-		float maxEndLength = Math.max(leftEnd.width, rightEnd.width);
-		maxEndLength = Math.max(maxEndLength, 10); // make sure we have enough to show limits value
-		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
-		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
-		trackWidth = centre.height;
-		trackOffset = calcTrackOffset();
-		extendCentreImage();
+		setStyle(skin);
+//		loadSkin(skin);
+//		float maxEndLength = Math.max(leftEnd.width, rightEnd.width);
+//		maxEndLength = Math.max(maxEndLength, 10); // make sure we have enough to show limits value
+//		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
+//		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
+//		trackWidth = centre.height;
+//		trackOffset = calcTrackOffset();
+//		extendCentreImage();
 
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -148,6 +149,21 @@ public class GCustomSlider extends GLinearTrackControl {
 		G4P.addControl(this);
 	}
 
+	/**
+	 * Change the sin used for the slider.
+	 * @param skin
+	 */
+	public void setStyle(String skin){
+		loadSkin(skin);
+		float maxEndLength = Math.max(leftEnd.width, rightEnd.width);
+		maxEndLength = Math.max(maxEndLength, 10); // make sure we have enough to show limits value
+		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
+		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
+		trackWidth = centre.height;
+		trackOffset = calcTrackOffset();
+		extendCentreImage();		
+	}
+	
 	/**
 	 * Calculates the amount of offset for the labels
 	 */

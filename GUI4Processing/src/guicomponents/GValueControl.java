@@ -50,7 +50,7 @@ public class GValueControl extends GAbstractControl {
 	protected String unit = "";
 	protected boolean showValue = false;
 	
-	protected float epsilon = 0.002f;
+	protected float epsilon = 0.01f;
 	
 	protected float parametricPos = 0.5f, parametricTarget = 0.5f;
 	protected boolean isValueChanging  = false;
@@ -213,6 +213,7 @@ public class GValueControl extends GAbstractControl {
 	 * @param nd must be >= 1 otherwise will use 1
 	 */
 	public void setPrecision(int nd){
+		nd = PApplet.constrain(nd, 1, 5);
 		if(nd < 1)
 			nd = 1;
 		if(nd != precision){
