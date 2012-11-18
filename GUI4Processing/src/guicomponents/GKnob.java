@@ -83,9 +83,8 @@ public class GKnob extends GValueControl {
 	protected float lastMouseAngle, mouseAngle;
 
 	// corresponds to target and current values
-	//				valueTarget valuePos
-	protected float angleTarget, anglePos;
-	protected float lastAngleTarget;
+	//				parametricTarget 
+	protected float angleTarget, lastAngleTarget;
 
 	/**
 	 * Will create the a circular knob control that fits the rectangle define by
@@ -113,8 +112,8 @@ public class GKnob extends GValueControl {
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		setTurnRange(startAng, endAng);
 		// valuePos and valueTarget will start at 0.5;
-		anglePos = scaleValueToAngle(valuePos);
-		lastAngleTarget = angleTarget = scaleValueToAngle(valueTarget);
+//		anglePos = scaleValueToAngle(parametricPos);
+		lastAngleTarget = angleTarget = scaleValueToAngle(parametricTarget);
 		hotspots = new HotSpot[]{
 				new HScircle(1, width/2, height/2, gripRadius)
 		};
@@ -158,6 +157,38 @@ public class GKnob extends GValueControl {
 			hotspots[0] = new HScircle(1, width/2, height/2, overRad);
 	}
 	
+	/**
+	 * For a particular normalised value calculate the angle (degrees)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	protected float scaleValueToAngle(float v){
+		float a = startAng + v * (endAng - startAng);
+		return a;		
+	}
+
+	/**
+	 * Calculates the knob angle based on the normalised value.
+	 * 
+	 * @param a
+	 */
+	protected float calcAngletoValue(float a){
+		if(a < startAng)
+			a += 360;
+		float v = (a - startAng) / (endAng - startAng);
+		return v;
+	}
+
+	/**
+	 * Set the value for the slider. <br>
+	 * The user must ensure that the value is valid for the slider range.
+	 * @param v
+	 */
+	public void setValue(float v){
+		super.setValue(v);
+		angleTarget = scaleValueToAngle(parametricTarget);
+	}
 
 	/**
 	 * Whether or not to show the circular progress bar.
@@ -268,7 +299,7 @@ public class GKnob extends GValueControl {
 				startMouseX = ox;
 				startMouseY = oy;
 				lastMouseAngle = mouseAngle = getAngleFromUser(ox, oy);
-				offset = scaleValueToAngle(valueTarget) - mouseAngle;
+				offset = scaleValueToAngle(parametricTarget) - mouseAngle;
 				takeFocus();
 			}
 			break;
@@ -284,7 +315,7 @@ public class GKnob extends GValueControl {
 			}
 			// Correct for sticky ticks if needed
 			if(stickToTicks)
-				valueTarget = findNearestTickValueTo(valueTarget);
+				parametricTarget = findNearestTickValueTo(parametricTarget);
 			dragging = false;
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
@@ -299,37 +330,19 @@ public class GKnob extends GValueControl {
 						deltaMangle -= 360;
 					// Calculate and adjust new needle angle so it is in the range aLow >>> aHigh
 					angleTarget = constrainToTurnRange(angleTarget + deltaMangle);
-					valueTarget = calcAngletoValue(angleTarget);
+					parametricTarget = calcAngletoValue(angleTarget);
 					// Update offset for use with angular mouse control
 					offset += (angleTarget - lastAngleTarget - deltaMangle);
 					// Remember target needle and mouse angles
 					lastAngleTarget = angleTarget;
 					lastMouseAngle = mouseAngle;
 				}
-//				isValueChanging = true;
 			}
 			break;
 		}
 	}
 
-	/**
-	 * Set the value for the slider. <br>
-	 * The user must ensure that the value is valid for the slider range.
-	 * @param v
-	 */
-	public void setValue(float v){
-		if(valueType == INTEGER)
-			v = Math.round(v);
-		float p = (v - startLimit) / (endLimit - startLimit);
-		if(p < 0)
-			p = 0;
-		else if(p > 1)
-			p = 1;
-		if(stickToTicks)
-			p = findNearestTickValueTo(p);
-		valueTarget = p;
-		angleTarget = scaleValueToAngle(p);
-	}
+
 
 	public void draw(){
 		if(!visible) return;
@@ -361,11 +374,21 @@ public class GKnob extends GValueControl {
 	}
 
 	/**
-	 * The value needs to be converted into an angle for the needle.
+	 * Specify whether the values are to be constrained to the tick marks or not.
+	 * It will automatically display tick marks if set true.
+	 * @param stickToTicks true if you want to constrain the values else false
 	 */
-	protected void updateDueToValueChanging(){
-		anglePos = scaleValueToAngle(valuePos);		
-	}
+//	public void setStickToTicks(boolean stickToTicks) {
+//		this.stickToTicks = stickToTicks;
+//		if(stickToTicks){
+//			setShowTicks(true);
+//			valueTarget = findNearestTickValueTo(valuePos);
+//			setValue(valuePos);
+////			anglePos = scaleValueToAngle(valuePos); //=============================================== added
+//			angleTarget = scaleValueToAngle(valueTarget); //=============================================== added
+//			bufferInvalid = true;
+//		}
+//	}
 	
 	protected void updateBuffer(){
 		double a, sina, cosa;
@@ -382,7 +405,7 @@ public class GKnob extends GValueControl {
 				buffer.background(buffer.color(255,0));
 			buffer.translate(width/2, height/2);
 			buffer.noStroke();
-
+			float anglePos = scaleValueToAngle(parametricPos);
 			if(bezelWidth > 0){
 				// Draw bezel, track,  ticks etc
 				buffer.noStroke();
@@ -435,6 +458,7 @@ public class GKnob extends GValueControl {
 		}
 	}
 
+	
 	/**
 	 * Get the current mouse controller mode possible values are <br>
 	 * GKnob.CTRL_ANGULAR or GKnob.CTRL_HORIZONTAL) orGKnob.CTRL_VERTICAL
@@ -500,29 +524,6 @@ public class GKnob extends GValueControl {
 	}
 
 	/**
-	 * For a particular normalised value calculate the angle (degrees)
-	 * 
-	 * @param v
-	 * @return
-	 */
-	protected float scaleValueToAngle(float v){
-		float a = startAng + v * (endAng - startAng);
-		return a;		
-	}
-
-	/**
-	 * Calculates the knob angle based on the normalised value.
-	 * 
-	 * @param a
-	 */
-	protected float calcAngletoValue(float a){
-		if(a < startAng)
-			a += 360;
-		float v = (a - startAng) / (endAng - startAng);
-		return v;
-	}
-
-	/**
 	 * Set the limits for the range of valid rotation angles for the knob.
 	 * 
 	 * @param start the range start angle in degrees
@@ -534,7 +535,7 @@ public class GKnob extends GValueControl {
 		startAng = start;
 		endAng = (startAng >= end) ? end + 360 : end;
 		setValue(getValueF());
-		anglePos = angleTarget;
+//		anglePos = angleTarget;
 		bufferInvalid = true;
 	}
 

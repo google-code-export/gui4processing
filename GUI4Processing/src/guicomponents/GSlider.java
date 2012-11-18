@@ -66,7 +66,7 @@ public class GSlider extends GLinearTrackControl {
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		buffer.g2.setFont(G4P.numericLabelFont);
 		hotspots = new HotSpot[]{
-				new HScircle(THUMB_SPOT, width/2 + (valuePos - 0.5f) * trackLength, height/2, trackWidth/2 ),  // thumb
+				new HScircle(THUMB_SPOT, width/2 + (parametricPos - 0.5f) * trackLength, height/2, trackWidth/2 ),  // thumb
 				new HSrect(TRACK_SPOT, (width-trackLength)/2, (height-trackWidth)/2, trackLength, trackWidth),		// track
 		};
 		z = Z_SLIPPY;
@@ -88,7 +88,7 @@ public class GSlider extends GLinearTrackControl {
 	}
 
 	protected void updateDueToValueChanging(){
-		hotspots[0].x = (width/2  + (valuePos - 0.5f) * trackLength);	
+		hotspots[0].x = (width/2  + (parametricPos - 0.5f) * trackLength);	
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class GSlider extends GLinearTrackControl {
 				break;
 			}
 			buffer.noStroke();
-			buffer.ellipse((valuePos - 0.5f) * trackLength, 0, trackWidth, trackWidth);
+			buffer.ellipse((parametricPos - 0.5f) * trackLength, 0, trackWidth, trackWidth);
 			// Draw track border
 			g2d.setStroke(pen_2_0);
 			g2d.setColor(jpalette[3]);

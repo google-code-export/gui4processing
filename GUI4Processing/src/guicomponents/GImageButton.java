@@ -34,7 +34,7 @@ import processing.core.PApplet;
  * <h3>Determining the control size </h3>
  * If when creating the button you specify a particular width and height then
  * any images that are not the same size will be scaled to fit without regard 
- * to the original size or aspect ratio. <br>
+ * to the original size or aspect ratio. If you do not spe <br>
  * 
  * If when creating the button you do not specify the width and height then it 
  * will use the width and height of the 'off-button' image and assume that all the
@@ -55,10 +55,10 @@ import processing.core.PApplet;
  * 
  * 
  * Three types of event can be generated :-  <br>
- * <b> PRESSED  RELEASED  CLICKED </b><br>
+ * <b> GEvent.PRESSED  GEvent.RELEASED  GEvent.CLICKED </b><br>
  * 
  * To simplify event handling the button only fires off CLICKED events 
- * if the mouse button is pressed and released over the button face 
+ * when the mouse button is pressed and released over the button face 
  * (the default behaviour). <br>
  * 
  * Using <pre>button1.fireAllEvents(true);</pre> enables the other 2 events
@@ -77,20 +77,61 @@ public class GImageButton extends GImageControl {
 
 	protected boolean reportAllButtonEvents = false;
 
-	public GImageButton(PApplet theApplet, float p0, float p1, float p2,
-			float p3, String[] fnames) {
-		this(theApplet, p0, p1, p2, p3, fnames, null);
-	}
 
-
-	public GImageButton(PApplet theApplet, float p0, float p1, String[] fnames, String fnameMask) {
-		this(theApplet, p0, p1, 0, 0, fnames, fnameMask);
-	}
-	
+	/**
+	 * The control size will be set to the size of the image file used for the button OFF state. <br>
+	 * There is no alpha mask file..
+	 * 
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param fnames an array of up to 3 image filenames to represent the off/over/down state of the button.
+	 */
 	public GImageButton(PApplet theApplet, float p0, float p1, String[] fnames) {
 		this(theApplet, p0, p1, 0, 0, fnames, null);
 	}
-	
+
+	/**
+	 * The control size will be set to the size of the image file used for the button OFF state. <br>
+	 * 
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param fnames an array of up to 3 image filenames to represent the off/over/down state of the button.
+	 * @param fnameMask the alpha mask filename or null if no mask
+	 */
+	public GImageButton(PApplet theApplet, float p0, float p1, String[] fnames, String fnameMask) {
+		this(theApplet, p0, p1, 0, 0, fnames, fnameMask);
+	}
+
+
+	/**
+	 * Create an image button of the size specified by the parameters. <br>
+	 * The images will be resized to fit and there is no alpha mask file.
+	 * 
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @param fnames an array of up to 3 image filenames to represent the off/over/down state of the button.
+	 */
+	public GImageButton(PApplet theApplet, float p0, float p1, float p2, float p3, String[] fnames) {
+		this(theApplet, p0, p1, p2, p3, fnames, null);
+	}
+
+	/**
+	 * Create an image button of the size specified by the parameters. <br>
+	 * The images will be resized to fit.
+	 * 
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @param fnames an array of up to 3 image filenames to represent the off/over/down state of the button.
+	 * @param fnameMask the alpha mask filename or null if no mask
+	 */
 	public GImageButton(PApplet theApplet, float p0, float p1, float p2, float p3, String[] fnames, String fnameMask) {
 		super(theApplet, p0, p1, p2, p3, fnames, fnameMask);
 		z = Z_SLIPPY;
@@ -203,8 +244,6 @@ public class GImageButton extends GImageControl {
 			break;
 		}
 	}
-
-
 
 	/**
 	 * If the parameter is true all 3 event types are generated, if false
