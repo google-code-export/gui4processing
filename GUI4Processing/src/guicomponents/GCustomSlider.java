@@ -161,7 +161,8 @@ public class GCustomSlider extends GLinearTrackControl {
 		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
 		trackWidth = centre.height;
 		trackOffset = calcTrackOffset();
-		extendCentreImage();		
+		extendCentreImage();
+		bufferInvalid = true;
 	}
 	
 	/**
