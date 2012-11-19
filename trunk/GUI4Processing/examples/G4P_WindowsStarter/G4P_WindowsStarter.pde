@@ -11,7 +11,7 @@ Demonstration of how to create and use multiple windows with
    http://www.lagers.org.uk/g4p/applets/g4p_windowsstarter
  */
 
-import guicomponents.*;
+import g4p_controls.*;
 
 GWindow[] window;
 GButton btnStart;

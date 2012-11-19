@@ -6,7 +6,7 @@ G4P (GUI for Processing library.
 */
 
 import processing.opengl.*;
-import guicomponents.*;
+import g4p_controls.*;
 
 // G4P components for main window
 GPanel pnlControls;

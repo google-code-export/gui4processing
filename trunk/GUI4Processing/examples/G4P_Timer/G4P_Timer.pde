@@ -9,7 +9,7 @@ library.
 
 */
 
-import guicomponents.*;
+import g4p_controls.*;
 
 GSlider sdrRate;
 GButton btnStart, btnStop;

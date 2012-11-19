@@ -6,7 +6,7 @@
  * (c) 2012 by Peter Lager
  */
  
-import guicomponents.*;
+import g4p_controls.*;
 import java.awt.Color;
 
 final int MAX_ITERATE = 128;
