@@ -50,7 +50,7 @@ public class GValueControl extends GAbstractControl {
 	protected String unit = "";
 	protected boolean showValue = false;
 	
-	protected float epsilon = 0.01f;
+	protected float epsilon = 0.001f;
 	
 	protected float parametricPos = 0.5f, parametricTarget = 0.5f;
 	protected boolean isValueChanging  = false;
@@ -110,7 +110,7 @@ public class GValueControl extends GAbstractControl {
 			s = String.format("%." + precision + "f %s", number, unit);
 			break;
 		case EXPONENT:
-			s = String.format("%." + precision + "f %s", number, unit);
+			s = String.format("%." + precision + "e %s", number, unit);
 			break;
 		}
 		return s.trim();
@@ -127,6 +127,7 @@ public class GValueControl extends GAbstractControl {
 	public void setLimits(int start, int end){
 		startLimit = start;
 		endLimit = end;
+		setEpsilon();
 		valueType = INTEGER;
 		limitsInvalid = true;
 		bufferInvalid = true;
@@ -144,6 +145,7 @@ public class GValueControl extends GAbstractControl {
 		startLimit = start;
 		endLimit = end;
 		valueType = INTEGER;
+		setEpsilon();
 		limitsInvalid = true;
 		bufferInvalid = true;
 		setValue(initValue);
@@ -165,6 +167,7 @@ public class GValueControl extends GAbstractControl {
 			valueType = DECIMAL;
 			setPrecision(1);
 		}
+		setEpsilon();
 		limitsInvalid = true;
 		bufferInvalid = true;
 	}
@@ -185,6 +188,7 @@ public class GValueControl extends GAbstractControl {
 			valueType = DECIMAL;
 			setPrecision(1);
 		}
+		setEpsilon();
 		limitsInvalid = true;
 		bufferInvalid = true;
 		setValue(initValue);
@@ -225,11 +229,10 @@ public class GValueControl extends GAbstractControl {
 	}
 	
 	/**
-	 * Make epsilon related to precision
+	 * Make epsilon to match the value of 1 pixel or the precision which ever is the smaller
 	 */
-	private void setEpsilon(){
-		epsilon = (float) (Math.pow(10, -precision));
-		System.out.println(epsilon);
+	protected void setEpsilon(){
+		epsilon = (float) Math.min(0.001, Math.pow(10, -precision));
 	}
 	
 	/**
@@ -341,7 +344,6 @@ public class GValueControl extends GAbstractControl {
 	 */
 	public void setEasing(float easeBy) {
 		easing = (easeBy < 1) ? 1 : easeBy;
-		setEpsilon();
 	}
 
 	/**

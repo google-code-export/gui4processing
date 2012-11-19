@@ -154,6 +154,7 @@ public class GButton extends GTextIconControl {
 				takeFocus();
 				if(reportAllButtonEvents)
 					fireEvent(this, GEvent.PRESSED);
+				bufferInvalid = true;
 			}
 			break;
 		case MouseEvent.MOUSE_CLICKED:
@@ -244,7 +245,7 @@ public class GButton extends GTextIconControl {
 			calcAlignment();
 			// If there is an icon draw it
 			if(iconW != 0)
-				buffer.image(bicon[0], siX, siY);
+				buffer.image(bicon[status], siX, siY);
 			float wrapWidth = stext.getWrapWidth();
 			float sx = 0, tw = 0;
 			buffer.translate(stX, stY);
