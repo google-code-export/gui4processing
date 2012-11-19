@@ -1,4 +1,4 @@
-import guicomponents.*;
+import g4p_controls.*;
 
 GPanel pnl;
 GSketchPad spad;

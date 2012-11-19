@@ -14,7 +14,7 @@
  
  */
 
-import guicomponents.*;
+import g4p_controls.*;
 
 GLabel lblSegs, lblERad, lblPts, lblLRad;
 GCustomSlider sdrSegs, sdrERad, sdrPts, sdrLRad;

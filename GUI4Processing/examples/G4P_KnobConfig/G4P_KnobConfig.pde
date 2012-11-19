@@ -10,7 +10,7 @@
  *
  */
 
-import guicomponents.*;
+import g4p_controls.*;
  
 GKnob kb;
 int bgcol = 128;

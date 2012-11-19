@@ -6,7 +6,7 @@
  (c) 2012 Peter Lager
  */
 
-import guicomponents.*;
+import g4p_controls.*;
 
 GImageButton btnGhost, btnCoins, btnTJ, btnInfo;
 GLabel lblOut;

@@ -9,7 +9,7 @@
  (c)2012 Peter Lager
  */
 
-import guicomponents.*;
+import g4p_controls.*;
 
 GKnob knbRed, knbGreen, knbBlue;
 GLabel label;

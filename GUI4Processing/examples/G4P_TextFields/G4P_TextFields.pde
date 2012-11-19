@@ -20,7 +20,7 @@
  
  */
 
-import guicomponents.*;
+import g4p_controls.*;
 
 GTextField txfML1, txfML2, txfSL1, txfSL2, txfEvents;
 GLabel lblML1, lblML2, lblSL1, lblSL2, lblEvents;

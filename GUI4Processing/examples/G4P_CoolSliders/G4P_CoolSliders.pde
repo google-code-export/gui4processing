@@ -10,7 +10,7 @@ for Processing) library.
 
  */
  
- import guicomponents.*;
+ import g4p_controls.*;
 
 GWSlider sdr1, sdr2, sdr3, sdr4, sdr5, sdr6, sdr7;
 

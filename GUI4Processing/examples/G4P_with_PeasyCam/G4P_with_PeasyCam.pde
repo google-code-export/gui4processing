@@ -19,7 +19,7 @@
  */
 
 import processing.opengl.*;
-import guicomponents.*;
+import g4p_controls.*;
 import peasy.*;
 
 PeasyCam cam;
