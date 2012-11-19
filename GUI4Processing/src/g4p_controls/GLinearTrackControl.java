@@ -248,6 +248,8 @@ public abstract class GLinearTrackControl extends GValueControl {
 			break;			
 		}
 	}
+	
+	
 
 	public void draw(){
 		if(!visible) return;

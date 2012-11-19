@@ -46,6 +46,7 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	public StyledString stext = null;
 	
 	protected int textAlignH = GAlign.CENTER, textAlignV =  GAlign.MIDDLE;
+	
 	protected float stX, stY;
 
 	protected Font localFont = G4P.globalFont;
