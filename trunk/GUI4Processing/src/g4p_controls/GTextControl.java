@@ -56,11 +56,11 @@ public abstract class GTextControl extends GAbstractControl {
 	}
 
 	public void setTextAlign(GAlign horz, GAlign vert){
-		if(horz.isHorzAlign()){
+		if(horz != null && horz.isHorzAlign()){
 			textAlignH = horz;
 			stext.setJustify(textAlignH == GAlign.JUSTIFY);
 		}
-		if(vert.isVertAlign()){
+		if(vert != null && vert.isVertAlign()){
 			textAlignV = vert;
 		}
 		bufferInvalid = true;
