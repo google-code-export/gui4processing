@@ -32,8 +32,10 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 
 /**
- * The prime 
- * @author Peter
+ * The core class for global manipulation and execution of G4P. <br>
+ * It also gives access to may of the constants used in this library.
+ * 
+ * @author Peter Lager
  *
  */
 public class G4P implements GConstants, PConstants {
@@ -98,6 +100,10 @@ public class G4P implements GConstants, PConstants {
 	 * but still need to know it. An example is the GColorChooser control which
 	 * cannot be used until this method is called or some other G4P control has
 	 * been created.
+	 * 
+	 * Also some other libraries such as PeasyCam change the transformation matrix.
+	 * In which case either a G4P control should be created or this method called
+	 * before creating a PeasyCam object.
 	 * 
 	 * @param app
 	 */
