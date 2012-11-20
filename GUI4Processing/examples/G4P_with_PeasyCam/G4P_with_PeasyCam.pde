@@ -107,7 +107,7 @@ public void setup() {
   label = new GLabel(this, 0, 0, width, 60, s);
   label.setOpaque(true);
   // Align the text both horizontally and vertically
-  label.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+  label.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
 }
 
 public void draw() {

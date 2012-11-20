@@ -38,7 +38,7 @@ void setup() {
   btnCoins = new GImageButton(this, 400, 20, files);
 
   lblOut = new GLabel(this, 10, 190, 560, 20, "");
-  lblOut.setTextAlign(GAlign.CENTER);
+  lblOut.setTextAlign(GAlign.CENTER, null);
   timer = millis() - 5000;
 }
 

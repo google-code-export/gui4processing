@@ -97,7 +97,7 @@ void setup(){
   t2 = " To zoom into the set drag a box on the area you are interested in and ";
   t2 += "he enlarged image will appear in a new window.";
   label = new GLabel(this, 20, 20, 260, 200, t0 + t1 + t2);
-  label.setTextAlign(GAlign.CENTER | GAlign.TOP);
+  label.setTextAlign(GAlign.CENTER, GAlign.TOP);
   createColours();
 }
 
