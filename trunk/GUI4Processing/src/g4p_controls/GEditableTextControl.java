@@ -439,11 +439,11 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			}
 			
 			if(keyID == KeyEvent.KEY_PRESSED) {
-				processKeyPressed(keyCode, keyChar, shiftDown, ctrlDown);
+				keyPressedProcess(keyCode, keyChar, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
 			}
 			else if(keyID == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED && !ctrlDown){
-				processKeyTyped(keyCode, keyChar, shiftDown, ctrlDown);
+				keyTypedProcess(keyCode, keyChar, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
 			}
 			if(textChanged){
@@ -454,10 +454,10 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	}
 	
 	// Enable polymorphism. 
-	protected void processKeyPressed(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown) {
+	protected void keyPressedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown) {
 	}
 
-	protected void processKeyTyped(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
+	protected void keyTypedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
 		int ascii = (int)keyChar;
 
 		if(ascii >= 32 && ascii < 127){

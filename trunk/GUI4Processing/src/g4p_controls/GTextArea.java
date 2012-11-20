@@ -424,7 +424,7 @@ public class GTextArea extends GEditableTextControl {
 		return snap;
 	}
 
-	protected void processKeyPressed(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
+	protected void keyPressedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
 		boolean validKeyCombo = true;
 
 		switch(keyCode){
@@ -458,7 +458,7 @@ public class GTextArea extends GEditableTextControl {
 				moveCaretEndOfText(endTLHI);
 				// Make shift down so that the start caret position is not
 				// moved to match end caret position.
-				shiftDown = true; // Prevent copying of 
+				shiftDown = true;
 			}
 			break;
 		case KeyEvent.VK_C:
@@ -511,8 +511,7 @@ public class GTextArea extends GEditableTextControl {
 
 			if(!shiftDown)
 				startTLHI.copyFrom(endTLHI);
-			else
-				bufferInvalid = true;
+			bufferInvalid = true;
 		}
 	}
 
