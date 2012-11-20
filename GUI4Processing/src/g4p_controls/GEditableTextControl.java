@@ -57,7 +57,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	// The width to break a line
 	protected int wrapWidth = Integer.MAX_VALUE;
 
-	protected int textAlign = GAlign.CENTER | GAlign.MIDDLE;
+//	protected GAlign textAlignH = GAlign.CENTER | GAlignXXX.MIDDLE;
 
 	protected Font localFont = G4P.globalFont;
 

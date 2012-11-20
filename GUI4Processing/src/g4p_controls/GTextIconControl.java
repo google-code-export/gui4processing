@@ -40,7 +40,7 @@ public abstract class GTextIconControl extends GTextControl {
 
 	protected PImage[] bicon = null;
 	protected int iconW = 0, iconH = 0;
-	protected int iconAlignH = GAlign.RIGHT, iconAlignV = GAlign.MIDDLE;
+	protected GAlign iconAlignH = GAlign.RIGHT, iconAlignV = GAlign.MIDDLE;
 	protected int siX, siY;
 
 
@@ -65,24 +65,15 @@ public abstract class GTextIconControl extends GTextControl {
 	}
 
 	/**
-	 * Get the icon alignment.
-	 * 
-	 * @return
-	 */
-	public int getIconAlign(){
-		return iconAlignH | iconAlignV;
-	}
-	
-	/**
 	 * Set the icon image and alignment. <br>
 	 * 
 	 * @param fname the filename of the icon
 	 * @param nbrImages number of tiled images in the icon
 	 * @param align horz and vertical alignment (see @see GAlign)
 	 */
-	public void setIcon(String fname, int nbrImages, int align){
+	public void setIcon(String fname, int nbrImages, GAlign horz, GAlign vert){
 		PImage iconImage = winApp.loadImage(fname);
-		setIcon(iconImage, nbrImages, align);
+		setIcon(iconImage, nbrImages, horz, vert);
 	}
 
 	/**
@@ -92,20 +83,16 @@ public abstract class GTextIconControl extends GTextControl {
 	 * @param nbrImages number of tiled images in the icon
 	 * @param align horz and vertical alignment (see @see GAlign)
 	 */
-	public void setIcon(PImage icon, int nbrImages, int align){
+	public void setIcon(PImage icon, int nbrImages, GAlign horz, GAlign vert){
 		bicon = loadImages(icon, nbrImages);
 		if(bicon == null)
 			return;
 		// We have loaded the image so validate alignment
-		if((align & GAlign.HA_VALID) != 0){
-			iconAlignH = align & GAlign.HA_VALID;
-			if(iconAlignH != GAlign.LEFT && iconAlignH != GAlign.RIGHT)
-				iconAlignH = GAlign.RIGHT;
+		if(horz.isHorzAlign() && horz != GAlign.MIDDLE){
+			iconAlignH = horz;
 		}
-		if((align & GAlign.VA_VALID) != 0){
-			iconAlignV = align & GAlign.VA_VALID;
-			if(iconAlignV != GAlign.TOP && iconAlignV != GAlign.MIDDLE && iconAlignV != GAlign.BOTTOM)
-				iconAlignV = GAlign.MIDDLE;
+		if(vert.isVertAlign()){
+			iconAlignV = vert;
 		}
 		iconW = bicon[0].width;
 		iconH = bicon[0].height;
@@ -117,17 +104,13 @@ public abstract class GTextIconControl extends GTextControl {
 	 * Change the alignment of an existing icn.
 	 * @param align horz and vertical alignment (see @see GAlign)
 	 */
-	public void setIconAlign(int align){
+	public void setIconAlign(GAlign horz, GAlign vert){
 		if(iconW != 0){
-			if((align & GAlign.HA_VALID) != 0){
-				iconAlignH = align & GAlign.HA_VALID;
-				if(iconAlignH != GAlign.LEFT && iconAlignH != GAlign.RIGHT)
-					iconAlignH = GAlign.RIGHT;
+			if(horz.isHorzAlign() && horz != GAlign.MIDDLE){
+				iconAlignH = horz;
 			}
-			if((align & GAlign.VA_VALID) != 0){
-				iconAlignV = align & GAlign.VA_VALID;
-				if(iconAlignV != GAlign.TOP && iconAlignV != GAlign.MIDDLE && iconAlignV != GAlign.BOTTOM)
-					iconAlignV = GAlign.MIDDLE;
+			if(vert != null && vert.isVertAlign()){
+				iconAlignV = vert;
 			}
 			bufferInvalid = true;
 		}
@@ -140,12 +123,12 @@ public abstract class GTextIconControl extends GTextControl {
 		super.calcAlignment();	// calculate the text alignment
 		if(iconW != 0){
 			switch(iconAlignH){
-			case GAlign.LEFT:
+			case LEFT:
 				siX = TPAD;
 				if(textAlignH != GAlign.RIGHT)
 					stX += (iconW + TPAD2); // Image on left so adjust text start x position
 				break;
-			case GAlign.RIGHT:
+			case RIGHT:
 			default:
 				siX = (int)width - iconW - TPAD2;
 				if(textAlignH == GAlign.RIGHT)
@@ -153,13 +136,13 @@ public abstract class GTextIconControl extends GTextControl {
 				break;
 			}
 			switch(iconAlignV){
-			case GAlign.TOP:
+			case TOP:
 				siY = TPAD;
 				break;
-			case GAlign.BOTTOM:
+			case BOTTOM:
 				siY =(int) height - iconH - TPAD2;
 				break;
-			case GAlign.MIDDLE:
+			case MIDDLE:
 			default:
 				siY = (int)(height - iconH)/2;
 			}

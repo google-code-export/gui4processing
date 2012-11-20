@@ -121,18 +121,18 @@ public class GLabel extends GTextIconControl {
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
 				switch(textAlignH){
-				case GAlign.CENTER:
+				case CENTER:
 					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = (wrapWidth - tw)/2;
 					break;
-				case GAlign.RIGHT:
+				case RIGHT:
 					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = wrapWidth - tw;
 					break;
-				case GAlign.LEFT:
-				case GAlign.JUSTIFY:
+				case LEFT:
+				case JUSTIFY:
 				default:
 					sx = 0;		
 				}

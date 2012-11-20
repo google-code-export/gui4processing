@@ -67,7 +67,7 @@ import processing.core.PGraphicsJava2D;
 public class GButton extends GTextIconControl {
 
 	// Mouse over status
-	protected int status = -1;
+	protected int status = 0;
 
 	// Only report CLICKED events
 	protected boolean reportAllButtonEvents = false;
@@ -163,6 +163,7 @@ public class GButton extends GTextIconControl {
 			// would not get the Java MouseEvent.MOUSE_CLICKED event
 			if(focusIsWith == this){
 				status = OFF_CONTROL;
+				bufferInvalid = true;
 				loseFocus(null);
 				dragging = false;
 				fireEvent(this, GEvent.CLICKED);
@@ -253,18 +254,18 @@ public class GButton extends GTextIconControl {
 				TextLayout layout = lineInfo.layout;
 				buffer.translate(0, layout.getAscent());
 				switch(textAlignH){
-				case GAlign.CENTER:
+				case CENTER:
 					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = (wrapWidth - tw)/2;
 					break;
-				case GAlign.RIGHT:
+				case RIGHT:
 					tw = layout.getVisibleAdvance();
 					tw = (tw > wrapWidth) ? tw - wrapWidth : tw;
 					sx = wrapWidth - tw;
 					break;
-				case GAlign.LEFT:
-				case GAlign.JUSTIFY:
+				case LEFT:
+				case JUSTIFY:
 				default:
 					sx = 0;		
 				}
