@@ -108,8 +108,8 @@ public class GButton extends GTextIconControl {
 
 	/**
 	 * Enable or disable the ability of the component to generate mouse events.<br>
-	 * GTextField - it also controls key press events <br>
-	 * GPanel - controls whether the panel can be moved/collapsed/expanded <br>
+	 * If the control is to be disabled when it is clicked then this will guarentee the
+	 * mouse offf button image is used.
 	 * @param enable true to enable else false
 	 */
 	public void setEnabled(boolean enable){

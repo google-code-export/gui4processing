@@ -49,8 +49,9 @@ public abstract class GTextIconControl extends GTextControl {
 	}
 
 	/**
-	 * Set the text to be displayed.
-	 * NEW version for FPanel etc.
+	 * Set the text to be displayed and calculate the wrap length taking into
+	 * account any icon set.
+	 * 
 	 * @param ptext
 	 */
 	public void setText(String text){
@@ -60,16 +61,17 @@ public abstract class GTextIconControl extends GTextControl {
 			stext = new StyledString(text, (int) width - TPAD2);
 		else
 			stext = new StyledString(text, (int) width - iconW - TPAD4);
-			
 		bufferInvalid = true;
 	}
 
 	/**
-	 * Set the icon image and alignment. <br>
+	 * Set the icon to be used and the horizontal and/or vertical icon alignment. 
+	 * Use the constants in GAlign e.g. <pre>GAlign.LEFT</pre> <br>
 	 * 
 	 * @param fname the filename of the icon
 	 * @param nbrImages number of tiled images in the icon
-	 * @param align horz and vertical alignment (see @see GAlign)
+	 * @param horz LEFT or RIGHT
+	 * @param vert TOP, MIDDLE, BOTTOM
 	 */
 	public void setIcon(String fname, int nbrImages, GAlign horz, GAlign vert){
 		PImage iconImage = winApp.loadImage(fname);
@@ -77,11 +79,15 @@ public abstract class GTextIconControl extends GTextControl {
 	}
 
 	/**
-	 * Set the icon image and alignment. <br>
+	 * Set the icon to be used and the horizontal and/or vertical icon alignment. 
+	 * Use the constants in GAlign e.g. <pre>GAlign.LEFT</pre> <br>
+	 * 
+	 * If you want to set just one of these then pass null in the other 
 	 * 
 	 * @param icon the icon
 	 * @param nbrImages number of tiled images in the icon
-	 * @param align horz and vertical alignment (see @see GAlign)
+	 * @param horz LEFT or RIGHT
+	 * @param vert TOP, MIDDLE, BOTTOM
 	 */
 	public void setIcon(PImage icon, int nbrImages, GAlign horz, GAlign vert){
 		bicon = loadImages(icon, nbrImages);

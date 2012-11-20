@@ -55,6 +55,15 @@ public abstract class GTextControl extends GAbstractControl {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
+	/**
+	 * Set the horizontal and/or vertical text alignment. Use the constants in GAlign 
+	 * e.g. <pre>GAlign.LEFT</pre> <br>
+	 * 
+	 * If you want to set just one of these then pass null in the other 
+	 * 
+	 * @param horz LEFT, CENTER, RIGHT or JUSTIFY
+	 * @param vert TOP, MIDDLE, BOTTOM
+	 */
 	public void setTextAlign(GAlign horz, GAlign vert){
 		if(horz != null && horz.isHorzAlign()){
 			textAlignH = horz;
