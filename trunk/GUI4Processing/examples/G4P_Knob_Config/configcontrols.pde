@@ -40,27 +40,27 @@ public void makeKnobConfigControls() {
   sdrSense.setLimits(1.0f, 0.2f, 5.0f);
   sdrSense.setShowValue(true);
   lblSense = new GLabel(this, x + 82, y, 100, 40, "XY drag rate");
-  lblSense.setTextAlign(GAlign.LEFT);
+  lblSense.setTextAlign(GAlign.LEFT, null);
   lblSense.setTextItalic();
 
   sdrEasing = new GSlider(this, x, y + 34, 80, 40, 12);
   sdrEasing.setLimits(1.0f, 1.0f, 30.0f);
   sdrEasing.setShowValue(true);
   lblEasing = new GLabel(this, x + 82, y + 34, 80, 40, "Easing");
-  lblEasing.setTextAlign(GAlign.LEFT);
+  lblEasing.setTextAlign(GAlign.LEFT, null);
   lblEasing.setTextItalic();
 
   sdrNbrTicks = new GSlider(this, x, y + 68, 80, 40, 12);
   sdrNbrTicks.setLimits(2, 2, 15);
   sdrNbrTicks.setShowValue(true);
   lblNbrTicks = new GLabel(this, x + 82, y + 68, 80, 40, "No. of ticks");
-  lblNbrTicks.setTextAlign(GAlign.LEFT);
+  lblNbrTicks.setTextAlign(GAlign.LEFT, null);
   lblNbrTicks.setTextItalic();
 
   x = width - 180; 
   y = 164;
   lblMC = new GLabel(this, x, y, 178, 18, "Knob turning control");
-  lblMC.setTextAlign(GAlign.LEFT);
+  lblMC.setTextAlign(GAlign.LEFT, null);
   lblMC.setTextBold();
   optAngular = new GOption(this, x, y + 20, 80, 18, "Angular");
   optXdrag = new GOption(this, x, y + 40, 80, 18, "X drag");
@@ -105,4 +105,3 @@ public void makeKnobConfigControls() {
   lblGripAmount = new GLabel(this, x + 226, y, 80, 40, "Grip Ratio");
   btnMakeCode = new GButton(this, x + 110, y + 36, 182, 38, "Place code for existing configuration on clipboard");
 }
-

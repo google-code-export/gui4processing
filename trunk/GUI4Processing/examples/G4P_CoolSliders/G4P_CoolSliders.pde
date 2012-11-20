@@ -1,74 +1,92 @@
 /*
-This component was created as part of the Processing 
-library `gwoptics' 
-http://www.gwoptics.org/processing/gwoptics_p5lib/
-(c) 2009 onwards Daniel Brown and Andreas Freise
+ The GCustomSlider control replaces the GWSlider, a control
+ created as part of the Processing library `gwoptics' 
+ http://www.gwoptics.org/processing/gwoptics_p5lib/
 
-Demonstration of cool sliders available in the G4P (GUI
-for Processing) library.
-(c) 2012 Peter Lager
-
- */
+ The GCustomSlider has all the capabilities of the original
+ control but also has the capabilities of the GSlider in that
+ it can be rotated to any angle and user controllable text
+ orrientation.
  
- import g4p_controls.*;
+ This sketch simply demonstrates some of the features and 
+ skins available with this library.
+ 
+ To try out different configurations trye the example
+ G4P_CustomSlider_Config.
+ 
+ (c) 2012 Peter Lager
+ 
+ */
 
-GWSlider sdr1, sdr2, sdr3, sdr4, sdr5, sdr6, sdr7;
+import g4p_controls.*;
+
+GCustomSlider sdr1, sdr2, sdr3, sdr4, sdr5, sdr6, sdr7;
 
 void setup() {
-  size(600, 240);  
+  size(600, 280);  
 
   //=============================================================
   // Simple default slider,
   // constructor is `Parent applet', the x, y position and length
-  sdr1 = new GWSlider(this,20,20,260);
-  
+  sdr1 = new GCustomSlider(this, 20, 20, 260, 50, null);
+  // show          opaque  ticks value limits
+  sdr1.setShowDecor(false, true, true, true);
+  sdr1.setNbrTicks(5);
+  sdr1.setLimits(40, -100, 100);
   //=============================================================
   // Slider with a custom skin, check the data folder to find 
   // the `blue18px' folder which stores the used image files.
-  sdr2 = new GWSlider(this,"blue18px",20,80,260);
-	  
+  sdr2 = new GCustomSlider(this, 20, 80, 260, 50, "blue18px");
+  // show          opaque  ticks value limits
+  sdr2.setShowDecor(false, true, false, true);
   // there are 3 types
-  // GWSlider.DECIMAL  e.g.  0.002
-  // GWSlider.EXPONENT e.g.  2E-3
-  // GWSlider.INTEGER
-  sdr2.setValueType(GWSlider.DECIMAL);
+  // GCustomSlider.DECIMAL  e.g.  0.002
+  // GCustomSlider.EXPONENT e.g.  2E-3
+  // GCustomSlider.INTEGER
+  sdr2.setNumberFormat(G4P.DECIMAL, 3);
   sdr2.setLimits(0.5f, 0f, 1.0f);
-  sdr2.setPrecision(3);
-  sdr2.setRenderValueLabel(false); 
+  sdr2.setShowValue(false); 
 
   //=============================================================
   // Slider with another custom skin
-  sdr3 = new GWSlider(this,"red_yellow18px",20,140,260);
-  sdr3.setRenderValueLabel(false); 
-
-  //=============================================================
-  // Slider with another custom skin
-  sdr4 = new GWSlider(this,"purple18px",20,200,260);
-  sdr4.setInertia(30);
+  sdr3 = new GCustomSlider(this, 20, 140, 260, 50, "red_yellow18px");
+  // show          opaque  ticks value limits
+  sdr3.setShowDecor(false, true, false, true);
+  sdr3.setEasing(25);
   
   //=============================================================
+  // Slider with another custom skin
+  sdr4 = new GCustomSlider(this, 20, 200, 260, 50, "purple18px");
+  // show          opaque  ticks value limits
+  sdr4.setShowDecor(false, true, true, true);
+  sdr4.setNbrTicks(6);
+  sdr4.setStickToTicks(true);
+  sdr4.setEasing(20);
+
+  //=============================================================
   // Standard slider with labels switched off
-  sdr5 = new GWSlider(this,320,20,260);
-  sdr5.setValueType(GWSlider.DECIMAL);
+  sdr5 = new GCustomSlider(this, 320, 20, 260, 80, null);
+  // show          opaque  ticks value limits
+  sdr5.setShowDecor(false, true, false, false);
+  sdr5.setNumberFormat(GCustomSlider.DECIMAL, 2);
   sdr5.setLimits(0.5f, 0f, 1.0f);
-  sdr5.setTickCount(3); 
-  sdr5.setRenderMaxMinLabel(false); //hides labels
-  sdr5.setRenderValueLabel(false);  //hides value label
-  sdr5.setStickToTicks(true);       //false by default 
+  sdr5.setNbrTicks(6);
+  sdr5.setStickToTicks(true);  //false by default 
   // `Stick to ticks' enforces that the handle can only rest 
   // at a tick position.
-  		
+
   //=============================================================
   // This example shows small float numbers used and settings
   // the accuracy of the display labels
-  sdr6 = new GWSlider(this,320,80,260);
-  sdr6.setValueType(GWSlider.EXPONENT);
+  sdr6 = new GCustomSlider(this, 320, 80, 260, 80, null);
+  // show          opaque  ticks value limits
+  sdr6.setShowDecor(false, true, true, true);
+  sdr6.setNumberFormat(G4P.EXPONENT, 1);
   sdr6.setLimits(3E-2f, 2.0E-2f, 3.5E-2f);
-  sdr6.setTickCount(15); 
-  sdr6.setPrecision(1);
-  sdr6.setInertia(15);
+  sdr6.setNbrTicks(16); 
+  sdr6.setEasing(15);
   sdr6.setStickToTicks(true);
-  
+
   //=============================================================
   // We can also add custom labels to ticks
   // Note: 
@@ -77,23 +95,22 @@ void setup() {
   //                 number of labels in the array.
   // setTickCount()  cancels labels that were previously set 
   //                 with setTickLabels()
-  String[] sdr6TickLabels = new String[] {"A", "B", "C", "D", "E"};
-  sdr7 = new GWSlider(this,"green_red20px", 320,140,260);
-  sdr7.setTickLabels(sdr6TickLabels);
-  sdr7.setLimits(1, 0, 4);
-  sdr7.setRenderValueLabel(false); 
-  sdr7.setStickToTicks(true);
-  sdr7.setValue(2.345f);
+  String[] tickLabels = new String[] {
+    "A", "B", "C", "D", "E"
+  };
+  sdr7 = new GCustomSlider(this, 320, 160, 260, 70, "green_red20px");
+  // show          opaque  ticks value limits
+  sdr7.setShowDecor(false, true, false, false);
+  sdr7.setTickLabels(tickLabels);
   // notice that we are setting a value that is not 
   // exactly a tick when `stick to tick' is true, 
   // setValue will stick to nearest tick value
-
 }
 
 void draw() {
-  background(200,200,255);
+  background(200, 200, 255);
 }
 
 void handleSliderEvents(GSlider slider) {
-  println("integer value:" + slider.getValue() + " float value:" + slider.getValuef());
+  println("integer value:" + slider.getValueI() + " float value:" + slider.getValueF());
 }

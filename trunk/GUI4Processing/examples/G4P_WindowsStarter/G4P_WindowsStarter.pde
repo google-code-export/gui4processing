@@ -21,7 +21,7 @@ void setup() {
   size(128, 128);
   btnStart = new GButton(this, 4, 20, 120, 30, "Create 3 Windows");
   lblInstr = new GLabel(this, 4, 64, 120, 60, "Use the mouse to draw a rectangle in any of the 3 windows");
-  lblInstr.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+  lblInstr.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   lblInstr.setVisible(false);
 }
 
