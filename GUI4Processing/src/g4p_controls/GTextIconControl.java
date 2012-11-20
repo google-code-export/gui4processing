@@ -88,10 +88,10 @@ public abstract class GTextIconControl extends GTextControl {
 		if(bicon == null)
 			return;
 		// We have loaded the image so validate alignment
-		if(horz.isHorzAlign() && horz != GAlign.MIDDLE){
+		if(horz != null && horz.isHorzAlign() && horz != GAlign.MIDDLE){
 			iconAlignH = horz;
 		}
-		if(vert.isVertAlign()){
+		if(vert != null && vert.isVertAlign()){
 			iconAlignV = vert;
 		}
 		iconW = bicon[0].width;
@@ -106,10 +106,10 @@ public abstract class GTextIconControl extends GTextControl {
 	 */
 	public void setIconAlign(GAlign horz, GAlign vert){
 		if(iconW != 0){
-			if(horz.isHorzAlign() && horz != GAlign.MIDDLE){
+			if(horz != null && horz.isHorzAlign() && horz != GAlign.MIDDLE){
 				iconAlignH = horz;
 			}
-			if(vert != null && vert.isVertAlign()){
+			if(vert != null && vert != null && vert.isVertAlign()){
 				iconAlignV = vert;
 			}
 			bufferInvalid = true;
