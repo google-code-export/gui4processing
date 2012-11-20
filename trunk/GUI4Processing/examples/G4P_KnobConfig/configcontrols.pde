@@ -44,14 +44,14 @@ public void makeKnobConfigControls() {
   lblSense.setTextItalic();
 
   sdrEasing = new GSlider(this, x, y + 34, 80, 40, 12);
-  sdrEasing.setLimits(1.0f, 1.0f, 50.0f);
+  sdrEasing.setLimits(1.0f, 1.0f, 30.0f);
   sdrEasing.setShowValue(true);
   lblEasing = new GLabel(this, x + 82, y + 34, 80, 40, "Easing");
   lblEasing.setTextAlign(GAlign.LEFT);
   lblEasing.setTextItalic();
 
   sdrNbrTicks = new GSlider(this, x, y + 68, 80, 40, 12);
-  sdrNbrTicks.setLimits(2, 2, 20);
+  sdrNbrTicks.setLimits(2, 2, 15);
   sdrNbrTicks.setShowValue(true);
   lblNbrTicks = new GLabel(this, x + 82, y + 68, 80, 40, "No. of ticks");
   lblNbrTicks.setTextAlign(GAlign.LEFT);
