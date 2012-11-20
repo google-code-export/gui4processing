@@ -36,7 +36,7 @@ import processing.core.PApplet;
  * @author Peter Lager
  * 
  */
-public abstract class GTextControl extends GAbstractControl implements GAlign {
+public abstract class GTextControl extends GAbstractControl {
 
 	protected static final int TPAD = 2;
 	protected static final int TPAD2 = TPAD * 2;
@@ -45,7 +45,7 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	/** The styled version of text */
 	public StyledString stext = null;
 	
-	protected int textAlignH = GAlign.CENTER, textAlignV =  GAlign.MIDDLE;
+	protected GAlign textAlignH = GAlign.CENTER, textAlignV =  GAlign.MIDDLE;
 	
 	protected float stX, stY;
 
@@ -55,33 +55,15 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
-	public void setTextAlign(int align){
-		if((align & GAlign.HA_VALID) != 0){
-			textAlignH = align & GAlign.HA_VALID;
-			switch(textAlignH){
-			case GAlign.JUSTIFY:
-				stext.setJustify(true);
-				break;
-			case GAlign.LEFT:
-			case GAlign.CENTER:
-			case GAlign.RIGHT:
-				stext.setJustify(false);
-				break;
-			default:
-				textAlignH = GAlign.CENTER;
-				stext.setJustify(false);
-			}
+	public void setTextAlign(GAlign horz, GAlign vert){
+		if(horz.isHorzAlign()){
+			textAlignH = horz;
+			stext.setJustify(textAlignH == GAlign.JUSTIFY);
 		}
-		if((align & GAlign.VA_VALID) != 0){
-			textAlignV = align & GAlign.VA_VALID;
-			if(textAlignV != GAlign.TOP && textAlignV != GAlign.MIDDLE && textAlignV != GAlign.BOTTOM)
-				textAlignV = GAlign.MIDDLE;
+		if(vert.isVertAlign()){
+			textAlignV = vert;
 		}
 		bufferInvalid = true;
-	}
-
-	public int getTextAlign(){
-		return textAlignH | textAlignV;
 	}
 
 	/**
@@ -109,6 +91,14 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	}
 	
 	/**
+	 * Clear <b>all</b> applied styles from the whole text.
+	 */
+	public void setTextPlain(){
+		stext.clearAllAttributes();
+		bufferInvalid = true;
+	}
+	
+	/**
 	 * Make the selected characters bold. <br>
 	 * Characters affected are >= start and < end
 	 * 
@@ -124,6 +114,7 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	 */
 	public void setTextBold(){
 		stext.addAttribute(G4P.WEIGHT, G4P.WEIGHT_BOLD);
+		bufferInvalid = true;
 	}
 
 	/**
@@ -142,6 +133,7 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 	 */
 	public void setTextItalic(){
 		stext.addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE);
+		bufferInvalid = true;
 	}
 
 	protected void addAttribute(TextAttribute style, Object value, int s, int e){
@@ -149,6 +141,7 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 		if(s < 0) s = 0;
 		if(e > stext.length()) e = stext.length();
 		stext.addAttribute(style, value, s, e);
+		bufferInvalid = true;
 	}
 	
 	/** 
@@ -166,23 +159,23 @@ public abstract class GTextControl extends GAbstractControl implements GAlign {
 
 	protected void calcAlignment(){
 		switch(textAlignH){
-		case GAlign.RIGHT:
+		case RIGHT:
 			stX = width - stext.getWrapWidth() - TPAD;
 			break;
-		case GAlign.LEFT:
-		case GAlign.CENTER:
-		case GAlign.JUSTIFY:
+		case LEFT:
+		case CENTER:
+		case JUSTIFY:
 		default:
 			stX = TPAD;	
 		}
 		switch(textAlignV){
-		case GAlign.TOP:
+		case TOP:
 			stY = TPAD;
 			break;
-		case GAlign.BOTTOM:
+		case BOTTOM:
 			stY = height - stext.getTextAreaHeight() - TPAD;
 			break;
-		case GAlign.MIDDLE:
+		case MIDDLE:
 		default:
 			stY = (height - stext.getTextAreaHeight()) / 2;
 		}

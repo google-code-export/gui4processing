@@ -140,7 +140,7 @@ public class GDropList extends GTextControl {
 				new HSrect(2, 0, 0, width - buttonWidth, itemHeight)	// selected text display area
 		};
 
-		z = Z_STICKY;
+		z = Z_SLIPPY;
 		createEventHandler(G4P.sketchApplet, "handleDropListEvents",
 				new Class[]{ GDropList.class, GEvent.class }, 
 				new String[]{ "list", "event" } 
