@@ -34,15 +34,18 @@ public enum GAlign {
 
 	INVALID			( -1, "INVALID", "Invalid alignment" ),
 	
+	// Horizontal alignment constants
 	LEFT 			( 0, "LEFT", "Align left" ),
 	CENTER 			( 1, "CENTER", "Align centre horizontally" ),
 	RIGHT			( 2, "RIGHT", "Align right" ),
 	JUSTIFY  		( 3, "JUSTIFY", "Justify text" ),
 	
+	// Vertical alignment constants
 	TOP 			( 16, "TOP", "Align top" ),
 	MIDDLE	 		( 17, "MIDDLE", "Align middle vertically" ),
 	BOTTOM 			( 18, "BOTTOM", "Align bottom" );
 
+	
 	/**
 	 * Get an alignment based on its ID number.
 	 * 
