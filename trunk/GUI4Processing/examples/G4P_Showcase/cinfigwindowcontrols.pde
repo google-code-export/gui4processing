@@ -32,7 +32,7 @@ public void createControlWindow() {
 
   x = 20; 
   y = 40;
-  lblAlpha1 = new GLabel(app, x, y, 110, 20, "Transparency  >>>");
+  lblAlpha1 = new GLabel(app, x, y, 120, 26, "Transparency  >>>");
   lblAlpha1.setTextBold();
   lblAlpha2 = new GLabel(app, x, y + 30, 110, 80, "When alpha falls below 64 it will disable the controls in the main sketch.");
 
@@ -55,4 +55,3 @@ public void createControlWindow() {
 public void drawController(GWinApplet appc, GWinData data) {
   appc.background(227, 230, 255);
 }
-

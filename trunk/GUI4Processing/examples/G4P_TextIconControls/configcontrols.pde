@@ -1,5 +1,5 @@
   // The code in this tab is used to create all the other
-  // controls needed to configure the knob control.
+  // controls needed to configure the text+icon controls.
   
   GToggleGroup tg = new GToggleGroup();
   GOption optPlain, optBold, optItalic, optBoldItalic;
@@ -41,7 +41,7 @@
     optPlain = new GOption(this, x, y + 20, 80, 18, "Plain");
     optBold = new GOption(this, x, y + 40, 80, 18, "Bold");
     optItalic = new GOption(this, x, y + 60, 80, 18, "Italic");
-    optBoldItalic = new GOption(this, x, y + 80, 80, 18, "Bold-Italic");
+    optBoldItalic = new GOption(this, x, y + 80, 100, 18, "Bold-Italic");
     
     tg.addControls(optPlain, optBold, optItalic, optBoldItalic);
     optPlain.setSelected(true);
