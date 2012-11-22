@@ -1,298 +1,134 @@
 /**
-Demonstrates many of the controls available in the 
-G4P (GUI for Processing library.
+ SHowcase sketch to demonstrate many of the controls available
+ in G4P. The other examples show these 
+ Some of the other examples are more detailed where they
+ demonstrate indidual controls.
 
-(c) 2012 Peter Lager
-*/
+ (c) 2012 Peter Lager
+ */
 
-import processing.opengl.*;
-import guicomponentss.*;
+import g4p_controls.*;
+
 
 // G4P components for main window
 GPanel pnlControls;
-GLabel lblSomeString, lblAlpha, lblAction, lblCursor;
-GTextField txfSomeText;
-GCombo cboColor, cboFont;
-GHorzSlider sdrAlpha;
-GKnob knob;
-GKnobOval knobOval;
-GActivityBar acyBar;
+GLabel lblAction;
+GTextField txfDemo;
+GTextArea txaDemo;
+GKnob knbDemo;
 GTimer tmrTimer;
 GButton btnTimer;
-GCheckbox cbxBusy, cbxMouseOver;
-GOptionGroup opgMouseOver;
-GOption optHand, optXhair, optMove, optText,optWait;
+GTabManager tt;
+GCheckbox cbxSticky;
+GButton btnControl;  // Used to start controller window
 
-// G4P components for second window
-GButton btnControl;	// Used to create controller window
-GWindow windControl;
-GHorzSlider sdrHorzPos;
-GVertSlider sdrVertPos;
-
+String startText;
 PImage imgBgImage;
 
 int count = 0;
+GLabel lblMC;
+GOption optAngular, optYdrag, optXdrag;
+GToggleGroup tg;
+GSketchPad spad;
+PGraphics pg;
 
-int pX = 10;
-int pY = 30;
-int pHeight = 280;
-int pWidth = 600;
+public void setup() {
+  size(700, 340, JAVA2D);
 
-void setup(){
-  size(700,340);
+  G4P.registerSketch(this);
   // Load the background image
   imgBgImage = loadImage("bground.jpg");
-  // Set the colour scheme
-  G4P.setColorScheme(this, GCScheme.GREEN_SCHEME);
-  G4P.messagesEnabled(false);
+  G4P.messagesEnabled(true);
 
-  // Create 2D GUI
-  createPanelAndStatusBar();
-  createCombos();
-  createKnobs();
-  createTransparencySlider();
-  createTextPlayArea();
-  createMouseOverSection();
-  createActivityBarSection();
-  createTimer();
-
-  // Enable mouse over image changes
-  G4P.setMouseOverEnabled(true);
-
-  // Create a second control window
-  btnControl = new GButton(this, "Open Panel Position Window", 10, pHeight - 100,200,30);
-  pnlControls.add(btnControl);
+  makeDemoControls();
 }
 
-public void createTextPlayArea(){
-  lblSomeString = new GLabel(this, "LABEL: Use combo boxes to change color scheme and font", 10, 10, 400, 20 );
-  lblSomeString.setBorder(1);
-  lblSomeString.setOpaque(true);
-  txfSomeText = new GTextField(this, "TEXTFIELD: Use combo boxes to change color scheme and font", 10, 50, 400, 20);
-  pnlControls.add(lblSomeString);
-  pnlControls.add(txfSomeText);
-}
-
-public void createTimer(){
-  btnTimer = new GButton(this, "Start", "time.png", 1, pWidth-100, pHeight-60, 100, 40);
-  tmrTimer = new GTimer(this, this, "myTimerFunction", 500);	
-  pnlControls.add(btnTimer);
-}
-
-public void createPanelAndStatusBar(){
-  pnlControls = new GPanel(this,"Panel Tab Text (drag to move : click to open/close)",pX,pY,pWidth,pHeight);
-  pnlControls.setOpaque(true);
-  pnlControls.setCollapsed(false);
-  lblAction = new GLabel(this, "USER ACTION FEEDBACK DISPLAYED HERE!", 0, pHeight-20, pWidth, 20);
-  lblAction.setBorder(1);
-  lblAction.setOpaque(true);
-  lblAction.setColorScheme(GCScheme.RED_SCHEME);
-  pnlControls.add(lblAction);		
-}
-
-public void createActivityBarSection(){
-  acyBar = new GActivityBar(this,pWidth-340,pHeight-56,120,10);
-  acyBar.start(0);
-
-  cbxBusy = new GCheckbox(this,"Busy?", pWidth - 180, (int)acyBar.getY() - 2, 100);
-  cbxBusy.setSelected(true);
-  cbxBusy.setBorder(0);
-  pnlControls.add(acyBar);
-  pnlControls.add(cbxBusy);	
-}
-
-public void createTransparencySlider(){
-  lblAlpha = new GLabel(this,"Adjust Panel transparency ->",0,pHeight-40,150);
-  lblAlpha.setFont("Arial", 14);
-  sdrAlpha = new GHorzSlider(this,pWidth-400,pHeight-40,299,19);
-  sdrAlpha.setBorder(2);
-  sdrAlpha.setLimits(255, 128, 255);
-  pnlControls.add(lblAlpha);
-  pnlControls.add(sdrAlpha);		
-}
-
-public void createMouseOverSection(){
-  cbxMouseOver = new GCheckbox(this,"Mouse Over Enabled",460,90,80);
-  cbxMouseOver.setSelected(true);
-  opgMouseOver = new GOptionGroup();
-  optHand = new GOption(this, "Hand", 460, 124,90);
-  opgMouseOver.addOption(optHand);
-  optXhair = new GOption(this, "Cross Hair", 460, 138,90);
-  opgMouseOver.addOption(optXhair);
-  optMove = new GOption(this, "Move", 460, 152,90);
-  opgMouseOver.addOption(optMove);
-  optText = new GOption(this, "Text", 460, 166,90);
-  opgMouseOver.addOption(optText);
-  optWait = new GOption(this, "Wait", 460, 180,90);
-  opgMouseOver.addOption(optWait);		
-  opgMouseOver.setSelected(optHand);
-  lblCursor = new GLabel(this, "Cursor over shape",460,106,120);
-  lblCursor.setOpaque(true);
-
-  pnlControls.add(lblCursor);
-  pnlControls.add(cbxMouseOver);
-  pnlControls.add(optHand);
-  pnlControls.add(optXhair);
-  pnlControls.add(optMove);
-  pnlControls.add(optText);
-  pnlControls.add(optWait);
-}
-
-public void createCombos() {
-  String[] colors = new String[] {
-    "Blue", "Green", "Red", "Purple", "Yellow", "Cyan", "Grey"        };
-  cboColor = new GCombo(this, colors, 4, 10, 90, 60);
-  cboColor.setSelected(1);
-  String[] fonts = new String[] { 
-    "SansSerif 11", "Serif 11", "Georgia 15", "Times New Roman 16", "Arial Bold 10",
-    "Arial 10", "Courier New 9"         };
-  cboFont = new GCombo(this, fonts, 4, 120, 90, 160);
-  pnlControls.add(cboColor);
-  pnlControls.add(cboFont);
-}
-
-public void createKnobs(){
-  knob = new GKnob(this, 320,90,60,110, 70);
-  knob.setNbrTickMarks(11);
-  knob.setValue(67);
-  knobOval = new GKnobOval(this, 260, 160, 180, 80, 185, 355);
-  knobOval.setNbrTickMarks(6);
-  knobOval.setRotArcOnly(true);
-  knobOval.setValue(25);
-  pnlControls.add(knob);
-  pnlControls.add(knobOval);
-}
-
-public void handleComboEvents(GCombo combo){
-  if(cboColor == combo){
-    pnlControls.setColorScheme(cboColor.selectedIndex());
-    lblSomeString.setColorScheme(cboColor.selectedIndex());
-    txfSomeText.setColorScheme(cboColor.selectedIndex());
-    acyBar.setColorScheme(cboColor.selectedIndex());
-    btnTimer.setColorScheme(cboColor.selectedIndex());
-    lblCursor.setColorScheme(cboColor.selectedIndex());
-    knob.setColorScheme(cboColor.selectedIndex());
-    knobOval.setColorScheme(cboColor.selectedIndex());
-    btnControl.setColorScheme(cboColor.selectedIndex());
-    cboFont.setColorScheme(cboColor.selectedIndex());
-    cboColor.setColorScheme(cboColor.selectedIndex());
-    sdrAlpha.setColorScheme(cboColor.selectedIndex());
-    sdrAlpha.setValue(255);
-    lblAction.setText("Color changed to " + cboColor.selectedText());
-  }
-  if(cboFont == combo){
-    // Get font name and size from
-    String[] fs = cboFont.selectedText().split(" ");
-    String font = fs[0];
-    if(fs.length > 2){
-      for(int i = 1; i < fs.length - 1; i++)
-        font = font + " " + fs[i];
-    }
-    int fsize = Integer.parseInt(fs[fs.length - 1]);
-    // Set fonts
-    lblSomeString.setFont(font, fsize);
-    txfSomeText.setFont(font, fsize);
-    lblAction.setText("Font changed to " + cboFont.selectedText() + "px");			
-  }
-}	
-
-public void handleSliderEvents(GSlider slider){
-  if(sdrAlpha == slider){
-    pnlControls.setAlpha(sdrAlpha.getValue());
-    lblAction.setText("Panel transparency is " + pnlControls.getAlpha());			
-  }
-  if(sdrHorzPos == slider){
-    pnlControls.setX(sdrHorzPos.getValue());
-  }
-  if(sdrVertPos == slider){
-    pnlControls.setY(sdrVertPos.getValue());
-  }
-}
-
-public void handleButtonEvents(GButton button){
-  if(btnTimer == button && button.eventType == GButton.CLICKED){
-    if(tmrTimer.isRunning()){
-      lblAction.setText("Timer stopped");
-      btnTimer.setText("Start");
-      tmrTimer.stop();
-    }
-    else {
-      lblAction.setText("Timer started");
-      btnTimer.setText("Stop");
-      tmrTimer.start();
+public void updateGraphic(int n) {
+  n = (n < 0) ? 0 : n % 30;
+  pg.beginDraw();
+  pg.background(0);
+  pg.noStroke();
+  pg.fill(255);
+  pg.ellipseMode(CENTER);
+  if (n >= 0) {
+    for (int i = 0; i < n; i++) {
+      int r = i / 10;
+      int c = i % 10;
+      pg.ellipse(5 + c * 10, 7 + r * 15, 6, 10);
     }
   }
-  if(btnControl == button && button.eventType == GButton.CLICKED){
-    createControlWindow();
-    btnControl.setVisible(false);
-  }
+  pg.endDraw();
 }
 
-public void handleCheckboxEvents(GCheckbox cbox){
-  if(cbox == cbxBusy){
-    if(cbxBusy.isSelected())
-      acyBar.start(0);
-    else
-      acyBar.stop();
-  }
-  if(cbox == cbxMouseOver){
-    G4P.setMouseOverEnabled(cbxMouseOver.isSelected());
-  }
-}
-
-public void handleOptionEvents(GOption selected, GOption deselected){
-  if(selected == optHand)
-    G4P.cursor(HAND);
-  else if(selected == optXhair)
-    G4P.cursor(CROSS);
-  else if(selected == optMove)
-    G4P.cursor(MOVE);
-  else if(selected == optText)
-    G4P.cursor(TEXT);
-  else if(selected == optWait)
-    G4P.cursor(WAIT);
-}
-
-public void myTimerFunction(){
-  count++;
-  lblAction.setText("My timer has counted to " + count);
-}
-
-public void handlePanelEvents(GPanel panel){
-  if(pnlControls == panel){
-    switch (pnlControls.getEventType()){
-      case GPanel.DRAGGED:
-        if(sdrHorzPos != null && sdrVertPos != null){
-          sdrHorzPos.setValue(pnlControls.getX());
-          sdrVertPos.setValue(pnlControls.getY());
-        }
-      case GPanel.EXPANDED: {
-        pnlControls.setControlsEnabled(true);
-      }
-    }
-  }
-}
-
-public void createControlWindow(){
-  windControl = new GWindow(this, "Controls",600,400,width/4 + 16,height/4 + 16, false, JAVA2D);
-  sdrHorzPos = new GHorzSlider(windControl.papplet,0,height/4,width/4,16);
-  sdrHorzPos.setLimits(pX, 0 ,width - pWidth);
-  sdrVertPos = new GVertSlider(windControl.papplet,width/4,0,16,height/4);
-  sdrVertPos.setLimits(pY, pnlControls.getTabHeight(), height - pHeight);
-  windControl.addData(new GWinData());
-  windControl.addDrawHandler(this, "drawController");
-}
-
-void draw(){
-  pushMatrix();
+public void draw() {
   background(imgBgImage);
-  popMatrix();
+  updateGraphic(count);
 }
 
-public void drawController(GWinApplet appc, GWinData data){
-  appc.stroke(255,255,0);
-  appc.strokeWeight(1);
-  appc.fill(130,130,0);
-  appc.rect(pnlControls.getX()/4, (pnlControls.getY() - pnlControls.getTabHeight())/4, 
-  pnlControls.getWidth()/4, (pnlControls.getHeight()+ pnlControls.getTabHeight())/4);
+public void handleTextEvents(GEditableTextControl textcontrol, GEvent event) {
+  if (textcontrol == txaDemo)
+    lblAction.setText("TextArea: " + event);
+  if (textcontrol == txfDemo)
+    lblAction.setText("TextField: " + event);
 }
+
+public void handlePanelEvents(GPanel panel, GEvent event) { 
+  lblAction.setText("Panel: " + event);
+}
+
+public void handleSliderEvents(GValueControl slider, GEvent event) {
+  if (slider == sdrAlpha) {
+    G4P.setWindowAlpha(this, sdrAlpha.getValueI());
+  }
+}
+
+public void handleToggleControlEvents(GToggleControl option, GEvent event) {
+  if (option == optAngular) {
+    lblAction.setText("Knob is now using angular drag for rotation");
+    knbDemo.setTurnMode(G4P.CTRL_ANGULAR);
+  }
+  if (option == optXdrag) {
+    lblAction.setText("Knob is now using horizontal drag for rotation");
+    knbDemo.setTurnMode(G4P.CTRL_HORIZONTAL);
+  }
+  if (option == optYdrag) {
+    lblAction.setText("Knob is now using vertical drag for rotation");
+    knbDemo.setTurnMode(G4P.CTRL_VERTICAL);
+  }
+  if (option == cbxSticky) {
+    lblAction.setText("Stick to ticks option changed");
+    knbDemo.setStickToTicks(cbxSticky.isSelected());
+  }
+}
+
+public void handleKnobEvents(GValueControl knob, GEvent event) { 
+  if (knob == knbDemo)
+    lblAction.setText("Knob value is now " + knbDemo.getValueS());
+  if (knob == knbAngle) {
+    pnlControls.setRotation(knbAngle.getValueF(), PApplet.CENTER);
+  }
+}
+
+public void handleButtonEvents(GButton button, GEvent event) {
+  // Create the control window?
+  if (button == btnControl && event == GEvent.CLICKED) {
+    lblAction.setText("Open control window and disable the button");
+    createControlWindow();
+    btnControl.setEnabled(false);
+  }
+  // Change the colour scheme
+  if (button.tagNo >= 1000 && event == GEvent.CLICKED)
+    G4P.setWindowColorScheme(this, button.tagNo - 1000);
+  if (button == btnTimer && event == GEvent.CLICKED) {
+    if (tmrTimer.isRunning())
+      tmrTimer.stop();
+    else
+      tmrTimer.start();
+  }
+}
+
+public void myTimerFunction(GTimer timer) {
+  count++;
+}
+
+
