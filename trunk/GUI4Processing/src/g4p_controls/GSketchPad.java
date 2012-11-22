@@ -38,8 +38,12 @@ import processing.core.PGraphics;
  */
 public class GSketchPad extends GAbstractControl {
 
+	// Scale graphic should be set to true if the grpahics object
+	// and this sketch pad object are of different sizes.
 	protected boolean scaleGraphic = false;
-	
+
+	protected PGraphics pad = null;
+
 	public GSketchPad(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 		cursorOver = G4P.mouseOff; // does not change
@@ -51,16 +55,13 @@ public class GSketchPad extends GAbstractControl {
 		if(pg == null)
 			return;
 		pad = pg;
-		scaleGraphic = (int)width == pg.width && (int)height == pg.height;
+		scaleGraphic = (int)width != pg.width || (int)height != pg.height;
 	}
 	
 	public void draw(){
 		if(!visible) return;
 
-		// Update buffer if invalid
-		updateBuffer();
 		winApp.pushStyle();
-
 		winApp.pushMatrix();
 		// Perform the rotation
 		winApp.translate(cx, cy);
@@ -68,7 +69,6 @@ public class GSketchPad extends GAbstractControl {
 		// Move matrix to line up with top-left corner
 		winApp.translate(-halfWidth, -halfHeight);
 		// Draw buffer
-		winApp.rectMode(PApplet.CORNER);
 		winApp.imageMode(PApplet.CORNER);
 		if(alphaLevel < 255)
 			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
@@ -77,15 +77,17 @@ public class GSketchPad extends GAbstractControl {
 				if(scaleGraphic)
 					winApp.image(pad, 0, 0, width, height);
 				else
-					winApp.image(pad, 0, 0, width, height);				
+					winApp.image(pad, 0, 0);
+//				System.out.println("Graphic updated with alpha " + alphaLevel);
 			}
 			catch(Exception excp){ /* Do nothing */	}
 		}
-		winApp.noFill();
-		winApp.stroke(palette[3]);
-		winApp.strokeWeight(1.5f);
-		winApp.rect(0, 0, width, height);
-		winApp.popMatrix();		
+//		winApp.noFill();
+//		winApp.stroke(palette[3]);
+//		winApp.strokeWeight(1.5f);
+//		winApp.rect(0, 0, width, height);
+		winApp.popMatrix();	
+		winApp.popStyle();
 	}
 
 }

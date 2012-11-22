@@ -263,7 +263,11 @@ public class GPanel extends GTextControl {
 						y = winApp.getHeight() - height;
 					if(x + width > winApp.getWidth())
 						x = winApp.getWidth() - width;
+					
 				}
+				// Maintain centre for drawing purposes
+				cx = x + width/2;
+				cy = y + height/2;
 				constrainPanelPosition();
 				if(tabOnly)
 					fireEvent(this, GEvent.COLLAPSED);
@@ -289,15 +293,18 @@ public class GPanel extends GTextControl {
 			if(focusIsWith == this && draggable && parent == null){
 				x += (winApp.mouseX - winApp.pmouseX);
 				y += (winApp.mouseY - winApp.pmouseY);
+				// Maintain centre for drawing purposes
+				cx = x + width/2;
+				cy = y + height/2;
 				constrainPanelPosition();
 				beingDragged = true;
 				fireEvent(this, GEvent.DRAGGED);
 			}
 			break;
 		}
-		// Maintain centre for drawing purposes
-		cx = x + width/2;
-		cy = y + height/2;
+//		// Maintain centre for drawing purposes
+//		cx = x + width/2;
+//		cy = y + height/2;
 	}
 
 	/**

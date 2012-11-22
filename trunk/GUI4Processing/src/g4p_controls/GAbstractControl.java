@@ -116,7 +116,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	// New to V3 components have an image buffer which is only redrawn if 
 	// it has been invalidated
 	protected PGraphicsJava2D buffer = null;
-	protected PGraphics pad = null;
 	protected boolean bufferInvalid = true;
 
 	/** Whether to show background or not */
@@ -350,8 +349,11 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 */
 	public void setAlpha(int alpha){
 		alpha = Math.abs(alpha) % 256;
-		alphaLevel = alpha;
-		available = (alphaLevel >= ALPHA_BLOCK);
+		if(alphaLevel != alpha){
+			alphaLevel = alpha;
+			available = (alphaLevel >= ALPHA_BLOCK);
+			bufferInvalid = true;
+		}
 	}
 	
 	/**
@@ -724,6 +726,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param angle the rotation angle (replaces any the angle specified in control)
 	 */
 	public void addControl(GAbstractControl c, float x, float y, float angle){
+		if(children == null) return;
 		c.rotAngle = angle; 
 		// In child control reset the control so it centred about the origin
 		AffineTransform aff = new AffineTransform();
@@ -778,6 +781,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param y the topmost or centre position depending on controlMode
 	 */
 	public void addControl(GAbstractControl c, float x, float y){
+		if(children == null) return;
 		addControl(c, x, y, 0);
 	}
 
@@ -787,6 +791,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param c the control to add
 	 */
 	public void addControl(GAbstractControl c){
+		if(children == null) return;
 		switch(G4P.control_mode){
 		case PApplet.CORNER:
 		case PApplet.CORNERS:
@@ -796,6 +801,21 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			addControl(c, c.cx, c.cy, c.rotAngle);
 			break;
 		}		
+	}
+	
+	public void addControls(GAbstractControl... controls){
+		if(children == null) return;
+		for(GAbstractControl c : controls){
+			switch(G4P.control_mode){
+			case PApplet.CORNER:
+			case PApplet.CORNERS:
+				addControl(c, c.x, c.y, c.rotAngle);
+				break;
+			case PApplet.CENTER:
+				addControl(c, c.cx, c.cy, c.rotAngle);
+				break;
+			}	
+		}
 	}
 	
 	/**

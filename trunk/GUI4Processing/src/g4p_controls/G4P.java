@@ -240,7 +240,7 @@ public class G4P implements GConstants, PConstants {
 	}
 	
 	/**
-	 * Used internally to registera control with its applet.
+	 * Used internally to register a control with its applet.
 	 * @param control
 	 */
 	static void addControl(GAbstractControl control){
@@ -268,7 +268,7 @@ public class G4P implements GConstants, PConstants {
 		if(winfo != null){
 			winfo = new GWindowInfo(app);
 			//control
-			winfo.disposable.add(control);
+			winfo.removeControl(control);
 			return true;
 		}
 		return false;

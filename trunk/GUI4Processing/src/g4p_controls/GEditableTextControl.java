@@ -448,7 +448,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			}
 			if(textChanged){
 				changeText();
-				fireEvent(this, GEvent.SELECTION_CHANGED);
+				fireEvent(this, GEvent.CHANGED);
 			}
 		}
 	}
