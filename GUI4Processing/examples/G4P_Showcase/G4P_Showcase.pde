@@ -33,7 +33,7 @@ GSketchPad spad;
 PGraphics pg;
 
 public void setup() {
-  size(700, 340, JAVA2D);
+  size(700, 340);
 
   G4P.registerSketch(this);
   // Load the background image
