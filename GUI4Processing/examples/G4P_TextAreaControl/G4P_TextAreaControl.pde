@@ -12,7 +12,9 @@
  * The buttons on the side will change the font style
  * for the selected text. If no text has been selected
  * then the buttons are ignored.
- * 
+ 
+ * Note that super/sub script may not be available on your
+ * system.
  * 
  * @author Peter Lager
  *

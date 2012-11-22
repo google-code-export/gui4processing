@@ -1,8 +1,10 @@
 /**
- SHowcase sketch to demonstrate many of the controls available
- in G4P. The other examples show these 
- Some of the other examples are more detailed where they
- demonstrate indidual controls.
+ This example showcases many of the controls available. Click 
+ on the 'G4P config window' button to open the control window 
+ for more options.
+ 
+ Some of the other examples  demonstrate individual controls 
+ in more detail.
 
  (c) 2012 Peter Lager
  */
@@ -130,5 +132,4 @@ public void handleButtonEvents(GButton button, GEvent event) {
 public void myTimerFunction(GTimer timer) {
   count++;
 }
-
 

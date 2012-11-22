@@ -26,14 +26,14 @@ public void makeDemoControls() {
   pnlControls.addControl(txaDemo);
   // Create a text field with horizontal scrollbar
   txfDemo = new GTextField(this, 4, 130, 220, 30, G4P.SCROLLBAR_HORIZONTAL | G4P.SCROLLBARS_AUTOHIDE);
-  txfDemo.setDefaultText("This is default text - so type something");
+  txfDemo.setDefaultText("This is default text");
   pnlControls.addControl(txfDemo);
   // Add tab controls
   tt = new GTabManager();
   tt.addControls(txaDemo, txfDemo);
 
   // Checkbox
-  cbxSticky = new GCheckbox(this, 230, 130, 100, 20, "Stick to ticks");
+  cbxSticky = new GCheckbox(this, 230, 130, 120, 20, "Stick to ticks");
   pnlControls.addControl(cbxSticky);
 
   // Knob
@@ -46,7 +46,7 @@ public void makeDemoControls() {
   knbDemo.setSensitivity(2.0f);
   pnlControls.addControl(knbDemo);
 
-  lblMC = new GLabel(this, 318, 22, 80, 50, "Knob turning control");
+  lblMC = new GLabel(this, 310, 22, 100, 50, "Knob turning control");
   lblMC.setTextAlign(GAlign.LEFT, null);
   lblMC.setTextAlign(GAlign.CENTER, GAlign.TOP);
   lblMC.setTextBold();
@@ -77,4 +77,3 @@ public void makeDemoControls() {
   btnControl = new GButton(this, 2, pHeight - 60, 100, 40, "G4P config window");
   pnlControls.addControl(btnControl);
 }
-

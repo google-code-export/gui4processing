@@ -67,7 +67,7 @@ public void makeKnobConfigControls() {
   optYdrag = new GOption(this, x, y + 60, 80, 18, "Y drag");
   tg.addControls(optAngular, optXdrag, optYdrag);
   optXdrag.setSelected(true);
-  cbxOverArc = new GCheckbox(this, x + 90, y + 20, 70, 18, "Arc only");
+  cbxOverArc = new GCheckbox(this, x + 90, y + 20, 90, 18, "Arc only");
   cbxOverAll = new GCheckbox(this, x + 90, y + 40, 90, 18, "Incl. Bezel");
 
   x = width - 180; 
@@ -78,7 +78,7 @@ public void makeKnobConfigControls() {
   cbxShowTicks.setSelected(true);
   cbxShowTrack = new GCheckbox(this, x, y + 40, 70, 18, "Track");
   cbxShowTrack.setSelected(true);
-  cbxShowArcOnly = new GCheckbox(this, x, y + 60, 70, 18, "Arc Only");
+  cbxShowArcOnly = new GCheckbox(this, x, y + 60, 80, 18, "Arc Only");
   cbxOpaque = new GCheckbox(this, x, y + 80, 70, 18, "Opaque");
   cbxSticky = new GCheckbox(this, x, y + 110, 70, 40, "Stick to ticks");
 
