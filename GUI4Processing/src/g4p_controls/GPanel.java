@@ -256,6 +256,8 @@ public class GPanel extends GTextControl {
 				if(tabOnly){
 					x = dockX;
 					y = dockY;
+					cx = x + width/2;
+					cy = y + height/2;
 				}
 				else {
 					// Open panel move on screen if needed
@@ -291,20 +293,21 @@ public class GPanel extends GTextControl {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this && draggable && parent == null){
-				x += (winApp.mouseX - winApp.pmouseX);
-				y += (winApp.mouseY - winApp.pmouseY);
+//				x += (winApp.mouseX - winApp.pmouseX);
+//				y += (winApp.mouseY - winApp.pmouseY);
+				cx += (winApp.mouseX - winApp.pmouseX);
+				cy += (winApp.mouseY - winApp.pmouseY);
 				// Maintain centre for drawing purposes
-				cx = x + width/2;
-				cy = y + height/2;
+//				cx = x + width/2;
+//				cy = y + height/2;
+				x = cx - width/2;
+				y = cy - height/2;
 				constrainPanelPosition();
 				beingDragged = true;
 				fireEvent(this, GEvent.DRAGGED);
 			}
 			break;
 		}
-//		// Maintain centre for drawing purposes
-//		cx = x + width/2;
-//		cy = y + height/2;
 	}
 
 	/**
