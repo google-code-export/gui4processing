@@ -508,7 +508,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			temp[1] = -halfHeight;
 			aff.transform(temp, 0, temp, 0, 1);
 			x = cx + (float)temp[0];
-			y = cy - (float)temp[1];
+			y = cy + (float)temp[1];  			// should this be minus?? I don't think so
 			break;
 		}		
 	}
