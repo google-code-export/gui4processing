@@ -18,7 +18,6 @@
  * by Peter Lager
  */
 
-import processing.opengl.*;
 import g4p_controls.*;
 import peasy.*;
 
@@ -42,14 +41,10 @@ int lastSx, lastSy, lastSz;
 int currSx, currSy, currSz;
 
 public void setup() {
-  // Change OPENGL to P3D to use Java 3D both work but OpenGL
-  // gives a better font display while Java 3D is probably
-  // better for applets - smaller file size but needs larger 
-  // font size.
   size(400, 400, P3D);
 
   // This is only required if you are going to create something
-  // that changes the initial matrix (g) BEFORE creating a G$P 
+  // that changes the initial matrix (g) BEFORE creating a G4P 
   // control. PeasyCam is just such an object, but if it is 
   // created after one of the G4P controls then you would not 
   // this statement.
