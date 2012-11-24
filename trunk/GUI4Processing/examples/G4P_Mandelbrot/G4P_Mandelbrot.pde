@@ -5,14 +5,14 @@
  *
  * (c) 2012 by Peter Lager
  */
- 
+
 import g4p_controls.*;
 import java.awt.Color;
 
 final int MAX_ITERATE = 128;
 
-final int MAX_WIDTH = 300;
-final int MAX_HEIGHT = 300;
+final int MAX_WIDTH = 400;
+final int MAX_HEIGHT = 400;
 
 final int MIN_WIDTH = 30;
 final int MIN_HEIGHT = 30;
@@ -23,75 +23,14 @@ GButton btnStart;
 GLabel label;
 
 int locX = 100, locY = 100;
-ArrayList windows = new ArrayList();
 
-String t0,t1,t2;
+String t0, t1, t2;
 
-/**
-A basic complex number class.
-*/
-class Complex {
-  public double real;
-  public double img;
 
-  Complex(){
-    real = img = 0.0f;
-  }
-
-  public Complex(float r, float i) {
-    super();
-    this.real = r;
-    this.img = i;
-  }
-
-  public void set(double colX, double rowY){
-    real = colX;
-    img = rowY;
-  }
-
-  public Complex add(Complex c){
-    real += c.real;
-    img += c.img;
-    return this;
-  }
-
-  public void mult(Complex c){
-    double nReal = real * c.real - img * c.img;
-    double nImg = real * c.img + img * c.real;
-    real = nReal;
-    img = nImg;
-  }
-
-  public Complex squared(){
-    double nReal = (real - img)*(real + img);
-    double nImg = 2 * real * img;
-    real = nReal;
-    img = nImg;	
-    return this;
-  }
-
-  public double sizeSquared(){
-    return real * real + img * img;
-  }
-}
-
-/**
- * Simple class that extends GWinData and holds the data that is specific
- * to a particular window.
- */
-class MyWinData extends GWinData {
-
-  public int msx,msy,mex,mey;
-  public double sx,sy,ex,ey;
-  public int w, h;
-  public PImage img;
-  public boolean imgDone;
-}
-
-void setup(){
-  size(300,160);
+public void setup() {
+  size(300, 160);
   G4P.setGlobalColorScheme(G4P.ORANGE_SCHEME);
-  btnStart = new GButton(this, (width - 80)/2,height - 30,80,20, "START");
+  btnStart = new GButton(this, (width - 80)/2, height - 30, 80, 20, "START");
   t0 = "MANDELBROT GALORE\n";
   t1 = "Click on the START button to see the Mandelbrot set in a separate window. ";
   t2 = " To zoom into the set drag a box on the area you are interested in and ";
@@ -104,19 +43,19 @@ void setup(){
 /**
  * Draw for the main sketch window
  */
-void draw(){
-  background(230,230,230);
+public void draw() {
+  background(230, 230, 230);
 }
 
 /**
-Create the colours to be used.
-*/
-public void createColours(){
+ Create the colours to be used.
+ */
+public void createColours() {
   colors[MAX_ITERATE-1] = color(0);
   float hue = 0.0f;
   float bright = 1.0f;
   float binc = 0.009f/MAX_ITERATE;
-  for(int i = 0; i < MAX_ITERATE - 2; i++){
+  for (int i = 0; i < MAX_ITERATE - 2; i++) {
     colors[i] = Color.HSBtoRGB(hue, 1.0f, bright);
     hue = (hue + 0.1309f) % 1.0f ;
     bright -= binc;
@@ -125,13 +64,13 @@ public void createColours(){
 
 /**
  * Create a PImage of the correct size and using the data
- * for a window create the Mandelbrot image. Singnal when
+ * for a window create the Mandelbrot image. Signal when
  * complete by setting imgDone = true
  * 
  * @param data
  */
-public void calcMandlebrot(MyWinData data){
-  double x0,x1,y0,y1, deltaX, deltaY;
+public void calcMandlebrot(MyWinData data) {
+  double x0, x1, y0, y1, deltaX, deltaY;
   double colX, rowY;
   x0 = data.sx;
   x1 = data.ex;
@@ -147,18 +86,18 @@ public void calcMandlebrot(MyWinData data){
   colX = x0;
   rowY = y0;
   int minC = 999, maxC = -999;
-  for(int row = 0; row < data.h; row++){
+  for (int row = 0; row < data.h; row++) {
     colX = x0;
-    for(int col = 0; col < data.w; col++){
+    for (int col = 0; col < data.w; col++) {
       count = 0;
       c.set(colX, rowY);
       z.set(colX, rowY);
-      while(count < MAX_ITERATE-1 && z.sizeSquared() < 4.0){
+      while (count < MAX_ITERATE-1 && z.sizeSquared () < 4.0) {
         z = z.squared().add(c); 
         count++;
       }
-      if(count < minC) minC = count;
-      if(count > maxC) maxC = count;
+      if (count < minC) minC = count;
+      if (count > maxC) maxC = count;
       data.img.pixels[col + row * data.w] = colors[count];
       colX += deltaX;
     }
@@ -180,11 +119,15 @@ public void calcMandlebrot(MyWinData data){
  * @param ney
  * @return
  */
-public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney, int action){
+public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney, int action) {
   MyWinData mydata = new MyWinData();
   GWindow window = null;
+  // Using doubles for greater magnification range
+  double mag = 2.5 / (nex-nsx);
+  String s = String.format("%.2E", mag);
+  String title = "Mandelbrot (x "+s+")";
   float ratio = (float) ((nex-nsx)/(ney-nsy));
-  if(ratio > MAX_WIDTH/MAX_HEIGHT){
+  if (ratio > MAX_WIDTH/MAX_HEIGHT) {
     mydata.w = MAX_WIDTH;
     mydata.h = (int)( MAX_HEIGHT / ratio);
   }
@@ -198,10 +141,11 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney,
   mydata.ey = ney;
   mydata.imgDone = false;
 
-  if(mydata.w >= MIN_WIDTH && mydata.h >= MIN_HEIGHT){
+  if (mydata.w >= MIN_WIDTH && mydata.h >= MIN_HEIGHT) {
     mydata.img = new PImage(mydata.w, mydata.h);
-    window = new GWindow(this,"Main", locX, locY, mydata.w, mydata.h, false, null);
-    windows.add(window);
+    window = new GWindow(this, title, locX, locY, mydata.w, mydata.h, false, null);
+    // Need to replace displayWidth and displayHeight with 
+    // screen.width and screen.height for Processing 1.5.1
     locX = (locX + mydata.w + 20)%(displayWidth - MAX_WIDTH);
     locY = (locY + 20)%(displayHeight - MAX_HEIGHT);
     window.addData(mydata);
@@ -219,9 +163,9 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney,
  * Click the button to create the windows.
  * @param button
  */
-public void handleButtonEvents(GButton button, GEvent event){
-  if(btnStart == button){
-    makeNewBrotWindow(-2.0f,0.5f,-1.25f,1.25f, GWindow.KEEP_OPEN);
+public void handleButtonEvents(GButton button, GEvent event) {
+  if (btnStart == button) {
+    makeNewBrotWindow(-2.0f, 0.5f, -1.25f, 1.25f, GWindow.KEEP_OPEN);
     btnStart.setVisible(false);
     label.setText(t0 + t2);
   }
@@ -234,11 +178,11 @@ public void handleButtonEvents(GButton button, GEvent event){
  * @param data the data for the GWindow being used
  * @param event the mouse event
  */
-public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event){
+public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event) {
   MyWinData d = (MyWinData)data;
-  if(d.imgDone == false)
+  if (d.imgDone == false)
     return;
-  switch(event.getID()){
+  switch(event.getID()) {
   case MouseEvent.MOUSE_PRESSED:
     d.msx = d.mex = appc.mouseX;
     d.msy = d.mey = appc.mouseY;
@@ -250,18 +194,18 @@ public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event){
     d.mey = appc.mouseY;
     // Make sure the coordinates are top left / bottom left
     int temp;
-    if(d.msx > d.mex){
+    if (d.msx > d.mex) {
       temp = d.msx; 
       d.msx = d.mex; 
       d.mex = temp;
     }
-    if(d.msy > d.mey){
+    if (d.msy > d.mey) {
       temp = d.msy; 
       d.msy = d.mey; 
       d.mey = temp;
     }
     // Calculate the new Mandelbrot plane coordinates
-    double nsx,nex,nsy,ney;
+    double nsx, nex, nsy, ney;
     nsx = dmap((double)d.msx, (double)0, (double)d.w, d.sx, d.ex);
     nex = dmap((double)d.mex, (double)0, (double)d.w, d.sx, d.ex);
     nsy = dmap((double)d.msy, (double)0, (double)d.h, d.sy, d.ey);
@@ -273,19 +217,19 @@ public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event){
   case MouseEvent.MOUSE_DRAGGED:
     d.mex = appc.mouseX;
     d.mey = appc.mouseY;
-    break;			
+    break;
   }
 }
 
 /**
-* Copied from PApplet and converted floats to doubles 
-* @param value
-* @param istart
-* @param istop
-* @param ostart
-* @param ostop
-* @return
-*/
+ * Copied from PApplet and converted floats to doubles 
+ * @param value
+ * @param istart
+ * @param istop
+ * @param ostart
+ * @param ostop
+ * @return
+ */
 double dmap(double value, double istart, double istop, double ostart, double ostop) {
   return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 }
@@ -296,16 +240,80 @@ double dmap(double value, double istart, double istop, double ostart, double ost
  * @param appc the PApplet object embeded into the frame
  * @param data the data for the GWindow being used
  */
-public void windowDraw(GWinApplet appc, GWinData data){
+public void windowDraw(GWinApplet appc, GWinData data) {
   MyWinData d = (MyWinData)data;
-  if(d.imgDone){
-    appc.image(d.img,0,0);
-    if(d.msx != d.mex || d.msy != d.mey){
+  if (d.imgDone) {
+    appc.image(d.img, 0, 0);
+    if (d.msx != d.mex || d.msy != d.mey) {
       appc.strokeWeight(2);
       appc.stroke(255);
       appc.noFill();
       appc.rectMode(CORNERS);
-      appc.rect(d.msx,d.msy,d.mex,d.mey);
-    }	
+      appc.rect(d.msx, d.msy, d.mex, d.mey);
+    }
   }
+}
+
+/**
+ A basic complex number class that has just enough to
+ do Mandelbrots
+ */
+class Complex {
+  public double real;
+  public double img;
+
+  Complex() {
+    real = img = 0.0f;
+  }
+
+  public Complex(float r, float i) {
+    super();
+    this.real = r;
+    this.img = i;
+  }
+
+  public void set(double colX, double rowY) {
+    real = colX;
+    img = rowY;
+  }
+
+  public Complex add(Complex c) {
+    real += c.real;
+    img += c.img;
+    return this;
+  }
+
+  public void mult(Complex c) {
+    double nReal = real * c.real - img * c.img;
+    double nImg = real * c.img + img * c.real;
+    real = nReal;
+    img = nImg;
+  }
+
+  public Complex squared() {
+    double nReal = (real - img)*(real + img);
+    double nImg = 2 * real * img;
+    real = nReal;
+    img = nImg;  
+    return this;
+  }
+
+  public double sizeSquared() {
+    return real * real + img * img;
+  }
+}
+
+/**
+ Simple class that extends GWinData and holds the data that 
+ is specific to a particular window.
+ In this case it holds the Mandelbrot data needed to draw 
+ the window image.
+ */
+class MyWinData extends GWinData {
+
+  public int msx, msy, mex, mey;
+  public double sx, sy, ex, ey;
+  public int w, h;
+  public PImage img;
+  public boolean imgDone;
 }
