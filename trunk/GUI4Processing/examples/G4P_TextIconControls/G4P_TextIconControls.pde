@@ -1,8 +1,19 @@
+/**
+ This sketch is used simple to show many of the 
+ controls available in the G4P library.
+ 
+ Other examples demonstrate individual controls 
+ in more detail.
+ 
+ created by Peter Lager
+
+*/
+ 
 import g4p_controls.*;
 
 import processing.core.PApplet;
 
-
+GToggleGroup tg = new GToggleGroup();
 GOption opt0, opt1, opt2;
 GCheckbox cbx0;
 GLabel lbl0, lbl1;
@@ -61,6 +72,8 @@ public void setup() {
   controls.add(opt2);
 
   opt0.setSelected(true);
+
+tg.addControls(opt0, opt1, opt2);
 
   cbx0 = new GCheckbox(this, 200, 76, 100, 20, "Tick box");
   controls.add(cbx0);
@@ -141,4 +154,3 @@ public void handleDropListEvents(GDropList list, GEvent event) {
       control.setIconAlign(null, na);
   }
 }
-

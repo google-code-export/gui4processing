@@ -1,7 +1,7 @@
   // The code in this tab is used to create all the other
   // controls needed to configure the text+icon controls.
   
-  GToggleGroup tg = new GToggleGroup();
+  GToggleGroup tgStyle = new GToggleGroup();
   GOption optPlain, optBold, optItalic, optBoldItalic;
   GCheckbox cbxOpaque;
   GSlider sdrBack;
@@ -43,7 +43,7 @@
     optItalic = new GOption(this, x, y + 60, 80, 18, "Italic");
     optBoldItalic = new GOption(this, x, y + 80, 100, 18, "Bold-Italic");
     
-    tg.addControls(optPlain, optBold, optItalic, optBoldItalic);
+    tgStyle.addControls(optPlain, optBold, optItalic, optBoldItalic);
     optPlain.setSelected(true);
 
     // Allignment droplists
@@ -85,4 +85,3 @@
     knbAngle.setNbrTicks(13);
     knbAngle.setStickToTicks(true);    
   }
-

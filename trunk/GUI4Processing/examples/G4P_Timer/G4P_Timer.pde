@@ -16,9 +16,7 @@ GButton btnStart, btnStop;
 GTimer timer;
 
 ArrayList liveBalls, deadBalls;
-
 int rate;
-
 PImage rear, front;
 
 void setup(){
@@ -29,7 +27,8 @@ void setup(){
   // Create a slider to control rate of balls erupted.
   sdrRate = new GSlider(this, 230, 10, 360, 20, 10);
   sdrRate.setLimits(50, 10, 120); // (init, min, max)
-
+  sdrRate.setEasing(5);
+  
   // Get timer interval based on initial slider value and limits
   rate = 130 - sdrRate.getValueI();
   // Create a GTimer object that will call the method
@@ -51,9 +50,10 @@ void setup(){
   // try and keep it at 30fps
   frameRate(30);
 
-  // Register the pre() method for this class
-//  registerPre(this);
-  registerMethod("pre", this);
+  // Register the pre() method for this class. Pick the line
+  // to match the version of Processing being used.
+  // registerPre(this); // Use this for PS 1.5.1
+  registerMethod("pre", this); // Use this for PS 2.0b6
 }
 
 // This method is now called before each call to draw()

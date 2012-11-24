@@ -1,5 +1,5 @@
 /*
-Demonstration of how to create and use multiple windows with
+ Demonstration of how to create and use multiple windows with
  the G4P (GUI for Processing) library.
  
  (c)2012 Peter Lager
@@ -9,6 +9,7 @@ Demonstration of how to create and use multiple windows with
  It is a complex example and it is recommended that you read
  a detailed explanation of the code used which can be found at:
    http://www.lagers.org.uk/g4p/applets/g4p_windowsstarter
+   
  */
 
 import g4p_controls.*;
@@ -18,9 +19,9 @@ GButton btnStart;
 GLabel lblInstr;
 
 void setup() {
-  size(128, 128);
-  btnStart = new GButton(this, 4, 20, 120, 30, "Create 3 Windows");
-  lblInstr = new GLabel(this, 4, 64, 120, 60, "Use the mouse to draw a rectangle in any of the 3 windows");
+  size(256, 128);
+  btnStart = new GButton(this, 4, 34, 120, 60, "Create 3 Windows");
+  lblInstr = new GLabel(this, 132, 34, 120, 60, "Use the mouse to draw a rectangle in any of the 3 windows");
   lblInstr.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   lblInstr.setVisible(false);
 }
@@ -29,12 +30,12 @@ void setup() {
  * Draw for the main window
  */
 void draw() {
-  background(192);
+  background(240);
 }
 
 /**
 Create the three windows so that they share mouse handling 
-and darwing code.
+and drawing code.
 */
 void createWindows() {
   int col;
