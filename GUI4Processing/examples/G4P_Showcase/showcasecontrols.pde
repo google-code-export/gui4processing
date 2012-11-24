@@ -67,8 +67,8 @@ public void makeDemoControls() {
   // Create the GSkethPad control to position and display the graphic
   spad = new GSketchPad(this, pWidth-210, pHeight-60, 100, 40);
   // Now create and clear graphic to be used (JAVA parameter
-  // only needed for Processing 1.5.1)
-  pg = createGraphics(100, 46, JAVA);
+  // parameter is only needed for Processing 1.5.1)
+  pg = createGraphics(100, 46, JAVA2D);
   // Add the graphic to the control. 
   spad.setGraphic(pg);
   updateGraphic(3); // Method for drawing the graphic

@@ -37,7 +37,7 @@ void setup() {
   G4P.setGlobalColorScheme(G4P.GOLD_SCHEME);
 
   // Create the various GUI components
-  p = new GPanel(this, 30, 30, 460, 300, "Toroid Control Panel");
+  p = new GPanel(this, 2, height - 30, 460, 300, "Toroid Control Panel");
   lblSegs = new GLabel(this, 2, 40, 120,20, "Segment detail");
   lblPts = new GLabel(this, 2, 100, 120, 20 , "Ellipse detail");
   lblERad = new GLabel(this, 2, 160, 120, 20, "Ellipse Radius");
