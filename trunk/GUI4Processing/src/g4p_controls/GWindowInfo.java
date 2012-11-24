@@ -8,12 +8,17 @@ import java.util.LinkedList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PMatrix;
-import processing.core.PMatrix2D;
 import processing.core.PMatrix3D;
-import processing.opengl.*;
 
 /**
- * This class is used to remember information about a particular applet (i.e. window).
+ * DO NOT ATTEMPT TO USE THIS CLASS <br>
+ * 
+ * Although this class and many of its methods are declared public this is to make 
+ * them available through Refelection and means that should only be used inside the
+ * library code. <br> 
+ * 
+ * This class is used to remember information about a particular applet (i.e. window)
+ * and is responsible handling events passes to it from Processing. <br>
  * 
  * It remembers the original transformation matrix to simplify working with 3D renderers
  * and libraries such as PeasyCam.
@@ -44,8 +49,8 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		app_g_3d = app.g.is3D();
 		if(app.g.is3D())
 			orgMatrix = papplet.getMatrix((PMatrix3D)null);
-		else
-			orgMatrix = papplet.getMatrix((PMatrix2D)null);
+//		else
+//			orgMatrix = papplet.getMatrix((PMatrix2D)null);
 		registerMethodsForWindow();
 	}
 
@@ -53,22 +58,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		windowControls.clear();
 	}
 	
-//	public void draw(){
-//		app.pushMatrix();
-//		if(app_g_3d)
-//			app.hint(PConstants.DISABLE_DEPTH_TEST);
-//		// Load the identity matrix.
-//		app.resetMatrix();
-//		// Apply the original Processing transformation matrix.
-//		app.applyMatrix(orgMatrix);
-//		for(GAbstractControl control : windowControls){
-//			if( (control.registeredMethods & DRAW_METHOD) == DRAW_METHOD && control.parent == null)
-//				control.draw();
-//		}		
-//		if(app_g_3d)
-//			app.hint(PConstants.ENABLE_DEPTH_TEST);
-//		app.popMatrix();
-//	}
+
 	
 	public void draw(){
 		app.pushMatrix();
@@ -87,6 +77,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 			app.hint(PConstants.ENABLE_DEPTH_TEST);
 		app.popMatrix();
 	}
+
 
 	public void mouseEvent(MouseEvent event){
 		for(GAbstractControl control : windowControls){
