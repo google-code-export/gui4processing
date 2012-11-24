@@ -7,8 +7,9 @@ PGraphics pg;
 
 void setup() {
   size(400, 300);
-  // Create and clear graphic to be used
-  pg = createGraphics(200, 160);
+  // Now create and clear graphic to be used (JAVA parameter
+  // only needed for Processing 1.5.1)
+   pg = createGraphics(200, 160, JAVA);
   clearGraphic();
   // Create the G4P control to position and display the graphic
   spad = new GSketchPad(this, 0, 0, 100, 80);

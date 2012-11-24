@@ -66,8 +66,9 @@ public void makeDemoControls() {
   // When the timer is on we will see it in a GSketchPad control
   // Create the GSkethPad control to position and display the graphic
   spad = new GSketchPad(this, pWidth-210, pHeight-60, 100, 40);
-  // Now create and clear graphic to be used
-  pg = createGraphics(100, 46);
+  // Now create and clear graphic to be used (JAVA parameter
+  // only needed for Processing 1.5.1)
+  pg = createGraphics(100, 46, JAVA);
   // Add the graphic to the control. 
   spad.setGraphic(pg);
   updateGraphic(3); // Method for drawing the graphic
