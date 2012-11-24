@@ -90,7 +90,7 @@ public class GButton extends GTextIconControl {
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleButtonEvents", 
 				new Class[]{ GButton.class, GEvent.class }, 
-				new String[]{ "buton", "event" } 
+				new String[]{ "button", "event" } 
 		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
 		cursorOver = HAND;
