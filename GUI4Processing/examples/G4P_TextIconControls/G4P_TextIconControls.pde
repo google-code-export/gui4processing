@@ -11,8 +11,6 @@
  
 import g4p_controls.*;
 
-import processing.core.PApplet;
-
 GToggleGroup tg = new GToggleGroup();
 GOption opt0, opt1, opt2;
 GCheckbox cbx0;
