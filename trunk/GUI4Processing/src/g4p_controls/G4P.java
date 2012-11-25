@@ -32,8 +32,8 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 
 /**
- * The core class for global manipulation and execution of G4P. <br>
- * It also gives access to may of the constants used in this library.
+ * The core class for the global manipulation and execution of G4P. <br>
+ * It also gives access to many of the constants used in this library.
  * 
  * @author Peter Lager
  *
