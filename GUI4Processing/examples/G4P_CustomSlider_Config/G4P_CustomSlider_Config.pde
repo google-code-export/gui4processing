@@ -1,6 +1,6 @@
 /**
  * This program demonstrates the various configuration options 
- * available for the custom slider control (GSlider).
+ * available for the custom slider control (GCustomSlider).
  * 
  * The only thing not set is the range limits. By default the 
  * slider returns values in the range 0.0 to 1.0 inclusive. 
