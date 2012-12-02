@@ -81,7 +81,7 @@ public class GCScheme implements GConstants {
 	 * 
 	 * @param app
 	 */
-	static void makeColorSchemes(PApplet app) {
+	public static void makeColorSchemes(PApplet app) {
 		// If the palettes have not been created then create them
 		// otherwise do nothing
 		if(palettes != null)
@@ -102,6 +102,24 @@ public class GCScheme implements GConstants {
 			// User image not provided
 			image = app.loadImage("default_gui_palette.png");
 		}
+		// Now make the palletes
+		palettes = new int[16][16];
+		jpalettes = new Color[16][16];
+		for(int p = 0; p <16; p++)
+			for(int c = 0; c < 16; c++){
+				int col =  image.get(c * 16 + 8, p * 16 + 8);
+				palettes[p][c] = col;
+				jpalettes[p][c] = new Color((col >> 16) & 0xff, (col >> 8) & 0xff, col & 0xff);
+			}
+	}
+
+	public static void makeColorSchemes() {
+		// If the palettes have not been created then create them
+		// otherwise do nothing
+		if(palettes != null)
+			return;
+		// Load the image
+		PImage image = new PImage((new javax.swing.ImageIcon(new GCScheme().getClass().getResource("/data/default_gui_palette.png"))).getImage());
 		// Now make the palletes
 		palettes = new int[16][16];
 		jpalettes = new Color[16][16];
