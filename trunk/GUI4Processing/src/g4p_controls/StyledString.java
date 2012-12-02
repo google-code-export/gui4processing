@@ -827,7 +827,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @author Peter Lager
 	 *
 	 */
-	static class TextLayoutHitInfo implements Comparable<TextLayoutHitInfo>{
+	static public class TextLayoutHitInfo implements Comparable<TextLayoutHitInfo>{
 		public TextLayoutInfo tli;
 		public TextHitInfo thi;
 
@@ -895,7 +895,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @author Peter Lager
 	 *
 	 */
-	static class TextLayoutInfo implements Comparable<TextLayoutInfo> {
+	static public class TextLayoutInfo implements Comparable<TextLayoutInfo> {
 		public TextLayout layout;		// The matching layout
 		public int lineNo;				// The line number
 		public int startCharIndex;		// Position of the first char in text
