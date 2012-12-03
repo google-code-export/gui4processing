@@ -78,12 +78,28 @@ public abstract class GTextControl extends GAbstractControl {
 	/**
 	 * Set the text to be displayed.
 	 * NEW version for FPanel etc.
-	 * @param ptext
+	 * @param text
 	 */
 	public void setText(String text){
 		if(text == null || text.length() == 0 )
 			text = " ";
 		stext = new StyledString(text, (int)width - TPAD2);
+		bufferInvalid = true;
+	}
+	
+	/**
+	 * Combines setting the text and text alignment in one method. <br>
+	 * 
+	 * If you want to set just one of the alignments then pass null 
+	 * in the other.
+	 * 
+	 * @param text
+	 * @param horz LEFT, CENTER, RIGHT or JUSTIFY
+	 * @param vert TOP, MIDDLE, BOTTOM
+	 */
+	public void setText(String text, GAlign horz, GAlign vert){
+		setText(text);
+		setTextAlign(horz, vert);
 		bufferInvalid = true;
 	}
 	
