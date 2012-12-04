@@ -194,7 +194,6 @@ public class GTextField extends GEditableTextControl {
 		return snap;
 	}
 
-	
 	/**
 	 * If the buffer is invalid then redraw it.
 	 * @TODO need to use palette for colours
