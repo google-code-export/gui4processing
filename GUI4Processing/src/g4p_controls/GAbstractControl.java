@@ -121,9 +121,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	/** Whether to show background or not */
 	protected boolean opaque = false;
 
-	// The event type use READ ONLY
-//	public GEvent eventType;
-
 	// The cursor image when over a control
 	// This should be set in the controls constructor
 	protected int cursorOver = HAND;
@@ -718,7 +715,10 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * any previous rotation set. Then it calculates the centre position
 	 * so that the original top left corner of the control will be the 
 	 * position indicated by x,y with respect to the top left corner of
-	 * parent
+	 * parent.
+	 * 
+	 * The added control will have its position calculated relative to the 
+	 * centre of the parent control.
 	 * 
 	 * @param c the control to add.
 	 * @param x the leftmost or centre position depending on controlMode
@@ -726,6 +726,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param angle the rotation angle (replaces any the angle specified in control)
 	 */
 	public void addControl(GAbstractControl c, float x, float y, float angle){
+		// Ignore if children are not allowed.
 		if(children == null) return;
 		c.rotAngle = angle; 
 		// In child control reset the control so it centred about the origin
@@ -767,6 +768,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		c.setZ(z);
 		// Parent will now be responsible for drawing
 		c.registeredMethods &= (ALL_METHOD - DRAW_METHOD);
+		addToParent(this);
 		if(children == null)
 			children = new LinkedList<GAbstractControl>();
 		children.addLast(c);
@@ -816,6 +818,14 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 				break;
 			}	
 		}
+	}
+
+	/**
+	 * Changes that need to be made to child when added
+	 * 
+	 * @param p the parent
+	 */
+	protected void addToParent(GAbstractControl p){
 	}
 	
 	/**
