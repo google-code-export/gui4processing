@@ -121,6 +121,18 @@ public class GPanel extends GTextControl {
 		};
 	}
 
+	/**
+	 * Additional changes that need to be made this control
+	 * is added to another.
+	 *  
+	 * @param p the parent
+	 */
+	protected void addToParent(GAbstractControl p){
+		dockX = x;
+		dockY = y;
+	}
+	
+
 	public void setText(String text){
 		super.setText(text);
 		stext.getLines(buffer.g2);
@@ -159,6 +171,7 @@ public class GPanel extends GTextControl {
 	public void draw(){
 		if(!visible) return;
 
+		//	System.out.println(tag + "  [" + x + ", " + y+"]" + "  [" + cx + ", " + cy+"]"+ "  [" + dockX + ", " + dockY+"]");
 		// Update buffer if invalid
 		updateBuffer();
 		winApp.pushStyle();
@@ -227,10 +240,10 @@ public class GPanel extends GTextControl {
 		currSpot = whichHotSpot(ox, oy);
 		// Is mouse over the panel tab (taking into account extended with when not collapsed)
 		boolean mouseOverTab = (tabOnly)? currSpot == COLLAPSED_BAR_SPOT : currSpot == EXPANDED_BAR_SPOT | currSpot == COLLAPSED_BAR_SPOT;
-//			(currSpot == 1  || (currSpot == EXAPNDED_BAR_SPOT && !tabOnly));
+		//			(currSpot == 1  || (currSpot == EXAPNDED_BAR_SPOT && !tabOnly));
 		// Is the mouse anywhere over the panel (taking into account whether the panel is
 		// collapsed or not)
-//		boolean mouseOverPanel = (currSpot == 1  && tabOnly) || (currSpot > 0 && !tabOnly);
+		//		boolean mouseOverPanel = (currSpot == 1  && tabOnly) || (currSpot > 0 && !tabOnly);
 
 		if(mouseOverTab || focusIsWith == this)
 			cursorIsOver = this;
@@ -245,8 +258,8 @@ public class GPanel extends GTextControl {
 			}
 			// If focus is with some other control with the same depth and the mouse is over the panel
 			// Used to ensure that GTextField controls on GPanels release focus
-//			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && currSpot >= 0)
-//				focusIsWith.loseFocus(null);
+			//			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && currSpot >= 0)
+			//				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.MOUSE_CLICKED:
 			if(focusIsWith == this){
@@ -256,8 +269,8 @@ public class GPanel extends GTextControl {
 				if(tabOnly){
 					x = dockX;
 					y = dockY;
-					cx = x + width/2;
-					cy = y + height/2;
+					//					cx = x + width/2;
+					//					cy = y + height/2;
 				}
 				else {
 					// Open panel move on screen if needed
@@ -265,12 +278,12 @@ public class GPanel extends GTextControl {
 						y = winApp.getHeight() - height;
 					if(x + width > winApp.getWidth())
 						x = winApp.getWidth() - width;
-					
+
 				}
 				// Maintain centre for drawing purposes
 				cx = x + width/2;
 				cy = y + height/2;
-				constrainPanelPosition();
+//				constrainPanelPosition();
 				if(tabOnly)
 					fireEvent(this, GEvent.COLLAPSED);
 				else
@@ -293,13 +306,10 @@ public class GPanel extends GTextControl {
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			if(focusIsWith == this && draggable && parent == null){
-//				x += (winApp.mouseX - winApp.pmouseX);
-//				y += (winApp.mouseY - winApp.pmouseY);
+				// Maintain centre for drawing purposes
 				cx += (winApp.mouseX - winApp.pmouseX);
 				cy += (winApp.mouseY - winApp.pmouseY);
-				// Maintain centre for drawing purposes
-//				cx = x + width/2;
-//				cy = y + height/2;
+				//	Update x and y positions
 				x = cx - width/2;
 				y = cy - height/2;
 				constrainPanelPosition();
@@ -326,7 +336,7 @@ public class GPanel extends GTextControl {
 	public void setDraggable(boolean draggable){
 		this.draggable = draggable;
 	}
-	
+
 	/**
 	 * Can we drag this panel with the mouse?
 	 * @return true if draggable
@@ -334,7 +344,7 @@ public class GPanel extends GTextControl {
 	public boolean isDraggable(){
 		return draggable;
 	}
-	
+
 	/**
 	 * Ensures that the panel tab and panel body if open does not
 	 * extend off the screen.
@@ -363,14 +373,14 @@ public class GPanel extends GTextControl {
 	 */
 	public void setCollapsed(boolean collapse){
 		tabOnly = collapse;
-		// If we open the panel make sure it fits on the screen but if we
-		// collapse the panel disable the panel controls
+		// If we open the panel make sure it fits on the screen but if we collapse
+		// the panel disable the panel controls but leave the panel available
 		if(tabOnly){
 			setAvailable(false);
 			available = true;
 		}
 		else {
-			constrainPanelPosition();
+//			constrainPanelPosition();
 			setAvailable(true);
 		}
 	}
@@ -387,4 +397,8 @@ public class GPanel extends GTextControl {
 		return tabHeight;
 	}
 
+	public String toString(){
+		return tag + "  [" + x + ", " + y+"]" + "  [" + cx + ", " + cy+"]"+ "  [" + dockX + ", " + dockY+"]";
+
+	}
 }
