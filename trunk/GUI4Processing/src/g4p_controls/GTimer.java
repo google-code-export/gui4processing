@@ -96,6 +96,24 @@ public class GTimer implements GConstantsInternal {
 		}
 	}
 
+	public GTimer(PApplet theApplet, Object obj, String methodName, int delay, int initDelay){
+		app = theApplet;
+		createEventHandler(obj, methodName);
+		// If we have something to handle the event then create the Timer
+		if(eventHandlerObject != null){
+			timer = new Timer(delay, new ActionListener(){
+
+				public void actionPerformed(ActionEvent e) {
+					fireEvent();
+				}
+
+			});	
+			timer.setInitialDelay(initDelay);
+			timer.setDelay(delay);
+			timer.stop();
+		}
+	}
+
 	/**
 	 * See if 'obj' has a parameterless method called 'methodName' and
 	 * if so keep a reference to it.
