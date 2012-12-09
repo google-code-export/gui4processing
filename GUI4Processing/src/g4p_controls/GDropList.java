@@ -119,8 +119,8 @@ public class GDropList extends GTextControl {
 		G4P.showMessages = false;
 		
 		vsb = new GScrollbar(theApplet, 0, 0, height - itemHeight, 10);
-		vsb.setAutoHide(false);
-		vsb.addEventHandler(this, "scrollbarEventHandler");
+//		vsb.setAutoHide(true);
+		vsb.addEventHandler(this, "vsbEventHandler");
 		vsb.setAutoHide(true);
 		vsb.setVisible(false);
 		
@@ -140,7 +140,7 @@ public class GDropList extends GTextControl {
 				new HSrect(2, 0, 0, width - buttonWidth, itemHeight)	// selected text display area
 		};
 
-		z = Z_SLIPPY;
+		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleDropListEvents",
 				new Class[]{ GDropList.class, GEvent.class }, 
 				new String[]{ "list", "event" } 
@@ -177,8 +177,8 @@ public class GDropList extends GTextControl {
 			float filler = ((float)dropListMaxSize)/list.length;
 			float value = ((float)startItem)/list.length;
 			vsb.setValue(value, filler);
+			vsb.setVisible(false); //  make it false
 		}
-		vsb.setVisible(false);
 	}
 	
 	/**
@@ -354,7 +354,7 @@ public class GDropList extends GTextControl {
 	 * This method should <b>not</b> be called by the user. It
 	 * is for internal library use only.
 	 */
-	public void scrollbarEventHandler(GScrollbar scrollbar, GEvent event){
+	public void vsbEventHandler(GScrollbar scrollbar, GEvent event){
 		int newStartItem = Math.round(vsb.getValue() * items.length);
 		startItem = newStartItem;
 		bufferInvalid = true;

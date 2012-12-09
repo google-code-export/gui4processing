@@ -114,8 +114,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 				stext = new StyledString(text);
 			}
 		}
-//		System.out.println("GEditableTextControl losefocus");
-//		startTLHI.copyFrom(endTLHI);
 		keepCursorInView = true;
 		bufferInvalid = true;
 	}
@@ -521,7 +519,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		tli = stext.getTLIforCharNo(pos);
 		if(tli == null){
 			// If unable to get a layout for pos then reset everything
-			System.out.println("FeditableTextControl - changeText");
 			endTLHI = null;
 			startTLHI = null;
 			ptx = pty = 0;
