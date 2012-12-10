@@ -40,20 +40,16 @@ import processing.core.PGraphicsJava2D;
  * dragged, collapsed (leaves title tab only) and un-collapsed.
  * 
  * When created the Panel is collapsed by default. To open the panel
- * use setCollapsed(true); after creating it. <br>
+ * use setCollapsed(true); after creating it.
  * 
  * Unlike all the other components the [x,y] coordinates do not represent
  * the top-left corner of the control rather the top-left corner of the 
- * panel drawing surface (which is the bottom left corner of the tab) <br>
- * 
- * Once a component has been added the x/y coordinates of the control are 
- * calculated to be the centre of the panel to the centre of the control. This 
- * is to facilitate rotating of controls on panels 
+ * panel drawing surface (which is the bottom left corner of the tab)
  *  
  * @author Peter Lager
  *
  */
-public class GPanel extends GTextControl {
+public class GPanelORG extends GTextControl {
 
 	static protected int COLLAPSED_BAR_SPOT = 1;
 	static protected int EXPANDED_BAR_SPOT = 2;
@@ -69,48 +65,29 @@ public class GPanel extends GTextControl {
 	/** Used to restore position when closing panel */
 	protected float dockX, dockY;
 
-	// Since all 
-	protected float lowX, highX, lowY, highY;
-	
 	/** true if the panel is being dragged */
 	protected boolean beingDragged = false;
 
 	protected boolean draggable = true;
 
-	/**
-	 * Create a Panel that comprises of 2 parts the tab which is used to 
-	 * select and move the panel and the container window below the tab which 
-	 * is used to hold other components.
-	 * 
-	 * @param theApplet the PApplet reference
-	 * @param p0 horizontal position
-	 * @param p1 vertical position
-	 * @param p2 width of the panel
-	 * @param p3 height of the panel (excl. tab)
-	 */
-	public GPanel(PApplet theApplet, float p0, float p1, float p2, float p3) {
-		this(theApplet, p0, p1, 2, p3, "Panel");
+	public GPanelORG(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		this(theApplet, p0, p1, 2, p3, "");
 	}
-	
+
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
 	 * select and move the panel and the container window below the tab which 
 	 * is used to hold other components.
 	 *  
 	 * @param theApplet the PApplet reference
-	 * @param p0 horizontal position
-	 * @param p1 vertical position
-	 * @param p2 width of the panel
-	 * @param p3 height of the panel (excl. tab)
+	 * @param x horizontal position
+	 * @param y vertical position
+	 * @param width width of the panel
+	 * @param height height of the panel (excl. tab)
 	 * @param text to appear on tab
 	 */
-	public GPanel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
+	public GPanelORG(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
-		// Set the values used to constrain movement of the panel
-		lowX = lowY = 0;
-		highX = winApp.width;
-		highY = winApp.height;
-		// Create the list of children
 		children = new LinkedList<GAbstractControl>();
 		// The image buffer is just for the tab area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
@@ -145,24 +122,14 @@ public class GPanel extends GTextControl {
 	}
 
 	/**
-	 * This panel is being added to another Additional changes that need to be made this control
+	 * Additional changes that need to be made this control
 	 * is added to another.
 	 *  
 	 * @param p the parent
 	 */
 	protected void addToParent(GAbstractControl p){
-		// Will this fit inside the parent panel
-		if(width > p.width || height > p.height){ //No
-			draggable = false;
-		}
-		else {
-			lowX = -p.width/2;
-			highX = p.width/2;
-			lowY = -p.height/2;
-			highY = p.height/2;
-		}
-//		dockX = x;
-//		dockY = y;
+		dockX = x;
+		dockY = y;
 	}
 	
 
@@ -203,6 +170,7 @@ public class GPanel extends GTextControl {
 	 */
 	public void draw(){
 		if(!visible) return;
+
 		//	System.out.println(tag + "  [" + x + ", " + y+"]" + "  [" + cx + ", " + cy+"]"+ "  [" + dockX + ", " + dockY+"]");
 		// Update buffer if invalid
 		updateBuffer();
@@ -221,7 +189,6 @@ public class GPanel extends GTextControl {
 		if(alphaLevel < 255)
 			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		winApp.image(buffer, 0, 0);	
-
 		winApp.popMatrix();
 
 		if(!tabOnly){
@@ -306,23 +273,21 @@ public class GPanel extends GTextControl {
 					//					cy = y + height/2;
 				}
 				else {
-					dockX = x;
-					dockY = y;
 					// Open panel move on screen if needed
 					if(y + height > winApp.getHeight())
 						y = winApp.getHeight() - height;
 					if(x + width > winApp.getWidth())
 						x = winApp.getWidth() - width;
+
 				}
 				// Maintain centre for drawing purposes
 				cx = x + width/2;
 				cy = y + height/2;
-				constrainPanelPosition();
+//				constrainPanelPosition();
 				if(tabOnly)
 					fireEvent(this, GEvent.COLLAPSED);
 				else
 					fireEvent(this, GEvent.EXPANDED);
-				beingDragged = false;
 				// This component does not keep the focus when clicked
 				loseFocus(null);
 			}
@@ -340,7 +305,7 @@ public class GPanel extends GTextControl {
 			}
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			if(focusIsWith == this && draggable ){//&& parent == null){
+			if(focusIsWith == this && draggable && parent == null){
 				// Maintain centre for drawing purposes
 				cx += (winApp.mouseX - winApp.pmouseX);
 				cy += (winApp.mouseY - winApp.pmouseY);
@@ -385,41 +350,22 @@ public class GPanel extends GTextControl {
 	 * extend off the screen.
 	 */
 	private void constrainPanelPosition(){
-		// Calculate the size of the visible part of the panel
 		int w = (int) ((tabOnly)? tabWidth : width);
 		int h = (int) ((tabOnly)? tabHeight : height);
 		// Constrain horizontally
-		if(x < lowX) 
-			x = lowX;
-		else if(x + w > highX) 
-			x = (int) (highX - w);
+		if(x < 0) 
+			x = 0;
+		else if(x + w > winApp.getWidth()) 
+			x = (int) (winApp.getWidth() - w);
 		// Constrain vertically
-		if(y < lowY) 
-			y = lowY;
-		else if(y + h > highY) 
-			y = highY - h;
+		if(y < 0) 
+			y = 0;
+		else if(y + h > winApp.getHeight()) 
+			y = winApp.getHeight() - h;
 		// Maintain centre for
 		cx = x + width/2;
 		cy = y + height/2;
 	}
-
-//	private void constrainPanelPosition_OLD(){
-//		int w = (int) ((tabOnly)? tabWidth : width);
-//		int h = (int) ((tabOnly)? tabHeight : height);
-//		// Constrain horizontally
-//		if(x < 0) 
-//			x = 0;
-//		else if(x + w > winApp.getWidth()) 
-//			x = (int) (winApp.getWidth() - w);
-//		// Constrain vertically
-//		if(y < 0) 
-//			y = 0;
-//		else if(y + h > winApp.getHeight()) 
-//			y = winApp.getHeight() - h;
-//		// Maintain centre for
-//		cx = x + width/2;
-//		cy = y + height/2;
-//	}
 
 	/**
 	 * Collapse or open the panel
