@@ -706,19 +706,17 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		return (focusIsWith == null) ? -1 : focusIsWith.z;
 	}
 
-//	public static GAbstractControl getFocusObject(){
-//		return focusIsWith;
-//	}
-	
 	/**
 	 * This will set the rotation of the control to angle overwriting
 	 * any previous rotation set. Then it calculates the centre position
 	 * so that the original top left corner of the control will be the 
 	 * position indicated by x,y with respect to the top left corner of
-	 * parent.
+	 * parent. <br>
 	 * 
 	 * The added control will have its position calculated relative to the 
-	 * centre of the parent control.
+	 * centre of the parent control. <br>
+	 * 
+	 * All overloaded methods call this one. <br>
 	 * 
 	 * @param c the control to add.
 	 * @param x the leftmost or centre position depending on controlMode
@@ -768,11 +766,12 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		c.setZ(z);
 		// Parent will now be responsible for drawing
 		c.registeredMethods &= (ALL_METHOD - DRAW_METHOD);
-		addToParent(this);
 		if(children == null)
 			children = new LinkedList<GAbstractControl>();
 		children.addLast(c);
 		Collections.sort(children, new Z_Order());
+		// Does the control being added have to do anything extra
+		c.addToParent(this);
 	}
 
 	/**
