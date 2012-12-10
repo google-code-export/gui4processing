@@ -28,6 +28,7 @@ import g4p_controls.HotSpot.HSrect;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
@@ -154,13 +155,23 @@ public class GDropList extends GTextControl {
 	 * Use this to set or change the list of items to appear in the list. If
 	 * you enter an invalid selection index then it is forced into
 	 * the valid range. <br>
-	 * If the list is null or empty then then no changes are made. <br>
+	 * Null and empty values in the list will be ignored. <br>
+	 * If the list is null then or empty then then no changes are made. <br>
 	 * @param list
 	 * @param selected
 	 */
 	public void setItems(String[] list, int selected){
-		if(list == null || list.length == 0)
+		if(list == null)
 			return;
+		// Get rid of null or empty strings
+		ArrayList<String> strings = new ArrayList<String>();
+		for(String s : list)
+			if(s != null && s.length() > 0)
+				strings.add(s);
+		list = strings.toArray(new String[strings.size()]);
+		if(list.length == 0)
+			return;
+		// We have at least one item for the droplist
 		items = list;
 		sitems = new StyledString[list.length];
 		// Create styled strings for display
