@@ -1,9 +1,10 @@
 /**
- * This sketch is to demonstrate features of the GTextField
- * and GTextArea controls. These features include
- * Tabbing between controls
- * Default text
- * Copy and paste text
+ * This sketch is to demonstrate some features of the GTextField
+ * and GTextArea controls. 
+ * These features include
+ * - Tabbing between controls
+ * - Default text
+ * - Copy and paste text
  * 
  * @author Peter Lager
  */
@@ -63,6 +64,10 @@ public void handleTextEvents(GEditableTextControl tc, GEvent event) {
     break;
   case SELECTION_CHANGED:
     System.out.println("SELECTION_CHANGED");
+    System.out.println(tc.getSelectedText() + "\n");
+    break;
+  case ENTERED:
+    System.out.println("ENTER KEY TYPED");
     System.out.println(tc.getSelectedText() + "\n");
     break;
   default:
