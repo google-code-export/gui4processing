@@ -57,8 +57,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	// The width to break a line
 	protected int wrapWidth = Integer.MAX_VALUE;
 
-//	protected GAlign textAlignH = GAlign.CENTER | GAlignXXX.MIDDLE;
-
 	protected Font localFont = G4P.globalFont;
 
 	// The typing area
@@ -111,7 +109,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			int tl = stext.getPlainText().trim().length();
 			if(tl == 0){
 				text = "";
-				stext = new StyledString(text);
+				stext = new StyledString(text, wrapWidth);
 			}
 		}
 		keepCursorInView = true;
@@ -131,7 +129,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		if(focusIsWith != this){
 			dragging = false;
 			if(stext == null || stext.length() == 0)
-				stext = new StyledString(" ");
+				stext = new StyledString(" ", wrapWidth);
 			text = stext.getPlainText();
 			LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
 			startTLHI = new TextLayoutHitInfo(lines.getFirst(), null);
@@ -158,7 +156,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		if(dtext == null || dtext.length() == 0)
 			defaultText = null;
 		else {
-			defaultText = new StyledString(dtext);
+			defaultText = new StyledString(dtext, wrapWidth);
 			defaultText.addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE);
 		}
 		bufferInvalid = true;
@@ -452,59 +450,10 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	}
 	
 	// Enable polymorphism. 
-	protected void keyPressedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown) {
-	}
+	protected void keyPressedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown) { }
 
-	protected void keyTypedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
-		int ascii = (int)keyChar;
+	protected void keyTypedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){ }
 
-		if(ascii >= 32 && ascii < 127){
-			if(hasSelection())
-				stext.deleteCharacters(pos, nbr);
-			stext.insertCharacters(pos, "" + keyChar);
-			adjust = 1; textChanged = true;
-		}
-		else if(keyChar == KeyEvent.VK_BACK_SPACE){
-			if(hasSelection()){
-				stext.deleteCharacters(pos, nbr);
-				adjust = 0; textChanged = true;				
-			}
-			else if(stext.deleteCharacters(pos - 1, 1)){
-				adjust = -1; textChanged = true;
-			}
-		}
-		else if(keyChar == KeyEvent.VK_DELETE){
-			if(hasSelection()){
-				stext.deleteCharacters(pos, nbr);
-				adjust = 0; textChanged = true;				
-			}
-			else if(stext.deleteCharacters(pos, 1)){
-				adjust = 0; textChanged = true;
-			}
-		}
-		else if(keyChar == KeyEvent.VK_ENTER && stext.getWrapWidth() != Integer.MAX_VALUE) {
-			if(stext.insertEOL(pos)){
-				adjust = 1; textChanged = true;
-				newline = true;
-			}
-		}
-		else if(keyChar == KeyEvent.VK_TAB){
-			// If possible move to next text control
-			if(tabManager != null){
-				boolean result = (shiftDown) ? tabManager.prevControl(this) : tabManager.nextControl(this);
-				if(result){
-					startTLHI.copyFrom(endTLHI);
-					return;
-				}
-			}
-		}
-		// If we have emptied the text then recreate a one character string (space)
-		if(stext.length() == 0){
-			stext.insertCharacters(0, " ");
-			adjust++; textChanged = true;
-		}
-	}
-	
 	
 	// Only executed if text has changed
 	protected void changeText(){
