@@ -310,7 +310,7 @@ public class GTextField extends GEditableTextControl {
 				}
 				dragging = false;
 				if(stext == null || stext.length() == 0){
-					stext = new StyledString(" ");
+					stext = new StyledString(" ", wrapWidth);
 					stext.getLines(buffer.g2);
 				}
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
@@ -399,6 +399,58 @@ public class GTextField extends GEditableTextControl {
 //		}
 	}
 
+	protected void keyTypedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
+		int ascii = (int)keyChar;
+
+		if(ascii >= 32 && ascii < 127){
+			if(hasSelection())
+				stext.deleteCharacters(pos, nbr);
+			stext.insertCharacters(pos, "" + keyChar);
+			adjust = 1; textChanged = true;
+		}
+		else if(keyChar == KeyEvent.VK_BACK_SPACE){
+			if(hasSelection()){
+				stext.deleteCharacters(pos, nbr);
+				adjust = 0; textChanged = true;				
+			}
+			else if(stext.deleteCharacters(pos - 1, 1)){
+				adjust = -1; textChanged = true;
+			}
+		}
+		else if(keyChar == KeyEvent.VK_DELETE){
+			if(hasSelection()){
+				stext.deleteCharacters(pos, nbr);
+				adjust = 0; textChanged = true;				
+			}
+			else if(stext.deleteCharacters(pos, 1)){
+				adjust = 0; textChanged = true;
+			}
+		}
+		else if(keyChar == KeyEvent.VK_ENTER) {
+			fireEvent(this, GEvent.ENTERED);
+			// If we have a tab manager and can tab forward then do so
+			if(tabManager != null && tabManager.nextControl(this)){
+					startTLHI.copyFrom(endTLHI);
+					return;
+			}
+		}
+		else if(keyChar == KeyEvent.VK_TAB){
+			// If possible move to next text control
+			if(tabManager != null){
+				boolean result = (shiftDown) ? tabManager.prevControl(this) : tabManager.nextControl(this);
+				if(result){
+					startTLHI.copyFrom(endTLHI);
+					return;
+				}
+			}
+		}
+		// If we have emptied the text then recreate a one character string (space)
+		if(stext.length() == 0){
+			stext.insertCharacters(0, " ");
+			adjust++; textChanged = true;
+		}
+	}
+	
 	public void draw(){
 		if(!visible) return;
 		updateBuffer();

@@ -164,7 +164,7 @@ public class GTextArea extends GEditableTextControl {
 		if(dtext == null || dtext.length() == 0)
 			defaultText = null;
 		else {
-			defaultText = new StyledString(dtext, (int)tw);
+			defaultText = new StyledString(dtext, wrapWidth);
 			defaultText.addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE);
 		}
 		bufferInvalid = true;
@@ -515,6 +515,55 @@ public class GTextArea extends GEditableTextControl {
 		}
 	}
 
+	protected void keyTypedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){
+		int ascii = (int)keyChar;
+
+		if(ascii >= 32 && ascii < 127){
+			if(hasSelection())
+				stext.deleteCharacters(pos, nbr);
+			stext.insertCharacters(pos, "" + keyChar);
+			adjust = 1; textChanged = true;
+		}
+		else if(keyChar == KeyEvent.VK_BACK_SPACE){
+			if(hasSelection()){
+				stext.deleteCharacters(pos, nbr);
+				adjust = 0; textChanged = true;				
+			}
+			else if(stext.deleteCharacters(pos - 1, 1)){
+				adjust = -1; textChanged = true;
+			}
+		}
+		else if(keyChar == KeyEvent.VK_DELETE){
+			if(hasSelection()){
+				stext.deleteCharacters(pos, nbr);
+				adjust = 0; textChanged = true;				
+			}
+			else if(stext.deleteCharacters(pos, 1)){
+				adjust = 0; textChanged = true;
+			}
+		}
+		else if(keyChar == KeyEvent.VK_ENTER) {
+			if(stext.insertEOL(pos)){
+				adjust = 1; textChanged = true;
+				newline = true;
+			}
+		}
+		else if(keyChar == KeyEvent.VK_TAB){
+			// If possible move to next text control
+			if(tabManager != null){
+				boolean result = (shiftDown) ? tabManager.prevControl(this) : tabManager.nextControl(this);
+				if(result){
+					startTLHI.copyFrom(endTLHI);
+					return;
+				}
+			}
+		}
+		// If we have emptied the text then recreate a one character string (space)
+		if(stext.length() == 0){
+			stext.insertCharacters(0, " ");
+			adjust++; textChanged = true;
+		}
+	}
 	/**
 	 * Move caret to home position
 	 * @return true if caret moved else false
@@ -648,7 +697,7 @@ public class GTextArea extends GEditableTextControl {
 				}
 				dragging = false;
 				if(stext == null || stext.length() == 0){
-					stext = new StyledString(" ", (int)tw);
+					stext = new StyledString(" ", wrapWidth);
 					stext.getLines(buffer.g2);
 				}
 				endTLHI = stext.calculateFromXY(buffer.g2, ox + ptx, oy + pty);
