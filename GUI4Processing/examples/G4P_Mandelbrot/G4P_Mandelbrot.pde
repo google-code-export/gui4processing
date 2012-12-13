@@ -8,6 +8,7 @@
 
 import g4p_controls.*;
 import java.awt.Color;
+import java.awt.event.*;
 
 final int MAX_ITERATE = 128;
 
@@ -178,18 +179,18 @@ public void handleButtonEvents(GButton button, GEvent event) {
  * @param data the data for the GWindow being used
  * @param event the mouse event
  */
-public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event) {
+public void windowMouse(GWinApplet appc, GWinData data, java.awt.event.MouseEvent event) {
   MyWinData d = (MyWinData)data;
   if (d.imgDone == false)
     return;
   switch(event.getID()) {
-  case MouseEvent.MOUSE_PRESSED:
+  case java.awt.event.MouseEvent.MOUSE_PRESSED:
     d.msx = d.mex = appc.mouseX;
     d.msy = d.mey = appc.mouseY;
     appc.loop();
     appc.frameRate(30);
     break;
-  case MouseEvent.MOUSE_RELEASED:
+  case java.awt.event.MouseEvent.MOUSE_RELEASED:
     d.mex = appc.mouseX;
     d.mey = appc.mouseY;
     // Make sure the coordinates are top left / bottom left
@@ -214,7 +215,7 @@ public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event) {
     d.msx = d.mex = d.msy = d.mey = 0;
     appc.noLoop();
     break;
-  case MouseEvent.MOUSE_DRAGGED:
+  case java.awt.event.MouseEvent.MOUSE_DRAGGED:
     d.mex = appc.mouseX;
     d.mey = appc.mouseY;
     break;
