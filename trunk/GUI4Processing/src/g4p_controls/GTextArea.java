@@ -29,8 +29,6 @@ import g4p_controls.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
@@ -39,6 +37,7 @@ import java.util.LinkedList;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
+import processing.event.MouseEvent;
 
 /**
  * The text area component. <br>
@@ -428,31 +427,32 @@ public class GTextArea extends GEditableTextControl {
 		boolean validKeyCombo = true;
 
 		switch(keyCode){
-		case KeyEvent.VK_LEFT:
+		case LEFT:
 			moveCaretLeft(endTLHI);
 			break;
-		case KeyEvent.VK_RIGHT:
+		case RIGHT:
 			moveCaretRight(endTLHI);
 			break;
-		case KeyEvent.VK_UP:
+		case UP:
 			moveCaretUp(endTLHI);
 			break;
-		case KeyEvent.VK_DOWN:
+		case DOWN:
 			moveCaretDown(endTLHI);
 			break;
-		case KeyEvent.VK_HOME:
+		case GConstants.HOME:
 			if(ctrlDown)		// move to start of text
 				moveCaretStartOfText(endTLHI);
 			else 	// Move to start of line
 				moveCaretStartOfLine(endTLHI);
 			break;
-		case KeyEvent.VK_END:
+		case GConstants.END:
 			if(ctrlDown)		// move to end of text
 				moveCaretEndOfText(endTLHI);
 			else 	// Move to end of line
 				moveCaretEndOfLine(endTLHI);
 			break;
-		case KeyEvent.VK_A:
+//		case KeyEvent.VK_A:
+		case 'A':
 			if(ctrlDown){
 				moveCaretStartOfText(startTLHI);
 				moveCaretEndOfText(endTLHI);
@@ -461,12 +461,14 @@ public class GTextArea extends GEditableTextControl {
 				shiftDown = true;
 			}
 			break;
-		case KeyEvent.VK_C:
+//		case KeyEvent.VK_C:
+		case 'C':
 			if(ctrlDown)
 				GClip.copy(getSelectedText());
 			validKeyCombo = false;
 			break;
-		case KeyEvent.VK_V:
+//		case KeyEvent.VK_V:
+		case 'V':
 			if(ctrlDown){
 				String p = GClip.paste();
 				if(p.length() > 0){
@@ -489,14 +491,14 @@ public class GTextArea extends GEditableTextControl {
 			// If we have moved  to the end of a paragraph marker
 			if(caretX > stext.getWrapWidth()){
 				switch(keyCode){
-				case KeyEvent.VK_LEFT:
-				case KeyEvent.VK_UP:
-				case KeyEvent.VK_DOWN:
-				case KeyEvent.VK_END:
+				case LEFT:
+				case UP:
+				case DOWN:
+				case END:
 					moveCaretLeft(endTLHI);
 					validKeyCombo = true;
 					break;
-				case KeyEvent.VK_RIGHT:
+				case RIGHT:
 					if(!moveCaretRight(endTLHI))
 						moveCaretLeft(endTLHI);
 					validKeyCombo = true;
@@ -524,7 +526,7 @@ public class GTextArea extends GEditableTextControl {
 			stext.insertCharacters(pos, "" + keyChar);
 			adjust = 1; textChanged = true;
 		}
-		else if(keyChar == KeyEvent.VK_BACK_SPACE){
+		else if(keyChar == BACKSPACE){
 			if(hasSelection()){
 				stext.deleteCharacters(pos, nbr);
 				adjust = 0; textChanged = true;				
@@ -533,7 +535,7 @@ public class GTextArea extends GEditableTextControl {
 				adjust = -1; textChanged = true;
 			}
 		}
-		else if(keyChar == KeyEvent.VK_DELETE){
+		else if(keyChar == DELETE){
 			if(hasSelection()){
 				stext.deleteCharacters(pos, nbr);
 				adjust = 0; textChanged = true;				
@@ -542,13 +544,13 @@ public class GTextArea extends GEditableTextControl {
 				adjust = 0; textChanged = true;
 			}
 		}
-		else if(keyChar == KeyEvent.VK_ENTER) {
+		else if(keyChar == ENTER || keyChar == RETURN) {
 			if(stext.insertEOL(pos)){
 				adjust = 1; textChanged = true;
 				newline = true;
 			}
 		}
-		else if(keyChar == KeyEvent.VK_TAB){
+		else if(keyChar == TAB){
 			// If possible move to next text control
 			if(tabManager != null){
 				boolean result = (shiftDown) ? tabManager.prevControl(this) : tabManager.nextControl(this);
@@ -688,8 +690,8 @@ public class GTextArea extends GEditableTextControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(currSpot == 1){
 				if(focusIsWith != this && z >= focusObjectZ()){
 					keepCursorInView = true;
@@ -710,11 +712,11 @@ public class GTextArea extends GEditableTextControl {
 					loseFocus(null);
 			}
 			break;
-		case MouseEvent.MOUSE_RELEASED:
+		case MouseEvent.RELEASE:
 			dragging = false;
 			bufferInvalid = true;
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			if(focusIsWith == this){
 				keepCursorInView = true;
 				dragging = true;

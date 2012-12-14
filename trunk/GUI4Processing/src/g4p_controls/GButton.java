@@ -27,12 +27,12 @@ import g4p_controls.HotSpot.HSrect;
 import g4p_controls.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
+import processing.event.MouseEvent;
 
 /**
  * This class is the Button component.
@@ -146,8 +146,8 @@ public class GButton extends GTextIconControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(focusIsWith != this && currSpot >= 0  && z > focusObjectZ()){
 				dragging = false;
 				status = PRESS_CONTROL;
@@ -157,7 +157,7 @@ public class GButton extends GTextIconControl {
 				bufferInvalid = true;
 			}
 			break;
-		case MouseEvent.MOUSE_CLICKED:
+		case MouseEvent.CLICK:
 			// No need to test for isOver() since if the component has focus
 			// and the mouse has not moved since MOUSE_PRESSED otherwise we 
 			// would not get the Java MouseEvent.MOUSE_CLICKED event
@@ -169,7 +169,7 @@ public class GButton extends GTextIconControl {
 				fireEvent(this, GEvent.CLICKED);
 			}
 			break;
-		case MouseEvent.MOUSE_RELEASED:	
+		case MouseEvent.RELEASE:	
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && dragging){
@@ -183,7 +183,7 @@ public class GButton extends GTextIconControl {
 				bufferInvalid = true;
 			}
 			break;
-		case MouseEvent.MOUSE_MOVED:
+		case MouseEvent.MOVE:
 			int currStatus = status;
 			// If dragged state will stay as PRESSED
 			if(currSpot >= 0)
@@ -193,7 +193,7 @@ public class GButton extends GTextIconControl {
 			if(currStatus != status)
 				bufferInvalid = true;
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			dragging = (focusIsWith == this);
 			break;
 		}

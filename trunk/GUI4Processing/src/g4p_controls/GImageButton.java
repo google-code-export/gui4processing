@@ -23,9 +23,8 @@
 
 package g4p_controls;
 
-import java.awt.event.MouseEvent;
-
 import processing.core.PApplet;
+import processing.event.MouseEvent;
 
 /**
  * Buttons create from this class use a number of images to represent it's 
@@ -195,8 +194,8 @@ public class GImageButton extends GImageControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(focusIsWith != this && currSpot >= 0  && z > focusObjectZ()){
 				dragging = false;
 				status = PRESS_CONTROL;
@@ -205,7 +204,7 @@ public class GImageButton extends GImageControl {
 					fireEvent(this, GEvent.PRESSED);
 			}
 			break;
-		case MouseEvent.MOUSE_CLICKED:
+		case MouseEvent.CLICK:
 			// No need to test for isOver() since if the component has focus
 			// and the mouse has not moved since MOUSE_PRESSED otherwise we 
 			// would not get the Java MouseEvent.MOUSE_CLICKED event
@@ -216,7 +215,7 @@ public class GImageButton extends GImageControl {
 				fireEvent(this, GEvent.CLICKED);
 			}
 			break;
-		case MouseEvent.MOUSE_RELEASED:	
+		case MouseEvent.RELEASE:	
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && dragging){
@@ -232,14 +231,14 @@ public class GImageButton extends GImageControl {
 				status = OFF_CONTROL;
 			}
 			break;
-		case MouseEvent.MOUSE_MOVED:
+		case MouseEvent.MOVE:
 			// If dragged state will stay as PRESSED
 			if(currSpot >= 0)
 				status = OVER_CONTROL;
 			else
 				status = OFF_CONTROL;
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			dragging = (focusIsWith == this);
 			break;
 		}

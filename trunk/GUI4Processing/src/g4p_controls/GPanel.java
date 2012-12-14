@@ -27,12 +27,12 @@ import g4p_controls.HotSpot.HSrect;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
+import processing.event.MouseEvent;
 
 
 /**
@@ -283,8 +283,8 @@ public class GPanel extends GTextControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(focusIsWith != this && mouseOverTab &&  z >= focusObjectZ()){
 				takeFocus();
 				beingDragged = false;
@@ -294,7 +294,7 @@ public class GPanel extends GTextControl {
 			//			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && currSpot >= 0)
 			//				focusIsWith.loseFocus(null);
 			break;
-		case MouseEvent.MOUSE_CLICKED:
+		case MouseEvent.CLICK:
 			if(focusIsWith == this){
 				tabOnly = !tabOnly;
 				// Perform appropriate action depending on collapse state
@@ -327,7 +327,7 @@ public class GPanel extends GTextControl {
 				loseFocus(null);
 			}
 			break;
-		case MouseEvent.MOUSE_RELEASED: // After dragging NOT clicking
+		case MouseEvent.RELEASE: // After dragging NOT clicking
 			if(focusIsWith == this){
 				if(beingDragged){
 					// Remember the dock position when the mouse has
@@ -339,7 +339,7 @@ public class GPanel extends GTextControl {
 				}
 			}
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			if(focusIsWith == this && draggable ){//&& parent == null){
 				// Maintain centre for drawing purposes
 				cx += (winApp.mouseX - winApp.pmouseX);

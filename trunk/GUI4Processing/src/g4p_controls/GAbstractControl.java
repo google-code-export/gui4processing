@@ -25,8 +25,6 @@ package g4p_controls;
 
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.lang.reflect.Method;
@@ -39,6 +37,8 @@ import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PGraphicsJava2D;
 import processing.core.PImage;
+import processing.event.KeyEvent;
+import processing.event.MouseEvent;
 
 /**
  * Abstract base class for all GUI controls.
@@ -249,6 +249,19 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	public void pre(){ }
 	public void post(){ }
 
+	/**
+	 * This will remove all references to this control in the library. <br>
+	 * The user is responsible for nullifying all references to this control
+	 * in their sketch code. <br>
+	 * Once this method is called the control cannot be reused but resources
+	 * used by the control remain until all references to the control are 
+	 * set to null.
+	 * 
+	 */
+	public void dispose(){
+		G4P.removeControl(this);
+	}
+	
 	/**
 	 * <b>This is for emergency use only!!!! </b><br>
 	 * In this version of the library a visual controls is drawn to off-screen buffer

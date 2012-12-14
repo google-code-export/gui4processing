@@ -23,10 +23,10 @@
 
 package g4p_controls;
 
-import java.awt.event.MouseEvent;
-
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.event.KeyEvent;
+import processing.event.MouseEvent;
 
 /**
  * CLASS FOR INTERNAL USE ONLY <br>
@@ -96,7 +96,7 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 
 	/**
 	 * INTERNAL USE ONLY <br>
-	 * Use addDrawHandler in GWindow to activate this method
+	 * This will always be active because this class extends PApplet
 	 */
 	public void draw() {
 		if(autoClear){
@@ -125,30 +125,41 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 				owner.mouseHandlerMethod.invoke(owner.mouseHandlerObject, new Object[] { this, owner.data, event });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER,
-						new Object[] {owner.drawHandlerObject, owner.mouseHandlerMethodName, e} );
+						new Object[] {owner.mouseHandlerObject, owner.mouseHandlerMethodName, e} );
+			}
+		}
+	}
+	
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use addDMouseHandler in GWindow to activate this method
+	 */
+	public void keyEvent(KeyEvent event){
+		if(owner.keyHandlerObject != null){
+			try {
+				owner.keyHandlerMethod.invoke(owner.keyHandlerObject, new Object[] { this, owner.data, event });
+			} catch (Exception e) {
+				GMessenger.message(EXCP_IN_HANDLER,
+						new Object[] {owner.keyHandlerObject, owner.keyHandlerMethodName, e} );
+			}
+		}
+	}
+	
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use addPreHandler in GWindow to activate this method
+	 */
+	public void post(){
+		if(owner.postHandlerObject != null){
+			try {
+				owner.preHandlerMethod.invoke(owner.postHandlerObject, 
+						new Object[] { owner.papplet, owner.data });
+			} catch (Exception e) {
+				GMessenger.message(EXCP_IN_HANDLER, 
+						new Object[] {owner.postHandlerObject, owner.postHandlerMethodName, e} );
 			}
 		}
 	}
 
-	/**
-	 * INTERNAL USE ONLY <br>
-	 * Already active to provide cursor over component image changes
-	 * Use addDPostHandler in GWindow to activate this method for your use
-	 */
-//	public void post(){
-//		if(isVisible() && F4P.cursorChangeEnabled){
-//			if(GComponent.cursorIsOver != null)
-//				cursor(G4P.mouseOver);
-//			else
-//				cursor(G4P.mouseOff);
-//		}
-//		if(owner.postHandlerObject != null){
-//			try {
-//				owner.postHandlerMethod.invoke(owner.postHandlerObject, new Object[] { this, owner.data });
-//			} catch (Exception e) {
-//				GMessenger.message(EXCP_IN_HANDLER, owner.postHandlerObject, 
-//						new Object[] {owner.postHandlerMethodName, e} );
-//			}
-//		}
-//	}
+	
 }

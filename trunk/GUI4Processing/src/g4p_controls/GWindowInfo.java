@@ -1,7 +1,5 @@
 package g4p_controls;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -9,13 +7,15 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PMatrix;
 import processing.core.PMatrix3D;
+import processing.event.KeyEvent;
+import processing.event.MouseEvent;
 
 /**
  * DO NOT ATTEMPT TO USE THIS CLASS <br>
  * 
  * Although this class and many of its methods are declared public this is to make 
- * them available through Refelection and means that should only be used inside the
- * library code. <br> 
+ * them available through Reflection and means that they should only be used inside
+ *  the library code. <br> 
  * 
  * This class is used to remember information about a particular applet (i.e. window)
  * and is responsible handling events passes to it from Processing. <br>
@@ -31,35 +31,60 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	public PApplet app;
 	public boolean app_g_3d;
 	public PMatrix orgMatrix;
+	
 	public LinkedList<GAbstractControl> windowControls = new LinkedList<GAbstractControl>();
 	// These next two lists are for controls that are to be added or remove since these
-	// actions must be performed outside the draw cyle to avoid concurrent modification
+	// actions must be performed outside the draw cycle to avoid concurrent modification
 	// exceptions when changing windowControls
 	public LinkedList<GAbstractControl> toRemove = new LinkedList<GAbstractControl>();
 	public LinkedList<GAbstractControl> toAdd = new LinkedList<GAbstractControl>();
-
-	boolean haveRegisteredMethodsFor151 = false;
-
+	
+	// Set this to true if papplet is a GWinApplet objects i.e. part of a 
+	// Gwindow object
+	public boolean isWindow;
+	
 	/**
 	 * Create an applet info object
 	 * @param papplet
 	 */
 	public GWindowInfo (PApplet papplet) {
 		app = papplet;
+		// Is this applet part of a GWindow object
+		isWindow = (app instanceof GWinApplet);
 		app_g_3d = app.g.is3D();
 		if(app.g.is3D())
 			orgMatrix = papplet.getMatrix((PMatrix3D)null);
 //		else
 //			orgMatrix = papplet.getMatrix((PMatrix2D)null);
-		registerMethodsForWindow();
+		
+		/*
+		 * The WinInfo object is responsible for capturing events from Processing
+		 * and passing them onto the GWindow objects and the controls.
+		 */
+		app.registerMethod("draw",this);
+		app.registerMethod("pre",this);
+		app.registerMethod("post",this);
+		app.registerMethod("mouseEvent",this);
+		app.registerMethod("keyEvent",this);
 	}
 
-	void releaseControls() {
-		windowControls.clear();
+	/**
+	 * The WinInfo object is responsible for capturing events from Processing
+	 * and passing them onto the GWindow objects and the controls.
+	 * 
+	 * Processing V2.0
+	 */
+	public void registerMethodsForWindowX(){
+		app.registerMethod("draw",this);
+		app.registerMethod("pre",this);
+		app.registerMethod("post",this);
+		app.registerMethod("mouseEvent",this);
+		app.registerMethod("keyEvent",this);
 	}
-	
 
-	
+	/**
+	 * The draw method registered with Processing
+	 */
 	public void draw(){
 		app.pushMatrix();
 		if(app_g_3d) {
@@ -78,32 +103,55 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		app.popMatrix();
 	}
 
-
+	/**
+	 * The mouse method registered with Processing
+	 * 
+	 * If this is a secondary window then it should call the draw method for the window.
+	 * 
+	 * Should call the user defined method for the  the draw method for the actual GWindow object.
+	 * 
+	 * @param event
+	 */
 	public void mouseEvent(MouseEvent event){
+		if(isWindow)
+			((GWinApplet)app).mouseEvent(event);
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & MOUSE_METHOD) == MOUSE_METHOD)
 				control.mouseEvent(event);
 		}
 	}
 
+	/**
+	 * The key method registered with Processing
+	 */	
 	public void keyEvent(KeyEvent event) {
+		if(isWindow)
+			((GWinApplet)app).keyEvent(event);
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & KEY_METHOD) == KEY_METHOD)
 				control.keyEvent(event);
 		}			
 	}
 
+	/**
+	 * The pre method registered with Processing
+	 */
 	public void pre(){
 		if(GAbstractControl.controlToTakeFocus != null && GAbstractControl.controlToTakeFocus.getPApplet() == app){
 			GAbstractControl.controlToTakeFocus.setFocus(true);
 			GAbstractControl.controlToTakeFocus = null;
 		}
+		if(isWindow)
+			((GWinApplet)app).pre();
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & PRE_METHOD) == PRE_METHOD)
 				control.pre();
 		}
 	}
 
+	/**
+	 * The post method registered with Processing
+	 */
 	public void post(){
 		if(G4P.cursorChangeEnabled){
 			if(GAbstractControl.cursorIsOver != null && GAbstractControl.cursorIsOver.getPApplet() == app)
@@ -111,50 +159,56 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 			else 
 				app.cursor(G4P.mouseOff);
 		}
+		if(isWindow)
+			((GWinApplet)app).post();
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & POST_METHOD) == POST_METHOD)
 				control.post();
 		}
+		// Housekeeping
 		synchronized (this) {
-		// Dispose of ant unwanted controls
-		if(!toRemove.isEmpty())
-			for(GAbstractControl control : toRemove){
-				// Clear control resources
-				control.buffer = null;
-				if(control.parent != null){
-					control.parent.children.remove(control);
-					control.parent = null;
+		// Dispose of any unwanted controls
+			if(!toRemove.isEmpty())
+				for(GAbstractControl control : toRemove){
+					// Clear control resources
+					control.buffer = null;
+					if(control.parent != null){
+						control.parent.children.remove(control);
+						control.parent = null;
+					}
+					if(control.children != null)
+						control.children.clear();
+					control.palette = null;
+					control.jpalette = null;
+					control.eventHandlerObject = null;
+					control.eventHandlerMethod = null;
+					control.winApp = null;
+					windowControls.remove(control);
+					System.gc();			
 				}
-				if(control.children != null)
-					control.children.clear();
-				control.palette = null;
-				control.jpalette = null;
-				control.eventHandlerObject = null;
-				control.eventHandlerMethod = null;
-				control.winApp = null;
-				windowControls.remove(control);
-				System.gc();			
+			if(!toAdd.isEmpty()){
+				for(GAbstractControl control : toAdd)
+					windowControls.add(control);
+				toAdd.clear();
+				Collections.sort(windowControls, G4P.zorder);
 			}
-		if(!toAdd.isEmpty()){
-			for(GAbstractControl control : toAdd)
-				windowControls.add(control);
-			toAdd.clear();
-			Collections.sort(windowControls, G4P.zorder);
-		}
 		}
 	}
 
 	/**
 	 * Dispose of this WIndow. <br>
-	 * applets GUI controls, normally used in preparation
-	 * to disposing of a window.
+	 * First unregister for event handling then clear list of controls
+	 * for this window.
 	 */
 	void dispose(){
-		unRegisterMethodsForWindow();
+		app.unregisterMethod("draw", this);
+		app.unregisterMethod("pre", this);
+		app.unregisterMethod("post", this);
+		app.unregisterMethod("mouseEvent",this);
+		app.unregisterMethod("keyEvent",this);
 		windowControls.clear();
 	}
-
-
+	
 	/**
 	 * If a control is to be added to this window then add the control
 	 * to the toAdd list. The control will actually be added during the 
@@ -189,38 +243,6 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 			control.setAlpha(alpha);
 	}
 
-	/*
-	 * This registers this applet for V1.5.1 and V2.0
-	 * Eventually these need to be modified to new style for
-	 * Processing V2.0
-	 */
-	public void registerMethodsForWindow(){
-		app.registerDraw(this);
-		app.registerMouseEvent(this);
-		app.registerPre(this);
-		app.registerKeyEvent(this);
-		app.registerPost(this);
-//		app.registerMethod("pre",this);
-//		app.registerMethod("post",this);
-		haveRegisteredMethodsFor151 = true;
-	}
 
-	/*
-	 * This registers this applet for V1.5.1 and V2.0
-	 * Eventually these need to be modified to new style for
-	 * Processing V2.0
-	 */
-	public void unRegisterMethodsForWindow(){
-		if(haveRegisteredMethodsFor151){
-			app.unregisterDraw(this);
-			app.unregisterMouseEvent(this);
-			app.unregisterPre(this);
-			app.unregisterKeyEvent(this);	
-			app.unregisterPost(this);
-//			app.unregisterMethod("pre", this);
-//			app.unregisterMethod("post", this);
-			haveRegisteredMethodsFor151 = false;
-		}
-	}
 		
 }

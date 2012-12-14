@@ -26,13 +26,13 @@ package g4p_controls;
 import g4p_controls.HotSpot.HSrect;
 
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
+import processing.event.MouseEvent;
 
 /**
  * A drop down list component. <br>
@@ -236,8 +236,8 @@ public class GDropList extends GTextControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_CLICKED:
+		switch(event.getAction()){
+		case MouseEvent.CLICK:
 			// No need to test for isOver() since if the component has focus
 			// and the mouse has not moved since MOUSE_PRESSED otherwise we 
 			// would not get the Java MouseEvent.MOUSE_CLICKED event
@@ -255,7 +255,7 @@ public class GDropList extends GTextControl {
 				currOverItem = lastOverItem = -1;
 			}
 			break;
-		case MouseEvent.MOUSE_MOVED:
+		case MouseEvent.MOVE:
 			if(focusIsWith == this){
 				if(currSpot == 1)
 					currOverItem = startItem + (int)(oy / itemHeight)-1; 

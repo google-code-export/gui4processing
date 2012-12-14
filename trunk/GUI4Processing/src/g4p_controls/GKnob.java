@@ -26,10 +26,9 @@ package g4p_controls;
 import g4p_controls.HotSpot.HSarc;
 import g4p_controls.HotSpot.HScircle;
 
-import java.awt.event.MouseEvent;
-
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
+import processing.event.MouseEvent;
 
 
 /**
@@ -293,8 +292,8 @@ public class GKnob extends GValueControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(focusIsWith != this && currSpot > -1 && z > focusObjectZ()){
 				startMouseX = ox;
 				startMouseY = oy;
@@ -303,13 +302,13 @@ public class GKnob extends GValueControl {
 				takeFocus();
 			}
 			break;
-//		case MouseEvent.MOUSE_CLICKED:
+//		case MouseEvent.CLICK:
 //			//			System.out.println("C " + focusIsWith);
 //			if(focusIsWith == this ){
 //				//				System.out.println("CLICKED " + currSpot );
 //			}
 //			break;
-		case MouseEvent.MOUSE_RELEASED:
+		case MouseEvent.RELEASE:
 			if(focusIsWith == this){
 				loseFocus(null);
 			}
@@ -318,7 +317,7 @@ public class GKnob extends GValueControl {
 				parametricTarget = findNearestTickValueTo(parametricTarget);
 			dragging = false;
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			if(focusIsWith == this){
 				mouseAngle = getAngleFromUser(ox, oy);
 				if(mouseAngle != lastMouseAngle){
