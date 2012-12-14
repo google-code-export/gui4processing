@@ -8,7 +8,6 @@
 
 import g4p_controls.*;
 import java.awt.Color;
-import java.awt.event.*;
 
 final int MAX_ITERATE = 128;
 
@@ -145,8 +144,8 @@ public boolean makeNewBrotWindow(double nsx, double nex, double nsy, double ney,
   if (mydata.w >= MIN_WIDTH && mydata.h >= MIN_HEIGHT) {
     mydata.img = new PImage(mydata.w, mydata.h);
     window = new GWindow(this, title, locX, locY, mydata.w, mydata.h, false, null);
-    // Need to replace displayWidth and displayHeight with 
-    // screen.width and screen.height for Processing 1.5.1
+    // Need to replace with screen.width and screen.height for
+    // Processing 1.5.1
     locX = (locX + mydata.w + 20)%(displayWidth - MAX_WIDTH);
     locY = (locY + 20)%(displayHeight - MAX_HEIGHT);
     window.addData(mydata);
@@ -179,18 +178,18 @@ public void handleButtonEvents(GButton button, GEvent event) {
  * @param data the data for the GWindow being used
  * @param event the mouse event
  */
-public void windowMouse(GWinApplet appc, GWinData data, java.awt.event.MouseEvent event) {
+public void windowMouse(GWinApplet appc, GWinData data, MouseEvent event) {
   MyWinData d = (MyWinData)data;
   if (d.imgDone == false)
     return;
-  switch(event.getID()) {
-  case java.awt.event.MouseEvent.MOUSE_PRESSED:
+  switch(event.getAction()) {
+  case MouseEvent.PRESS:
     d.msx = d.mex = appc.mouseX;
     d.msy = d.mey = appc.mouseY;
     appc.loop();
     appc.frameRate(30);
     break;
-  case java.awt.event.MouseEvent.MOUSE_RELEASED:
+  case MouseEvent.RELEASE:
     d.mex = appc.mouseX;
     d.mey = appc.mouseY;
     // Make sure the coordinates are top left / bottom left
@@ -215,7 +214,7 @@ public void windowMouse(GWinApplet appc, GWinData data, java.awt.event.MouseEven
     d.msx = d.mex = d.msy = d.mey = 0;
     appc.noLoop();
     break;
-  case java.awt.event.MouseEvent.MOUSE_DRAGGED:
+  case MouseEvent.DRAG:
     d.mex = appc.mouseX;
     d.mey = appc.mouseY;
     break;
@@ -256,8 +255,7 @@ public void windowDraw(GWinApplet appc, GWinData data) {
 }
 
 /**
- A basic complex number class that has just enough to
- do Mandelbrots
+ A basic complex number class.
  */
 class Complex {
   public double real;
@@ -305,10 +303,8 @@ class Complex {
 }
 
 /**
- Simple class that extends GWinData and holds the data that 
- is specific to a particular window.
- In this case it holds the Mandelbrot data needed to draw 
- the window image.
+ * Simple class that extends GWinData and holds the data that is specific
+ * to a particular window.
  */
 class MyWinData extends GWinData {
 
