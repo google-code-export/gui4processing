@@ -51,6 +51,10 @@ public interface GConstants {
 	int SCHEME_14		= 14;
 	int SCHEME_15		= 15;
 
+	// Keyboard values not covered by Processing
+	char HOME		= java.awt.event.KeyEvent.VK_HOME;
+	char END		= java.awt.event.KeyEvent.VK_END;
+		
 
 	// Configuration constants
 	// GRoundControl

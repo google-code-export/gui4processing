@@ -24,10 +24,10 @@
 package g4p_controls;
 
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 
 import processing.core.PApplet;
+import processing.event.MouseEvent;
 
 /**
  * Base class for linear sliders.
@@ -177,8 +177,8 @@ public abstract class GLinearTrackControl extends GValueControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(focusIsWith != this && currSpot > -1 && z >= focusObjectZ()){
 				downHotSpot = currSpot;
 				status = (downHotSpot == THUMB_SPOT) ? PRESS_CONTROL : OFF_CONTROL;
@@ -187,7 +187,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 				bufferInvalid = true;
 			}
 			break;
-		case MouseEvent.MOUSE_CLICKED:
+		case MouseEvent.CLICK:
 			if(focusIsWith == this ){
 				parametricTarget = ox + 0.5f;
 				if(stickToTicks)
@@ -198,7 +198,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 				bufferInvalid = true;
 			}
 			break;
-		case MouseEvent.MOUSE_RELEASED:
+		case MouseEvent.RELEASE:
 			if(focusIsWith == this && dragging){
 				if(downHotSpot == THUMB_SPOT){
 					parametricTarget = (ox - offset) + 0.5f;
@@ -219,7 +219,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 			}
 			dragging = false;
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			if(focusIsWith == this){
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
@@ -236,7 +236,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 				}
 			}
 			break;
-		case MouseEvent.MOUSE_MOVED:
+		case MouseEvent.MOVE:
 			int currStatus = status;
 			// If dragged state will stay as PRESSED
 			if(currSpot == THUMB_SPOT)

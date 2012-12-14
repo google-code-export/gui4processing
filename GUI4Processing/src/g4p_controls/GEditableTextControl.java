@@ -27,13 +27,13 @@ import g4p_controls.StyledString.TextLayoutHitInfo;
 import g4p_controls.StyledString.TextLayoutInfo;
 
 import java.awt.Font;
-import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextHitInfo;
 import java.awt.geom.GeneralPath;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
+import processing.event.KeyEvent;
 
 /**
  * 
@@ -402,16 +402,18 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !available) return;
 		if(focusIsWith == this && endTLHI != null){
-			char keyChar = e.getKeyChar();
+			char keyChar = e.getKey();
 			int keyCode = e.getKeyCode();
-			int keyID = e.getID();
+			int keyID = e.getAction();
+			boolean shiftDown = e.isShiftDown();
+			boolean ctrlDown = e.isControlDown();
 			
 			textChanged = false;
 			newline = false;
 			keepCursorInView = true;
 			
-			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
-			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
+//			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
+//			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
 
 			int startPos = pos, startNbr = nbr;
 			
@@ -434,11 +436,11 @@ public abstract class GEditableTextControl extends GAbstractControl {
 					fireEvent(this, GEvent.SELECTION_CHANGED);
 			}
 			
-			if(keyID == KeyEvent.KEY_PRESSED) {
+			if(keyID == KeyEvent.PRESS) {
 				keyPressedProcess(keyCode, keyChar, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
 			}
-			else if(keyID == KeyEvent.KEY_TYPED && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED && !ctrlDown){
+			else if(keyID == KeyEvent.TYPE ){ // && e.getKey()  != KeyEvent.CHAR_UNDEFINED && !ctrlDown){
 				keyTypedProcess(keyCode, keyChar, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
 			}

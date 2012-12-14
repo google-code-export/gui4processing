@@ -26,13 +26,13 @@ package g4p_controls;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.event.MouseEvent;
 
 /**
  * Objects of this class are separate windows which can be used to hold
@@ -65,15 +65,6 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	protected int actionOnClose = KEEP_OPEN;
 	
 	
-	/**
-	 * Remember what we have registered for.
-	 */
-	protected boolean regDraw = false;
-	protected boolean regMouse = false;
-	protected boolean regPre = false;
-	protected boolean regKey = false;
-	protected boolean regPost = false;
-
 	/** The object to handle the pre event */
 	protected Object preHandlerObject = null;
 	/** The method in preHandlerObject to execute */
@@ -87,6 +78,13 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	protected Method drawHandlerMethod = null;
 	/** the name of the method to handle the event */ 
 	protected String drawHandlerMethodName;
+
+	/** The object to handle the key event */
+	public Object keyHandlerObject = null;
+	/** The method in keyHandlerObject to execute */
+	public Method keyHandlerMethod = null;
+	/** the name of the method to handle the event */ 
+	protected String keyHandlerMethodName;
 
 	/** The object to handle the mouse event */
 	public Object mouseHandlerObject = null;
@@ -394,7 +392,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
 //			papplet.registerPre(papplet);
-			regPre = true;
+//			regPre = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class } } );
 		}
@@ -414,8 +412,8 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 					new Class[] {GWinApplet.class, GWinData.class, MouseEvent.class } );
 			mouseHandlerObject = obj;
 			mouseHandlerMethodName = methodName;
-			papplet.registerMouseEvent(papplet);
-			regMouse = true;
+//			papplet.registerMouseEvent(papplet);
+//			regMouse = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class, MouseEvent.class } } );
 		}
@@ -435,7 +433,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 					new Class[] {GWinApplet.class, GWinData.class } );
 			postHandlerObject = obj;
 			postHandlerMethodName = methodName;
-			regPost = true;
+//			regPost = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class } } );
 		}

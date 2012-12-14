@@ -66,6 +66,8 @@ import processing.core.PApplet;
  */
 final public class StyledString implements GConstantsInternal, Serializable {
 
+	private static final long serialVersionUID = -1376981368230460906L;
+	
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
 	transient private LineBreakMeasurer lineMeasurer = null;

@@ -26,11 +26,11 @@ package g4p_controls;
 import g4p_controls.HotSpot.HSrect;
 
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
+import processing.event.MouseEvent;
 
 class GScrollbar extends GAbstractControl {
 
@@ -147,15 +147,15 @@ class GScrollbar extends GAbstractControl {
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(focusIsWith != this && currSpot>= 0 && z > focusObjectZ()){
 				dragging = false;
 				last_ox = ox; last_oy = oy;
 				takeFocus();
 			}
 			break;
-		case MouseEvent.MOUSE_CLICKED:
+		case MouseEvent.CLICK:
 			if(focusIsWith == this){
 				switch(currSpot){
 				case 1:
@@ -177,7 +177,7 @@ class GScrollbar extends GAbstractControl {
 				loseFocus(parent);
 			}
 			break;
-		case MouseEvent.MOUSE_RELEASED:
+		case MouseEvent.RELEASE:
 			if(focusIsWith == this && dragging){
 				loseFocus(parent);
 				dragging = false;
@@ -185,7 +185,7 @@ class GScrollbar extends GAbstractControl {
 				bufferInvalid = true;
 			}
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			if(focusIsWith == this){
 				float movement = ox - last_ox;
 				last_ox = ox;

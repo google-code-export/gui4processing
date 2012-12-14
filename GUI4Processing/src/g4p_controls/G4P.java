@@ -224,7 +224,7 @@ public class G4P implements GConstants, PConstants {
 	
 	/**
 	 * Used internally to remove a window from the list of windows. Done when
-	 * a window is to be dispose of.
+	 * a window is to be disposed of.
 	 * 
 	 * @param window
 	 */
@@ -232,11 +232,9 @@ public class G4P implements GConstants, PConstants {
 		PApplet app = window.papplet;
 		GWindowInfo winfo = windows.get(app);
 		if(winfo != null){
-			winfo.unRegisterMethodsForWindow();
-			winfo.releaseControls();
+			winfo.dispose();
 			windows.remove(winfo);
 		}
-		
 	}
 	
 	/**
@@ -266,8 +264,6 @@ public class G4P implements GConstants, PConstants {
 		PApplet app = control.getPApplet();
 		GWindowInfo winfo = windows.get(app);
 		if(winfo != null){
-			winfo = new GWindowInfo(app);
-			//control
 			winfo.removeControl(control);
 			return true;
 		}

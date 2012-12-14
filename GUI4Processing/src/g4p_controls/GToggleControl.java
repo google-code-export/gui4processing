@@ -28,12 +28,12 @@ import g4p_controls.StyledString.TextLayoutInfo;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
+import processing.event.MouseEvent;
 
 /**
  * This class forms the basis for any two-state type control (toggle switch). <br>
@@ -130,14 +130,14 @@ public abstract class GToggleControl extends GTextIconControl {
 			cursorIsOver = null;
 
 
-		switch(event.getID()){
-		case MouseEvent.MOUSE_PRESSED:
+		switch(event.getAction()){
+		case MouseEvent.PRESS:
 			if(focusIsWith != this && currSpot >= 0 && z > focusObjectZ()){
 				dragging = false;
 				takeFocus();
 			}
 			break;
-		case MouseEvent.MOUSE_CLICKED:
+		case MouseEvent.CLICK:
 			if(focusIsWith == this){
 				hasBeenClicked();
 				loseFocus(null);
@@ -147,10 +147,10 @@ public abstract class GToggleControl extends GTextIconControl {
 					fireEvent(this, GEvent.DESELECTED);
 			}
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			dragging = true;
 			break;
-		case MouseEvent.MOUSE_RELEASED:
+		case MouseEvent.RELEASE:
 			// Release focus without firing an event - that would have 
 			// been done
 			if(focusIsWith == this && dragging)
