@@ -80,22 +80,6 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 
 	/**
 	 * INTERNAL USE ONLY <br>
-	 * Use addPreHandler in GWindow to activate this method
-	 */
-	public void pre(){
-		if(owner.preHandlerObject != null){
-			try {
-				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
-						new Object[] { owner.papplet, owner.data });
-			} catch (Exception e) {
-				GMessenger.message(EXCP_IN_HANDLER, 
-						new Object[] {owner.preHandlerObject, owner.preHandlerMethodName, e} );
-			}
-		}
-	}
-
-	/**
-	 * INTERNAL USE ONLY <br>
 	 * This will always be active because this class extends PApplet
 	 */
 	public void draw() {
@@ -149,10 +133,26 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 	 * INTERNAL USE ONLY <br>
 	 * Use addPreHandler in GWindow to activate this method
 	 */
+	public void pre(){
+		if(owner.preHandlerObject != null){
+			try {
+				owner.preHandlerMethod.invoke(owner.preHandlerObject, 
+						new Object[] { owner.papplet, owner.data });
+			} catch (Exception e) {
+				GMessenger.message(EXCP_IN_HANDLER, 
+						new Object[] {owner.preHandlerObject, owner.preHandlerMethodName, e} );
+			}
+		}
+	}
+
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use addPreHandler in GWindow to activate this method
+	 */
 	public void post(){
 		if(owner.postHandlerObject != null){
 			try {
-				owner.preHandlerMethod.invoke(owner.postHandlerObject, 
+				owner.postHandlerMethod.invoke(owner.postHandlerObject, 
 						new Object[] { owner.papplet, owner.data });
 			} catch (Exception e) {
 				GMessenger.message(EXCP_IN_HANDLER, 

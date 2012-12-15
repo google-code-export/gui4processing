@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
 /**
@@ -381,7 +382,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	/**
 	 * Attempt to add the 'pre' handler method. 
 	 * The default event handler is a method that returns void and has two
-	 * parameters Papplet and GWinData
+	 * parameters GWinApplet and GWinData
 	 * 
 	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
@@ -391,8 +392,6 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
-//			papplet.registerPre(papplet);
-//			regPre = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class } } );
 		}
@@ -400,8 +399,8 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 
 	/**
 	 * Attempt to add the 'mouse' handler method. 
-	 * The default event handler is a method that returns void and has two
-	 * parameters Papplet and GWinData
+	 * The default event handler is a method that returns void and has three
+	 * parameters GWinApplet, GWinData and a MouseEvent
 	 * 
 	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
@@ -412,17 +411,34 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 					new Class[] {GWinApplet.class, GWinData.class, MouseEvent.class } );
 			mouseHandlerObject = obj;
 			mouseHandlerMethodName = methodName;
-//			papplet.registerMouseEvent(papplet);
-//			regMouse = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class, MouseEvent.class } } );
 		}
 	}
 
 	/**
+	 * Attempt to add the 'key' handler method. 
+	 * The default event handler is a method that returns void and has three
+	 * parameters GWinApplet, GWinData and a KeyEvent
+	 * 
+	 * @param obj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 */
+	public void addKeyHandler(Object obj, String methodName){
+		try{
+			keyHandlerMethod = obj.getClass().getMethod(methodName, 
+					new Class[] {GWinApplet.class, GWinData.class, KeyEvent.class } );
+			keyHandlerObject = obj;
+			keyHandlerMethodName = methodName;
+		} catch (Exception e) {
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class, KeyEvent.class } } );
+		}
+	}
+
+	/**
 	 * Attempt to add the 'post' handler method. 
 	 * The default event handler is a method that returns void and has two
-	 * parameters Papplet and GWinData
+	 * parameters GWinApplet and GWinData
 	 * 
 	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
@@ -433,7 +449,6 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 					new Class[] {GWinApplet.class, GWinData.class } );
 			postHandlerObject = obj;
 			postHandlerMethodName = methodName;
-//			regPost = true;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class } } );
 		}
