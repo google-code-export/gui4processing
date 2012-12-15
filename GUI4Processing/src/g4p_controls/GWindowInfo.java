@@ -111,7 +111,6 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	 * The key method registered with Processing
 	 */	
 	public void keyEvent(KeyEvent event) {
-		System.out.println("GWindowInfo - key() " + isWindow );
 		if(isWindow)
 			((GWinApplet)app).keyEvent(event);
 		for(GAbstractControl control : windowControls){
