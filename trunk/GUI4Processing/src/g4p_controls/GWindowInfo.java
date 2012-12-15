@@ -18,7 +18,7 @@ import processing.event.MouseEvent;
  *  the library code. <br> 
  * 
  * This class is used to remember information about a particular applet (i.e. window)
- * and is responsible handling events passes to it from Processing. <br>
+ * and is responsible for forwarding events passed to it from Processing. <br>
  * 
  * It remembers the original transformation matrix to simplify working with 3D renderers
  * and libraries such as PeasyCam.
@@ -62,24 +62,10 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		 * and passing them onto the GWindow objects and the controls.
 		 */
 		app.registerMethod("draw",this);
-		app.registerMethod("pre",this);
-		app.registerMethod("post",this);
 		app.registerMethod("mouseEvent",this);
 		app.registerMethod("keyEvent",this);
-	}
-
-	/**
-	 * The WinInfo object is responsible for capturing events from Processing
-	 * and passing them onto the GWindow objects and the controls.
-	 * 
-	 * Processing V2.0
-	 */
-	public void registerMethodsForWindowX(){
-		app.registerMethod("draw",this);
 		app.registerMethod("pre",this);
 		app.registerMethod("post",this);
-		app.registerMethod("mouseEvent",this);
-		app.registerMethod("keyEvent",this);
 	}
 
 	/**
@@ -125,6 +111,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	 * The key method registered with Processing
 	 */	
 	public void keyEvent(KeyEvent event) {
+		System.out.println("GWindowInfo - key() " + isWindow );
 		if(isWindow)
 			((GWinApplet)app).keyEvent(event);
 		for(GAbstractControl control : windowControls){

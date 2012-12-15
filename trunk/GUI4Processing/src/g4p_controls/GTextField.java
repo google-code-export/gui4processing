@@ -193,87 +193,25 @@ public class GTextField extends GEditableTextControl {
 		return snap;
 	}
 
-	/**
-	 * If the buffer is invalid then redraw it.
-	 * @TODO need to use palette for colours
-	 */
-	protected void updateBuffer(){
-		if(bufferInvalid) {
-			Graphics2D g2d = buffer.g2;
-			// Get the latest lines of text
-			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
-			if(lines.isEmpty() && defaultText != null)
-				lines = defaultText.getLines(g2d);
-
-			bufferInvalid = false;
-			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
-			
-			buffer.beginDraw();
-			// Whole control surface if opaque
-			if(opaque)
-				buffer.background(palette[6]);
-			else
-				buffer.background(buffer.color(255,0));
-
-			// Now move to top left corner of text display area
-			buffer.translate(tx,ty); 
-
-			// Typing area surface
-			buffer.noStroke();
-			buffer.fill(palette[7]);
-			buffer.rect(-1,-1,tw+2,th+2);
-
-			g2d.setClip(gpTextDisplayArea);
-			buffer.translate(-ptx, -pty);
-			// Translate in preparation for display selection and text
-
-			if(hasSelection()){
-				if(endTLHI.compareTo(startTLHI) == -1){
-					startSelTLHI = endTLHI;
-					endSelTLHI = startTLHI;
-				}
-				else {
-					startSelTLHI = startTLHI;
-					endSelTLHI = endTLHI;
-				}
-			}
-			// Display selection and text
-			for(TextLayoutInfo lineInfo : lines){
-				TextLayout layout = lineInfo.layout;
-				buffer.translate(0, layout.getAscent());
-				// Draw selection if any
-				if(hasSelection() && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
-					int ss = startSelTLHI.thi.getInsertionIndex();
-					int ee = endSelTLHI.thi.getInsertionIndex();
-					g2d.setColor(jpalette[14]);
-					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
-					g2d.fill(selShape);
-				}
-				// Draw text
-				g2d.setColor(jpalette[2]);
-				lineInfo.layout.draw(g2d, 0, 0);
-				buffer.translate(0, layout.getDescent() + layout.getLeading());
-			}
-			g2d.setClip(null);
-			buffer.endDraw();
-		}
-	}
-
 	public void pre(){
 		if(keepCursorInView){
 			boolean horzScroll = false;
 			float max_ptx = caretX - tw + 2;
 			if(endTLHI != null){
-				if(ptx > caretX){ 										// LEFT?
+				if(ptx > caretX){ 								// Scroll to the left (text moves right)
 					ptx -= HORZ_SCROLL_RATE;
 					if(ptx < 0) ptx = 0;
 					horzScroll = true;
 				}
-				else if(ptx < max_ptx){ 						// RIGHT?
-//				else if(ptx < caretX - tw + 4){ 						// RIGHT?
+				else if(ptx < max_ptx){ 						// Scroll to the right (text moves left)?
 					ptx += HORZ_SCROLL_RATE;
 					if(ptx > max_ptx) ptx = max_ptx;
-//					ptx = Math.min(ptx, max_ptx);
+					horzScroll = true;
+				}
+				// Ensure that we show as much text as possible keeping the caret in view
+				// This is particularly important when deleting from the end of the text
+				if(ptx > 0 && endTLHI.tli.layout.getAdvance() - ptx < tw - 2){
+					ptx = Math.max(0, endTLHI.tli.layout.getAdvance() - tw - 2);
 					horzScroll = true;
 				}
 				if(horzScroll && hsb != null)
@@ -493,6 +431,72 @@ public class GTextField extends GEditableTextControl {
 		}
 		winApp.popMatrix();
 		winApp.popStyle();
+	}
+
+	/**
+	 * If the buffer is invalid then redraw it.
+	 * @TODO need to use palette for colours
+	 */
+	protected void updateBuffer(){
+		if(bufferInvalid) {
+			Graphics2D g2d = buffer.g2;
+			// Get the latest lines of text
+			LinkedList<TextLayoutInfo> lines = stext.getLines(g2d);	
+			if(lines.isEmpty() && defaultText != null)
+				lines = defaultText.getLines(g2d);
+
+			bufferInvalid = false;
+			TextLayoutHitInfo startSelTLHI = null, endSelTLHI = null;
+			
+			buffer.beginDraw();
+			// Whole control surface if opaque
+			if(opaque)
+				buffer.background(palette[6]);
+			else
+				buffer.background(buffer.color(255,0));
+
+			// Now move to top left corner of text display area
+			buffer.translate(tx,ty); 
+
+			// Typing area surface
+			buffer.noStroke();
+			buffer.fill(palette[7]);
+			buffer.rect(-1,-1,tw+2,th+2);
+
+			g2d.setClip(gpTextDisplayArea);
+			buffer.translate(-ptx, -pty);
+			// Translate in preparation for display selection and text
+
+			if(hasSelection()){
+				if(endTLHI.compareTo(startTLHI) == -1){
+					startSelTLHI = endTLHI;
+					endSelTLHI = startTLHI;
+				}
+				else {
+					startSelTLHI = startTLHI;
+					endSelTLHI = endTLHI;
+				}
+			}
+			// Display selection and text
+			for(TextLayoutInfo lineInfo : lines){
+				TextLayout layout = lineInfo.layout;
+				buffer.translate(0, layout.getAscent());
+				// Draw selection if any
+				if(hasSelection() && lineInfo.compareTo(startSelTLHI.tli) >= 0 && lineInfo.compareTo(endSelTLHI.tli) <= 0 ){				
+					int ss = startSelTLHI.thi.getInsertionIndex();
+					int ee = endSelTLHI.thi.getInsertionIndex();
+					g2d.setColor(jpalette[14]);
+					Shape selShape = layout.getLogicalHighlightShape(ss, ee);
+					g2d.fill(selShape);
+				}
+				// Draw text
+				g2d.setColor(jpalette[2]);
+				lineInfo.layout.draw(g2d, 0, 0);
+				buffer.translate(0, layout.getDescent() + layout.getLeading());
+			}
+			g2d.setClip(null);
+			buffer.endDraw();
+		}
 	}
 
 
