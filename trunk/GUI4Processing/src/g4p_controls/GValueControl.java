@@ -38,9 +38,7 @@ import processing.core.PApplet;
  */
 public class GValueControl extends GAbstractControl {
 
-	static protected float HINSET = 2;
 	protected StyledString ssStartLimit, ssEndLimit, ssValue;
-
 
 	protected float startLimit = 0, endLimit = 1;
 	protected boolean showLimits = false;
