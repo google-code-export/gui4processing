@@ -321,7 +321,7 @@ public class GValueControl extends GAbstractControl {
 	 * If labels have not been set then return null
 	 */
 	public String getValueS(){
-		return getNumericDisplayString(parametricPos);
+		return getNumericDisplayString(getValueF());
 	}
 
 	/**
