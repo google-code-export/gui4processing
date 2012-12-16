@@ -301,7 +301,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 * By default the background() method is called to set the background image/colour
 	 * every frame. You can switch this off by calling this method with a parameter 
 	 * value = false.
-	 * @param auto_clear whether to call the background method() or not
+	 * @param auto_clear whether to call the background() method or not
 	 */
 	public void setAutoClear(boolean auto_clear){
 		papplet.autoClear = auto_clear;
