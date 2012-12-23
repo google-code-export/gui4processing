@@ -403,6 +403,53 @@ public class GPanel extends GTextControl {
 		cy = y + height/2;
 	}
 
+	/**
+	 * Move the panel to the given position based on the mode. <br>
+	 * 
+	 * Unlike when dragged the position is not constrain to the 
+	 * screen area. <br>
+	 * 
+	 * The current control mode determines whether we move the
+	 * corner or the center of the panel to px,py <br>
+	 * 
+	 * @param px the horizontal position to move to
+	 * @param py the vertical position to move to
+	 */
+	public void moveTo(float px, float py){
+		moveTo(px,py, G4P.control_mode);
+	}
+
+	/**
+	 * Move the panel to the given position based on the mode. <br>
+	 * 
+	 * Unlike when dragged the position is not constrain to the 
+	 * screen area. <br>
+	 * 
+	 * The mode determines whether we move the corner or the center 
+	 * of the panel to px,py <br>
+	 * 
+	 * @param px the horizontal position to move to
+	 * @param py the vertical position to move to
+	 * @param mode the control mode 
+	 */
+	public void moveTo(float px, float py, int mode){
+		switch(mode){
+		case PApplet.CORNER:
+		case PApplet.CORNERS:
+			x = px;
+			y = py;
+			cx = x + width/2;
+			cy = y + height/2;
+			break;
+		case PApplet.CENTER:
+			cx = px;
+			cy = py;
+			x = cx - width/2;
+			y = cy - height/2;
+			break;
+		}
+	}
+	
 //	private void constrainPanelPosition_OLD(){
 //		int w = (int) ((tabOnly)? tabWidth : width);
 //		int h = (int) ((tabOnly)? tabHeight : height);

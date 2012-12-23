@@ -500,7 +500,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		rotAngle = angle;
 		AffineTransform aff = new AffineTransform();
 		aff.setToRotation(angle);
-
 		switch(mode){
 		case PApplet.CORNER:
 		case PApplet.CORNERS:
@@ -524,7 +523,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	}
 
 	public void setRotation(float angle){
-		setRotation(angle, G4P.getCtrlMode());
+		setRotation(angle, G4P.control_mode);
 	}
 	
 	/**
