@@ -138,7 +138,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	/**
 	 * The post method registered with Processing
 	 */
-	public void post(){
+	public void post(){if(toAdd.size() > 0 || toRemove.size() > 0)
 		if(G4P.cursorChangeEnabled){
 			if(GAbstractControl.cursorIsOver != null && GAbstractControl.cursorIsOver.getPApplet() == app)
 				app.cursor(GAbstractControl.cursorIsOver.cursorOver);			
@@ -154,8 +154,11 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		// Housekeeping
 		synchronized (this) {
 		// Dispose of any unwanted controls
-			if(!toRemove.isEmpty())
+			if(!toRemove.isEmpty()){
 				for(GAbstractControl control : toRemove){
+					// If the control has focus then lose it
+					if(GAbstractControl.focusIsWith == control)
+						control.loseFocus(null);
 					// Clear control resources
 					control.buffer = null;
 					if(control.parent != null){
@@ -172,6 +175,8 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 					windowControls.remove(control);
 					System.gc();			
 				}
+				toRemove.clear();
+			}
 			if(!toAdd.isEmpty()){
 				for(GAbstractControl control : toAdd)
 					windowControls.add(control);
@@ -208,14 +213,14 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	}
 
 	/**
-	 * If a control is to be added to this window then add the control
+	 * If a control is to be removed to this window then add the control
 	 * to the toAdd list. The control will actually be added during the 
 	 * post() method
 	 * @param control
 	 */
 	synchronized void removeControl(GAbstractControl control){
 		// Make sure we avoid duplicates
-		if(!windowControls.contains(control) && !toAdd.contains(control))
+		if(windowControls.contains(control) && !toRemove.contains(control))
 			toRemove.add(control);
 	}
 
