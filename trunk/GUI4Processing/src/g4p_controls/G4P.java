@@ -24,9 +24,22 @@
 package g4p_controls;
 
 
+import java.awt.Color;
+import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
+import javax.swing.filechooser.FileFilter;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -41,7 +54,7 @@ import processing.core.PConstants;
 public class G4P implements GConstants, PConstants {
 
 	static PApplet sketchApplet = null;
-	
+
 	/**
 	 * return the pretty version of the library.
 	 */
@@ -55,7 +68,7 @@ public class G4P implements GConstants, PConstants {
 	public static String getVersion() {
 		return "##library.version##";
 	}
-	
+
 	static int globalColorScheme = GCScheme.BLUE_SCHEME;
 	static int globalAlpha = 255;
 
@@ -64,15 +77,15 @@ public class G4P implements GConstants, PConstants {
 	 * in preference to platform specific fonts or include them here.
 	 * <ul>
 	 * <li>Dialog </li>
-     * <li>DialogInpu </li>t
-     * <li>Monospaced </li>
-     * <li>Serif </li>
-     * <li>SansSerif </li>
-     * </ul>
+	 * <li>DialogInpu </li>t
+	 * <li>Monospaced </li>
+	 * <li>Serif </li>
+	 * <li>SansSerif </li>
+	 * </ul>
 	 */
 	static Font globalFont = new Font("Dialog", Font.PLAIN, 12);
 	static Font numericLabelFont = new Font("DialogInput", Font.BOLD, 12);
-	
+
 	// Store of info about windows and controls
 	static HashMap<PApplet, GWindowInfo> windows = new HashMap<PApplet, GWindowInfo>();
 	// Used to order controls
@@ -90,7 +103,14 @@ public class G4P implements GConstants, PConstants {
 	static int control_mode = PApplet.CORNER;
 
 	static LinkedList<G4Pstyle> styles = new LinkedList<G4Pstyle>();
-	
+
+	static File lastSelectFolder = null;
+	static File lastInputFolder = null;
+	static File lastOutputFolder = null;
+
+	static JColorChooser chooser = null;
+	static Color lastColor = Color.white; // White
+
 	/**
 	 * Used to register the main sketch window with G4P. This is ignored if any
 	 * G4P controls or windows have already been created because the act of
@@ -117,7 +137,7 @@ public class G4P implements GConstants, PConstants {
 			}			
 		}
 	}
-	
+
 	/**
 	 * Set the global colour scheme. This will change the local
 	 * colour scheme for every control.
@@ -145,7 +165,7 @@ public class G4P implements GConstants, PConstants {
 		if(winfo != null)
 			winfo.setColorScheme(cs);
 	}
-	
+
 	/**
 	 * Set the colour scheme for all the controls drawn by the given 
 	 * GWindow. This will override any previous colour scheme for 
@@ -159,7 +179,7 @@ public class G4P implements GConstants, PConstants {
 		if(winfo != null)
 			winfo.setColorScheme(cs);
 	}
-	
+
 
 	/**
 	 * Set the transparency of all controls. If the alpha level for a 
@@ -176,7 +196,7 @@ public class G4P implements GConstants, PConstants {
 				winfo.setAlpha(globalAlpha);
 		}
 	}
-	
+
 	/**
 	 * Set the transparency level for all controls drawn by the given
 	 * PApplet. If the alpha level for a control falls below 
@@ -192,7 +212,7 @@ public class G4P implements GConstants, PConstants {
 		if(winfo != null)
 			winfo.setAlpha(alpha);
 	}
-	
+
 	/**
 	 * Set the transparency level for all controls drawn by the given
 	 * GWindow. If the alpha level for a control falls below 
@@ -208,8 +228,8 @@ public class G4P implements GConstants, PConstants {
 		if(winfo != null)
 			winfo.setAlpha(alpha);
 	}
-	
-	
+
+
 	static void addWindow(GWindow window){
 		PApplet app = window.papplet;
 		// The first applet must be the sketchApplet
@@ -221,7 +241,7 @@ public class G4P implements GConstants, PConstants {
 			windows.put(app, winfo);
 		}
 	}
-	
+
 	/**
 	 * Used internally to remove a window from the list of windows. Done when
 	 * a window is to be disposed of.
@@ -236,7 +256,7 @@ public class G4P implements GConstants, PConstants {
 			windows.remove(winfo);
 		}
 	}
-	
+
 	/**
 	 * Used internally to register a control with its applet.
 	 * @param control
@@ -253,7 +273,7 @@ public class G4P implements GConstants, PConstants {
 		}
 		winfo.addControl(control);
 	}
-		
+
 	/**
 	 * Remove a control from the window. This is used in preparation 
 	 * for disposing of a control.
@@ -269,7 +289,7 @@ public class G4P implements GConstants, PConstants {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Change the way position and size parameters are interpreted when a control is created. 
 	 * or added to another control e.g. GPanel. <br>
@@ -354,7 +374,7 @@ public class G4P implements GConstants, PConstants {
 		// Now save the style for later
 		styles.addLast(s);
 	}
-	
+
 	/**
 	 * Remove and restore the current style from the stack. <br>
 	 * There should be a matching pushStyle otherwise the program will crash.
@@ -364,7 +384,7 @@ public class G4P implements GConstants, PConstants {
 		control_mode = s.ctrlMode;
 		showMessages = s.showMessages;
 	}
-	
+
 	/**
 	 * This class represents the current style used by G4P. 
 	 * It can be extended to add other attributes but these should be 
@@ -376,5 +396,250 @@ public class G4P implements GConstants, PConstants {
 		int ctrlMode;
 		boolean showMessages;
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static int selectColor(){
+		Frame owner = (sketchApplet == null) ? null : sketchApplet.frame;
+		if(chooser == null){
+			chooser = new JColorChooser();
+			AbstractColorChooserPanel[] oldPanels = chooser.getChooserPanels();
+			AbstractColorChooserPanel[] newPanels = new AbstractColorChooserPanel[3];
+			for(AbstractColorChooserPanel p : oldPanels){
+				String displayName = p.getDisplayName();
+				if(displayName.equalsIgnoreCase("Swatches"))
+					newPanels[0] = p;
+				else if(displayName.equalsIgnoreCase("RGB"))
+					newPanels[1] = p;
+				else if(displayName.equalsIgnoreCase("HSV"))
+					newPanels[2] = p;
+			}
+			chooser.setChooserPanels(newPanels);
+			ColorPreviewPanel pp = new ColorPreviewPanel(lastColor);
+			chooser.getSelectionModel().addChangeListener(pp);
+			chooser.setPreviewPanel(pp);
+		}
+		// Use the last color selected to start it off
+		chooser.setColor(lastColor);
+		JDialog dialog = JColorChooser.createDialog(owner,
+				"Color picker", 
+				true, 
+				chooser, 
+				new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lastColor = chooser.getColor();
+			}
+		}, 
+		null);
+		dialog.setVisible(true);
+		return lastColor.getRGB();
+	}
+
+
+	/**
+	 * Select a folder from the local file system. <br>
+	 * 
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @param initSelection the initial file path to use
+	 * @return
+	 */
+	public static File selectFolder(String prompt){
+		return selectFolder(prompt, null);
+	}
+
+	/**
+	 * Select a folder from the local file system.
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @param initSelection the initial file path to use
+	 * @return the folder selected
+	 */
+	public static File selectFolder(String prompt, File initSelection){
+		if(initSelection == null)
+			initSelection = lastSelectFolder;
+		File selectedFile = null;
+		Frame frame = (sketchApplet == null) ? null : sketchApplet.frame;
+		if (PApplet.platform == MACOSX && PApplet.useNativeSelect != false) {
+			FileDialog fileDialog =
+				new FileDialog(frame, prompt, FileDialog.LOAD);
+			System.setProperty("apple.awt.fileDialogForDirectories", "true");
+			fileDialog.setVisible(true);
+			System.setProperty("apple.awt.fileDialogForDirectories", "false");
+			String filename = fileDialog.getFile();
+			if (filename != null) {
+				selectedFile = new File(fileDialog.getDirectory(), fileDialog.getFile());
+			}
+		} else {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle(prompt);
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			if (initSelection != null) {
+				fileChooser.setSelectedFile(initSelection);
+			}
+
+			int result = fileChooser.showOpenDialog(frame);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				selectedFile = fileChooser.getSelectedFile();
+			}
+		}
+		if(selectedFile != null)
+			lastSelectFolder = selectedFile;
+		return selectedFile;
+	}
+
+	/**
+	 * Select a file for input from the local file system. <br>
+	 * 
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @return the file selected or null
+	 */
+	public static File selectInput(String prompt){
+		return selectInput(prompt, null, null, null);
+	}
+
+	/**
+	 * Select a file for input from the local file system. <br>
+	 * 
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @param initSelection the initial file path to use
+	 * @return the file selected or null
+	 */
+	public static File selectInput(String prompt, File initSelection){
+		return selectInput(prompt, initSelection, null, null);
+	}
+
+	/**
+	 * Select a file for input from the local file system. <br>
+	 * 
+	 * This version allows the dialog window to filter the output based on file extensions.
+	 * This is not available on all platforms, if not then it is ignored. <br>
+	 * 
+	 * It is definitely available on Linux systems because it uses the standard swing
+	 * JFileFinder component.
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @param initSelection the initial file path to use
+	 * @param types a comma separated list of file extensions e.g. 
+	 * @param typeDesc simple textual description of the file types e.g. "Image files"
+	 * @return the file selected or null
+	 */
+	public static File selectInput(String prompt, File initSelection, String types, String typeDesc){
+		return selectImpl(prompt, initSelection, FileDialog.LOAD, types, typeDesc);
+	}
+
+	/**
+	 * Select a file for output from the local file system. <br>
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @param initSelection the initial file path to use
+	 * @return the file selected or null
+	 */
+	public static File selectOutput(String prompt){
+		return selectOutput(prompt, null, null, null);
+	}
+
+	/**
+	 * Select a file for output from the local file system. <br>
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @param initSelection the initial file path to use
+	 * @return the file selected or null
+	 */
+	public static File selectOutput(String prompt, File initSelection){
+		return selectOutput(prompt, initSelection, null, null);
+	}
+
+	/**
+	 * Select a file for output from the local file system. <br>
+	 * 
+	 * This version allows the dialog window to filter the output based on file extensions.
+	 * This is not available on all platforms, if not then it is ignored. <br>
+	 * 
+	 * It is definitely available on Linux systems because it uses the standard swing
+	 * JFileFinder component.
+	 * 
+	 * @param prompt the frame text for the chooser
+	 * @param initSelection the initial file path to use
+	 * @param types a comma separated list of file extensions e.g. "png,jpf,tiff"
+	 * @param typeDesc simple textual description of the file types e.g. "Image files"
+	 * @return the file selected or null
+	 */
+	public static File selectOutput(String prompt, File initSelection, String types, String typeDesc){
+		return selectImpl(prompt, initSelection, FileDialog.SAVE, types, typeDesc);
+	}
+
+	/**
+	 * The implementation of the select input and output methods.
+	 * @param prompt
+	 * @param initSelection
+	 * @param mode
+	 * @param types
+	 * @param typeDesc
+	 * @return the selected file or null
+	 */
+	private static File selectImpl(String prompt, File initSelection, int mode, String types, String typeDesc) {
+		// If no initial selection made then use last selection	
+		if(initSelection == null){
+			if(mode == FileDialog.SAVE)
+				initSelection = lastInputFolder;
+			else
+				initSelection = lastOutputFolder;
+		}
+		// Assume that a file will not be selected
+		File selectedFile = null;
+		// Get the owner
+		Frame owner = (sketchApplet == null) ? null : sketchApplet.frame;
+		// Create a file filter
+		if (PApplet.useNativeSelect) {
+			FileDialog dialog = new FileDialog(owner, prompt, mode);
+			if (initSelection != null) {
+				dialog.setDirectory(initSelection.getParent());
+				dialog.setFile(initSelection.getName());
+			}
+			FilenameFilter filter = null;
+			if(types != null && types.length() > 0){
+				filter = new FilenameChooserFilter(types);
+				dialog.setFilenameFilter(filter);
+			}
+			dialog.setVisible(true);
+			String directory = dialog.getDirectory();
+			String filename = dialog.getFile();
+			if (filename != null) {
+				selectedFile = new File(directory, filename);
+			}
+		} else {
+			JFileChooser chooser = new JFileChooser();
+			chooser.setDialogTitle(prompt);
+			FileFilter filter = null;
+			if(types != null && types.length() > 0){
+				filter = new FileChooserFilter(types, typeDesc);
+				chooser.setFileFilter(filter);
+			}
+			if (initSelection != null) {
+				chooser.setSelectedFile(initSelection);
+			}
+			int result = JFileChooser.ERROR_OPTION;
+			if (mode == FileDialog.SAVE) {
+				result = chooser.showSaveDialog(owner);
+			} else if (mode == FileDialog.LOAD) {
+				result = chooser.showOpenDialog(owner);
+			}
+			if (result == JFileChooser.APPROVE_OPTION) {
+				selectedFile = chooser.getSelectedFile();
+			}
+		}
+		// If a file has been selected then update the last?????Folder
+		if(selectedFile != null){
+			if(mode == FileDialog.SAVE)
+				lastInputFolder = selectedFile;
+			else
+				lastOutputFolder = selectedFile;
+		}
+		return selectedFile;
+	}
 }
