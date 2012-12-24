@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -406,16 +407,20 @@ public class G4P implements GConstants, PConstants {
 		if(chooser == null){
 			chooser = new JColorChooser();
 			AbstractColorChooserPanel[] oldPanels = chooser.getChooserPanels();
-			AbstractColorChooserPanel[] newPanels = new AbstractColorChooserPanel[3];
+			LinkedList<AbstractColorChooserPanel> panels = new LinkedList<AbstractColorChooserPanel>();
+			
 			for(AbstractColorChooserPanel p : oldPanels){
-				String displayName = p.getDisplayName();
-				if(displayName.equalsIgnoreCase("Swatches"))
-					newPanels[0] = p;
-				else if(displayName.equalsIgnoreCase("RGB"))
-					newPanels[1] = p;
-				else if(displayName.equalsIgnoreCase("HSV"))
-					newPanels[2] = p;
+				String displayName = p.getDisplayName().toLowerCase();
+				System.out.println(displayName);
+				if(displayName.equals("swatches"))
+					panels.addLast(p);
+				else if(displayName.equals("rgb"))
+					panels.addFirst(p);
+				else if(displayName.startsWith("hs"))
+					panels.addFirst(p);
 			}
+			AbstractColorChooserPanel[] newPanels;
+			newPanels = panels.toArray(new AbstractColorChooserPanel[panels.size()]);
 			chooser.setChooserPanels(newPanels);
 			ColorPreviewPanel pp = new ColorPreviewPanel(lastColor);
 			chooser.getSelectionModel().addChangeListener(pp);
