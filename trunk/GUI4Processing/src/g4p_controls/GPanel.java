@@ -423,6 +423,20 @@ public class GPanel extends GTextControl {
 //	}
 
 	/**
+	 * 
+	 * @param visible the visibility to set
+	 */
+	public void setVisible(boolean visible) {
+		// If we are making it invisible and it has focus give up the focus
+		if(!visible && focusIsWith == this)
+			loseFocus(null);
+		this.visible = visible;
+		// Children are available if the panel is visible and unavailable if invisible
+		setAvailableChildren(visible);
+	}
+
+
+	/**
 	 * Collapse or open the panel
 	 * @param collapse
 	 */
