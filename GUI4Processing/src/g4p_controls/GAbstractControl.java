@@ -633,6 +633,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	}
 
 	/**
+	 * 
 	 * @param visible the visibility to set
 	 */
 	public void setVisible(boolean visible) {
