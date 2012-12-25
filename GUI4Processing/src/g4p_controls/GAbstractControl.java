@@ -493,8 +493,21 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	}
 
 	/**
-	 * Set the rotation to apply when displaying this control.
-	 * @param angle
+	 * Set the rotation to apply when displaying this control. The center of 
+	 * rotation is determined by the control_mode attribute.
+	 * 
+	 * @param angle clockwise angle in radians
+	 */
+	public void setRotation(float angle){
+		setRotation(angle, G4P.control_mode);
+	}
+	
+	/**
+	 * Set the rotation to apply when displaying this control. The center of 
+	 * rotation is determined by the mode parameter parameter.
+	 * 
+	 * @param angle clockwise angle in radians
+	 * @param mode PApplet.CORNER / CORNERS / CENTER
 	 */
 	public void setRotation(float angle, int mode){	
 		rotAngle = angle;
@@ -522,8 +535,55 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		}		
 	}
 
-	public void setRotation(float angle){
-		setRotation(angle, G4P.control_mode);
+	/**
+	 * Move the control to the given position based on the mode. <br>
+	 * 
+	 * The position is not constrained to the screen area. <br>
+	 * 
+	 * The current control mode determines whether we move the
+	 * corner or the center of the control to px,py <br>
+	 * 
+	 * @param px the horizontal position to move to
+	 * @param py the vertical position to move to
+	 */
+	public void moveTo(float px, float py){
+		moveTo(px, py, G4P.control_mode);
+	}
+
+	/**
+	 * Move the control to the given position based on the mode. <br>
+	 * 
+	 * Unlike when dragged the position is not constrained to the 
+	 * screen area. <br>
+	 * 
+	 * The mode determines whether we move the corner or the center 
+	 * of the control to px,py <br>
+	 * 
+	 * @param px the horizontal position to move to
+	 * @param py the vertical position to move to
+	 * @param mode the control mode 
+	 */
+	public void moveTo(float px, float py, int mode){
+		GAbstractControl p = parent;
+		if(p != null){
+			px -= p.width/2;
+			py -= p.height/2;
+		}
+		switch(mode){
+		case PApplet.CORNER:
+		case PApplet.CORNERS:
+			cx += (px - x);
+			cy += (py - y);
+			x = cx - width/2;
+			y = cy - height/2;
+			break;
+		case PApplet.CENTER:
+			cx = px;
+			cy = py;
+			x = cx - width/2;
+			y = cy - height/2;
+			break;
+		}
 	}
 	
 	/**

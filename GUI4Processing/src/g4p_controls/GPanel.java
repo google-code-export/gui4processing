@@ -76,6 +76,7 @@ public class GPanel extends GTextControl {
 	protected boolean beingDragged = false;
 
 	protected boolean draggable = true;
+	protected boolean collapsable = true;
 
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
@@ -145,8 +146,10 @@ public class GPanel extends GTextControl {
 	}
 
 	/**
-	 * This panel is being added to another Additional changes that need to be made this control
-	 * is added to another.
+	 * This panel is being added to another additional changes that need to be made this control
+	 * is added to another. <br>
+	 * 
+	 * In this case we need to set the constraint limits to keep inside the parent.
 	 *  
 	 * @param p the parent
 	 */
@@ -161,8 +164,6 @@ public class GPanel extends GTextControl {
 			lowY = -p.height/2;
 			highY = p.height/2;
 		}
-//		dockX = x;
-//		dockY = y;
 	}
 	
 
@@ -295,15 +296,13 @@ public class GPanel extends GTextControl {
 			//				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.CLICK:
-			if(focusIsWith == this){
+			if(focusIsWith == this && collapsable){
 				tabOnly = !tabOnly;
 				// Perform appropriate action depending on collapse state
 				setCollapsed(tabOnly);
 				if(tabOnly){
 					x = dockX;
 					y = dockY;
-					//					cx = x + width/2;
-					//					cy = y + height/2;
 				}
 				else {
 					dockX = x;
@@ -380,6 +379,7 @@ public class GPanel extends GTextControl {
 		return draggable;
 	}
 
+	
 	/**
 	 * Ensures that the panel tab and panel body if open does not
 	 * extend off the screen.
@@ -403,53 +403,7 @@ public class GPanel extends GTextControl {
 		cy = y + height/2;
 	}
 
-	/**
-	 * Move the panel to the given position based on the mode. <br>
-	 * 
-	 * Unlike when dragged the position is not constrain to the 
-	 * screen area. <br>
-	 * 
-	 * The current control mode determines whether we move the
-	 * corner or the center of the panel to px,py <br>
-	 * 
-	 * @param px the horizontal position to move to
-	 * @param py the vertical position to move to
-	 */
-	public void moveTo(float px, float py){
-		moveTo(px,py, G4P.control_mode);
-	}
 
-	/**
-	 * Move the panel to the given position based on the mode. <br>
-	 * 
-	 * Unlike when dragged the position is not constrain to the 
-	 * screen area. <br>
-	 * 
-	 * The mode determines whether we move the corner or the center 
-	 * of the panel to px,py <br>
-	 * 
-	 * @param px the horizontal position to move to
-	 * @param py the vertical position to move to
-	 * @param mode the control mode 
-	 */
-	public void moveTo(float px, float py, int mode){
-		switch(mode){
-		case PApplet.CORNER:
-		case PApplet.CORNERS:
-			x = px;
-			y = py;
-			cx = x + width/2;
-			cy = y + height/2;
-			break;
-		case PApplet.CENTER:
-			cx = px;
-			cy = py;
-			x = cx - width/2;
-			y = cy - height/2;
-			break;
-		}
-	}
-	
 //	private void constrainPanelPosition_OLD(){
 //		int w = (int) ((tabOnly)? tabWidth : width);
 //		int h = (int) ((tabOnly)? tabHeight : height);
@@ -473,16 +427,18 @@ public class GPanel extends GTextControl {
 	 * @param collapse
 	 */
 	public void setCollapsed(boolean collapse){
-		tabOnly = collapse;
-		// If we open the panel make sure it fits on the screen but if we collapse
-		// the panel disable the panel controls but leave the panel available
-		if(tabOnly){
-			setAvailable(false);
-			available = true;
-		}
-		else {
-//			constrainPanelPosition();
-			setAvailable(true);
+		if(collapsable){
+			tabOnly = collapse;
+			// If we open the panel make sure it fits on the screen but if we collapse
+			// the panel disable the panel controls but leave the panel available
+			if(tabOnly){
+				setAvailable(false);
+				available = true; // Needed so we can click on the title bar
+			}
+			else {
+				constrainPanelPosition();  // Not sure
+				setAvailable(true);
+			}
 		}
 	}
 
@@ -494,6 +450,28 @@ public class GPanel extends GTextControl {
 		return tabOnly;
 	}
 
+	/**
+	 * Determine whether the panel can be collapsed when the title bar is clicked. <br>
+	 *  
+	 * If this is set to false then the panel will be expanded and it will
+	 * not be possible to collapse it until set back to true.
+	 * 
+	 */
+	public void setCollapsable(boolean c){
+		collapsable = c;
+		if(c == false){
+			tabOnly = false;
+			setAvailable(true);
+		}
+	}
+	
+	/**
+	 * Is this panel collapsable.	 * 
+	 */
+	public boolean isCollapsable(){
+		return collapsable;
+	}
+	
 	public int getTabHeight(){
 		return tabHeight;
 	}
