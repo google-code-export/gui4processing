@@ -230,7 +230,11 @@ public class G4P implements GConstants, PConstants {
 			winfo.setAlpha(alpha);
 	}
 
-
+	/**
+	 * Register a GWindow object.
+	 * 
+	 * @param window
+	 */
 	static void addWindow(GWindow window){
 		PApplet app = window.papplet;
 		// The first applet must be the sketchApplet
@@ -399,19 +403,22 @@ public class G4P implements GConstants, PConstants {
 	}
 
 	/**
+	 * This will open a version of the Java Swing color chooser dialog. The dialog's
+	 * UI is dependent on the OS and JVM implementation running. <br>
 	 * 
-	 * @return
+	 * If you click on Cancel then it returns the last color previously selected.
+	 * 
+	 * @return the ARGB colour as a 32 bit integer (as used in Processing). 
 	 */
 	public static int selectColor(){
 		Frame owner = (sketchApplet == null) ? null : sketchApplet.frame;
 		if(chooser == null){
 			chooser = new JColorChooser();
 			AbstractColorChooserPanel[] oldPanels = chooser.getChooserPanels();
-			LinkedList<AbstractColorChooserPanel> panels = new LinkedList<AbstractColorChooserPanel>();
-			
+			// Do not assume what panels are present
+			LinkedList<AbstractColorChooserPanel> panels = new LinkedList<AbstractColorChooserPanel>();	
 			for(AbstractColorChooserPanel p : oldPanels){
 				String displayName = p.getDisplayName().toLowerCase();
-				System.out.println(displayName);
 				if(displayName.equals("swatches"))
 					panels.addLast(p);
 				else if(displayName.equals("rgb"))
@@ -433,12 +440,12 @@ public class G4P implements GConstants, PConstants {
 				true, 
 				chooser, 
 				new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				lastColor = chooser.getColor();
-			}
-		}, 
-		null);
-		dialog.setVisible(true);
+					public void actionPerformed(ActionEvent e) {
+						lastColor = chooser.getColor();
+					}
+				}, 
+				null);
+				dialog.setVisible(true);
 		return lastColor.getRGB();
 	}
 
