@@ -32,13 +32,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.filechooser.FileFilter;
 
@@ -653,5 +653,58 @@ public class G4P implements GConstants, PConstants {
 				lastOutputFolder = selectedFile;
 		}
 		return selectedFile;
+	}
+	/*
+	 
+		Component parentComponent
+		    The first argument to each showXxxDialog method is always the parent component, which must be a 
+		    Frame, a component inside a Frame, or null. If you specify a Frame or Dialog, then the Dialog 
+		    will appear over the center of the Frame and follow the focus behavior of that Frame. If you 
+		    specify a component inside a Frame, then the Dialog will appear over the center of that component 
+		    and will follow the focus behavior of that component's Frame. If you specify null, then the look 
+		    and feel will pick an appropriate position for the dialog — generally the center of the screen — and 
+		    the Dialog will not necessarily follow the focus behavior of any visible Frame or Dialog.
+		
+		    The JOptionPane constructors do not include this argument. Instead, you specify the parent frame 
+		    when you create the JDialog that contains the JOptionPane, and you use the JDialog 
+		    setLocationRelativeTo method to set the dialog position.
+		Object message
+		    This required argument specifies what the dialog should display in its main area. Generally, you 
+		    specify a string, which results in the dialog displaying a label with the specified text. You can 
+		    split the message over several lines by putting newline (\n) characters inside the message string. 
+		    For example:
+		
+		    "Complete the sentence:\n \"Green eggs and...\""
+		
+		String title
+		    The title of the dialog.
+		int optionType
+		    Specifies the set of buttons that appear at the bottom of the dialog. Choose from one of the 
+		    following standard sets: DEFAULT_OPTION, YES_NO_OPTION, YES_NO_CANCEL_OPTION, OK_CANCEL_OPTION.
+		int messageType
+		    This argument determines the icon displayed in the dialog. Choose from one of the following 
+		    values: PLAIN_MESSAGE (no icon), ERROR_MESSAGE, INFORMATION_MESSAGE, WARNING_MESSAGE, QUESTION_MESSAGE.
+		Icon icon
+		    The icon to display in the dialog.
+		Object[] options
+		    Generally used to specify the string displayed by each button at the bottom of the dialog. See 
+		    Customizing Button Text in a Standard Dialog for more information. Can also be used to specify 
+		    icons to be displayed by the buttons or non-button components to be added to the button row.
+		Object initialValue
+		    Specifies the default value to be selected.
+		
+		You can either let the option pane display its default icon or specify the icon using the message 
+		type or icon argument. By default, an option pane created with showMessageDialog displays the 
+		information icon, one created with showConfirmDialog or showInputDialog displays the question 
+		icon, and one created with a JOptionPane constructor displays no icon. To specify that the dialog 
+		display a standard icon or no icon, specify the message type corresponding to the icon you desire. 
+		To specify a custom icon, use the icon argument. The icon argument takes precedence over the 
+		message type; as long as the icon argument has a non-null value, the dialog displays the 
+		specified icon.
+	 */
+	
+	public static int showMessage(){
+		JOptionPane xxx;
+		return 0;
 	}
 }

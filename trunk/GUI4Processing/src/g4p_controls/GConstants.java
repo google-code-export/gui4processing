@@ -25,6 +25,8 @@ package g4p_controls;
 
 import java.awt.font.TextAttribute;
 
+import javax.swing.JOptionPane;
+
 /**
  * 
  * These constants can all be available to the Processor.
@@ -161,5 +163,25 @@ public interface GConstants {
 	//	TextAttribute JUSTIFICATION = TextAttribute.JUSTIFICATION;
 	//	Float JUSTIFICATION_FULL = new Float(1.0f);
 	//	Float JUSTIFICATION_NONE = new Float(0.0f);
-
+	
+	// Modal dialog messages
+	
+	// Message types
+	int PLAIN 			= JOptionPane.PLAIN_MESSAGE;
+	int ERROR			= JOptionPane.ERROR_MESSAGE;
+	int INFO			= JOptionPane.INFORMATION_MESSAGE;
+	int WARNING			= JOptionPane.WARNING_MESSAGE;
+	int QUERY			= JOptionPane.QUESTION_MESSAGE;
+	
+	// Option types
+	int DEFAULT			= JOptionPane.DEFAULT_OPTION;
+	int YES_NO			= JOptionPane.YES_NO_OPTION;
+	int YES_NO_CANCEL	= JOptionPane.YES_NO_CANCEL_OPTION;
+	int OK_CANCEL		= JOptionPane.OK_CANCEL_OPTION;
+	// Replies to option types
+	int OK				= JOptionPane.OK_OPTION;
+	int YES				= JOptionPane.YES_OPTION;		// Has same int value as OK
+	int CANCEL			= JOptionPane.CANCEL_OPTION;
+	int CLOSED			= JOptionPane.CLOSED_OPTION;
+	
 }
