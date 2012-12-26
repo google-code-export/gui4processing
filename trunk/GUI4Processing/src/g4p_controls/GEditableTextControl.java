@@ -412,9 +412,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			newline = false;
 			keepCursorInView = true;
 			
-//			boolean shiftDown = ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK);
-//			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK);
-
 			int startPos = pos, startNbr = nbr;
 			
 			// Get selection details

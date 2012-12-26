@@ -81,7 +81,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 			app.applyMatrix(orgMatrix);
 		}
 		for(GAbstractControl control : windowControls){
-			if( (control.registeredMethods & DRAW_METHOD) == DRAW_METHOD && control.parent == null)
+			if( (control.registeredMethods & DRAW_METHOD) == DRAW_METHOD )
 				control.draw();
 		}		
 		if(app_g_3d)
@@ -102,7 +102,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 		if(isWindow)
 			((GWinApplet)app).mouseEvent(event);
 		for(GAbstractControl control : windowControls){
-			if( (control.registeredMethods & MOUSE_METHOD) == MOUSE_METHOD)
+			if((control.registeredMethods & MOUSE_METHOD) == MOUSE_METHOD)
 				control.mouseEvent(event);
 		}
 	}
