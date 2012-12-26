@@ -166,7 +166,6 @@ public class GPanel extends GTextControl {
 		}
 	}
 	
-
 	public void setText(String text){
 		super.setText(text);
 		stext.getLines(buffer.g2);
@@ -175,7 +174,6 @@ public class GPanel extends GTextControl {
 		calcHotSpots();
 		bufferInvalid = true;
 	}
-
 
 	public void setFont(Font font) {
 		if(font != null)
@@ -274,10 +272,6 @@ public class GPanel extends GTextControl {
 		currSpot = whichHotSpot(ox, oy);
 		// Is mouse over the panel tab (taking into account extended with when not collapsed)
 		boolean mouseOverTab = (tabOnly)? currSpot == COLLAPSED_BAR_SPOT : currSpot == EXPANDED_BAR_SPOT | currSpot == COLLAPSED_BAR_SPOT;
-		//			(currSpot == 1  || (currSpot == EXAPNDED_BAR_SPOT && !tabOnly));
-		// Is the mouse anywhere over the panel (taking into account whether the panel is
-		// collapsed or not)
-		//		boolean mouseOverPanel = (currSpot == 1  && tabOnly) || (currSpot > 0 && !tabOnly);
 
 		if(mouseOverTab || focusIsWith == this)
 			cursorIsOver = this;
@@ -290,10 +284,6 @@ public class GPanel extends GTextControl {
 				takeFocus();
 				beingDragged = false;
 			}
-			// If focus is with some other control with the same depth and the mouse is over the panel
-			// Used to ensure that GTextField controls on GPanels release focus
-			//			if(focusIsWith != null && focusIsWith != this && z == focusObjectZ() && currSpot >= 0)
-			//				focusIsWith.loseFocus(null);
 			break;
 		case MouseEvent.CLICK:
 			if(focusIsWith == this && collapsable){
@@ -379,7 +369,6 @@ public class GPanel extends GTextControl {
 		return draggable;
 	}
 
-	
 	/**
 	 * Ensures that the panel tab and panel body if open does not
 	 * extend off the screen.
@@ -403,39 +392,6 @@ public class GPanel extends GTextControl {
 		cy = y + height/2;
 	}
 
-
-//	private void constrainPanelPosition_OLD(){
-//		int w = (int) ((tabOnly)? tabWidth : width);
-//		int h = (int) ((tabOnly)? tabHeight : height);
-//		// Constrain horizontally
-//		if(x < 0) 
-//			x = 0;
-//		else if(x + w > winApp.getWidth()) 
-//			x = (int) (winApp.getWidth() - w);
-//		// Constrain vertically
-//		if(y < 0) 
-//			y = 0;
-//		else if(y + h > winApp.getHeight()) 
-//			y = winApp.getHeight() - h;
-//		// Maintain centre for
-//		cx = x + width/2;
-//		cy = y + height/2;
-//	}
-
-	/**
-	 * 
-	 * @param visible the visibility to set
-	 */
-	public void setVisible(boolean visible) {
-		// If we are making it invisible and it has focus give up the focus
-		if(!visible && focusIsWith == this)
-			loseFocus(null);
-		this.visible = visible;
-		// Children are available if the panel is visible and unavailable if invisible
-		setAvailableChildren(visible);
-	}
-
-
 	/**
 	 * Collapse or open the panel
 	 * @param collapse
@@ -450,7 +406,6 @@ public class GPanel extends GTextControl {
 				available = true; // Needed so we can click on the title bar
 			}
 			else {
-				constrainPanelPosition();  // Not sure
 				setAvailable(true);
 			}
 		}
@@ -492,6 +447,5 @@ public class GPanel extends GTextControl {
 
 	public String toString(){
 		return tag + "  [" + x + ", " + y+"]" + "  [" + cx + ", " + cy+"]"+ "  [" + dockX + ", " + dockY+"]";
-
 	}
 }

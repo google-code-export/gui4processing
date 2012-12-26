@@ -111,7 +111,6 @@ public class GKnob extends GValueControl {
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		setTurnRange(startAng, endAng);
 		// valuePos and valueTarget will start at 0.5;
-//		anglePos = scaleValueToAngle(parametricPos);
 		lastAngleTarget = angleTarget = scaleValueToAngle(parametricTarget);
 		hotspots = new HotSpot[]{
 				new HScircle(1, width/2, height/2, gripRadius)
@@ -302,12 +301,6 @@ public class GKnob extends GValueControl {
 				takeFocus();
 			}
 			break;
-//		case MouseEvent.CLICK:
-//			//			System.out.println("C " + focusIsWith);
-//			if(focusIsWith == this ){
-//				//				System.out.println("CLICKED " + currSpot );
-//			}
-//			break;
 		case MouseEvent.RELEASE:
 			if(focusIsWith == this){
 				loseFocus(null);
@@ -372,23 +365,6 @@ public class GKnob extends GValueControl {
 		winApp.popStyle();
 	}
 
-	/**
-	 * Specify whether the values are to be constrained to the tick marks or not.
-	 * It will automatically display tick marks if set true.
-	 * @param stickToTicks true if you want to constrain the values else false
-	 */
-//	public void setStickToTicks(boolean stickToTicks) {
-//		this.stickToTicks = stickToTicks;
-//		if(stickToTicks){
-//			setShowTicks(true);
-//			valueTarget = findNearestTickValueTo(valuePos);
-//			setValue(valuePos);
-////			anglePos = scaleValueToAngle(valuePos); //=============================================== added
-//			angleTarget = scaleValueToAngle(valueTarget); //=============================================== added
-//			bufferInvalid = true;
-//		}
-//	}
-	
 	protected void updateBuffer(){
 		double a, sina, cosa;
 		float tickLength;
@@ -438,7 +414,6 @@ public class GKnob extends GValueControl {
 			// draw grip (inner) part of knob
 			buffer.strokeWeight(1.6f);
 			buffer.stroke(palette[2]); // was 14
-//			buffer.noStroke();
 			buffer.fill(palette[2]);
 			if(drawArcOnly)
 				buffer.arc(0,0,2*gripRadius, 2*gripRadius, PApplet.radians(startAng), PApplet.radians(endAng));

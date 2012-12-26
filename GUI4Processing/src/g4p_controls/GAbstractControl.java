@@ -143,18 +143,18 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	public int tagNo;
 
 	/* Is the component visible or not */
-	protected boolean visible = true;
+	boolean visible = true;
 
 	/* Is the component enabled to generate mouse and keyboard events */
-	protected boolean enabled = true;
+	boolean enabled = true;
 
 	/* 
 	 * Is the component available for mouse and keyboard events.
-	 * This is on;y used internally to prevent user input being
-	 * processed during animation. new to V3
-	 * Will preserve enabled and visible flags
+	 * This is only used internally to prevent user input being
+	 * processed during animation.
+	 * It will preserve enabled and visible flags
 	 */
-	protected boolean available = true;
+	boolean available = true;
 
 	/* The object to handle the event */
 	protected Object eventHandlerObject = null;
@@ -636,12 +636,30 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 * @param visible the visibility to set
 	 */
+//	public void setVisible(boolean visible) {
+//		// If we are making it invisible and it has focus give up the focus
+//		if(!visible && focusIsWith == this)
+//			loseFocus(null);
+//		this.visible = visible;
+//	}
+
+	/**
+	 * 
+	 * @param visible the visibility to set
+	 */
 	public void setVisible(boolean visible) {
 		// If we are making it invisible and it has focus give up the focus
 		if(!visible && focusIsWith == this)
 			loseFocus(null);
 		this.visible = visible;
+		// If this control has childrenChildren are available if the panel is visible and unavailable if invisible
+		available = visible;
+		if(children != null){
+			for(GAbstractControl c : children)
+				c.setAvailable(this.visible);
+		}
 	}
+
 
 	/**
 	 * @return the component's visibility
@@ -651,24 +669,18 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	}
 
 	/**
-	 * If a control is made unavailable it will still be drawn but it not respond to user input.
+	 * The availability flag is used by the library code to determine whether
+	 * a control should be considered for drawing and mouse/key input. <br>
+	 * It perits an internal control that does not affect the visible
+	 * and enabled state of the control, which are set by the programmer.
+	 * 
+	 * If a control and its children are made unavailable it will still be drawn 
+	 * but it not respond to user input.
 	 * 
 	 * @param avail
 	 */
-	public void setAvailable(boolean avail){
+	protected void setAvailable(boolean avail){
 		available = avail;
-		if(children != null){
-			for(GAbstractControl c : children)
-				c.setAvailable(avail);
-		}
-	}
-
-	/**
-	 * Set the availability for the children only.
-	 * 
-	 * @param avail
-	 */
-	public void setAvailableChildren(boolean avail){
 		if(children != null){
 			for(GAbstractControl c : children)
 				c.setAvailable(avail);
