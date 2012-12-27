@@ -173,9 +173,7 @@ public class GButton extends GTextIconControl {
 			// if the mouse has moved then release focus otherwise
 			// MOUSE_CLICKED will handle it
 			if(focusIsWith == this && dragging){
-				if(currSpot >= 0)
-					fireEvent(this, GEvent.CLICKED);
-				else if(reportAllButtonEvents)
+				if(reportAllButtonEvents)
 					fireEvent(this, GEvent.RELEASED);
 				dragging = false;
 				loseFocus(null);
