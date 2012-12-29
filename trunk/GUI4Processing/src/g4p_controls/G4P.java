@@ -25,6 +25,7 @@ package g4p_controls;
 
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Frame;
@@ -32,6 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -104,10 +106,6 @@ public class G4P implements GConstants, PConstants {
 	static int control_mode = PApplet.CORNER;
 
 	static LinkedList<G4Pstyle> styles = new LinkedList<G4Pstyle>();
-
-	static File lastSelectFolder = null;
-	static File lastInputFolder = null;
-	static File lastOutputFolder = null;
 
 	static JColorChooser chooser = null;
 	static Color lastColor = Color.white; // White
@@ -449,30 +447,15 @@ public class G4P implements GConstants, PConstants {
 		return lastColor.getRGB();
 	}
 
-
-	/**
-	 * Select a folder from the local file system. <br>
-	 * 
-	 * 
-	 * @param prompt the frame text for the chooser
-	 * @param initSelection the initial file path to use
-	 * @return
-	 */
-	public static File selectFolder(String prompt){
-		return selectFolder(prompt, null);
-	}
-
 	/**
 	 * Select a folder from the local file system.
 	 * 
 	 * @param prompt the frame text for the chooser
-	 * @param initSelection the initial file path to use
-	 * @return the folder selected
+	 * @return the absolute path name for the selected folder, or null if action 
+	 * cancelled.
 	 */
-	public static File selectFolder(String prompt, File initSelection){
-		if(initSelection == null)
-			initSelection = lastSelectFolder;
-		File selectedFile = null;
+	public static String selectFolder(String prompt){
+		String selectedFolder = null;
 		Frame frame = (sketchApplet == null) ? null : sketchApplet.frame;
 		if (PApplet.platform == MACOSX && PApplet.useNativeSelect != false) {
 			FileDialog fileDialog =
@@ -482,24 +465,26 @@ public class G4P implements GConstants, PConstants {
 			System.setProperty("apple.awt.fileDialogForDirectories", "false");
 			String filename = fileDialog.getFile();
 			if (filename != null) {
-				selectedFile = new File(fileDialog.getDirectory(), fileDialog.getFile());
+				try {
+					selectedFolder = (new File(fileDialog.getDirectory(), fileDialog.getFile())).getCanonicalPath();
+				} catch (IOException e) {
+					selectedFolder = null;
+				}
 			}
 		} else {
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setDialogTitle(prompt);
 			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			if (initSelection != null) {
-				fileChooser.setSelectedFile(initSelection);
-			}
-
 			int result = fileChooser.showOpenDialog(frame);
 			if (result == JFileChooser.APPROVE_OPTION) {
-				selectedFile = fileChooser.getSelectedFile();
+				try {
+					selectedFolder = fileChooser.getSelectedFile().getCanonicalPath();
+				} catch (IOException e) {
+					selectedFolder = null;
+				}
 			}
 		}
-		if(selectedFile != null)
-			lastSelectFolder = selectedFile;
-		return selectedFile;
+		return selectedFolder;
 	}
 
 	/**
@@ -507,22 +492,11 @@ public class G4P implements GConstants, PConstants {
 	 * 
 	 * 
 	 * @param prompt the frame text for the chooser
-	 * @return the file selected or null
+	 * @return the absolute path name for the selected folder, or null if action 
+	 * cancelled.
 	 */
-	public static File selectInput(String prompt){
-		return selectInput(prompt, null, null, null);
-	}
-
-	/**
-	 * Select a file for input from the local file system. <br>
-	 * 
-	 * 
-	 * @param prompt the frame text for the chooser
-	 * @param initSelection the initial file path to use
-	 * @return the file selected or null
-	 */
-	public static File selectInput(String prompt, File initSelection){
-		return selectInput(prompt, initSelection, null, null);
+	public static String selectInput(String prompt){
+		return selectInput(prompt, null, null);
 	}
 
 	/**
@@ -535,13 +509,13 @@ public class G4P implements GConstants, PConstants {
 	 * JFileFinder component.
 	 * 
 	 * @param prompt the frame text for the chooser
-	 * @param initSelection the initial file path to use
 	 * @param types a comma separated list of file extensions e.g. 
 	 * @param typeDesc simple textual description of the file types e.g. "Image files"
-	 * @return the file selected or null
+	 * @return the absolute path name for the selected folder, or null if action 
+	 * cancelled.
 	 */
-	public static File selectInput(String prompt, File initSelection, String types, String typeDesc){
-		return selectImpl(prompt, initSelection, FileDialog.LOAD, types, typeDesc);
+	public static String selectInput(String prompt, String types, String typeDesc){
+		return selectImpl(prompt, FileDialog.LOAD, types, typeDesc);
 	}
 
 	/**
@@ -549,21 +523,11 @@ public class G4P implements GConstants, PConstants {
 	 * 
 	 * @param prompt the frame text for the chooser
 	 * @param initSelection the initial file path to use
-	 * @return the file selected or null
+	 * @return the absolute path name for the selected folder, or null if action 
+	 * cancelled.
 	 */
-	public static File selectOutput(String prompt){
-		return selectOutput(prompt, null, null, null);
-	}
-
-	/**
-	 * Select a file for output from the local file system. <br>
-	 * 
-	 * @param prompt the frame text for the chooser
-	 * @param initSelection the initial file path to use
-	 * @return the file selected or null
-	 */
-	public static File selectOutput(String prompt, File initSelection){
-		return selectOutput(prompt, initSelection, null, null);
+	public static String selectOutput(String prompt){
+		return selectOutput(prompt, null, null);
 	}
 
 	/**
@@ -576,43 +540,33 @@ public class G4P implements GConstants, PConstants {
 	 * JFileFinder component.
 	 * 
 	 * @param prompt the frame text for the chooser
-	 * @param initSelection the initial file path to use
 	 * @param types a comma separated list of file extensions e.g. "png,jpf,tiff"
 	 * @param typeDesc simple textual description of the file types e.g. "Image files"
-	 * @return the file selected or null
+	 * @return the absolute path name for the selected folder, or null if action 
+	 * cancelled.
 	 */
-	public static File selectOutput(String prompt, File initSelection, String types, String typeDesc){
-		return selectImpl(prompt, initSelection, FileDialog.SAVE, types, typeDesc);
+	public static String selectOutput(String prompt, String types, String typeDesc){
+		return selectImpl(prompt, FileDialog.SAVE, types, typeDesc);
 	}
 
 	/**
 	 * The implementation of the select input and output methods.
 	 * @param prompt
-	 * @param initSelection
 	 * @param mode
 	 * @param types
 	 * @param typeDesc
-	 * @return the selected file or null
+	 * @return the absolute path name for the selected folder, or null if action 
+	 * cancelled.
 	 */
-	private static File selectImpl(String prompt, File initSelection, int mode, String types, String typeDesc) {
+	private static String selectImpl(String prompt, int mode, String types, String typeDesc) {
 		// If no initial selection made then use last selection	
-		if(initSelection == null){
-			if(mode == FileDialog.SAVE)
-				initSelection = lastInputFolder;
-			else
-				initSelection = lastOutputFolder;
-		}
 		// Assume that a file will not be selected
-		File selectedFile = null;
+		String selectedFile = null;
 		// Get the owner
 		Frame owner = (sketchApplet == null) ? null : sketchApplet.frame;
 		// Create a file filter
 		if (PApplet.useNativeSelect) {
 			FileDialog dialog = new FileDialog(owner, prompt, mode);
-			if (initSelection != null) {
-				dialog.setDirectory(initSelection.getParent());
-				dialog.setFile(initSelection.getName());
-			}
 			FilenameFilter filter = null;
 			if(types != null && types.length() > 0){
 				filter = new FilenameChooserFilter(types);
@@ -620,9 +574,15 @@ public class G4P implements GConstants, PConstants {
 			}
 			dialog.setVisible(true);
 			String directory = dialog.getDirectory();
-			String filename = dialog.getFile();
-			if (filename != null) {
-				selectedFile = new File(directory, filename);
+			if(directory != null){
+				selectedFile = dialog.getFile();
+				if(selectedFile != null){
+					try {
+						selectedFile = (new File(directory, selectedFile)).getCanonicalPath();
+					} catch (IOException e) {
+						selectedFile = null;
+					}
+				}
 			}
 		} else {
 			JFileChooser chooser = new JFileChooser();
@@ -632,9 +592,6 @@ public class G4P implements GConstants, PConstants {
 				filter = new FileChooserFilter(types, typeDesc);
 				chooser.setFileFilter(filter);
 			}
-			if (initSelection != null) {
-				chooser.setSelectedFile(initSelection);
-			}
 			int result = JFileChooser.ERROR_OPTION;
 			if (mode == FileDialog.SAVE) {
 				result = chooser.showSaveDialog(owner);
@@ -642,69 +599,104 @@ public class G4P implements GConstants, PConstants {
 				result = chooser.showOpenDialog(owner);
 			}
 			if (result == JFileChooser.APPROVE_OPTION) {
-				selectedFile = chooser.getSelectedFile();
+				try {
+					selectedFile = chooser.getSelectedFile().getCanonicalPath();
+				} catch (IOException e) {
+					selectedFile = null;
+				}
 			}
-		}
-		// If a file has been selected then update the last?????Folder
-		if(selectedFile != null){
-			if(mode == FileDialog.SAVE)
-				lastInputFolder = selectedFile;
-			else
-				lastOutputFolder = selectedFile;
 		}
 		return selectedFile;
 	}
+
 	/*
 	 
-		Component parentComponent
-		    The first argument to each showXxxDialog method is always the parent component, which must be a 
-		    Frame, a component inside a Frame, or null. If you specify a Frame or Dialog, then the Dialog 
-		    will appear over the center of the Frame and follow the focus behavior of that Frame. If you 
-		    specify a component inside a Frame, then the Dialog will appear over the center of that component 
-		    and will follow the focus behavior of that component's Frame. If you specify null, then the look 
-		    and feel will pick an appropriate position for the dialog — generally the center of the screen — and 
-		    the Dialog will not necessarily follow the focus behavior of any visible Frame or Dialog.
-		
-		    The JOptionPane constructors do not include this argument. Instead, you specify the parent frame 
-		    when you create the JDialog that contains the JOptionPane, and you use the JDialog 
-		    setLocationRelativeTo method to set the dialog position.
-		Object message
-		    This required argument specifies what the dialog should display in its main area. Generally, you 
-		    specify a string, which results in the dialog displaying a label with the specified text. You can 
-		    split the message over several lines by putting newline (\n) characters inside the message string. 
-		    For example:
-		
-		    "Complete the sentence:\n \"Green eggs and...\""
-		
-		String title
-		    The title of the dialog.
-		int optionType
-		    Specifies the set of buttons that appear at the bottom of the dialog. Choose from one of the 
-		    following standard sets: DEFAULT_OPTION, YES_NO_OPTION, YES_NO_CANCEL_OPTION, OK_CANCEL_OPTION.
-		int messageType
-		    This argument determines the icon displayed in the dialog. Choose from one of the following 
-		    values: PLAIN_MESSAGE (no icon), ERROR_MESSAGE, INFORMATION_MESSAGE, WARNING_MESSAGE, QUESTION_MESSAGE.
-		Icon icon
-		    The icon to display in the dialog.
-		Object[] options
-		    Generally used to specify the string displayed by each button at the bottom of the dialog. See 
-		    Customizing Button Text in a Standard Dialog for more information. Can also be used to specify 
-		    icons to be displayed by the buttons or non-button components to be added to the button row.
-		Object initialValue
-		    Specifies the default value to be selected.
-		
-		You can either let the option pane display its default icon or specify the icon using the message 
-		type or icon argument. By default, an option pane created with showMessageDialog displays the 
-		information icon, one created with showConfirmDialog or showInputDialog displays the question 
-		icon, and one created with a JOptionPane constructor displays no icon. To specify that the dialog 
-		display a standard icon or no icon, specify the message type corresponding to the icon you desire. 
-		To specify a custom icon, use the icon argument. The icon argument takes precedence over the 
-		message type; as long as the icon argument has a non-null value, the dialog displays the 
-		specified icon.
-	 */
+	Component parentComponent
+	    The first argument to each showXxxDialog method is always the parent component, which must be a 
+	    Frame, a component inside a Frame, or null. If you specify a Frame or Dialog, then the Dialog 
+	    will appear over the center of the Frame and follow the focus behavior of that Frame. If you 
+	    specify a component inside a Frame, then the Dialog will appear over the center of that component 
+	    and will follow the focus behavior of that component's Frame. If you specify null, then the look 
+	    and feel will pick an appropriate position for the dialog — generally the center of the screen — and 
+	    the Dialog will not necessarily follow the focus behavior of any visible Frame or Dialog.
 	
-	public static int showMessage(){
-		JOptionPane xxx;
-		return 0;
+	    The JOptionPane constructors do not include this argument. Instead, you specify the parent frame 
+	    when you create the JDialog that contains the JOptionPane, and you use the JDialog 
+	    setLocationRelativeTo method to set the dialog position.
+	Object message
+	    This required argument specifies what the dialog should display in its main area. Generally, you 
+	    specify a string, which results in the dialog displaying a label with the specified text. You can 
+	    split the message over several lines by putting newline (\n) characters inside the message string. 
+	    For example:
+	
+	    "Complete the sentence:\n \"Green eggs and...\""
+	
+	String title
+	    The title of the dialog.
+	int optionType
+	    Specifies the set of buttons that appear at the bottom of the dialog. Choose from one of the 
+	    following standard sets: DEFAULT_OPTION, YES_NO_OPTION, YES_NO_CANCEL_OPTION, OK_CANCEL_OPTION.
+	int messageType
+	    This argument determines the icon displayed in the dialog. Choose from one of the following 
+	    values: PLAIN_MESSAGE (no icon), ERROR_MESSAGE, INFORMATION_MESSAGE, WARNING_MESSAGE, QUESTION_MESSAGE.
+	Icon icon
+	    The icon to display in the dialog.
+	Object[] options
+	    Generally used to specify the string displayed by each button at the bottom of the dialog. See 
+	    Customizing Button Text in a Standard Dialog for more information. Can also be used to specify 
+	    icons to be displayed by the buttons or non-button components to be added to the button row.
+	Object initialValue
+	    Specifies the default value to be selected.
+	
+	You can either let the option pane display its default icon or specify the icon using the message 
+	type or icon argument. By default, an option pane created with showMessageDialog displays the 
+	information icon, one created with showConfirmDialog or showInputDialog displays the question 
+	icon, and one created with a JOptionPane constructor displays no icon. To specify that the dialog 
+	display a standard icon or no icon, specify the message type corresponding to the icon you desire. 
+	To specify a custom icon, use the icon argument. The icon argument takes precedence over the 
+	message type; as long as the icon argument has a non-null value, the dialog displays the 
+	specified icon.
+ */
+
+	/**
+	 * 
+	 * 
+	 * The message type should be one of the following <br>
+	 * 	G4P.PLAIN, G4P.ERROR, G4P.INFO, G4P.WARNING, G4P.QUERY <br>
+	 * 
+	 * The dialog can be shown as an internal dialog (i.e. inside the application window)
+	 * provided that the owner is a window or a G4P control being displayed in a window.
+	 * 
+	 * @param owner the control responsible for this dialog. 
+	 * @param message the text to be displayed in the main area of the dialog
+	 * @param title the text to appear in the dialog's title bar.
+	 * @param messageType the message type
+	 * @param internal if true the dialog will appear inside the application window if possible
+	 */
+	public static void showMessage(Object owner, String message, String title, int messageType, boolean internal){
+		Frame frame = null;
+		if(owner != null)
+			frame = getFrame(owner);
+		if(frame != null && internal)
+			JOptionPane.showInternalMessageDialog(frame, message, title, messageType);
+		else
+			JOptionPane.showMessageDialog(frame, message, title, messageType);
+	}
+	
+	/**
+	 * Find the Frame associated with this object.
+	 * 
+	 * @param owner the object that is responsible for this message
+	 * @return
+	 */
+	private static Frame getFrame(Object owner){
+		Frame frame = null;
+		if(owner instanceof PApplet || owner instanceof GWinApplet)
+			frame = ((PApplet)owner).frame;
+		else if(owner instanceof GWindow)
+			frame = (Frame)owner;
+		else if(owner instanceof GAbstractControl)
+			frame = ((GAbstractControl) owner).getPApplet().frame;
+		return frame;
 	}
 }
