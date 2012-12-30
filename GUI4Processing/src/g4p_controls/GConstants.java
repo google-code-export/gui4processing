@@ -174,14 +174,16 @@ public interface GConstants {
 	int QUERY			= JOptionPane.QUESTION_MESSAGE;
 	
 	// Option types
-	int DEFAULT			= JOptionPane.DEFAULT_OPTION;
+	int DEFAULT			= JOptionPane.DEFAULT_OPTION;  // Maybe get rid of this ???
 	int YES_NO			= JOptionPane.YES_NO_OPTION;
 	int YES_NO_CANCEL	= JOptionPane.YES_NO_CANCEL_OPTION;
 	int OK_CANCEL		= JOptionPane.OK_CANCEL_OPTION;
+	
 	// Replies to option types
 	int OK				= JOptionPane.OK_OPTION;
+	int NO				= JOptionPane.NO_OPTION;
 	int YES				= JOptionPane.YES_OPTION;		// Has same int value as OK
 	int CANCEL			= JOptionPane.CANCEL_OPTION;
-	int CLOSED			= JOptionPane.CLOSED_OPTION;
+	int CLOSED			= JOptionPane.CLOSED_OPTION;	
 	
 }
