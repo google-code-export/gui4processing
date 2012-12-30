@@ -677,6 +677,13 @@ public class G4P implements GConstants, PConstants {
 		JOptionPane.showMessageDialog(frame, message, title, messageType);
 	}
 	
+	
+	public static int selectOption(Object owner, String message, String title, int messageType, int optionType){
+		Frame frame = getFrame(owner);
+		return JOptionPane.showOptionDialog(frame, message, title, optionType, messageType, null, null, null);
+	}
+	
+	
 	/**
 	 * Find the Frame associated with this object.
 	 * 
