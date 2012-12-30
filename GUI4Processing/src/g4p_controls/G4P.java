@@ -671,16 +671,10 @@ public class G4P implements GConstants, PConstants {
 	 * @param message the text to be displayed in the main area of the dialog
 	 * @param title the text to appear in the dialog's title bar.
 	 * @param messageType the message type
-	 * @param internal if true the dialog will appear inside the application window if possible
 	 */
-	public static void showMessage(Object owner, String message, String title, int messageType, boolean internal){
-		Frame frame = null;
-		if(owner != null)
-			frame = getFrame(owner);
-		if(frame != null && internal)
-			JOptionPane.showInternalMessageDialog(frame, message, title, messageType);
-		else
-			JOptionPane.showMessageDialog(frame, message, title, messageType);
+	public static void showMessage(Object owner, String message, String title, int messageType){
+		Frame frame = getFrame(owner);
+		JOptionPane.showMessageDialog(frame, message, title, messageType);
 	}
 	
 	/**
