@@ -659,7 +659,7 @@ public class G4P implements GConstants, PConstants {
  */
 
 	/**
-	 * 
+	 * Display a simple message dialog window. <br>
 	 * 
 	 * The message type should be one of the following <br>
 	 * 	G4P.PLAIN, G4P.ERROR, G4P.INFO, G4P.WARNING, G4P.QUERY <br>
