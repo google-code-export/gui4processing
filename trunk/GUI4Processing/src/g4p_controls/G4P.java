@@ -658,14 +658,21 @@ public class G4P implements GConstants, PConstants {
 	specified icon.
  */
 
+	private static String PANE_TEXT_STYLE_MACOS = "<html> <head> <style type=\"text/css\">"+
+    "b { font: 13pt \"Lucida Grande\" } p { font: 11pt \"Lucida Grande\"; margin-top: 8px }"+
+    "</style> </head> <b>@@TITLE@@</b> <p>@@MESSAGE@@</p>";
+	
+	private static String PANE_TEXT_STYLE_OTHER = "<html> <head> <style type=\"text/css\">"+
+    "b { font: 12pt \"Lucida Grande\" } p { font: 11pt \"Lucida Grande\"; margin-top: 8px }"+
+    "</style> </head> <b>@@MESSAGE@@ </b>";
+	
 	/**
 	 * Display a simple message dialog window. <br>
 	 * 
-	 * The message type should be one of the following <br>
-	 * 	G4P.PLAIN, G4P.ERROR, G4P.INFO, G4P.WARNING, G4P.QUERY <br>
+	 * The actual UI will depend on the platform your application is running on. <br>
 	 * 
-	 * The dialog can be shown as an internal dialog (i.e. inside the application window)
-	 * provided that the owner is a window or a G4P control being displayed in a window.
+	 * The message type should be one of the following <br>
+	 * G4P.PLAIN, G4P.ERROR, G4P.INFO, G4P.WARNING, G4P.QUERY <br>
 	 * 
 	 * @param owner the control responsible for this dialog. 
 	 * @param message the text to be displayed in the main area of the dialog
@@ -674,15 +681,60 @@ public class G4P implements GConstants, PConstants {
 	 */
 	public static void showMessage(Object owner, String message, String title, int messageType){
 		Frame frame = getFrame(owner);
-		JOptionPane.showMessageDialog(frame, message, title, messageType);
+		String m;
+		if(PApplet.platform == PApplet.MACOSX){
+			m = PANE_TEXT_STYLE_MACOS.replaceAll("@@TITLE@@", title);
+			title = "";
+			m = m.replaceAll("@@MESSAGE@@", message);
+		}
+		else {
+			m = PANE_TEXT_STYLE_OTHER.replaceAll("@@MESSAGE@@", message);
+		}
+		JOptionPane.showMessageDialog(frame, m, title, messageType);
 	}
 	
-	
+	/**
+	 * Display a simple message dialog window. <br>
+	 * 
+	 * The actual UI will depend on the platform your application is running on. <br>
+	 * 
+	 * The message type should be one of the following <br>
+	 * 	G4P.PLAIN, G4P.ERROR, G4P.INFO, G4P.WARNING, G4P.QUERY <br>
+	 * 
+	 * The option type  should be one of the following <br>
+	 * G4P.YES_NO, G4P.YES_NO_CANCEL, G4P.OK_CANCEL <br>
+	 * 
+	 * This method returns a value to indicate which button was clicked. It will be
+	 * one of the following <br>
+	 * G4P.OK, G4P.YES, G4P.NO, G4P.CANCEL, G4P.CLOSED <br>
+	 * 
+	 * Some comments on the returned value: <ul>
+	 * <li>G4P.OK and G4P.YES have the same integer value so can be used interchangeably. </li>
+	 * <li>G4P.CLOSED maybe returned if the dialog box is closed although on some 
+	 * systems G4P.NO or G4P.CANCEL may be returned instead. </li>
+	 * <li>It is better to test for a positive response because they have the same value. </li>
+	 * <li> If you must test for a negative response use !G4P.OK or !G4P.YES </li></ul>
+	 * 
+	 * @param owner the control responsible for this dialog. 
+	 * @param message the text to be displayed in the main area of the dialog
+	 * @param title the text to appear in the dialog's title bar.
+	 * @param messageType the message type
+	 * @param optionType
+	 * @return
+	 */
 	public static int selectOption(Object owner, String message, String title, int messageType, int optionType){
 		Frame frame = getFrame(owner);
-		return JOptionPane.showOptionDialog(frame, message, title, optionType, messageType, null, null, null);
+		String m;
+		if(PApplet.platform == PApplet.MACOSX){
+			m = PANE_TEXT_STYLE_MACOS.replaceAll("@@TITLE@@", title);
+			title = "";
+			m = m.replaceAll("@@MESSAGE@@", message);
+		}
+		else {
+			m = PANE_TEXT_STYLE_OTHER.replaceAll("@@MESSAGE@@", message);
+		}
+		return JOptionPane.showOptionDialog(frame, m, title, optionType, messageType, null, null, null);
 	}
-	
 	
 	/**
 	 * Find the Frame associated with this object.
