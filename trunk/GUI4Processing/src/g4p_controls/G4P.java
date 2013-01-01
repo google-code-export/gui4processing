@@ -81,7 +81,7 @@ public class G4P implements GConstants, PConstants {
 	 * in preference to platform specific fonts or include them here.
 	 * <ul>
 	 * <li>Dialog </li>
-	 * <li>DialogInpu </li>t
+	 * <li>DialogInput </li>t
 	 * <li>Monospaced </li>
 	 * <li>Serif </li>
 	 * <li>SansSerif </li>
