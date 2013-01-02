@@ -71,18 +71,18 @@ void handleButtonEvents(GButton button, GEvent event) {
  */
 void windowMouse(GWinApplet appc, GWinData data, MouseEvent event) {
   MyWinData data2 = (MyWinData)data;
-  switch(event.getID()) {
-  case MouseEvent.MOUSE_PRESSED:
+  switch(event.getAction()) {
+  case MouseEvent.PRESS:
     data2.sx = data2.ex = appc.mouseX;
     data2.sy = data2.ey = appc.mouseY;
     data2.done = false;
     break;
-  case MouseEvent.MOUSE_RELEASED:
+  case MouseEvent.RELEASE:
     data2.ex = appc.mouseX;
     data2.ey = appc.mouseY;
     data2.done = true;
     break;
-  case MouseEvent.MOUSE_DRAGGED:
+  case MouseEvent.DRAG:
     data2.ex = appc.mouseX;
     data2.ey = appc.mouseY;
     break;
