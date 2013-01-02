@@ -25,7 +25,6 @@ package g4p_controls;
 
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Frame;
@@ -34,7 +33,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
