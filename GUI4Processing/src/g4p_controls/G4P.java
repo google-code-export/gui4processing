@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-12 Peter Lager
+  Copyright (c) 2008-13 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -430,6 +430,8 @@ public class G4P implements GConstants, PConstants {
 			chooser.getSelectionModel().addChangeListener(pp);
 			chooser.setPreviewPanel(pp);
 		}
+		// Set the preview color
+		((ColorPreviewPanel)chooser.getPreviewPanel()).setPrevColor(lastColor);
 		// Use the last color selected to start it off
 		chooser.setColor(lastColor);
 		JDialog dialog = JColorChooser.createDialog(owner,
@@ -442,7 +444,7 @@ public class G4P implements GConstants, PConstants {
 					}
 				}, 
 				null);
-				dialog.setVisible(true);
+		dialog.setVisible(true);
 		return lastColor.getRGB();
 	}
 
