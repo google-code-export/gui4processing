@@ -209,7 +209,7 @@ public void createColorChooserGUI(int x, int y, int w, int h, int border) {
   w -= 2*border; 
   h -= 2*border;
   GLabel title = new GLabel(this, x, y, w, 20);
-  title.setText("Color Chooser dialog", GAlign.LEFT, GAlign.MIDDLE);
+  title.setText("Color picker dialog", GAlign.LEFT, GAlign.MIDDLE);
   title.setOpaque(true);
   title.setTextBold();
   btnColor = new GButton(this, x, y+26, 80, 20, "Choose");
@@ -346,6 +346,7 @@ public void createFileSystemGUI(int x, int y, int w, int h, int border) {
 GButton btnFolder, btnInput, btnOutput;
 GLabel lblFile;
 GCheckbox cbxUseNative;
+
 // Controls used for message dialog GUI 
 GButton btnMdialog;
 GOption[] optMmessType;
@@ -353,6 +354,7 @@ GToggleGroup opgMmessType;
 GTextField txfMdTitle;
 GTextArea txfSMMessage;
 int md_mtype;
+
 // Controls used for option dialog GUI 
 GButton btnOdialog;
 GOption[] optOmessType, optOoptType;
@@ -361,11 +363,13 @@ GTextField txfOdTitle;
 GTextArea txfOdMessage;
 GLabel lblReply;
 int od_mtype, od_otype;
+
 // Controls used for colour chooser dialog GUI 
 GButton btnColor;
 GSketchPad spad;
 PGraphics pg;
 int sel_col = -1;
+
 // Graphic frames used to group controls
 ArrayList<Rectangle> rects ;
 
