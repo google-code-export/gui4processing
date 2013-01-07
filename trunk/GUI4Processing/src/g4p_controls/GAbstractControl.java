@@ -307,6 +307,17 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	}
 
 	/**
+	 * Determines if a particular pixel position is over the panel.
+	 * 
+	 * @return true if the position is over.
+	 */
+	public boolean isOver(float x, float y){
+		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
+		currSpot = whichHotSpot(ox, oy);
+		return (currSpot >= 0);
+	}
+
+	/**
 	 * Set the local colour scheme for this control. Children are ignored.
 	 * 
 	 * @param cs the colour scheme to use

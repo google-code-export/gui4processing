@@ -52,6 +52,9 @@ import processing.event.MouseEvent;
  */
 public class GDropList extends GTextControl {
 	
+	static protected int CLOSED_SURFACE = 1;
+	static protected int LIST_SURFACE = 2;
+
 	protected static final int FORE_COLOR = 2;
 	protected static final int BACK_COLOR = 5;
 	protected static final int ITEM_FORE_COLOR = 3;
@@ -120,7 +123,6 @@ public class GDropList extends GTextControl {
 		G4P.showMessages = false;
 		
 		vsb = new GScrollbar(theApplet, 0, 0, height - itemHeight, 10);
-//		vsb.setAutoHide(true);
 		vsb.addEventHandler(this, "vsbEventHandler");
 		vsb.setAutoHide(true);
 		vsb.setVisible(false);
@@ -137,8 +139,8 @@ public class GDropList extends GTextControl {
 
 		buffer.g2.setFont(localFont);
 		hotspots = new HotSpot[]{
-				new HSrect(1, 0, itemHeight+1, width - 11, height - itemHeight - 1),	// text list area
-				new HSrect(2, 0, 0, width - buttonWidth, itemHeight)	// selected text display area
+				new HSrect(LIST_SURFACE, 0, itemHeight+1, width - 11, height - itemHeight - 1),	// text list area
+				new HSrect(CLOSED_SURFACE, 0, 0, width - buttonWidth, itemHeight)				// selected text display area
 		};
 
 		z = Z_STICKY;
@@ -225,6 +227,16 @@ public class GDropList extends GTextControl {
 		}
 	}
 	
+	/**
+	 * Determines if a particular pixel position is over this control taking
+	 * into account whether it is collapsed or not.
+	 */
+	public boolean isOver(float x, float y){
+		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
+		currSpot = whichHotSpot(ox, oy);
+		return (!expanded)? currSpot == CLOSED_SURFACE : currSpot == CLOSED_SURFACE | currSpot == LIST_SURFACE;
+	}
+
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled || !available) return;
 
