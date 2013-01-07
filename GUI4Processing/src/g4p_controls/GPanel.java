@@ -139,9 +139,9 @@ public class GPanel extends GTextControl {
 	 */
 	private void calcHotSpots(){
 		hotspots = new HotSpot[]{
-				new HSrect(COLLAPSED_BAR_SPOT, 0, 0, tabWidth, tabHeight),					// tab text area
-				new HSrect(EXPANDED_BAR_SPOT, 0, 0, width, tabHeight),	// tab non-text area
-				new HSrect(SURFACE_SPOT, 0, tabHeight, width, height - tabHeight)		// panel content surface
+				new HSrect(COLLAPSED_BAR_SPOT, 0, 0, tabWidth, tabHeight),			// tab text area
+				new HSrect(EXPANDED_BAR_SPOT, 0, 0, width, tabHeight),				// tab non-text area
+				new HSrect(SURFACE_SPOT, 0, tabHeight, width, height - tabHeight)	// panel content surface
 		};
 	}
 
@@ -262,6 +262,16 @@ public class GPanel extends GTextControl {
 	}
 
 	/**
+	 * Determines if a particular pixel position is over the panel taking
+	 * into account whether it is collapsed or not.
+	 */
+	public boolean isOver(float x, float y){
+		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
+		currSpot = whichHotSpot(ox, oy);
+		return (tabOnly)? currSpot == COLLAPSED_BAR_SPOT : currSpot == EXPANDED_BAR_SPOT | currSpot == COLLAPSED_BAR_SPOT;
+	}
+
+	/**
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
@@ -271,16 +281,16 @@ public class GPanel extends GTextControl {
 
 		currSpot = whichHotSpot(ox, oy);
 		// Is mouse over the panel tab (taking into account extended with when not collapsed)
-		boolean mouseOverTab = (tabOnly)? currSpot == COLLAPSED_BAR_SPOT : currSpot == EXPANDED_BAR_SPOT | currSpot == COLLAPSED_BAR_SPOT;
+		boolean mouseOver = (tabOnly)? currSpot == COLLAPSED_BAR_SPOT : currSpot == EXPANDED_BAR_SPOT | currSpot == COLLAPSED_BAR_SPOT;
 
-		if(mouseOverTab || focusIsWith == this)
+		if(mouseOver || focusIsWith == this)
 			cursorIsOver = this;
 		else if(cursorIsOver == this)
 			cursorIsOver = null;
 
 		switch(event.getAction()){
 		case MouseEvent.PRESS:
-			if(focusIsWith != this && mouseOverTab &&  z >= focusObjectZ()){
+			if(focusIsWith != this && mouseOver &&  z >= focusObjectZ()){
 				takeFocus();
 				beingDragged = false;
 			}
