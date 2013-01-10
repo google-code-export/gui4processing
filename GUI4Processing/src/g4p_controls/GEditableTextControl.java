@@ -86,6 +86,9 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	protected int endChar = -1, startChar = -1, pos = endChar, nbr = 0, adjust = 0;
 	protected boolean textChanged = false, newline = false, selectionChanged = false;
 
+	/* Is the component enabled to generate mouse and keyboard events */
+	boolean textEditEnabled = true;
+
 	public GEditableTextControl(PApplet theApplet, float p0, float p1, float p2, float p3, int scrollbars) {
 		super(theApplet, p0, p1, p2, p3);
 		scrollbarPolicy = scrollbars;
@@ -399,8 +402,28 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		caretY = tlhi.tli.yPosInPara;
 	}
 
+	/**
+	 * Determines whether the text can be edited using the keyboard or mouse. It
+	 * still allows the text to be modified by the sketch code. <br>
+	 * If text editing is being disabled and the control has focus then it is forced
+	 * to give up that focus. <br>
+	 * This might be useful if you want to use a GTextArea control to display large 
+	 * amounts of text that needs scrolling (so cannot use a GLabel) but must not 
+	 * change e.g. a user instruction guide.
+	 * 
+	 * @param enableTextEdit false to disable keyboard input
+	 */
+	public void setTextEditEnabled(boolean enableTextEdit){
+		// If we are disabling this then make sure it does not have focus
+		if(enableTextEdit == false && focusIsWith == this){
+			loseFocus(null);
+		}
+		enabled = enableTextEdit;
+		textEditEnabled = enableTextEdit;
+	}
+	
 	public void keyEvent(KeyEvent e) {
-		if(!visible  || !enabled || !available) return;
+		if(!visible  || !enabled || !textEditEnabled || !available) return;
 		if(focusIsWith == this && endTLHI != null){
 			char keyChar = e.getKey();
 			int keyCode = e.getKeyCode();
