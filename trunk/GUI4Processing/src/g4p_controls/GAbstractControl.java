@@ -598,35 +598,58 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	}
 	
 	/**
-	 * Get the left position of the control
-	 * @return the x
+	 * Get the left position of the control. <br>
+	 * If the control is on a panel then the value returned is relative to the 
+	 * top-left corner of the panel otherwise it is relative to the sketch 
+	 * window display. <br>
+	 * 
 	 */
 	public float getX() {
-		return x;
+		if(parent != null)
+			return x + parent.width/2;
+		else
+			return x;
 	}
 
 	/**
-	 * Get the left position of the control
-	 * @return the y
+	 * Get the top position of the control. <br>
+	 * If the control is on a panel then the value returned is relative to the 
+	 * top-left corner of the panel otherwise it is relative to the sketch 
+	 * window display. <br>
+	 * 
 	 */
 	public float getY() {
-		return y;
+		if(parent != null)
+			return y + parent.height/2;
+		else
+			return y;
 	}
 
 	/**
-	 * Get the centre x position of the control
-	 * @return the cx
+	 * Get the centre x position of the control. <br>
+	 * If the control is on a panel then the value returned is relative to the 
+	 * top-left corner of the panel otherwise it is relative to the sketch 
+	 * window display. <br>
 	 */
 	public float getCX() {
-		return cx;
+		if(parent != null)
+			return x + (parent.width + width)/2;
+		else
+			return cx;
 	}
 
 	/**
-	 * Get the centre y position of the control
-	 * @return the cy
+	 * Get the centre y position of the control. <br>
+	 * If the control is on a panel then the value returned is relative to the 
+	 * top-left corner of the panel otherwise it is relative to the sketch 
+	 * window display. <br>
+	 * 
 	 */
 	public float getCY() {
-		return cy;
+		if(parent != null)
+			return x + (parent.width + width)/2;
+		else
+			return cy;
 	}
 
 	/**

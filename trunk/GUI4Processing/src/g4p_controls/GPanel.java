@@ -42,10 +42,6 @@ import processing.event.MouseEvent;
  * When created the Panel is collapsed by default. To open the panel
  * use setCollapsed(true); after creating it. <br>
  * 
- * Unlike all the other components the [x,y] coordinates do not represent
- * the top-left corner of the control rather the top-left corner of the 
- * panel drawing surface (which is the bottom left corner of the tab) <br>
- * 
  * Once a component has been added the x/y coordinates of the control are 
  * calculated to be the centre of the panel to the centre of the control. This 
  * is to facilitate rotating of controls on panels 
