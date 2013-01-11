@@ -138,7 +138,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	/**
 	 * The post method registered with Processing
 	 */
-	public void post(){if(toAdd.size() > 0 || toRemove.size() > 0)
+	public void post(){
 		if(G4P.cursorChangeEnabled){
 			if(GAbstractControl.cursorIsOver != null && GAbstractControl.cursorIsOver.getPApplet() == app)
 				app.cursor(GAbstractControl.cursorIsOver.cursorOver);			
@@ -183,7 +183,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 				toAdd.clear();
 				Collections.sort(windowControls, G4P.zorder);
 			}
-		}
+		} // End of housekeeping
 	}
 
 	/**
