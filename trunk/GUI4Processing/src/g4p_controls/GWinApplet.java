@@ -35,6 +35,10 @@ import processing.event.MouseEvent;
  * the GWindow class. Do not instantiate objects of this class, create
  * GWindow objects instead.
  * 
+ * The event handling methods here are NOT called by Processing directly. Instead events are caught by the
+ * GWindowInfo class which then call the appropriate method this class. <br>
+ * These methods use reflection to execute methods registered by the GWindo object that owns this class.
+ * 
  * @author Peter Lager
  */
 @SuppressWarnings("serial")
@@ -116,7 +120,7 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 	
 	/**
 	 * INTERNAL USE ONLY <br>
-	 * Use addDMouseHandler in GWindow to activate this method
+	 * Use addDKeyHandler in GWindow to activate this method
 	 */
 	public void keyEvent(KeyEvent event){
 		if(owner.keyHandlerObject != null){
@@ -147,7 +151,7 @@ public class GWinApplet extends PApplet implements GConstants, GConstantsInterna
 
 	/**
 	 * INTERNAL USE ONLY <br>
-	 * Use addPreHandler in GWindow to activate this method
+	 * Use addPostHandler in GWindow to activate this method
 	 */
 	public void post(){
 		if(owner.postHandlerObject != null){

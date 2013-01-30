@@ -48,10 +48,8 @@ public class GValueControl extends GAbstractControl {
 	protected String unit = "";
 	protected boolean showValue = false;
 	
-	protected float epsilon = 0.001f;
-	
+
 	protected float parametricPos = 0.5f, parametricTarget = 0.5f;
-	protected boolean isValueChanging  = false;
 	protected float easing  = 1.0f; // must be >= 1.0
 	
 
@@ -74,11 +72,9 @@ public class GValueControl extends GAbstractControl {
 			updateDueToValueChanging();
 			bufferInvalid = true;
 			if(Math.abs(parametricTarget - parametricPos) > epsilon){
-				isValueChanging = true;
 				fireEvent(this, GEvent.VALUE_CHANGING);
 			}
 			else {
-				isValueChanging = false;
 				parametricPos = parametricTarget;
 				fireEvent(this, GEvent.VALUE_STEADY);
 			}
@@ -270,7 +266,7 @@ public class GValueControl extends GAbstractControl {
 	 * Valid number formats are INTEGER, DECIMAL, EXPONENT <br>
 	 * Precision must be >= 1 and is ignored for INTEGER.
 	 * 
-	 * @param numberFormat INTEGER, DECIMAL or EXPONENT
+	 * @param numberFormat G4P.INTEGER, G4P.DECIMAL orG4P. EXPONENT
 	 * @param precision must be >= 1
 	 */
 	public void setNumberFormat(int numberFormat, int precision){
@@ -287,6 +283,13 @@ public class GValueControl extends GAbstractControl {
 		bufferInvalid = true;
 	}
 	
+	/**
+	 * Set the numberFormat and precision in one go. <br>
+	 * Valid number formats are INTEGER, DECIMAL, EXPONENT <br>
+	 * Precision must be >= 1 and is ignored for INTEGER.
+	 * 
+	 * @param numberFormat G4P.INTEGER, G4P.DECIMAL or G4P.EXPONENT
+	 */
 	public void setNumberFormat(int numberFormat){
 		switch(numberFormat){
 		case INTEGER:
