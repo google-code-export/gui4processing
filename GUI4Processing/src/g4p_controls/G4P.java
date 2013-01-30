@@ -95,7 +95,7 @@ public class G4P implements GConstants, PConstants {
 
 	/* INTERNAL USE ONLY  Mouse over changer */
 	static boolean cursorChangeEnabled = true;
-	static int mouseOff = ARROW;
+	static int mouseOff = WAIT;
 
 	static boolean showMessages = true;
 
@@ -349,10 +349,28 @@ public class G4P implements GConstants, PConstants {
 	 * Initial values are ARROW (off) and HAND (over)
 	 * 
 	 * @param cursorOff
-	 * @param cursorOver
 	 */
 	public static void setCursorOff(int cursorOff){
 		mouseOff = cursorOff;
+	}
+
+	public static void setCursor(int cursorOff){
+		mouseOff = cursorOff;
+		for(GWindowInfo winfo : windows.values())
+			winfo.app.cursor(cursorOff);
+	}
+
+	public static void setCursor(int cursorOff, GWindow window){
+		PApplet app = window.papplet;
+		setCursor(cursorOff, app);
+	}
+
+	public static void setCursor(int cursorOff, PApplet app){
+		GWindowInfo winfo = windows.get(app);
+		if(winfo != null){
+			mouseOff = cursorOff;
+			winfo.app.cursor(cursorOff);
+		}
 	}
 
 	/**

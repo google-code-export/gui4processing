@@ -41,7 +41,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	
 	// Set this to true if papplet is a GWinApplet objects i.e. part of a 
 	// Gwindow object
-	public boolean isWindow;
+	boolean isGWindow;
 	
 	/**
 	 * Create an applet info object
@@ -50,7 +50,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	public GWindowInfo (PApplet papplet) {
 		app = papplet;
 		// Is this applet part of a GWindow object
-		isWindow = (app instanceof GWinApplet);
+		isGWindow = (app instanceof GWinApplet);
 		app_g_3d = app.g.is3D();
 		if(app.g.is3D())
 			orgMatrix = papplet.getMatrix((PMatrix3D)null);
@@ -99,7 +99,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	 * @param event
 	 */
 	public void mouseEvent(MouseEvent event){
-		if(isWindow)
+		if(isGWindow)
 			((GWinApplet)app).mouseEvent(event);
 		for(GAbstractControl control : windowControls){
 			if((control.registeredMethods & MOUSE_METHOD) == MOUSE_METHOD)
@@ -111,7 +111,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	 * The key method registered with Processing
 	 */	
 	public void keyEvent(KeyEvent event) {
-		if(isWindow)
+		if(isGWindow)
 			((GWinApplet)app).keyEvent(event);
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & KEY_METHOD) == KEY_METHOD)
@@ -127,7 +127,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 			GAbstractControl.controlToTakeFocus.setFocus(true);
 			GAbstractControl.controlToTakeFocus = null;
 		}
-		if(isWindow)
+		if(isGWindow)
 			((GWinApplet)app).pre();
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & PRE_METHOD) == PRE_METHOD)
@@ -140,12 +140,12 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	 */
 	public void post(){
 		if(G4P.cursorChangeEnabled){
-			if(GAbstractControl.cursorIsOver != null && GAbstractControl.cursorIsOver.getPApplet() == app)
+			if(GAbstractControl.cursorIsOver != null ) //&& GAbstractControl.cursorIsOver.getPApplet() == app)
 				app.cursor(GAbstractControl.cursorIsOver.cursorOver);			
 			else 
 				app.cursor(G4P.mouseOff);
 		}
-		if(isWindow)
+		if(isGWindow)
 			((GWinApplet)app).post();
 		for(GAbstractControl control : windowControls){
 			if( (control.registeredMethods & POST_METHOD) == POST_METHOD)

@@ -78,12 +78,14 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	// e.g. GButton
 	final static int Z_SLIPPY = 24;
 	
+	
 	// Reference to the PApplet object that owns this control
 	protected PApplet winApp;
 
 	// Set to true when mouse is dragging : set false on button released
 	protected boolean dragging = false;
 
+	protected static float epsilon = 0.001f;
 
 	/** Link to the parent panel (if null then it is on main window) */
 	protected GAbstractControl parent = null;
