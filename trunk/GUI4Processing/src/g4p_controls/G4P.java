@@ -95,7 +95,7 @@ public class G4P implements GConstants, PConstants {
 
 	/* INTERNAL USE ONLY  Mouse over changer */
 	static boolean cursorChangeEnabled = true;
-	static int mouseOff = WAIT;
+	static int mouseOff = ARROW;
 
 	static boolean showMessages = true;
 
