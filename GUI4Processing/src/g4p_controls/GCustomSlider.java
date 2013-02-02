@@ -28,6 +28,7 @@ import g4p_controls.HotSpot.HSrect;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.io.File;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -54,15 +55,15 @@ import processing.core.PImage;
  * A skin requires 5 image files for different parts of the slider which must be stored in their own 
  * folder (the folder name is also used as the skin name) and this folder should be place inside the 
  * sketch's data folder.</p>
- * <p>The image files have specific names </p>
+ * <p>The image files have specific names. 
  * <ul>
- * <li>Left end cap of the slider(<b>end_left.png</b>)</li>
- * <li>Right end cap of the slider(<b>preend_right.png</b>)</li>
- * <li>An extendible centre segment(<b>centre.png</b>)</li>
- * <li>Draggable thumb (<b>handle.png</b> and <b>handle_mouseover.png</b>)</li>
+ * <li>Left end cap of the slider(<b>end_left.???</b>)</li>
+ * <li>Right end cap of the slider(<b>end_right.???</b>)</li>
+ * <li>An extendible centre segment(<b>centre.???</b>)</li>
+ * <li>Draggable thumb (<b>handle.???</b> and <b>handle_mouseover.???</b>)</li>
  * </ul>
- * 
- * <p>If it can't find any of the above files it will look for equivalent JPEG image e.g. <b>left_hand.jpg</b></p>
+ * Where ??? is the image type file extension. The image type can be any that Processing can handle, the
+ * most common types will be png, jpg or gif but tga is also permitted</p>
  * 
  * <p>There are very few restrictions about the images you use but when designing the images you should consider
  * the following facts:</p>
@@ -99,7 +100,7 @@ public class GCustomSlider extends GLinearTrackControl {
 	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		this(theApplet, p0, p1, p2, p3, null);
 	}
-	
+
 	/**
 	 * Create a custom slider using the skin specified.
 	 * 
@@ -112,15 +113,8 @@ public class GCustomSlider extends GLinearTrackControl {
 	 */
 	public GCustomSlider(PApplet theApplet, float p0, float p1, float p2, float p3, String skin) {
 		super(theApplet, p0, p1, p2, p3);
+		skin = (skin == null) ? "grey_blue" : skin.trim();
 		setStyle(skin);
-//		loadSkin(skin);
-//		float maxEndLength = Math.max(leftEnd.width, rightEnd.width);
-//		maxEndLength = Math.max(maxEndLength, 10); // make sure we have enough to show limits value
-//		trackLength = Math.round(width - 2 * maxEndLength - TINSET);
-//		trackDisplayLength = trackLength + 2 * Math.min(leftEnd.width, rightEnd.width);
-//		trackWidth = centre.height;
-//		trackOffset = calcTrackOffset();
-//		extendCentreImage();
 
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -150,7 +144,7 @@ public class GCustomSlider extends GLinearTrackControl {
 	}
 
 	/**
-	 * Change the sin used for the slider.
+	 * Change the skin used for the slider.
 	 * @param skin
 	 */
 	public void setStyle(String skin){
@@ -164,7 +158,7 @@ public class GCustomSlider extends GLinearTrackControl {
 		extendCentreImage();
 		bufferInvalid = true;
 	}
-	
+
 	/**
 	 * Calculates the amount of offset for the labels
 	 */
@@ -187,7 +181,7 @@ public class GCustomSlider extends GLinearTrackControl {
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
 			buffer.beginDraw();
-			
+
 			// Back ground colour
 			if(opaque == true)
 				buffer.background(palette[6]);
@@ -240,8 +234,8 @@ public class GCustomSlider extends GLinearTrackControl {
 			buffer.endDraw();
 		}
 	}
-	
-	protected void extendCentreImage(){
+
+	private void extendCentreImage(){
 		int tl = (int)trackLength;
 		PGraphics pg = winApp.createGraphics(tl, centre.height, JAVA2D);
 		int rem = tl % centre.width;
@@ -251,42 +245,80 @@ public class GCustomSlider extends GLinearTrackControl {
 		pg.beginDraw();
 		pg.background(winApp.color(255,0));
 		pg.imageMode(CORNER);
-		
+
 		while(px < tl){
 			pg.image(centre, px, 0);
 			px += centre.width;
 		}
-		
+
 		pg.endDraw();
 		centre = pg;
 	}
-	
-	private void loadSkin(String style){
+
+	private boolean loadStyleFromSketch(File styleFolder, String style) {
+		int fcount = 0;
+		String[] names = new String[] { "centre.", "end_left.", "end_right.", "handle.", "handle_mouseover." };
+		PImage[] images = new PImage[names.length];
+		File[] fileList = styleFolder.listFiles();
+		for(int i = 0; i < names.length; i++){
+			for(File f : fileList){
+				String filename = f.getName();
+				if(filename.startsWith(names[i])){
+					images[i] = winApp.loadImage(style + "/" + filename);
+					fcount ++;
+				}
+			}
+		}
+		if(fcount != names.length)
+			return false;
+
+		centre = images[0];
+		leftEnd = images[1];
+		rightEnd = images[2];
+		thumb = images[3];
+		thumb_mouseover = images[4];
+		return true;		
+	}
+
+	private void loadSkin(String style_name){
+		String style = style_name;
+		if(style.length() == 0)
+			style="grey_blue";
+		// First attempt to locate the style inside the sketch or sketch data folders
+		File styleFolder = new File(winApp.dataPath(style));
+		if(!styleFolder.exists())
+			styleFolder = new File(winApp.sketchPath(style));
+		// If the style is in the sketch then attempt to load the style
+		// and if successful we are done
+		if(styleFolder.exists() && loadStyleFromSketch(styleFolder, style))
+			return;
+
+		// If we get here then it is either not in the sketch or sketch folders, or it found
+		// the style but was unable to load it.
+		// In which case it look for a matching library style. If there is no match use the default
+		String[] styles = new String[] { "grey_blue", "blue18px", "green_red20px", "purple18px", "red_yellow18px" };
+		boolean found = false;
+		for(String libStyle : styles){
+			if(libStyle.equalsIgnoreCase(style)){
+				found = true;
+				break;
+			}
+		}
+		// If not found use the default grey_blue
+		if(!found)
+			style = "grey_blue";
+
+		// All the library styles use png graphics
 		leftEnd = winApp.loadImage(style + "/end_left.png");
-		if(leftEnd == null)
-			leftEnd = winApp.loadImage(style + "/end_left.jpg");
 		rightEnd = winApp.loadImage(style + "/end_right.png");
-		if(rightEnd == null)
-			rightEnd = winApp.loadImage(style + "/end_right.jpg");
 		thumb = winApp.loadImage(style +"/handle.png");
-		if(thumb == null)
-			thumb = winApp.loadImage(style +"/handle.jpg");
 		thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.png");
-		if(thumb_mouseover == null)
-			thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.jpg");
 		//	will be stretched before use
 		centre = winApp.loadImage(style + "/centre.png");
-		if(centre == null)
-			centre = winApp.loadImage(style + "/centre.jpg");
-			
-		boolean error = (leftEnd == null || rightEnd == null || thumb == null || thumb_mouseover == null || centre == null);
-		
-		// See if we have problems with the skin files
-		if(error){
-			System.out.println("Unable to load the skin " + style + " check the ");
-			System.out.println("skin name used and ensure all the image files are present.");
-			System.out.println("Reverting to default 'grey_blue' style");
-			loadSkin("grey_blue");
-		}
+
+		// See if we have had to use a different skin. If true then 
+		// the original skin could not be found so say so 
+		if(!style.equalsIgnoreCase(style_name))
+			System.out.println("Unable to load the skin " + style_name + " using default 'grey_blue' style instead");
 	}
 }
