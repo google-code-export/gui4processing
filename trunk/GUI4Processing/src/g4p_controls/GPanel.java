@@ -122,7 +122,7 @@ public class GPanel extends GTextControl {
 		z = Z_PANEL;
 
 		createEventHandler(G4P.sketchApplet, "handlePanelEvents", 
-				new Class[]{ GPanel.class, GEvent.class },
+				new Class<?>[]{ GPanel.class, GEvent.class },
 				new String[]{ "panel", "event" } 
 		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;

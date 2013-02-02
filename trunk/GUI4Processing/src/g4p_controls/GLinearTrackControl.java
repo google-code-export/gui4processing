@@ -144,8 +144,6 @@ public abstract class GLinearTrackControl extends GValueControl {
 	
 	/**
 	 * Get the visual offset for the value/label text.
-	 * 
-	 * @return
 	 */
 	public float getTrackOffset(){
 		return trackOffset;

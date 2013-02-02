@@ -105,7 +105,7 @@ class GMessenger implements GConstants, GConstantsInternal {
 
 		output.append("You might want to add a method to handle " + className + " events syntax is\n");
 		output.append("public void " + methodName + "(");
-		Class[] param_classes = (Class[])(info[2]);
+		Class<?>[] param_classes = (Class[])(info[2]);
 		String[] param_names = (String[])(info[3]);
 		if(param_classes != null) {
 			for(int i = 0; i < param_classes.length; i++){
@@ -140,7 +140,7 @@ class GMessenger implements GConstants, GConstantsInternal {
 
 		output.append("The "+className+" class cannot find this method \n");
 		output.append("\tpublic void " + methodName + "(");
-		Class[] param_names = (Class[])(info[2]);
+		Class<?>[] param_names = (Class[])(info[2]);
 		for(int i = 0; i < param_names.length; i++){
 			pname = (param_names[i]).getSimpleName();
 			output.append(pname + " " + pname.substring(1).toLowerCase());

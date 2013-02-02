@@ -400,7 +400,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	
 	/**
 	 * Get the parent control. If null then this is a top-level component
-	 * @return
 	 */
 	public GAbstractControl getParent() {
 		return parent;
@@ -408,7 +407,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 
 	/**
 	 * Get the PApplet that manages this component
-	 * @return
 	 */
 	public PApplet getPApplet() {
 		return winApp;
@@ -421,7 +419,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	/**
 	 * This method should be used sparingly since it is heavy on resources.
 	 * 
-	 * @return
+	 * @return a PGraphics object showing current state of the control (ignoring rotation)
 	 */
 	public PGraphics getSnapshot(){
 		if(buffer != null){

@@ -72,7 +72,6 @@ public abstract class GToggleControl extends GTextIconControl {
 	/**
 	 * Get the toggle group. If null is returned then it is not part 
 	 * of the group.
-	 * @return
 	 */
 	public GToggleGroup getToggleGroup(){
 		return group;

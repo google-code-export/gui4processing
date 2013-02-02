@@ -145,7 +145,7 @@ public class GDropList extends GTextControl {
 
 		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleDropListEvents",
-				new Class[]{ GDropList.class, GEvent.class }, 
+				new Class<?>[]{ GDropList.class, GEvent.class }, 
 				new String[]{ "list", "event" } 
 		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
@@ -195,8 +195,7 @@ public class GDropList extends GTextControl {
 	}
 	
 	/**
-	 * Get the index position of the selected item in the array
-	 * @return
+	 * Get the index position of the selected item
 	 */
 	public int getSelectedIndex(){
 		return selItem;
@@ -204,7 +203,6 @@ public class GDropList extends GTextControl {
 	
 	/**
 	 * Get the text for the selected item
-	 * @return
 	 */
 	public String getSelectedText(){
 		return items[selItem];
