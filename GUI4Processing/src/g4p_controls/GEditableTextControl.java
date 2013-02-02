@@ -167,7 +167,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	
 	/**
 	 * Get the default text for this control
-	 * @return
+	 * @return the default text without styling
 	 */
 	public String getDefaultText(){
 		return defaultText.getPlainText();
@@ -175,7 +175,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	
 	/**
 	 * Get the text in the control
-	 * @return
+	 * @return the text without styling
 	 */
 	public String getText(){
 		return stext.getPlainText();
@@ -183,7 +183,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	
 	/**
 	 * Get the text that has been selected (highlighted) by the user. <br>
-	 * @return
+	 * @return the selected text without styling
 	 */
 	public String getSelectedText(){
 		if(!hasSelection())
@@ -274,7 +274,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	 * @param font
 	 * @return
 	 */
-	public GEditableTextControl setFont(Font font) {
+	public void setFont(Font font) {
 		if(font != null && font != localFont && buffer != null){
 			localFont = font;
 			buffer.g2.setFont(localFont);
@@ -283,7 +283,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			setScrollbarValues(ptx, pty);
 			bufferInvalid = true;
 		}
-		return this;
 	}
 
 	/**
@@ -385,7 +384,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 
 	/**
 	 * Find out if some text is selected (highlighted)
-	 * @return
+	 * @return true if some text is selected else false
 	 */
 	public boolean hasSelection(){
 		return (startTLHI.tli != null && endTLHI.tli != null && startTLHI.compareTo(endTLHI) != 0);	

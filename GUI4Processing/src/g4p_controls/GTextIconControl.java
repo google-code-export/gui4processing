@@ -52,7 +52,7 @@ public abstract class GTextIconControl extends GTextControl {
 	 * Set the text to be displayed and calculate the wrap length taking into
 	 * account any icon set.
 	 * 
-	 * @param ptext
+	 * @param text
 	 */
 	public void setText(String text){
 		if(text == null || text.length() == 0 )
@@ -108,7 +108,8 @@ public abstract class GTextIconControl extends GTextControl {
 
 	/**
 	 * Change the alignment of an existing icn.
-	 * @param align horz and vertical alignment (see @see GAlign)
+	 * @param horz horizontal alignment (see @see GAlign)
+	 * @param vert vertical alignment (see @see GAlign)
 	 */
 	public void setIconAlign(GAlign horz, GAlign vert){
 		if(iconW != 0){

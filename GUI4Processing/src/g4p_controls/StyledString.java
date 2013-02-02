@@ -144,7 +144,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 
 	/**
 	 * Get the number of characters in this styled string
-	 * @return
 	 */
 	public int length(){
 		return plainText.length();
@@ -420,8 +419,8 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	
 	/**
 	 * Use this method to insert an EOL character.
-	 * @param insertPos
-	 * @return
+	 * @param insertPos index position to insert EOL
+	 * @return true if an EOL was inserted into the string
 	 */
 	public boolean insertEOL(int insertPos){
 		if(wrapWidth != Integer.MAX_VALUE){
@@ -453,7 +452,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * 
 	 * @param nbrToRemove number of characters to remove
 	 * @param fromPos start location for removal
-	 * @return
+	 * @return true if the deletion was sucessful else false
 	 */
 	public boolean deleteCharacters(int fromPos, int nbrToRemove){
 		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
@@ -534,19 +533,12 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		}
 	}
 
-	public void setWrapWidth(int wrapWidth){
-		if(this.wrapWidth != wrapWidth){
-			this.wrapWidth = wrapWidth;
-			invalidLayout = true;
-		}
-	}
-
 	/**
 	 * Get the text layouts for display if the string has changed since last call
 	 * to this method regenerate them.
 	 * 
 	 * @param g2d Graphics2D display context
-	 * @return
+	 * @return a list of text layouts for rendering
 	 */
 	public LinkedList<TextLayoutInfo> getLines(Graphics2D g2d){
 		if(font != g2d.getFont()){
@@ -604,8 +596,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	}
 
 	/**
-	 * Return the number of lines in the layout
-	 * @return
+	 * Get the number of lines in the layout
 	 */
 	public int getNbrLines(){
 		return nbrLines;
@@ -643,10 +634,20 @@ final public class StyledString implements GConstantsInternal, Serializable {
 
 	/**
 	 * Get the break width used to create the lines.
-	 * @return
 	 */
 	public int getWrapWidth(){
 		return wrapWidth;
+	}
+
+	/**
+	 * Set the maximum width of a line. 
+	 * @param wrapWidth
+	 */
+	public void setWrapWidth(int wrapWidth){
+		if(this.wrapWidth != wrapWidth){
+			this.wrapWidth = wrapWidth;
+			invalidLayout = true;
+		}
 	}
 
 	TextLayoutHitInfo calculateFromXY(Graphics2D g2d, float px, float py){
@@ -793,7 +794,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * 
 	 * @param papp
 	 * @param fname the filename of the StyledString
-	 * @return
 	 */
 	public static StyledString load(PApplet papp, String fname){
 		InputStream is;

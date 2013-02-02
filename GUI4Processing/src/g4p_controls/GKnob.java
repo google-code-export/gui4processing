@@ -122,7 +122,7 @@ public class GKnob extends GValueControl {
 		
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleKnobEvents",
-				new Class[]{ GValueControl.class, GEvent.class }, 
+				new Class<?>[]{ GValueControl.class, GEvent.class }, 
 				new String[]{ "knob", "event" } 
 		);
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD ;

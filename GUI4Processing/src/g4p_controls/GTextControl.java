@@ -127,8 +127,8 @@ public abstract class GTextControl extends GAbstractControl {
 	 * Make the selected characters bold. <br>
 	 * Characters affected are >= start and < end
 	 * 
-	 * @param s the first character to style
-	 * @param e the first character not to style
+	 * @param start the first character to style
+	 * @param end the first character not to style
 	 */
 	public void setTextBold(int start, int end){
 		addAttribute(G4P.WEIGHT, G4P.WEIGHT_BOLD, start, end);
@@ -146,8 +146,8 @@ public abstract class GTextControl extends GAbstractControl {
 	 * Make the selected characters italic. <br>
 	 * Characters affected are >= start and < end
 	 * 
-	 * @param s the first character to style
-	 * @param e the first character not to style
+	 * @param start the first character to style
+	 * @param end the first character not to style
 	 */
 	public void setTextItalic(int start, int end){
 		addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE, start, end);

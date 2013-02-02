@@ -217,7 +217,7 @@ public class G4P implements GConstants, PConstants {
 	 * G4P.ALPHA_BLOCK then it will no longer respond to mouse
 	 * and keyboard events.
 	 * 
-	 * @param app
+	 * @param win apply to this window
 	 * @param alpha value in the range 0 (transparent) to 255 (opaque)
 	 */
 	public static void setWindowAlpha(GWindow win, int alpha){
@@ -313,7 +313,7 @@ public class G4P implements GConstants, PConstants {
 
 	/**
 	 * Get the control creation mode @see ctrlMode(int mode)
-	 * @return
+	 * @return the current control mode
 	 */
 	public static int getCtrlMode(){
 		return control_mode;
@@ -347,8 +347,10 @@ public class G4P implements GConstants, PConstants {
 	/**
 	 * Inform G4P which cursor shapes will be used.
 	 * Initial values are ARROW (off) and HAND (over)
-	 * 
+	 * use setCursor method
 	 * @param cursorOff
+	 * 
+	 * @deprecated 
 	 */
 	public static void setCursorOff(int cursorOff){
 		mouseOff = cursorOff;
@@ -376,7 +378,14 @@ public class G4P implements GConstants, PConstants {
 	/**
 	 * Inform G4P which cursor to use for mouse over.
 	 * 
-	 * @param cursorOver
+	 */
+	public static int getCursor(){
+		return mouseOff;
+	}
+
+	/**
+	 * use getCursor 
+	 * @deprecated 
 	 */
 	public static int getCursorOff(){
 		return mouseOff;
@@ -541,9 +550,7 @@ public class G4P implements GConstants, PConstants {
 	 * Select a file for output from the local file system. <br>
 	 * 
 	 * @param prompt the frame text for the chooser
-	 * @param initSelection the initial file path to use
-	 * @return the absolute path name for the selected folder, or null if action 
-	 * cancelled.
+	 * @return the absolute path name for the selected folder, or null if action is cancelled.
 	 */
 	public static String selectOutput(String prompt){
 		return selectOutput(prompt, null, null);
@@ -739,7 +746,7 @@ public class G4P implements GConstants, PConstants {
 	 * @param title the text to appear in the dialog's title bar.
 	 * @param messageType the message type
 	 * @param optionType
-	 * @return
+	 * @return which button was clicked
 	 */
 	public static int selectOption(Object owner, String message, String title, int messageType, int optionType){
 		Frame frame = getFrame(owner);
@@ -759,7 +766,7 @@ public class G4P implements GConstants, PConstants {
 	 * Find the Frame associated with this object.
 	 * 
 	 * @param owner the object that is responsible for this message
-	 * @return
+	 * @return the frame (if any) that owns this object
 	 */
 	private static Frame getFrame(Object owner){
 		Frame frame = null;

@@ -104,6 +104,7 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 
 		/**
 		 * If used the parameters must be in the order x, y then r. <br>
+		 * 
 		 */
 		public void adjust(Object ... arguments){
 			switch(arguments.length){

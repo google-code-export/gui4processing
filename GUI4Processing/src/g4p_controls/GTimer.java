@@ -123,11 +123,11 @@ public class GTimer implements GConstantsInternal {
 	 */
 	protected void createEventHandler(Object handlerObj, String methodName){
 		try{
-			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, new Class[] { GTimer.class } );
+			eventHandlerMethod = handlerObj.getClass().getMethod(methodName, new Class<?>[] { GTimer.class } );
 			eventHandlerObject = handlerObj;
 			eventHandlerMethodName = methodName;			
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GTimer.class }});
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class<?>[] { GTimer.class }});
 			eventHandlerObject = null;
 		}
 	}

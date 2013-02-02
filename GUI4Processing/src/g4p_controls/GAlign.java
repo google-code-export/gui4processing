@@ -75,7 +75,7 @@ public enum GAlign {
 	/**
 	 * Get an alignment based on its alignment text.
 	 * 
-	 * @param id the id number for this alignment.
+	 * @param text the alignment text.
 	 * @return the alignment or INVALID if not found
 	 */
 	public static GAlign getFromText(String text){
@@ -116,7 +116,7 @@ public enum GAlign {
 	
 	/**
 	 * Get the id number associated with this alignment
-	 * @return
+	 * @return the ID associated with this alignment
 	 */
 	public int getID(){
 		return alignID;

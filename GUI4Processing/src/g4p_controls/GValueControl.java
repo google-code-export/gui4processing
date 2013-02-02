@@ -254,7 +254,7 @@ public class GValueControl extends GAbstractControl {
 	 * 
 	 * @param numberFormat INTEGER, DECIMAL or EXPONENT
 	 * @param precision must be >= 1
-	 * @param units for example  kg, m, ($), fps
+	 * @param unit for example  kg, m, ($), fps
 	 */
 	public void setNumberFormat(int numberFormat, int precision, String unit){
 		this.unit = (unit == null) ? "" : unit;
