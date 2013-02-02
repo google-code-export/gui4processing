@@ -89,7 +89,7 @@ public class GButton extends GTextIconControl {
 		z = Z_SLIPPY;
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleButtonEvents", 
-				new Class[]{ GButton.class, GEvent.class }, 
+				new Class<?>[]{ GButton.class, GEvent.class }, 
 				new String[]{ "button", "event" } 
 		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;

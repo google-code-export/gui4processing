@@ -1,9 +1,7 @@
 package g4p_controls;
 
-import g4p_controls.HotSpot.HScircle;
 import g4p_controls.HotSpot.HSrect;
 
-import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import processing.core.PApplet;
@@ -16,7 +14,8 @@ public class GSlider2D extends GValueControl2D {
 	static int DBORDER = 1, LBORDER = 3, BACK = 6;
 	static int TBORDER = 15, TOFF = 5, TOVER = 11, TDOWN = 14;
 
-	static final float THUMB_SIZE = 8;
+	static final float THUMB_SIZE = 10;
+	static final float HALF_THUMB_SIZE = THUMB_SIZE / 2;
 	static final float BORDER_WIDTH = 2;
 	
 	// Define the drag area for this control
@@ -42,8 +41,10 @@ public class GSlider2D extends GValueControl2D {
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		buffer.g2.setFont(G4P.numericLabelFont);
 		hotspots = new HotSpot[]{
-				new HScircle(THUMB_SPOT, dragD + parametricPosX * dragWidth, 
-						dragD + parametricPosY * dragHeight, THUMB_SIZE/2 ),  // thumb
+				new HSrect(THUMB_SPOT, dragD - HALF_THUMB_SIZE + parametricPosX * dragWidth, 
+						dragD - HALF_THUMB_SIZE + parametricPosY * dragHeight, THUMB_SIZE, THUMB_SIZE ),  // thumb
+//					new HScircle(THUMB_SPOT, dragD + parametricPosX * dragWidth, 
+//							dragD + parametricPosY * dragHeight, THUMB_SIZE/2 ),  // thumb
 				new HSrect(TRACK_SPOT, dragD, dragD, dragWidth, dragHeight)		// track
 		};
 		z = Z_SLIPPY;
@@ -63,8 +64,8 @@ public class GSlider2D extends GValueControl2D {
 	}
 
 	protected void updateDueToValueChanging(){
-		hotspots[0].x = dragD + parametricPosX * dragWidth;
-		hotspots[0].y = dragD + parametricPosY * dragHeight;	
+		hotspots[0].x = dragD - HALF_THUMB_SIZE  + parametricPosX * dragWidth;
+		hotspots[0].y = dragD  - HALF_THUMB_SIZE + parametricPosY * dragHeight;	
 	}
 
 	
@@ -519,6 +520,7 @@ public class GSlider2D extends GValueControl2D {
 			buffer.beginDraw();
 
 			buffer.ellipseMode(PApplet.CENTER);
+			buffer.rectMode(PApplet.CENTER);
 			// Back ground colour
 			if(opaque == true)
 				buffer.background(palette[BACK]);
@@ -544,7 +546,7 @@ public class GSlider2D extends GValueControl2D {
 				buffer.fill(palette[TDOWN]);
 				break;
 			}
-			buffer.ellipse(tx, ty, THUMB_SIZE, THUMB_SIZE);
+			buffer.rect(tx, ty, THUMB_SIZE, THUMB_SIZE);
 			
 			// Draw control border
 			buffer.rectMode(PApplet.CORNERS);

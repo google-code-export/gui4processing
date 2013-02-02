@@ -816,7 +816,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
 		// Recreate transient elements
-		spacer = getParagraghSpacer((int)wrapWidth);
+		spacer = getParagraghSpacer(wrapWidth);
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
 		applyAttributes();

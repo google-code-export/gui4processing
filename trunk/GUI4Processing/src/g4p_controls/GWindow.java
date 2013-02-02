@@ -371,11 +371,11 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 */
 	public void addDrawHandler(Object obj, String methodName){
 		try{
-			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
+			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class<?>[] {GWinApplet.class, GWinData.class } );
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class } } );
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class<?>[] { GWinApplet.class, GWinData.class } } );
 		}
 	}
 
@@ -389,11 +389,11 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 */
 	public void addPreHandler(Object obj, String methodName){
 		try{
-			preHandlerMethod = obj.getClass().getMethod(methodName, new Class[] {GWinApplet.class, GWinData.class } );
+			preHandlerMethod = obj.getClass().getMethod(methodName, new Class<?>[] {GWinApplet.class, GWinData.class } );
 			preHandlerObject = obj;
 			preHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class } } );
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class<?>[] { GWinApplet.class, GWinData.class } } );
 		}
 	}
 
@@ -408,11 +408,11 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	public void addMouseHandler(Object obj, String methodName){
 		try{
 			mouseHandlerMethod = obj.getClass().getMethod(methodName, 
-					new Class[] {GWinApplet.class, GWinData.class, MouseEvent.class } );
+					new Class<?>[] {GWinApplet.class, GWinData.class, MouseEvent.class } );
 			mouseHandlerObject = obj;
 			mouseHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class, MouseEvent.class } } );
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class<?>[] { GWinApplet.class, GWinData.class, MouseEvent.class } } );
 		}
 	}
 
@@ -427,11 +427,11 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	public void addKeyHandler(Object obj, String methodName){
 		try{
 			keyHandlerMethod = obj.getClass().getMethod(methodName, 
-					new Class[] {GWinApplet.class, GWinData.class, KeyEvent.class } );
+					new Class<?>[] {GWinApplet.class, GWinData.class, KeyEvent.class } );
 			keyHandlerObject = obj;
 			keyHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class, KeyEvent.class } } );
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class<?>[] { GWinApplet.class, GWinData.class, KeyEvent.class } } );
 		}
 	}
 
@@ -446,11 +446,11 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	public void addPostHandler(Object obj, String methodName){
 		try{
 			postHandlerMethod = obj.getClass().getMethod(methodName, 
-					new Class[] {GWinApplet.class, GWinData.class } );
+					new Class<?>[] {GWinApplet.class, GWinData.class } );
 			postHandlerObject = obj;
 			postHandlerMethodName = methodName;
 		} catch (Exception e) {
-			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class[] { GWinApplet.class, GWinData.class } } );
+			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class<?>[] { GWinApplet.class, GWinData.class } } );
 		}
 	}
 
