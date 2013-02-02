@@ -272,7 +272,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	/**
 	 * Set the font for this control.
 	 * @param font
-	 * @return
 	 */
 	public void setFont(Font font) {
 		if(font != null && font != localFont && buffer != null){
