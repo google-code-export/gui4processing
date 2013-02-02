@@ -350,8 +350,9 @@ public class G4P implements GConstants, PConstants {
 	 * use setCursor method
 	 * @param cursorOff
 	 * 
-	 * @deprecated 
+	 * @deprecated use setCursor(int)
 	 */
+	@Deprecated
 	public static void setCursorOff(int cursorOff){
 		mouseOff = cursorOff;
 	}
@@ -384,9 +385,9 @@ public class G4P implements GConstants, PConstants {
 	}
 
 	/**
-	 * use getCursor 
-	 * @deprecated 
+	 * @deprecated use getCursor()
 	 */
+	@Deprecated
 	public static int getCursorOff(){
 		return mouseOff;
 	}
