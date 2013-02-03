@@ -43,7 +43,7 @@ public void handleSliderEvents(GValueControl slider, GEvent event) {
 
 public void handleKnobEvents(GValueControl knob, GEvent event) { 
   if (knbAngle == knob)
-    this.sdr.setRotation(knbAngle.getValueF(), PApplet.CENTER);
+    this.sdr.setRotation(knbAngle.getValueF(), GControlMode.CENTER);
 }
 
 public void handleButtonEvents(GButton button, GEvent event) { 
@@ -93,7 +93,7 @@ private void placeCodeOnClipboard() {
   s.append("  sdr.setShowTicks(" + sdr.isShowTicks() + "); \n");
   s.append("  sdr.setStickToTicks(" + sdr.isStickToTicks() + "); \n");
   s.append("  sdr.setEasing(" + sdr.getEasing() + "); \n");
-  s.append("  sdr.setRotation(" + knbAngle.getValueF() + ", PApplet.CENTER); \n");
+  s.append("  sdr.setRotation(" + knbAngle.getValueF() + ", GControlMode.CENTER); \n");
   s.append("}   \n\n");
   s.append("void draw(){ \n");
   s.append("  background(" + bgcol + "); \n");
@@ -103,5 +103,4 @@ private void placeCodeOnClipboard() {
   else
     System.err.println("UNABLE TO ACCESS CLIPBOARD");
 }
-
 

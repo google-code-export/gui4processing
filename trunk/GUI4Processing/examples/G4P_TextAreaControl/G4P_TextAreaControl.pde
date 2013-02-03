@@ -86,6 +86,5 @@ public void handleToggleControlEvents(GToggleControl checkbox, GEvent event) {
 }
 
 public void handleKnobEvents(GValueControl knob, GEvent event) {
-  txaSample.setRotation(knbAngle.getValueF(), PApplet.CENTER);
+  txaSample.setRotation(knbAngle.getValueF(), GControlMode.CENTER);
 }
-

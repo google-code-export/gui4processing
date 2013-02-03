@@ -43,7 +43,7 @@ public void handleSliderEvents(GValueControl slider, GEvent event) {
 
 public void handleKnobEvents(GValueControl knob, GEvent event) { 
   if (knbAngle == knob)
-    this.sdr.setRotation(knbAngle.getValueF(), PApplet.CENTER);
+    this.sdr.setRotation(knbAngle.getValueF(), GControlMode.CENTER);
 }
 
 public void handleButtonEvents(GButton button, GEvent event) { 
@@ -107,4 +107,3 @@ private void placeCodeOnClipboard() {
   else
     System.err.println("UNABLE TO ACCESS CLIPBOARD");
 }
-
