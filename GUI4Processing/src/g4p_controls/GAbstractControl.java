@@ -204,6 +204,30 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 */
 	public GAbstractControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
+		this(theApplet, G4P.control_mode, p0, p1, p2, p3);
+//		// The first applet must be the sketchApplet
+//		if(G4P.sketchApplet == null)
+//			G4P.sketchApplet = theApplet;
+//		winApp = theApplet;
+//		GCScheme.makeColorSchemes(winApp);
+//		setPositionAndSize(p0, p1, p2, p3);
+//		rotAngle = 0;
+//		z = 0;
+//		palette = GCScheme.getColor(localColorScheme);
+//		jpalette = GCScheme.getJavaColor(localColorScheme);
+//		tag = this.getClass().getSimpleName();
+	}
+
+	/*
+	 * Base constructor for ALL control ctors where it is required to use a specific control
+	 * mode for its construction. It will set the position and size of the control based on 
+	 * the control mode specified as a parameter. <br>
+	 * Since this is an abstract class it is not possible to use it directly
+	 * 
+	 */
+	public GAbstractControl(PApplet theApplet, GControlMode cmode, float p0, float p1, float p2, float p3) {
+		GControlMode currMode = G4P.control_mode;
+		G4P.control_mode = cmode;
 		// The first applet must be the sketchApplet
 		if(G4P.sketchApplet == null)
 			G4P.sketchApplet = theApplet;
@@ -215,6 +239,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		palette = GCScheme.getColor(localColorScheme);
 		jpalette = GCScheme.getJavaColor(localColorScheme);
 		tag = this.getClass().getSimpleName();
+		G4P.control_mode = currMode;
 	}
 
 	/*
@@ -224,17 +249,17 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 */
 	private void setPositionAndSize(float n0, float n1, float n2, float n3){
 		switch(G4P.control_mode){
-		case PApplet.CORNER:	// (x,y,w,h)
+		case CORNER:	// (x,y,w,h)
 			x = n0; y = n1; width = n2; height = n3;
 			halfWidth = width/2; halfHeight = height/2;
 			cx = x + halfWidth; cy = y + halfHeight;
 			break;			
-		case PApplet.CORNERS:	// (x0,y0,x1,y1)
+		case CORNERS:	// (x0,y0,x1,y1)
 			x = n0; y = n1; width = n2 - n0; height = n3 - n1;
 			halfWidth = width/2; halfHeight = height/2;
 			cx = x + halfWidth; cy = y + halfHeight;
 			break;
-		case PApplet.CENTER:	// (cx,cy,w,h)
+		case CENTER:	// (cx,cy,w,h)
 			cx = n0; cy = n1; width = n2; height = n3;
 			halfWidth = width/2; halfHeight = height/2;
 			x = cx - halfWidth; y = cy - halfHeight;
@@ -520,13 +545,13 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param angle clockwise angle in radians
 	 * @param mode PApplet.CORNER / CORNERS / CENTER
 	 */
-	public void setRotation(float angle, int mode){	
+	public void setRotation(float angle, GControlMode mode){	
 		rotAngle = angle;
 		AffineTransform aff = new AffineTransform();
 		aff.setToRotation(angle);
 		switch(mode){
-		case PApplet.CORNER:
-		case PApplet.CORNERS:
+		case CORNER:
+		case CORNERS:
 			// Rotate about top corner
 			temp[0] = halfWidth;
 			temp[1] = halfHeight;
@@ -534,7 +559,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			cx = (float)temp[0] + x;// - halfWidth;
 			cy = (float)temp[1] + y;// - halfHeight;
 			break;
-		case PApplet.CENTER:
+		case CENTER:
 		default:
 			// Rotate about centre
 			temp[0] = -halfWidth;
@@ -574,21 +599,21 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param py the vertical position to move to
 	 * @param mode the control mode 
 	 */
-	public void moveTo(float px, float py, int mode){
+	public void moveTo(float px, float py, GControlMode mode){
 		GAbstractControl p = parent;
 		if(p != null){
 			px -= p.width/2;
 			py -= p.height/2;
 		}
 		switch(mode){
-		case PApplet.CORNER:
-		case PApplet.CORNERS:
+		case CORNER:
+		case CORNERS:
 			cx += (px - x);
 			cy += (py - y);
 			x = cx - width/2;
 			y = cy - height/2;
 			break;
-		case PApplet.CENTER:
+		case CENTER:
 			cx = px;
 			cy = py;
 			x = cx - width/2;
@@ -855,8 +880,8 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		 * this control.
 		 */
 		switch(G4P.control_mode){
-		case PApplet.CORNER:
-		case PApplet.CORNERS:
+		case CORNER:
+		case CORNERS:
 			// Rotate about top corner
 			c.x = x; c.y = y;
 			c.temp[0] = c.halfWidth;
@@ -867,7 +892,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 			c.x = c.cx - c.halfWidth;
 			c.y = c.cy - c.halfHeight;
 			break;
-		case PApplet.CENTER:
+		case CENTER:
 			// Rotate about centre
 			c.cx = x; c.cy = y;
 			c.temp[0] = -c.halfWidth;
@@ -913,11 +938,11 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	public void addControl(GAbstractControl c){
 		if(children == null) return;
 		switch(G4P.control_mode){
-		case PApplet.CORNER:
-		case PApplet.CORNERS:
+		case CORNER:
+		case CORNERS:
 			addControl(c, c.x, c.y, c.rotAngle);
 			break;
-		case PApplet.CENTER:
+		case CENTER:
 			addControl(c, c.cx, c.cy, c.rotAngle);
 			break;
 		}		
@@ -927,11 +952,11 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		if(children == null) return;
 		for(GAbstractControl c : controls){
 			switch(G4P.control_mode){
-			case PApplet.CORNER:
-			case PApplet.CORNERS:
+			case CORNER:
+			case CORNERS:
 				addControl(c, c.x, c.y, c.rotAngle);
 				break;
-			case PApplet.CENTER:
+			case CENTER:
 				addControl(c, c.cx, c.cy, c.rotAngle);
 				break;
 			}	

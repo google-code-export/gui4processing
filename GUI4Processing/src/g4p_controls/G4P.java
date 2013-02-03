@@ -102,7 +102,7 @@ public class G4P implements GConstants, PConstants {
 	// Determines how position and size parameters are interpreted when
 	// a control is created
 	// Introduced V3.0
-	static int control_mode = PApplet.CORNER;
+	static GControlMode control_mode = GControlMode.CORNER;
 
 	static LinkedList<G4Pstyle> styles = new LinkedList<G4Pstyle>();
 
@@ -302,20 +302,16 @@ public class G4P implements GConstants, PConstants {
 	 * 
 	 * @param mode illegal values are ignored leaving the mode unchanged
 	 */
-	public static void setCtrlMode(int mode){
-		switch(mode){
-		case PApplet.CORNER:	// (x, y, w, h)
-		case PApplet.CORNERS:	// (x0, y0, x1, y1)
-		case PApplet.CENTER:	// (cx, cy, w, h)
+	public static void setCtrlMode(GControlMode mode){
+		if(mode != null)
 			control_mode = mode;
-		}
 	}
 
 	/**
 	 * Get the control creation mode @see ctrlMode(int mode)
 	 * @return the current control mode
 	 */
-	public static int getCtrlMode(){
+	public static GControlMode getCtrlMode(){
 		return control_mode;
 	}
 
@@ -423,7 +419,7 @@ public class G4P implements GConstants, PConstants {
 	 *
 	 */
 	static class G4Pstyle {
-		int ctrlMode;
+		GControlMode ctrlMode;
 		boolean showMessages;
 	}
 

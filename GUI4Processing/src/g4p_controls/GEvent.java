@@ -41,9 +41,9 @@ public enum GEvent {
 	DRAGGED 			( "Control is being dragged" ),
 
 	// GButton
-	CLICKED  			( "Mouse button clicked" ),
-	PRESSED  			( "Mouse button pressed" ),
-	RELEASED  			( "Mouse button released" ),
+	CLICKED  			( "Mouse button was clicked" ),
+	PRESSED  			( "Mouse button was pressed" ),
+	RELEASED  			( "Mouse button was released" ),
 
 	VALUE_CHANGING		( "Value is changing" ),
 	VALUE_STEADY		( "Value has reached a steady state" ),
