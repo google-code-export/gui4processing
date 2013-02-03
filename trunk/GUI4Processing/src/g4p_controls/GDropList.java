@@ -131,7 +131,7 @@ public class GDropList extends GTextControl {
 		showList = new GButton(theApplet, 0, 0, buttonWidth, itemHeight, ":");
 		showList.addEventHandler(this, "buttonShowListHandler");
 	
-		G4P.control_mode = CORNER;
+		G4P.control_mode = GControlMode.CORNER;
 		addControl(vsb, width, itemHeight + 1, PI/2);
 		addControl(showList, width - buttonWidth, 0, 0);
 		

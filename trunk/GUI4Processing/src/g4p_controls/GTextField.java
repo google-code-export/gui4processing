@@ -115,7 +115,7 @@ public class GTextField extends GEditableTextControl {
 		G4P.pushStyle();
 		G4P.showMessages = false;
 		
-		G4P.control_mode = CORNER;
+		G4P.control_mode = GControlMode.CORNER;
 		if((scrollbarPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new GScrollbar(theApplet, 0, 0, tw, 10);
 			addControl(hsb, tx, ty + th + 2, 0);

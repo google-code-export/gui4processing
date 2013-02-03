@@ -74,14 +74,14 @@ abstract class GImageControl extends GAbstractControl {
 			halfHeight = height/2;
 			// Recalculate corners or centre  depending on contro;_mode
 			switch(G4P.control_mode){
-			case PApplet.CORNER:
-			case PApplet.CORNERS:
+			case CORNER:
+			case CORNERS:
 				x = p0;
 				y = p1;
 				cx = x + halfWidth;
 				cy = y + halfHeight;
 				break;
-			case PApplet.CENTER:
+			case CENTER:
 				cx = p0;
 				cy = p1;
 				x = cx - halfWidth;
