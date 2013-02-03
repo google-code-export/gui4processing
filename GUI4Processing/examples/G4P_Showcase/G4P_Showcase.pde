@@ -107,7 +107,7 @@ public void handleKnobEvents(GValueControl knob, GEvent event) {
   if (knob == knbDemo)
     lblAction.setText("Knob value is now " + knbDemo.getValueS());
   if (knob == knbAngle) {
-    pnlControls.setRotation(knbAngle.getValueF(), PApplet.CENTER);
+    pnlControls.setRotation(knbAngle.getValueF(), GControlMode.CENTER);
   }
 }
 
@@ -132,4 +132,3 @@ public void handleButtonEvents(GButton button, GEvent event) {
 public void myTimerFunction(GTimer timer) {
   count++;
 }
-

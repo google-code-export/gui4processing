@@ -1,14 +1,14 @@
 /**
- This sketch is used simple to show many of the 
+ This sketch is used show controls that uae a mixture of
+ text and icons and allows you to experiment with text 
+ and icon alignment options.
+ 
+ It also uses the droplist control extensively.
  controls available in the G4P library.
  
- Other examples demonstrate individual controls 
- in more detail.
- 
  created by Peter Lager
+ */
 
-*/
- 
 import g4p_controls.*;
 
 GToggleGroup tg = new GToggleGroup();
@@ -68,14 +68,12 @@ public void setup() {
   opt2 = new GOption(this, 200, 54, 100, 18, "Option 2");
   tg.addControl(opt2);
   controls.add(opt2);
-
+  
   opt0.setSelected(true);
-
-tg.addControls(opt0, opt1, opt2);
-
+  tg.addControls(opt0, opt1, opt2);
+  
   cbx0 = new GCheckbox(this, 200, 76, 100, 20, "Tick box");
   controls.add(cbx0);
-
   makeTextIconConfigControls();
 }
 
@@ -94,7 +92,7 @@ public void handleSliderEvents(GValueControl slider, GEvent event) {
 public void handleKnobEvents(GValueControl knob, GEvent event) { 
   if (knbAngle == knob)
     for (GTextIconControl control : controls)
-      control.setRotation(knbAngle.getValueF(), PApplet.CENTER);
+      control.setRotation(knbAngle.getValueF(), GControlMode.CENTER);
 }
 
 public void handleButtonEvents(GButton button, GEvent event) { 
