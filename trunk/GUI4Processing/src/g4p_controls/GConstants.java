@@ -105,7 +105,31 @@ public interface GConstants {
 	int ORIENT_LEFT = 	-1;
 	int ORIENT_TRACK = 	0;
 	int ORIENT_RIGHT = 	1;
+	
+	// Stick type
+	int X4 = 	1;
+	int X8 = 	2;
 
+	// Modal dialog messages
+	// Message types
+	int PLAIN 			= JOptionPane.PLAIN_MESSAGE;
+	int ERROR			= JOptionPane.ERROR_MESSAGE;
+	int INFO			= JOptionPane.INFORMATION_MESSAGE;
+	int WARNING			= JOptionPane.WARNING_MESSAGE;
+	int QUERY			= JOptionPane.QUESTION_MESSAGE;
+	
+	// Option types
+	int YES_NO			= JOptionPane.YES_NO_OPTION;
+	int YES_NO_CANCEL	= JOptionPane.YES_NO_CANCEL_OPTION;
+	int OK_CANCEL		= JOptionPane.OK_CANCEL_OPTION;
+	
+	// Replies to option types
+	int OK				= JOptionPane.OK_OPTION;
+	int YES				= JOptionPane.YES_OPTION;		// Has same int value as OK
+	int NO				= JOptionPane.NO_OPTION;
+	int CANCEL			= JOptionPane.CANCEL_OPTION;
+	int CLOSED			= JOptionPane.CLOSED_OPTION;	
+	
 	// Attribute:- fontface   Value Type:- String font family name e.g. "Times New Roman"
 	TextAttribute FAMILY = TextAttribute.FAMILY;
 
@@ -163,26 +187,5 @@ public interface GConstants {
 	//	TextAttribute JUSTIFICATION = TextAttribute.JUSTIFICATION;
 	//	Float JUSTIFICATION_FULL = new Float(1.0f);
 	//	Float JUSTIFICATION_NONE = new Float(0.0f);
-	
-	// Modal dialog messages
-	
-	// Message types
-	int PLAIN 			= JOptionPane.PLAIN_MESSAGE;
-	int ERROR			= JOptionPane.ERROR_MESSAGE;
-	int INFO			= JOptionPane.INFORMATION_MESSAGE;
-	int WARNING			= JOptionPane.WARNING_MESSAGE;
-	int QUERY			= JOptionPane.QUESTION_MESSAGE;
-	
-	// Option types
-	int YES_NO			= JOptionPane.YES_NO_OPTION;
-	int YES_NO_CANCEL	= JOptionPane.YES_NO_CANCEL_OPTION;
-	int OK_CANCEL		= JOptionPane.OK_CANCEL_OPTION;
-	
-	// Replies to option types
-	int OK				= JOptionPane.OK_OPTION;
-	int YES				= JOptionPane.YES_OPTION;		// Has same int value as OK
-	int NO				= JOptionPane.NO_OPTION;
-	int CANCEL			= JOptionPane.CANCEL_OPTION;
-	int CLOSED			= JOptionPane.CLOSED_OPTION;	
 	
 }
