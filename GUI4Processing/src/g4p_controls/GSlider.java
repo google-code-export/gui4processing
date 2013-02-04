@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-12 Peter Lager
+  Copyright (c) 2008-13 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -103,6 +103,10 @@ public class GSlider extends GLinearTrackControl {
 			status = OFF_CONTROL;
 	}
 
+	// Palette index constants
+	static int DBORDER = 1, LBORDER = 3, BACK = 6;
+	static int TBORDER = 15, TOFF = 3, TOVER = 11, TDOWN = 14;
+
 	protected void updateBuffer(){
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
@@ -112,7 +116,7 @@ public class GSlider extends GLinearTrackControl {
 			buffer.ellipseMode(PApplet.CENTER);
 			// Back ground colour
 			if(opaque == true)
-				buffer.background(palette[6]);
+				buffer.background(palette[BACK]);
 			else
 				buffer.background(buffer.color(255,0));
 
@@ -138,13 +142,13 @@ public class GSlider extends GLinearTrackControl {
 			// Draw thumb
 			switch(status){
 			case OFF_CONTROL:
-				buffer.fill(palette[0]);
+				buffer.fill(palette[TOFF]);
 				break;
 			case OVER_CONTROL:
-				buffer.fill(palette[1]);
+				buffer.fill(palette[TOVER]);
 				break;
 			case PRESS_CONTROL:
-				buffer.fill(palette[14]);
+				buffer.fill(palette[TDOWN]);
 				break;
 			}
 			buffer.noStroke();
