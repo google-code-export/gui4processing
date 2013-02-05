@@ -218,30 +218,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		tag = this.getClass().getSimpleName();
 	}
 
-//	/*
-//	 * Base constructor for ALL control ctors where it is required to use a specific control
-//	 * mode for its construction. It will set the position and size of the control based on 
-//	 * the control mode specified as a parameter. <br>
-//	 * Since this is an abstract class it is not possible to use it directly
-//	 * 
-//	 */
-//	public GAbstractControl(PApplet theApplet, GControlMode cmode, float p0, float p1, float p2, float p3) {
-//		GControlMode currMode = G4P.control_mode;
-//		G4P.control_mode = cmode;
-//		// The first applet must be the sketchApplet
-//		if(G4P.sketchApplet == null)
-//			G4P.sketchApplet = theApplet;
-//		winApp = theApplet;
-//		GCScheme.makeColorSchemes(winApp);
-//		setPositionAndSize(p0, p1, p2, p3);
-//		rotAngle = 0;
-//		z = 0;
-//		palette = GCScheme.getColor(localColorScheme);
-//		jpalette = GCScheme.getJavaColor(localColorScheme);
-//		tag = this.getClass().getSimpleName();
-//		G4P.control_mode = currMode;
-//	}
-
 	/*
 	 * Calculate all the variables that determine the position and size of the
 	 * control. This depends on <pre>control_mode</pre>
