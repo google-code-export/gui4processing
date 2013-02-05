@@ -204,30 +204,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 */
 	public GAbstractControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
-		this(theApplet, G4P.control_mode, p0, p1, p2, p3);
-//		// The first applet must be the sketchApplet
-//		if(G4P.sketchApplet == null)
-//			G4P.sketchApplet = theApplet;
-//		winApp = theApplet;
-//		GCScheme.makeColorSchemes(winApp);
-//		setPositionAndSize(p0, p1, p2, p3);
-//		rotAngle = 0;
-//		z = 0;
-//		palette = GCScheme.getColor(localColorScheme);
-//		jpalette = GCScheme.getJavaColor(localColorScheme);
-//		tag = this.getClass().getSimpleName();
-	}
-
-	/*
-	 * Base constructor for ALL control ctors where it is required to use a specific control
-	 * mode for its construction. It will set the position and size of the control based on 
-	 * the control mode specified as a parameter. <br>
-	 * Since this is an abstract class it is not possible to use it directly
-	 * 
-	 */
-	public GAbstractControl(PApplet theApplet, GControlMode cmode, float p0, float p1, float p2, float p3) {
-		GControlMode currMode = G4P.control_mode;
-		G4P.control_mode = cmode;
+//		this(theApplet, G4P.control_mode, p0, p1, p2, p3);
 		// The first applet must be the sketchApplet
 		if(G4P.sketchApplet == null)
 			G4P.sketchApplet = theApplet;
@@ -239,8 +216,31 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		palette = GCScheme.getColor(localColorScheme);
 		jpalette = GCScheme.getJavaColor(localColorScheme);
 		tag = this.getClass().getSimpleName();
-		G4P.control_mode = currMode;
 	}
+
+//	/*
+//	 * Base constructor for ALL control ctors where it is required to use a specific control
+//	 * mode for its construction. It will set the position and size of the control based on 
+//	 * the control mode specified as a parameter. <br>
+//	 * Since this is an abstract class it is not possible to use it directly
+//	 * 
+//	 */
+//	public GAbstractControl(PApplet theApplet, GControlMode cmode, float p0, float p1, float p2, float p3) {
+//		GControlMode currMode = G4P.control_mode;
+//		G4P.control_mode = cmode;
+//		// The first applet must be the sketchApplet
+//		if(G4P.sketchApplet == null)
+//			G4P.sketchApplet = theApplet;
+//		winApp = theApplet;
+//		GCScheme.makeColorSchemes(winApp);
+//		setPositionAndSize(p0, p1, p2, p3);
+//		rotAngle = 0;
+//		z = 0;
+//		palette = GCScheme.getColor(localColorScheme);
+//		jpalette = GCScheme.getJavaColor(localColorScheme);
+//		tag = this.getClass().getSimpleName();
+//		G4P.control_mode = currMode;
+//	}
 
 	/*
 	 * Calculate all the variables that determine the position and size of the
@@ -267,6 +267,28 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 		}
 	}
 
+	/**
+	 * Used internally to enforce minimum size constraints
+	 * 
+	 * @param w the new width
+	 * @param h the new height
+	 */
+	protected void resize(float w, float h){
+		switch(G4P.control_mode){
+		case CORNER:	// (x,y,w,h)
+		case CORNERS:	// (x0,y0,x1,y1)
+			width = w; height = h;
+			halfWidth = width/2; halfHeight = height/2;
+			cx = x + halfWidth; cy = y + halfHeight;
+			break;			
+		case CENTER:	// (cx,cy,w,h)
+			width = w; height = h;
+			halfWidth = width/2; halfHeight = height/2;
+			x = cx - halfWidth; y = cy - halfHeight;
+			break;
+		}
+	}
+	
 	/*
 	 * These are empty methods to enable polymorphism
 	 */

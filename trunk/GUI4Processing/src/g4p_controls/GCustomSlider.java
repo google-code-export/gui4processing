@@ -212,9 +212,8 @@ public class GCustomSlider extends GLinearTrackControl {
 				buffer.image(thumb,(parametricPos - 0.5f) * trackLength, 0);
 				break;
 			case OVER_CONTROL:
-				buffer.image(thumb_mouseover,(parametricPos - 0.5f) * trackLength, 0);
-				break;
 			case PRESS_CONTROL:
+			case DRAG_CONTROL:
 				buffer.image(thumb_mouseover,(parametricPos - 0.5f) * trackLength, 0);
 				break;
 			}		

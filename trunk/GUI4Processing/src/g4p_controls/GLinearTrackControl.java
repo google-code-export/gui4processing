@@ -219,6 +219,7 @@ public abstract class GLinearTrackControl extends GValueControl {
 			break;
 		case MouseEvent.DRAG:
 			if(focusIsWith == this){
+				status = DRAG_CONTROL;
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
 					parametricTarget = (ox - offset) + 0.5f;

@@ -50,8 +50,9 @@ public interface GConstantsInternal {
 
 	// Button/slider status values
 	int OFF_CONTROL	= 		0;
-	int OVER_CONTROL	= 	1;
+	int OVER_CONTROL =	 	1;
 	int PRESS_CONTROL = 	2;
+	int DRAG_CONTROL = 		3;
 
 	// The tint color used when controls are drawn with transparency
 	int TINT_FOR_ALPHA =	255;
