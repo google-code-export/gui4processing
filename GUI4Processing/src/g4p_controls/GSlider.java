@@ -105,7 +105,7 @@ public class GSlider extends GLinearTrackControl {
 
 	// Palette index constants
 	static int DBORDER = 1, LBORDER = 3, BACK = 6;
-	static int TBORDER = 15, TOFF = 3, TOVER = 11, TDOWN = 14;
+	static int TBORDER = 15, TOFF = 3, TOVER = 11, TDOWN = 14, TDRAG = 15;
 
 	protected void updateBuffer(){
 		if(bufferInvalid) {
@@ -149,6 +149,9 @@ public class GSlider extends GLinearTrackControl {
 				break;
 			case PRESS_CONTROL:
 				buffer.fill(palette[TDOWN]);
+				break;
+			case DRAG_CONTROL:
+				buffer.fill(palette[TDRAG]);
 				break;
 			}
 			buffer.noStroke();

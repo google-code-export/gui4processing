@@ -31,11 +31,25 @@ import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 import processing.event.MouseEvent;
 
+/**
+ * This slider is used to control 2 variables by dragging the thumb over
+ * a 2D surface. It has all the features of the standard slider (GSlider)
+ * except that it does not have ticks or stick-to-ticks functionality. <br>
+ *  
+ * Each axis can have its own minimum and maximum for each dimension. 
+ * 
+ * The minimum size for this control is 40x40 pixels and this is enforced 
+ * when the control is created. If necessary the width and/or height the 
+ * rectangle will be increased to 40pixels.
+ * 
+ * @author Peter Lager
+ *
+ */
 public class GSlider2D extends GValueControl2D {
 
 	// Palette index constants
 	static int DBORDER = 1, LBORDER = 3, BACK = 6;
-	static int TBORDER = 15, TOFF = 3, TOVER = 11, TDOWN = 14;
+	static int TBORDER = 15, TOFF = 3, TOVER = 11, TDOWN = 14, TDRAG = 15;
 
 	static final float THUMB_SIZE = 10;
 	static final float HALF_THUMB_SIZE = THUMB_SIZE / 2;
@@ -48,12 +62,22 @@ public class GSlider2D extends GValueControl2D {
 	// Mouse over status
 	protected int status = OFF_CONTROL;
 	
-
 	protected float startXlimit = 0, endXlimit = 1;
 	protected float startYlimit = 0, endYlimit = 1;
 	
+	/**
+	 * Create a 2D slider inside the specified rectangle.
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 */
 	public GSlider2D(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
+		// Enforce minimum size constraint
+		if(width < 40 || height < 40)
+			resize(PApplet.max(width,40), PApplet.max(height,40));
 	
 		dragWidth = width - THUMB_SIZE - 2 * BORDER_WIDTH;
 		dragHeight = height - THUMB_SIZE - 2 * BORDER_WIDTH;
@@ -66,14 +90,11 @@ public class GSlider2D extends GValueControl2D {
 		hotspots = new HotSpot[]{
 				new HSrect(THUMB_SPOT, dragD - HALF_THUMB_SIZE + parametricPosX * dragWidth, 
 						dragD - HALF_THUMB_SIZE + parametricPosY * dragHeight, THUMB_SIZE, THUMB_SIZE ),  // thumb
-//					new HScircle(THUMB_SPOT, dragD + parametricPosX * dragWidth, 
-//							dragD + parametricPosY * dragHeight, THUMB_SIZE/2 ),  // thumb
 				new HSrect(TRACK_SPOT, dragD, dragD, dragWidth, dragHeight)		// track
 		};
 		z = Z_SLIPPY;
 
 		epsilon = 0.98f / PApplet.max(dragWidth, dragHeight);
-
 		opaque = true;
 		
 		// Now register control with applet
@@ -86,6 +107,9 @@ public class GSlider2D extends GValueControl2D {
 		G4P.addControl(this);
 	}
 
+	/**
+	 * Updates thumb hotspot due changes caused by easing
+	 */
 	protected void updateDueToValueChanging(){
 		hotspots[0].x = dragD - HALF_THUMB_SIZE  + parametricPosX * dragWidth;
 		hotspots[0].y = dragD  - HALF_THUMB_SIZE + parametricPosY * dragHeight;	
@@ -360,7 +384,6 @@ public class GSlider2D extends GValueControl2D {
 		return s.trim();
 	}
 
-	
 	/**
 	 * For DECIMAL values this sets the number of decimal places to 
 	 * be displayed.
@@ -376,7 +399,6 @@ public class GSlider2D extends GValueControl2D {
 			bufferInvalid = true;
 		}
 	}
-	
 	
 	/**
 	 * Set the numberFormat and precision in one go. <br>
@@ -419,10 +441,6 @@ public class GSlider2D extends GValueControl2D {
 		}
 		bufferInvalid = true;
 	}
-	
-	
-	
-	
 	
 	public void mouseEvent(MouseEvent event){
 		if(!visible || !enabled || !available) return;
@@ -472,6 +490,7 @@ public class GSlider2D extends GValueControl2D {
 			break;
 		case MouseEvent.DRAG:
 			if(focusIsWith == this){
+				status = DRAG_CONTROL;
 				dragging = true;
 				if(downHotSpot == THUMB_SPOT){
 					mouseUpdateTargets();
@@ -492,6 +511,9 @@ public class GSlider2D extends GValueControl2D {
 		}
 	}
 
+	/**
+	 * Convenience method called during mouse event handling
+	 */
 	private void mouseUpdateTargets(){
 		parametricTargetX = ox / dragWidth;
 		if(parametricTargetX < 0){
@@ -567,6 +589,9 @@ public class GSlider2D extends GValueControl2D {
 				break;
 			case PRESS_CONTROL:
 				buffer.fill(palette[TDOWN]);
+				break;
+			case DRAG_CONTROL:
+				buffer.fill(palette[TDRAG]);
 				break;
 			}
 			buffer.rect(tx, ty, THUMB_SIZE, THUMB_SIZE);
