@@ -412,9 +412,10 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param includeChildren if do do the same for all descendants 
 	 */
 	public void setAlpha(int alpha, boolean includeChildren){
-		alpha = Math.abs(alpha) % 256;
-		alphaLevel = alpha;
-		available = (alphaLevel >= ALPHA_BLOCK);
+		setAlpha(alpha);
+//		alpha = Math.abs(alpha) % 256;
+//		alphaLevel = alpha;
+//		available = (alphaLevel >= ALPHA_BLOCK);
 		if(includeChildren && children != null){
 			for(GAbstractControl c : children)
 				c.setAlpha(alpha, true);

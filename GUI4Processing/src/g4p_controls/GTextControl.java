@@ -161,6 +161,14 @@ public abstract class GTextControl extends GAbstractControl {
 		bufferInvalid = true;
 	}
 
+	/**
+	 * Get the text used for this control.
+	 * @return the displayed text without styling
+	 */
+	public String getText(){
+		return stext.getPlainText();
+	}
+	
 	protected void addAttribute(TextAttribute style, Object value, int s, int e){
 		if(s >= e) return;
 		if(s < 0) s = 0;

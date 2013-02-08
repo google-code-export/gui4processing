@@ -530,11 +530,11 @@ public class G4P implements GConstants, PConstants {
 	 * This version allows the dialog window to filter the output based on file extensions.
 	 * This is not available on all platforms, if not then it is ignored. <br>
 	 * 
-	 * It is definitely available on Linux systems because it uses the standard swing
+	 * It is definitely available on Linux systems because it uses the standard Swing
 	 * JFileFinder component.
 	 * 
 	 * @param prompt the frame text for the chooser
-	 * @param types a comma separated list of file extensions e.g. 
+	 * @param types a comma separated list of file extensions e.g. "png,gif,jpg,jpeg"
 	 * @param typeDesc simple textual description of the file types e.g. "Image files"
 	 * @return the absolute path name for the selected folder, or null if action 
 	 * cancelled.
