@@ -99,7 +99,7 @@ public class GSlider2D extends GValueControl2D {
 		
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleSlider2DEvents",
-				new Class<?>[]{ GValueControl2D.class, GEvent.class },
+				new Class<?>[]{ GSlider2D.class, GEvent.class },
 				new String[]{ "slider2d", "event" }
 		);
 		registeredMethods = PRE_METHOD | DRAW_METHOD | MOUSE_METHOD;
@@ -314,7 +314,7 @@ public class GSlider2D extends GValueControl2D {
 	 * @param vx the new X (horz) value
 	 * @param vy the new Y (vert) value
 	 */
-	public void setYvalue(float vx, float vy){
+	public void setXYvalue(float vx, float vy){
 		setXvalue(vx);
 		setYvalue(vy);
 	}
