@@ -133,9 +133,14 @@ public class GTextField extends GEditableTextControl {
 		G4P.addControl(this);
 	}
 
-	public void setText(String text){
-		stext = new StyledString(text, wrapWidth);
-		this.text = stext.getPlainText();
+	/**
+	 * Set the styled text for this textfield after ensuring that all EOL characters
+	 * have been removed.
+	 * @param stext
+	 */
+	public void setStyledText(StyledString stext){
+		this.stext = stext.convertToSingleLine();
+		text = stext.getPlainText();
 		stext.getLines(buffer.g2);
 		if(stext.getNbrLines() > 0){
 			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
@@ -152,8 +157,41 @@ public class GTextField extends GEditableTextControl {
 			else
 				hsb.setValue(0, tw/stext.getMaxLineLength());
 		}
+		bufferInvalid = true;
+	}
+	
+	/**
+	 * Set the plain text to be displayed.
+	 * @param text plain text
+	 */
+	public void setText(String text){
+		//stext = new StyledString(text, wrapWidth);
+		setStyledText(new StyledString(text, wrapWidth));
+//		this.text = stext.getPlainText();
+//		stext.getLines(buffer.g2);
+//		if(stext.getNbrLines() > 0){
+//			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
+//			endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);	
+//			startTLHI.copyFrom(endTLHI);
+//			calculateCaretPos(endTLHI);
+//			keepCursorInView = true;
+//		}
+//		ptx = pty = 0;
+//		// If needed update the horizontal scrollbar
+//		if(hsb != null){
+//			if(stext.getMaxLineLength() < tw)
+//				hsb.setValue(0,1);
+//			else
+//				hsb.setValue(0, tw/stext.getMaxLineLength());
+//		}
+//		bufferInvalid = true;
 	}
 
+	/**
+	 * Add some plain text to the end of the existing text.
+	 * 
+	 * @param extraText
+	 */
 	public void appendText(String extraText){
 		if(extraText == null || extraText.equals(""))
 			return;
@@ -293,7 +331,6 @@ public class GTextField extends GEditableTextControl {
 		case GConstants.END:
 			moveCaretEndOfLine(endTLHI);
 			break;
-//		case java.awt.event.KeyEvent.VK_A:
 		case 'A':
 			if(ctrlDown){
 				moveCaretStartOfLine(startTLHI);
@@ -303,13 +340,11 @@ public class GTextField extends GEditableTextControl {
 				shiftDown = true; 
 			}
 			break;
-//		case java.awt.event.KeyEvent.VK_C:
 		case 'C':
 			if(ctrlDown)
 				GClip.copy(getSelectedText());
 			validKeyCombo = false;
 			break;
-//		case java.awt.event.KeyEvent.VK_V:
 		case 'V':
 			if(ctrlDown){
 				String p = GClip.paste();
