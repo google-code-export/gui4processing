@@ -131,15 +131,14 @@ public abstract class GTextControl extends GAbstractControl {
 	 * @param end the first character not to style
 	 */
 	public void setTextBold(int start, int end){
-		addAttribute(G4P.WEIGHT, G4P.WEIGHT_BOLD, start, end);
+		addAttributeImpl(G4P.WEIGHT, G4P.WEIGHT_BOLD, start, end);
 	}
 
 	/**
-	 * Make all the characters bold. <br>
+	 * Make all the characters bold.
 	 */
 	public void setTextBold(){
-		stext.addAttribute(G4P.WEIGHT, G4P.WEIGHT_BOLD);
-		bufferInvalid = true;
+		addAttributeImpl(G4P.WEIGHT, G4P.WEIGHT_BOLD);
 	}
 
 	/**
@@ -150,15 +149,14 @@ public abstract class GTextControl extends GAbstractControl {
 	 * @param end the first character not to style
 	 */
 	public void setTextItalic(int start, int end){
-		addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE, start, end);
+		addAttributeImpl(G4P.POSTURE, G4P.POSTURE_OBLIQUE, start, end);
 	}
 
 	/**
-	 * Make all the characters italic. <br>
+	 * Make all the characters italic.
 	 */
 	public void setTextItalic(){
-		stext.addAttribute(G4P.POSTURE, G4P.POSTURE_OBLIQUE);
-		bufferInvalid = true;
+		addAttributeImpl(G4P.POSTURE, G4P.POSTURE_OBLIQUE);
 	}
 
 	/**
@@ -169,7 +167,26 @@ public abstract class GTextControl extends GAbstractControl {
 		return stext.getPlainText();
 	}
 	
-	protected void addAttribute(TextAttribute style, Object value, int s, int e){
+	/**
+	 * Apply the style to the whole text
+	 * 
+	 * @param style the style attribute
+	 * @param value 'amount' to apply
+	 */
+	protected void addAttributeImpl(TextAttribute style, Object value){
+		stext.addAttribute(style, value);
+		bufferInvalid = true;
+	}
+	
+	/**
+	 * Apply the style to a portion of the strin
+	 * 
+	 * @param style the style attribute
+	 * @param value 'amount' to apply
+	 * @param s first character to be included for styling
+	 * @param e the first character not to be included for stylin
+	 */
+	protected void addAttributeImpl(TextAttribute style, Object value, int s, int e){
 		if(s >= e) return;
 		if(s < 0) s = 0;
 		if(e > stext.length()) e = stext.length();
@@ -213,6 +230,5 @@ public abstract class GTextControl extends GAbstractControl {
 			stY = (height - stext.getTextAreaHeight()) / 2;
 		}
 	}
-
 
 }

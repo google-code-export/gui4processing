@@ -169,14 +169,15 @@ public class GTextArea extends GEditableTextControl {
 		bufferInvalid = true;
 	}
 
+
 	/**
 	 * Set the text to be used. The wrap width is determined by the size 
 	 * of the control.
 	 * @param text
 	 */
-	public GTextArea setText(String text){
-		setText(text, wrapWidth);
-		return this;
+	public void setText(String text){
+		//setText(text, wrapWidth);
+		setStyledText(new StyledString(text));
 	}
 
 	/**
@@ -185,8 +186,44 @@ public class GTextArea extends GEditableTextControl {
 	 * @param wrapWidth
 	 */
 	public void setText(String text, int wrapWidth){
-		stext = new StyledString(text, wrapWidth);
-		this.text = stext.getPlainText();
+		this.wrapWidth = wrapWidth;
+		setStyledText(new StyledString(text));
+//		stext = new StyledString(text, wrapWidth);
+//		this.text = stext.getPlainText();
+//		stext.getLines(buffer.g2);
+//		if(stext.getNbrLines() > 0){
+//			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
+//			endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);	
+//			startTLHI.copyFrom(endTLHI);
+//			calculateCaretPos(endTLHI);
+//			keepCursorInView = true;
+//		}
+//		ptx = pty = 0;
+//		float sTextHeight;
+//		if(vsb != null){
+//			sTextHeight = stext.getTextAreaHeight();
+//			if(sTextHeight < th)
+//				vsb.setValue(0.0f, 1.0f);
+//			else 
+//				vsb.setValue(0, th/sTextHeight);
+//		}
+//		// If needed update the horizontal scrollbar
+//		if(hsb != null){
+//			if(stext.getMaxLineLength() < tw)
+//				hsb.setValue(0,1);
+//			else
+//				hsb.setValue(0, tw/stext.getMaxLineLength());
+//		}
+//		bufferInvalid = true;
+	}
+
+	public void setStyledText(StyledString stext){
+		if(stext.getWrapWidth() == Integer.MAX_VALUE)
+			stext.setWrapWidth(wrapWidth);
+		else
+			wrapWidth = stext.getWrapWidth();
+		this.stext = stext;
+		text = stext.getPlainText();
 		stext.getLines(buffer.g2);
 		if(stext.getNbrLines() > 0){
 			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
@@ -211,8 +248,8 @@ public class GTextArea extends GEditableTextControl {
 			else
 				hsb.setValue(0, tw/stext.getMaxLineLength());
 		}
+		bufferInvalid = true;				
 	}
-
 	/**
 	 * Add text to the end of the current text. This is useful for a logging' type activity.
 	 * 

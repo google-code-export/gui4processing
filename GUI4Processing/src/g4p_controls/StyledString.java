@@ -66,7 +66,7 @@ import processing.core.PApplet;
  */
 final public class StyledString implements GConstantsInternal, Serializable {
 
-	private static final long serialVersionUID = -1376981368230460906L;
+//	private static final long serialVersionUID = -7221265878366215856L;
 	
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
@@ -106,7 +106,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @param startText
 	 */
 	public StyledString(String startText){
-		plainText = removeSingleSpacing(startText);
+		plainText = removeSingleSpacingFromPlainText(startText);
 		spacer = getParagraghSpacer(1); //  safety
 		// Get rid of any EOLs
 		styledText = new AttributedString(plainText);
@@ -124,7 +124,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	public StyledString(String startText, int wrapWidth){
 		if(wrapWidth > 0 && wrapWidth < Integer.MAX_VALUE)
 			this.wrapWidth = wrapWidth;
-		plainText = (wrapWidth == Integer.MAX_VALUE) ? removeSingleSpacing(startText) : removeDoubleSpacing(startText);
+		plainText = (wrapWidth == Integer.MAX_VALUE) ? removeSingleSpacingFromPlainText(startText) : removeDoubleSpacingFromPlainText(startText);
 		spacer = getParagraghSpacer(this.wrapWidth);
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
@@ -149,14 +149,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		return plainText.length();
 	}
 
-	/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	 * 
-	 * The following methods allow the user to change the base font style
-	 * 
-	 * %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	 */
-
-	/**
+	/*
 	 * Set the font face to be used. This will be system specific 
 	 * but all Java implementations support the following logical
 	 * fonts. <br>
@@ -172,14 +165,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * Note the class attribute fontFamilies is an array of all 
 	 * @param family
 	 * @return true if the font was found and different from the current font family
-	 */
-
-	/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	 * 
-	 * Set and clear the text selection highlight. Used by GTextField and
-	 * GTextArea classes
-	 * 
-	 * %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	 */
 
 	/**
@@ -353,6 +338,10 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		invalidText = true;
 	}
 	
+	/**
+	 * Removes all styling from the string.
+	 * 
+	 */
 	public void clearAllAttributes(){
 		atrun.clear();
 		invalidText = true;
@@ -392,7 +381,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	}
 
 	/**
-	 * This is used when multiple characters are to be inserted. <br>
+	 * This is ONLY used when multiple characters are to be inserted. <br>
 	 * If it is single line text i.e. no wrapping then it removes all EOLs
 	 * If it is multiple line spacing it will reduce all double EOLs to single
 	 * EOLs and remove any EOLs at the start or end of the string.
@@ -404,9 +393,9 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		// Get rid of single / double line spacing
 		if(chars.length() > 0){
 			if(wrapWidth == Integer.MAX_VALUE) // no wrapping remove all
-				chars = removeSingleSpacing(chars);
+				chars = removeSingleSpacingFromPlainText(chars);
 			else {
-				chars = removeDoubleSpacing(chars); // wrapping remove double spacing
+				chars = removeDoubleSpacingFromPlainText(chars); // wrapping remove double spacing
 				// no remove EOL at ends of string
 				while(chars.length() > 0 && chars.charAt(0) == '\n')
 					chars = chars.substring(1);
@@ -447,18 +436,19 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		return false;
 	}
 	
+	
 	/**
 	 * Remove a number of characters from the string
 	 * 
 	 * @param nbrToRemove number of characters to remove
 	 * @param fromPos start location for removal
-	 * @return true if the deletion was sucessful else false
+	 * @return true if the deletion was successful else false
 	 */
 	public boolean deleteCharacters(int fromPos, int nbrToRemove){
 		if(fromPos < 0 || fromPos + nbrToRemove > plainText.length())
 			return false;
 		/*
-		 * If the character preceding the selection and the charcater immediately after the selection
+		 * If the character preceding the selection and the character immediately after the selection
 		 * are both EOLs then increment the number of characters to be deleted
 		 */
 		if(wrapWidth != Integer.MAX_VALUE){
@@ -491,7 +481,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 							iter.remove();
 							continue;
 						}
-						// Deletion is entirely within the run
+						// Deletion fits entirely within the run
 						if(fromPos > ar.start && lastPos < ar.end){
 							ar.end -= nbrToRemove;
 							continue;
@@ -658,7 +648,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 			getLines(g2d);
 		if(px < 0) px = 0;
 		if(py < 0) py = 0;
-		tli = getLayoutFromYpos(py);
+		tli = getTLIforYpos(py);
 		// Correct py to match layout's upper-left bounds
 		py -= tli.yPosInPara;
 		// get hit
@@ -681,24 +671,12 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @param y Must be >= 0
 	 * @return the first layout where y is above the upper layout bounds
 	 */
-	TextLayoutInfo getLayoutFromYpos(float y){
+	TextLayoutInfo getTLIforYpos(float y){
 		TextLayoutInfo tli = null;
 		if(!linesInfo.isEmpty()){
 			for(int i = linesInfo.size()-1; i >= 0; i--){
 				tli = linesInfo.get(i);
 				if(tli.yPosInPara <= y)
-					break;
-			}
-		}
-		return tli;
-	}
-
-	TextLayoutInfo getLayoutFromCharPos(int charNo){
-		TextLayoutInfo tli = null;
-		if(!linesInfo.isEmpty()){
-			for(int i = linesInfo.size()-1; i >= 0; i--){
-				tli = linesInfo.get(i);
-				if(tli.startCharIndex < charNo)
 					break;
 			}
 		}
@@ -733,7 +711,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * become EOL/EOL not the single EOL required.
 	 * 
 	 */
-	String removeDoubleSpacing(String chars){
+	private String removeDoubleSpacingFromPlainText(String chars){
 		while(chars.indexOf("\n\n") >= 0){
 			invalidText = true;
 			chars = chars.replaceAll("\n\n", "\n");
@@ -741,12 +719,33 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		return chars;
 	}
 
-	String removeSingleSpacing(String chars){
+	/**
+	 * Remove all EOL characters from the string. This is necessary if the string
+	 * is for a single line component.
+	 * @param chars the string to use
+	 * @return the string with all EOLs removed
+	 */
+	private String removeSingleSpacingFromPlainText(String chars){
 		while(chars.indexOf("\n") >= 0){
 			invalidText = true;
 			chars = chars.replaceAll("\n", "");
 		}
 		return chars;
+	}
+	
+	/**
+	 * This removes all line spacing from the styled text. <br>
+	 * It is used to convert any styled string into one suitable for
+	 * a GTextField controls
+	 */
+	StyledString convertToSingleLine(){
+		int p = plainText.indexOf("\n");
+		while(p >= 0){
+			deleteCharacters(p, 1);
+			p = plainText.indexOf("\n");
+		}
+		wrapWidth = Integer.MAX_VALUE;
+		return this;
 	}
 
 	/**
@@ -941,7 +940,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @author Peter Lager
 	 *
 	 */
-	protected class AttributeRun {
+	private class AttributeRun {
 		public Attribute atype;
 		public Object value;
 		public Integer start;
@@ -977,7 +976,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		/**
 		 * If possible merge the two runs or crop the prevRun run.
 		 * 
-		 *	If both runs have the same attribute type and the represent
+		 * If both runs have the same attribute type and the represent
 		 * the same location and size in the text then the intersection
 		 * mode will be MM_SURROUNDS rather than MM_SURROUNDED because 
 		 * 'this' is the attribute being added.
@@ -1012,7 +1011,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 					edx = 1;
 			}
 			combi_mode |= grid[sdx][edx];
-//			System.out.println( (combi_mode & 255) + "   " + (combi_mode & 768));
 			return combi_mode;
 		}
 		
@@ -1020,22 +1018,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 			String s = atype.toString() + "  value = " + value.toString() + "  from " + start + "   to " + end;
 			return s;
 		}
-//		public boolean sameType(AttributeRun ar){
-//			return atype == ar.atype;
-//		}
-//
-//		public boolean sameValue(AttributeRun ar){
-//			if(value instanceof java.lang.Float && ar.value instanceof java.lang.Float ){
-//				return ((Float)value) == ((Float)ar.value);
-//			}
-//			if(value instanceof java.lang.Integer && ar.value instanceof java.lang.Integer ){
-//				return ((Integer)value) == ((Integer)ar.value);
-//			}
-//			if(value instanceof java.lang.String && ar.value instanceof java.lang.String ){
-//				return ((String)value).equalsIgnoreCase((String)ar.value);
-//			}
-//			return false;
-//		}
 
 	}  // End of AttributeRun class
 
