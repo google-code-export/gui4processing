@@ -73,7 +73,7 @@ public interface GConstants {
 	int USER_COL_SCHEME = 	0x00010102;
 
 	// The min alpha level for a control to respond to mouse and keyboard
-	int ALPHA_BLOCK =				64;
+	int ALPHA_BLOCK =				128;
 	// The min alpha before a pixel is considered for a hot spot
 	int ALPHA_PICK	=				48;
 
