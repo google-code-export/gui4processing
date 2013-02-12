@@ -588,11 +588,8 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	public void saveText(String fname){
 		SelectionInfo sinfo = new SelectionInfo();
 		if(hasSelection()){
-			// startTLHI.tli != null && endTLHI.tli 
 			sinfo.startIdx = startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex();
-			sinfo.startIsLeadingEdge = startTLHI.thi.isLeadingEdge();
 			sinfo.endIdx = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
-			sinfo.endIsLeadingEdge = endTLHI.thi.isLeadingEdge();
 		}
 		if(stext == null){
 			text = "";
@@ -607,8 +604,6 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			oos.writeObject(stext);
 			os.close();
 			oos.close();
-			System.out.println("Text saved");
-			System.out.println(sinfo);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -631,10 +626,10 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-//		adjustWrapWidth(ss);
 		setStyledText(ss);
 		// Now restore any text selection
 		if(sinfo.startIdx >=0){ // we have a selection
+			// Selection starts at ...
 			startTLHI = new TextLayoutHitInfo();
 			startTLHI.tli = stext.getTLIforCharNo(sinfo.startIdx);
 			int pInLayout = sinfo.startIdx - startTLHI.tli.startCharIndex;
@@ -642,13 +637,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 				startTLHI.thi = startTLHI.tli.layout.getNextLeftHit(1);
 			else
 				startTLHI.thi = startTLHI.tli.layout.getNextRightHit(pInLayout - 1);
-				
-
-//			if(sinfo.startIsLeadingEdge)
-//				startTLHI.thi = startTLHI.tli.layout.getNextLeftHit(pInLayout);
-//			else
-//				startTLHI.thi = startTLHI.tli.layout.getNextRightHit(pInLayout);
-			
+			// Selection ends at ...
 			endTLHI = new TextLayoutHitInfo();
 			endTLHI.tli = stext.getTLIforCharNo(sinfo.endIdx);
 			pInLayout = sinfo.endIdx - endTLHI.tli.startCharIndex;
@@ -657,25 +646,12 @@ public abstract class GEditableTextControl extends GAbstractControl {
 				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);
 			else
 				endTLHI.thi = endTLHI.tli.layout.getNextRightHit(pInLayout - 1);
-			
-//			if(sinfo.endIsLeadingEdge)
-//				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(pInLayout);
-//			else
-//				endTLHI.thi = endTLHI.tli.layout.getNextRightHit(pInLayout);
 			calculateCaretPos(endTLHI);
 		}
 		bufferInvalid = true;
-		System.out.println("Text loaded");
 	}
 	
-	/**
-	 * Adjust the wrap width depending whether this is a GTextField 
-	 * or GTextArea object.
-	 * 
-	 * @param ss
-	 */
-//	protected abstract void adjustWrapWidth(StyledString ss);
-	
+
 	/**
 	 * Setting the styled text depends on whether this is a GTextField 
 	 * or GTextArea object. Either way the stext will be valid after 
@@ -693,21 +669,11 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	 * @author Peter Lager
 	 *
 	 */
-	public static class SelectionInfo implements Serializable {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 3270082179371554372L;
+	static class SelectionInfo implements Serializable {
+
+		private static final long serialVersionUID = -4856505282755490971L;
+
 		public int startIdx = -1;
-		public boolean startIsLeadingEdge = false;
 		public int endIdx = -1;
-		public boolean endIsLeadingEdge = false;
-		
-		
-		public String toString(){
-			String s = "["+startIdx+", "+ startIsLeadingEdge+"]   ";
-			s += ("["+endIdx+", "+ endIsLeadingEdge+"]   ");
-			return s;
-		}
 	}
 }
