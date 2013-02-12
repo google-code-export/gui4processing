@@ -169,6 +169,18 @@ public class GTextArea extends GEditableTextControl {
 		bufferInvalid = true;
 	}
 
+//	/**
+//	 * If the text is single line then use the controls wrapwidth for the text. If not
+//	 * then change the control's wrapwidth to match the text 
+//	 */
+//	@Override
+//	protected void adjustWrapWidth(StyledString ss) {
+//		if(ss.getWrapWidth() == Integer.MAX_VALUE)
+//			ss.setWrapWidth(wrapWidth);
+//		else
+//			wrapWidth = ss.getWrapWidth();
+//		
+//	}
 
 	/**
 	 * Set the text to be used. The wrap width is determined by the size 
@@ -217,12 +229,12 @@ public class GTextArea extends GEditableTextControl {
 //		bufferInvalid = true;
 	}
 
-	public void setStyledText(StyledString stext){
+	public void setStyledText(StyledString st){
+		stext = st;
 		if(stext.getWrapWidth() == Integer.MAX_VALUE)
 			stext.setWrapWidth(wrapWidth);
 		else
 			wrapWidth = stext.getWrapWidth();
-		this.stext = stext;
 		text = stext.getPlainText();
 		stext.getLines(buffer.g2);
 		if(stext.getNbrLines() > 0){
@@ -250,6 +262,7 @@ public class GTextArea extends GEditableTextControl {
 		}
 		bufferInvalid = true;				
 	}
+	
 	/**
 	 * Add text to the end of the current text. This is useful for a logging' type activity.
 	 * 
@@ -364,8 +377,6 @@ public class GTextArea extends GEditableTextControl {
 					horzScroll = true;
 				}
 				else if(ptx < max_ptx){ 						// RIGHT?
-//				else if(ptx  < caretX  - tw + 2){ 						// RIGHT?
-//				else if(caretX > ptx + tw - 2){ 						// RIGHT?
 					ptx += HORZ_SCROLL_RATE;
 					if(ptx > max_ptx) ptx = max_ptx;
 					horzScroll = true;
@@ -376,9 +387,7 @@ public class GTextArea extends GEditableTextControl {
 					vertScroll = true;
 				}
 				else if(pty < max_pty){	// DOWN?
-//				else if(caretY > pty + th  - 2 * stext.getMaxLineHeight()){	// DOWN?
 					pty += VERT_SCROLL_RATE;
-//					pty = Math.min(pty, max_pty);
 					vertScroll = true;
 				}
 				if(horzScroll && hsb != null)
@@ -488,7 +497,6 @@ public class GTextArea extends GEditableTextControl {
 			else 	// Move to end of line
 				moveCaretEndOfLine(endTLHI);
 			break;
-//		case KeyEvent.VK_A:
 		case 'A':
 			if(ctrlDown){
 				moveCaretStartOfText(startTLHI);
@@ -498,13 +506,11 @@ public class GTextArea extends GEditableTextControl {
 				shiftDown = true;
 			}
 			break;
-//		case KeyEvent.VK_C:
 		case 'C':
 			if(ctrlDown)
 				GClip.copy(getSelectedText());
 			validKeyCombo = false;
 			break;
-//		case KeyEvent.VK_V:
 		case 'V':
 			if(ctrlDown){
 				String p = GClip.paste();
@@ -771,5 +777,7 @@ public class GTextArea extends GEditableTextControl {
 		caretX = temp[0];		
 		caretY = tlhi.tli.yPosInPara;
 	}
+
+
 
 }

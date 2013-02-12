@@ -133,13 +133,24 @@ public class GTextField extends GEditableTextControl {
 		G4P.addControl(this);
 	}
 
+	
+//	/**
+//	 * If the wrapwidth is < Integer.MAX_VALUE then this string has been saved from a text 
+//	 */
+//	@Override
+//	protected void adjustWrapWidth(StyledString ss) {
+//		if(ss.getWrapWidth() < Integer.MAX_VALUE)
+//			ss = ss.convertToSingleLineText();
+//	}
+
+
 	/**
 	 * Set the styled text for this textfield after ensuring that all EOL characters
 	 * have been removed.
-	 * @param stext
+	 * @param st
 	 */
-	public void setStyledText(StyledString stext){
-		this.stext = stext.convertToSingleLine();
+	public void setStyledText(StyledString st){
+		stext = st.convertToSingleLineText();
 		text = stext.getPlainText();
 		stext.getLines(buffer.g2);
 		if(stext.getNbrLines() > 0){
