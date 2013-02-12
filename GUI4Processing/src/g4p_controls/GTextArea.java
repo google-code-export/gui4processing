@@ -169,19 +169,6 @@ public class GTextArea extends GEditableTextControl {
 		bufferInvalid = true;
 	}
 
-//	/**
-//	 * If the text is single line then use the controls wrapwidth for the text. If not
-//	 * then change the control's wrapwidth to match the text 
-//	 */
-//	@Override
-//	protected void adjustWrapWidth(StyledString ss) {
-//		if(ss.getWrapWidth() == Integer.MAX_VALUE)
-//			ss.setWrapWidth(wrapWidth);
-//		else
-//			wrapWidth = ss.getWrapWidth();
-//		
-//	}
-
 	/**
 	 * Set the text to be used. The wrap width is determined by the size 
 	 * of the control.

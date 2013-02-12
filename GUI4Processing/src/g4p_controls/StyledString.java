@@ -66,11 +66,6 @@ import processing.core.PApplet;
  */
 final public class StyledString implements GConstantsInternal, Serializable {
 
-//	private static final long serialVersionUID = -7221265878366215856L;
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7257943047799704942L;
 	
 	transient private AttributedString styledText = null;
@@ -780,26 +775,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	}
 	
 	/**
-	 * This replaces all the EOL characters with the specified replacement
-	 * character. It is better to replace them than delete them because
-	 * it does not affect the overall length of the string. It means that
-	 * the current styling can still be applied and any text selection
-	 * information is still valid.<br>
-	 * It is used to convert any styled string into one suitable for
-	 * a GTextField controls.
-	 */
-//	StyledString replaceAllEOL(char replacement){
-//		// need to replace paragraph markers with replacement
-//		int p = plainText.indexOf("\n");
-//		while(p >= 0){
-//			deleteCharacters(p, 1);
-//			p = plainText.indexOf("\n");
-//		}
-//		wrapWidth = Integer.MAX_VALUE;
-//		return this;
-//	}
-
-	/**
 	 * Create a graphic image character to simulate paragraph breaks
 	 * 
 	 * @param ww
@@ -997,6 +972,9 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 *
 	 */
 	private class AttributeRun implements Serializable {
+
+		private static final long serialVersionUID = -8401062069478890163L;
+		
 		public Attribute atype;
 		public Object value;
 		public Integer start;
