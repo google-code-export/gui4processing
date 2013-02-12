@@ -68,6 +68,11 @@ final public class StyledString implements GConstantsInternal, Serializable {
 
 //	private static final long serialVersionUID = -7221265878366215856L;
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7257943047799704942L;
+	
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
 	transient private LineBreakMeasurer lineMeasurer = null;
@@ -131,6 +136,42 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		applyAttributes();
 		invalidText = true;
 		invalidLayout = true;
+	}
+
+	/**
+	 * Converts this StyledString from multi-line to single-line by replacing all EOL
+	 * characters with the space character
+	 * for paragraphs
+	 * @param ptext
+	 * @param as
+	 * @return
+	 */
+	StyledString convertToSingleLineText(){
+		// Make sure we have something to work with.
+		if(styledText == null || plainText == null){
+			plainText = "";
+			styledText = new AttributedString(plainText);
+		}
+		else {
+			// Scan through plain text and for each EOL replace the paragraph spacer from
+			// the attributed string (styledText).
+			int fromIndex = plainText.indexOf('\n', 0);
+			if(fromIndex >= 0){
+				while(fromIndex >= 0){
+					try { // if text == "\n" then an exception is thrown
+						styledText.addAttribute(TextAttribute.CHAR_REPLACEMENT, ' ', fromIndex, fromIndex + 1);
+						fromIndex = plainText.indexOf('\n', fromIndex + 1);
+					}
+					catch(Exception excp){
+						break;
+					}
+				}
+				// Finally replace all EOL in the plainText
+				plainText = plainText.replace('\n', ' ');
+			}
+		}
+		wrapWidth = Integer.MAX_VALUE;
+		return this;
 	}
 
 	/**
@@ -312,6 +353,11 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		invalidLayout = true;
 	}
 
+	/**
+	 * Clears all attributes from start to end-1
+	 * @param start
+	 * @param end
+	 */
 	public void clearAttributes(int start, int end){
 		ListIterator<AttributeRun> iter = atrun.listIterator();
 		AttributeRun ar;
@@ -734,19 +780,24 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	}
 	
 	/**
-	 * This removes all line spacing from the styled text. <br>
+	 * This replaces all the EOL characters with the specified replacement
+	 * character. It is better to replace them than delete them because
+	 * it does not affect the overall length of the string. It means that
+	 * the current styling can still be applied and any text selection
+	 * information is still valid.<br>
 	 * It is used to convert any styled string into one suitable for
-	 * a GTextField controls
+	 * a GTextField controls.
 	 */
-	StyledString convertToSingleLine(){
-		int p = plainText.indexOf("\n");
-		while(p >= 0){
-			deleteCharacters(p, 1);
-			p = plainText.indexOf("\n");
-		}
-		wrapWidth = Integer.MAX_VALUE;
-		return this;
-	}
+//	StyledString replaceAllEOL(char replacement){
+//		// need to replace paragraph markers with replacement
+//		int p = plainText.indexOf("\n");
+//		while(p >= 0){
+//			deleteCharacters(p, 1);
+//			p = plainText.indexOf("\n");
+//		}
+//		wrapWidth = Integer.MAX_VALUE;
+//		return this;
+//	}
 
 	/**
 	 * Create a graphic image character to simulate paragraph breaks
@@ -783,6 +834,8 @@ final public class StyledString implements GConstantsInternal, Serializable {
 			os = papp.createOutput(fname);
 			oos = new ObjectOutputStream(os);
 			oos.writeObject(ss);
+			os.close();
+			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -795,13 +848,15 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @param fname the filename of the StyledString
 	 */
 	public static StyledString load(PApplet papp, String fname){
-		InputStream is;
 		StyledString ss = null;
+		InputStream is;
 		ObjectInputStream ios;	
 		try {
 			is = papp.createInput(fname);
 			ios = new ObjectInputStream(is);
 			ss = (StyledString) ios.readObject();
+			is.close();
+			ios.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -818,6 +873,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 		spacer = getParagraghSpacer(wrapWidth);
 		styledText = new AttributedString(plainText);
 		styledText = insertParagraphMarkers(plainText, styledText);
+		linesInfo = new LinkedList<TextLayoutInfo>();
 		applyAttributes();
 	}
 
@@ -940,7 +996,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * @author Peter Lager
 	 *
 	 */
-	private class AttributeRun {
+	private class AttributeRun implements Serializable {
 		public Attribute atype;
 		public Object value;
 		public Integer start;

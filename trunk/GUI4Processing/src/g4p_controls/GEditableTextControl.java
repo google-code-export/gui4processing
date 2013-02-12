@@ -30,6 +30,12 @@ import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextHitInfo;
 import java.awt.geom.GeneralPath;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
@@ -182,6 +188,14 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	}
 	
 	/**
+	 * Get the styled text in the control
+	 * @return the text with styling
+	 */
+	public StyledString getStyledText(){
+		return stext;
+	}
+	
+	/**
 	 * Get the text that has been selected (highlighted) by the user. <br>
 	 * @return the selected text without styling
 	 */
@@ -239,7 +253,9 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn-1);
 		bufferInvalid = true;
 	}
-	
+	/**
+	 * Clear any styles applied to the selected text.
+	 */
 	public void clearStyle(){
 		if(!hasSelection())
 			return;
@@ -567,5 +583,131 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		if(tabManager != null)
 			tabManager.removeControl(this);
 		super.markForDisposal();
+	}
+	
+	public void saveText(String fname){
+		SelectionInfo sinfo = new SelectionInfo();
+		if(hasSelection()){
+			// startTLHI.tli != null && endTLHI.tli 
+			sinfo.startIdx = startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex();
+			sinfo.startIsLeadingEdge = startTLHI.thi.isLeadingEdge();
+			sinfo.endIdx = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
+			sinfo.endIsLeadingEdge = endTLHI.thi.isLeadingEdge();
+		}
+		if(stext == null){
+			text = "";
+			stext = new StyledString(text);
+		}
+		OutputStream os;
+		ObjectOutputStream oos;
+		try {
+			os = winApp.createOutput(fname);
+			oos = new ObjectOutputStream(os);
+			oos.writeObject(sinfo);
+			oos.writeObject(stext);
+			os.close();
+			oos.close();
+			System.out.println("Text saved");
+			System.out.println(sinfo);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadText(String fname){
+		SelectionInfo sinfo = new SelectionInfo();
+		StyledString ss = null;
+		InputStream is;
+		ObjectInputStream ios;	
+		try {
+			is = winApp.createInput(fname);
+			ios = new ObjectInputStream(is);
+			sinfo = (SelectionInfo) ios.readObject();
+			ss = (StyledString) ios.readObject();
+			is.close();
+			ios.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+//		adjustWrapWidth(ss);
+		setStyledText(ss);
+		// Now restore any text selection
+		if(sinfo.startIdx >=0){ // we have a selection
+			startTLHI = new TextLayoutHitInfo();
+			startTLHI.tli = stext.getTLIforCharNo(sinfo.startIdx);
+			int pInLayout = sinfo.startIdx - startTLHI.tli.startCharIndex;
+			if(pInLayout == 0)
+				startTLHI.thi = startTLHI.tli.layout.getNextLeftHit(1);
+			else
+				startTLHI.thi = startTLHI.tli.layout.getNextRightHit(pInLayout - 1);
+				
+
+//			if(sinfo.startIsLeadingEdge)
+//				startTLHI.thi = startTLHI.tli.layout.getNextLeftHit(pInLayout);
+//			else
+//				startTLHI.thi = startTLHI.tli.layout.getNextRightHit(pInLayout);
+			
+			endTLHI = new TextLayoutHitInfo();
+			endTLHI.tli = stext.getTLIforCharNo(sinfo.endIdx);
+			pInLayout = sinfo.endIdx - endTLHI.tli.startCharIndex;
+			
+			if(pInLayout == 0)
+				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);
+			else
+				endTLHI.thi = endTLHI.tli.layout.getNextRightHit(pInLayout - 1);
+			
+//			if(sinfo.endIsLeadingEdge)
+//				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(pInLayout);
+//			else
+//				endTLHI.thi = endTLHI.tli.layout.getNextRightHit(pInLayout);
+			calculateCaretPos(endTLHI);
+		}
+		bufferInvalid = true;
+		System.out.println("Text loaded");
+	}
+	
+	/**
+	 * Adjust the wrap width depending whether this is a GTextField 
+	 * or GTextArea object.
+	 * 
+	 * @param ss
+	 */
+//	protected abstract void adjustWrapWidth(StyledString ss);
+	
+	/**
+	 * Setting the styled text depends on whether this is a GTextField 
+	 * or GTextArea object. Either way the stext will be valid after 
+	 * this call so we can restore selection.
+	 * 
+	 * @param st
+	 */
+	public abstract void setStyledText(StyledString st);
+	
+	/** 
+	 * This class is used solely to store text selection information when saving the text
+	 * to disc. This means the selection information will be persistent.
+	 * 
+	 * 
+	 * @author Peter Lager
+	 *
+	 */
+	public static class SelectionInfo implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3270082179371554372L;
+		public int startIdx = -1;
+		public boolean startIsLeadingEdge = false;
+		public int endIdx = -1;
+		public boolean endIsLeadingEdge = false;
+		
+		
+		public String toString(){
+			String s = "["+startIdx+", "+ startIsLeadingEdge+"]   ";
+			s += ("["+endIdx+", "+ endIsLeadingEdge+"]   ");
+			return s;
+		}
 	}
 }

@@ -52,8 +52,8 @@ import processing.event.MouseEvent;
  */
 public class GDropList extends GTextControl {
 	
-	static protected int CLOSED_SURFACE = 1;
-	static protected int LIST_SURFACE = 2;
+	static protected int LIST_SURFACE = 1;
+	static protected int CLOSED_SURFACE = 2;
 
 	protected static final int FORE_COLOR = 2;
 	protected static final int BACK_COLOR = 5;
@@ -145,7 +145,7 @@ public class GDropList extends GTextControl {
 
 		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleDropListEvents",
-				new Class<?>[]{ GDropList.class, GEvent.class }, 
+				new Class[]{ GDropList.class, GEvent.class }, 
 				new String[]{ "list", "event" } 
 		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;
@@ -267,7 +267,7 @@ public class GDropList extends GTextControl {
 			break;
 		case MouseEvent.MOVE:
 			if(focusIsWith == this){
-				if(currSpot == 1)
+				if(currSpot == LIST_SURFACE)
 					currOverItem = startItem + (int)(oy / itemHeight)-1; 
 				//currOverItem = startItem + Math.round(oy / itemHeight) - 1; 
 				else
