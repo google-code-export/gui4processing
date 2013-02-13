@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2012 Peter Lager
+  Copyright (c) 2013 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -30,12 +30,6 @@ import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextHitInfo;
 import java.awt.geom.GeneralPath;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.LinkedList;
 
 import processing.core.PApplet;
@@ -48,17 +42,13 @@ import processing.event.KeyEvent;
  * @author Peter Lager
  *
  */
-public abstract class GEditableTextControl extends GAbstractControl {
+public abstract class GEditableTextControl extends GText {
 
 	protected static float HORZ_SCROLL_RATE = 4f;
 	protected static float VERT_SCROLL_RATE = 8;
 	
 	GTabManager tabManager = null;
 	
-	/** Text value associated with component */
-	protected String text = "";
-	// The styled version of text
-	protected StyledString stext = null;
 	protected StyledString defaultText = null;
 	// The width to break a line
 	protected int wrapWidth = Integer.MAX_VALUE;
@@ -116,10 +106,8 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		// If only blank text clear it out allowing default text (if any) to be displayed
 		if(stext.length() > 0){
 			int tl = stext.getPlainText().trim().length();
-			if(tl == 0){
-				text = "";
-				stext = new StyledString(text, wrapWidth);
-			}
+			if(tl == 0)
+				stext = new StyledString("", wrapWidth);
 		}
 		keepCursorInView = true;
 		bufferInvalid = true;
@@ -139,7 +127,7 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			dragging = false;
 			if(stext == null || stext.length() == 0)
 				stext = new StyledString(" ", wrapWidth);
-			text = stext.getPlainText();
+//			text = stext.getPlainText();
 			LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
 			startTLHI = new TextLayoutHitInfo(lines.getFirst(), null);
 			startTLHI.thi = startTLHI.tli.layout.getNextLeftHit(1);
@@ -585,62 +573,53 @@ public abstract class GEditableTextControl extends GAbstractControl {
 		super.markForDisposal();
 	}
 	
-	public void saveText(String fname){
-		SelectionInfo sinfo = new SelectionInfo();
+	/**
+	 * Save the styled text used by this control to file. <br>
+	 * It will also save the start and end position of any text selection.
+	 * 
+	 * @param fname the name of the file to use
+	 * @return true if saved successfully else false
+	 */
+	public boolean saveText(String fname){
+		if(stext == null)
+			return false;
 		if(hasSelection()){
-			sinfo.startIdx = startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex();
-			sinfo.endIdx = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
+			stext.startIdx = startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex();
+			stext.endIdx = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
 		}
-		if(stext == null){
-			text = "";
-			stext = new StyledString(text);
+		else {
+			stext.startIdx = stext.endIdx = -1;
 		}
-		OutputStream os;
-		ObjectOutputStream oos;
-		try {
-			os = winApp.createOutput(fname);
-			oos = new ObjectOutputStream(os);
-			oos.writeObject(sinfo);
-			oos.writeObject(stext);
-			os.close();
-			oos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		StyledString.save(winApp, stext, fname);
+		return true;
 	}
-	
-	public void loadText(String fname){
-		SelectionInfo sinfo = new SelectionInfo();
-		StyledString ss = null;
-		InputStream is;
-		ObjectInputStream ios;	
-		try {
-			is = winApp.createInput(fname);
-			ios = new ObjectInputStream(is);
-			sinfo = (SelectionInfo) ios.readObject();
-			ss = (StyledString) ios.readObject();
-			is.close();
-			ios.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+
+	/**
+	 * Load the styled string to be used by this control. <br>
+	 * It will also restore any text selection saved with the text.
+	 * 
+	 * @param fname the name of the file to use
+	 * @return true if loaded successfully else false
+	 */
+	public boolean loadText(String fname){
+		StyledString ss = StyledString.load(winApp, fname);
+		if(ss == null)
+			return false;
 		setStyledText(ss);
 		// Now restore any text selection
-		if(sinfo.startIdx >=0){ // we have a selection
+		if(stext.startIdx >=0){ // we have a selection
 			// Selection starts at ...
 			startTLHI = new TextLayoutHitInfo();
-			startTLHI.tli = stext.getTLIforCharNo(sinfo.startIdx);
-			int pInLayout = sinfo.startIdx - startTLHI.tli.startCharIndex;
+			startTLHI.tli = stext.getTLIforCharNo(stext.startIdx);
+			int pInLayout = stext.startIdx - startTLHI.tli.startCharIndex;
 			if(pInLayout == 0)
 				startTLHI.thi = startTLHI.tli.layout.getNextLeftHit(1);
 			else
 				startTLHI.thi = startTLHI.tli.layout.getNextRightHit(pInLayout - 1);
 			// Selection ends at ...
 			endTLHI = new TextLayoutHitInfo();
-			endTLHI.tli = stext.getTLIforCharNo(sinfo.endIdx);
-			pInLayout = sinfo.endIdx - endTLHI.tli.startCharIndex;
+			endTLHI.tli = stext.getTLIforCharNo(stext.endIdx);
+			pInLayout = stext.endIdx - endTLHI.tli.startCharIndex;
 			
 			if(pInLayout == 0)
 				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);
@@ -649,8 +628,8 @@ public abstract class GEditableTextControl extends GAbstractControl {
 			calculateCaretPos(endTLHI);
 		}
 		bufferInvalid = true;
+		return true;
 	}
-	
 
 	/**
 	 * Setting the styled text depends on whether this is a GTextField 
@@ -660,20 +639,5 @@ public abstract class GEditableTextControl extends GAbstractControl {
 	 * @param st
 	 */
 	public abstract void setStyledText(StyledString st);
-	
-	/** 
-	 * This class is used solely to store text selection information when saving the text
-	 * to disc. This means the selection information will be persistent.
-	 * 
-	 * 
-	 * @author Peter Lager
-	 *
-	 */
-	static class SelectionInfo implements Serializable {
 
-		private static final long serialVersionUID = -4856505282755490971L;
-
-		public int startIdx = -1;
-		public int endIdx = -1;
-	}
 }

@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-12 Peter Lager
+  Copyright (c) 2008-13 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,13 @@ import g4p_controls.HotSpot.HSmask;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+/**
+ * Intermediary class for control based on images.
+ * 
+ * It will create an array (minimum size 3) of PImage objects one for each image file.
+ * 
+ * @author Peter Lager
+ */
 abstract class GImageControl extends GAbstractControl {
 
 	protected PImage[] bimage = null;
@@ -41,17 +48,22 @@ abstract class GImageControl extends GAbstractControl {
 		//=======================================================
 		// First of all load images
 		bimage = new PImage[3];
-		if(fnames == null || fnames.length == 0)
+		if(fnames == null || fnames.length == 0){
 			fnames = new String[] { "err0.png", "err1.png", "err2.png" };
-		else {
-			for(int i = 0; i < fnames.length; i++){
-				bimage[i] = winApp.loadImage(fnames[i]);
-				if(bimage[i] == null)
-					bimage[i] = winApp.loadImage("err" + i + ".png");
-			}
-			for(int i = fnames.length; i < 3; i++)
-				bimage[i] = bimage[i-1];
+			bimage = new PImage[3];
 		}
+		else {
+			bimage = new PImage[PApplet.max(3, fnames.length)];
+		}
+
+		for(int i = 0; i < fnames.length; i++){
+			bimage[i] = winApp.loadImage(fnames[i]);
+			if(bimage[i] == null)
+				bimage[i] = winApp.loadImage("err" + (i%3) + ".png");
+		}
+		for(int i = fnames.length; i < 3; i++)
+			bimage[i] = bimage[i-1];
+
 		// Get mask image if available
 		if(fnameMask != null)
 			mask = winApp.loadImage(fnameMask);
@@ -64,7 +76,7 @@ abstract class GImageControl extends GAbstractControl {
 					bimage[i].resize(controlWidth, controlHeight);					
 			}
 			if(mask != null && (mask.width != controlWidth || mask.height != controlHeight))
-					mask.resize(controlWidth, controlHeight);
+				mask.resize(controlWidth, controlHeight);
 		}
 		else {
 			// resize control
@@ -88,7 +100,6 @@ abstract class GImageControl extends GAbstractControl {
 				y = cy - halfHeight;
 				break;
 			}
-
 		}
 		if(mask != null){	// if we have a mask use it for the hot spot
 			hotspots = new HotSpot[]{

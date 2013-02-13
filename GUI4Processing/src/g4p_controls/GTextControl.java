@@ -24,7 +24,6 @@
 package g4p_controls;
 
 import java.awt.Font;
-import java.awt.font.TextAttribute;
 
 import processing.core.PApplet;
 
@@ -36,21 +35,12 @@ import processing.core.PApplet;
  * @author Peter Lager
  * 
  */
-public abstract class GTextControl extends GAbstractControl {
+public abstract class GTextControl extends GText {
 
-	protected static final int TPAD = 2;
-	protected static final int TPAD2 = TPAD * 2;
-	protected static final int TPAD4 = TPAD * 4;
-	
-	/** The styled version of text */
-	public StyledString stext = null;
-	
 	protected GAlign textAlignH = GAlign.CENTER, textAlignV =  GAlign.MIDDLE;
 	
 	protected float stX, stY;
 
-	protected Font localFont = G4P.globalFont;
-	
 	public GTextControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 	}
@@ -76,18 +66,6 @@ public abstract class GTextControl extends GAbstractControl {
 	}
 
 	/**
-	 * Set the text to be displayed.
-	 * NEW version for FPanel etc.
-	 * @param text
-	 */
-	public void setText(String text){
-		if(text == null || text.length() == 0 )
-			text = " ";
-		stext = new StyledString(text, (int)width - TPAD2);
-		bufferInvalid = true;
-	}
-	
-	/**
 	 * Combines setting the text and text alignment in one method. <br>
 	 * 
 	 * If you want to set just one of the alignments then pass null 
@@ -100,97 +78,6 @@ public abstract class GTextControl extends GAbstractControl {
 	public void setText(String text, GAlign horz, GAlign vert){
 		setText(text);
 		setTextAlign(horz, vert);
-		bufferInvalid = true;
-	}
-	
-	/**
-	 * Allows the user to provide their own styled text for this component
-	 * @param stext
-	 */
-	public void setStyledText(StyledString stext){
-		if(stext != null) {
-			this.stext = stext;
-			this.stext.setWrapWidth((int)width - TPAD2);
-			bufferInvalid = true;
-		}
-	}
-	
-	/**
-	 * Clear <b>all</b> applied styles from the whole text.
-	 */
-	public void setTextPlain(){
-		stext.clearAllAttributes();
-		bufferInvalid = true;
-	}
-	
-	/**
-	 * Make the selected characters bold. <br>
-	 * Characters affected are >= start and < end
-	 * 
-	 * @param start the first character to style
-	 * @param end the first character not to style
-	 */
-	public void setTextBold(int start, int end){
-		addAttributeImpl(G4P.WEIGHT, G4P.WEIGHT_BOLD, start, end);
-	}
-
-	/**
-	 * Make all the characters bold.
-	 */
-	public void setTextBold(){
-		addAttributeImpl(G4P.WEIGHT, G4P.WEIGHT_BOLD);
-	}
-
-	/**
-	 * Make the selected characters italic. <br>
-	 * Characters affected are >= start and < end
-	 * 
-	 * @param start the first character to style
-	 * @param end the first character not to style
-	 */
-	public void setTextItalic(int start, int end){
-		addAttributeImpl(G4P.POSTURE, G4P.POSTURE_OBLIQUE, start, end);
-	}
-
-	/**
-	 * Make all the characters italic.
-	 */
-	public void setTextItalic(){
-		addAttributeImpl(G4P.POSTURE, G4P.POSTURE_OBLIQUE);
-	}
-
-	/**
-	 * Get the text used for this control.
-	 * @return the displayed text without styling
-	 */
-	public String getText(){
-		return stext.getPlainText();
-	}
-	
-	/**
-	 * Apply the style to the whole text
-	 * 
-	 * @param style the style attribute
-	 * @param value 'amount' to apply
-	 */
-	protected void addAttributeImpl(TextAttribute style, Object value){
-		stext.addAttribute(style, value);
-		bufferInvalid = true;
-	}
-	
-	/**
-	 * Apply the style to a portion of the strin
-	 * 
-	 * @param style the style attribute
-	 * @param value 'amount' to apply
-	 * @param s first character to be included for styling
-	 * @param e the first character not to be included for stylin
-	 */
-	protected void addAttributeImpl(TextAttribute style, Object value, int s, int e){
-		if(s >= e) return;
-		if(s < 0) s = 0;
-		if(e > stext.length()) e = stext.length();
-		stext.addAttribute(style, value, s, e);
 		bufferInvalid = true;
 	}
 	

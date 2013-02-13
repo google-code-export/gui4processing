@@ -25,7 +25,6 @@ package g4p_controls;
 
 import g4p_controls.HotSpot.HScircle;
 
-import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import processing.core.PApplet;

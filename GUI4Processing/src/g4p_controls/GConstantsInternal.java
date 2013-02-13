@@ -31,7 +31,7 @@ import java.awt.BasicStroke;
  * @author Peter Lager
  *
  */
-public interface GConstantsInternal {
+interface GConstantsInternal {
 
 	// Constants for the control methods
 	int DRAW_METHOD = 			0x00000001;
