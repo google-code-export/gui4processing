@@ -5,8 +5,8 @@
  
  Some of the other examples  demonstrate individual controls 
  in more detail.
-
- (c) 2012 Peter Lager
+ 
+ (c) 2013 Peter Lager
  */
 
 import g4p_controls.*;
@@ -23,7 +23,7 @@ GButton btnTimer;
 GTabManager tt;
 GCheckbox cbxSticky;
 GButton btnControl;  // Used to start controller window
-
+GStick astick;
 String startText;
 PImage imgBgImage;
 
@@ -35,13 +35,9 @@ GSketchPad spad;
 PGraphics pg;
 
 public void setup() {
-  size(700, 340);
-
-  G4P.registerSketch(this);
+  size(600, 440);
   // Load the background image
-  imgBgImage = loadImage("bground.jpg");
-  G4P.messagesEnabled(true);
-
+  imgBgImage = loadImage("castle.jpg");
   makeDemoControls();
 }
 
@@ -76,11 +72,20 @@ public void handleTextEvents(GEditableTextControl textcontrol, GEvent event) {
 
 public void handlePanelEvents(GPanel panel, GEvent event) { 
   lblAction.setText("Panel: " + event);
+  if (event == GEvent.DRAGGED && sdrPanelPos != null) {
+    sdrPanelPos.setXvalue(pnlControls.getX());
+    sdrPanelPos.setYvalue(pnlControls.getY());
+  }
 }
 
 public void handleSliderEvents(GValueControl slider, GEvent event) {
   if (slider == sdrAlpha) {
-    G4P.setWindowAlpha(this, sdrAlpha.getValueI());
+    int alpha = sdrAlpha.getValueI();
+    if (alpha >= G4P.ALPHA_BLOCK)
+      slider.setLocalColorScheme(G4P.BLUE_SCHEME);
+    else
+      slider.setLocalColorScheme(G4P.RED_SCHEME);
+    G4P.setWindowAlpha(this, alpha);
   }
 }
 
@@ -101,6 +106,30 @@ public void handleToggleControlEvents(GToggleControl option, GEvent event) {
     lblAction.setText("Stick to ticks option changed");
     knbDemo.setStickToTicks(cbxSticky.isSelected());
   }
+}
+
+public void handleStickEvents(GStick stick, GEvent event) {
+  String pos = "";
+  // 4-way stick so forget 1,3,5 & 7 positions
+  switch(stick.getPosition()) {
+  case 0:
+    pos = "RIGHT";
+    break;
+  case 2:
+    pos = "DOWN";
+    break;
+  case 4:
+    pos = "LEFT";
+    break;
+  case 6:
+    pos = "UP";
+    break;
+  }
+  lblAction.setText("Stick control is in " + pos + " position");
+}
+
+public void handleSlider2DEvents(GSlider2D slider2d, GEvent event) {
+  pnlControls.moveTo(slider2d.getXvalueI(), slider2d.getYvalueI());
 }
 
 public void handleKnobEvents(GValueControl knob, GEvent event) { 
