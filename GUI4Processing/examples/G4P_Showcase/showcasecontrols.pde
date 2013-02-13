@@ -4,7 +4,7 @@
 
 public void makeDemoControls() {
   // Create the panel of this size
-  int pX = 10, pY = 30, pHeight = 236, pWidth = 400;
+  int pX = 10, pY = 30, pHeight = 240, pWidth = 400;
   pnlControls = new GPanel(this, pX, pY, pWidth, pHeight, "Panel Tab Text (drag to move : click to open/close)");
   pnlControls.setOpaque(true);
   pnlControls.setCollapsed(false);
@@ -20,12 +20,12 @@ public void makeDemoControls() {
   // Create a text area with both horizontal and 
   // vertical scrollbars that automatically hide 
   // when not needed.
-  txaDemo = new GTextArea(this, 4, 24, 220, 100, G4P.SCROLLBARS_BOTH | G4P.SCROLLBARS_AUTOHIDE);
+  txaDemo = new GTextArea(this, 4, 24, 220, 96, G4P.SCROLLBARS_BOTH | G4P.SCROLLBARS_AUTOHIDE);
   txaDemo.setText(startText, 250);
   txaDemo.setDefaultText("Please enter some text");
   pnlControls.addControl(txaDemo);
   // Create a text field with horizontal scrollbar
-  txfDemo = new GTextField(this, 4, 130, 220, 30, G4P.SCROLLBAR_HORIZONTAL | G4P.SCROLLBARS_AUTOHIDE);
+  txfDemo = new GTextField(this, 4, 126, 220, 30, G4P.SCROLLBAR_HORIZONTAL | G4P.SCROLLBARS_AUTOHIDE);
   txfDemo.setDefaultText("This is default text");
   pnlControls.addControl(txfDemo);
   // Add tab controls
@@ -73,7 +73,9 @@ public void makeDemoControls() {
   spad.setGraphic(pg);
   updateGraphic(3); // Method for drawing the graphic
   pnlControls.addControl(spad);
-
+  // 4-way stick control
+  astick = new GStick(this, pWidth - 290, pHeight - 80, 60, 60);
+  pnlControls.addControl(astick);
   // Create button to open the control window
   btnControl = new GButton(this, 2, pHeight - 60, 100, 40, "G4P config window");
   pnlControls.addControl(btnControl);
