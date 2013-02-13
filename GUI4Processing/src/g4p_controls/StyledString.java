@@ -66,8 +66,8 @@ import processing.core.PApplet;
  */
 final public class StyledString implements GConstantsInternal, Serializable {
 
-	private static final long serialVersionUID = 7257943047799704942L;
-	
+	private static final long serialVersionUID = 3577177485527475867L;
+
 	transient private AttributedString styledText = null;
 	transient private ImageGraphicAttribute spacer = null;
 	transient private LineBreakMeasurer lineMeasurer = null;
@@ -98,7 +98,8 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	private float maxLineHeight = 0;
 	private int nbrLines;
 
-	// These are only used by GTextField and GTextArea
+	// These are only used by GTextField and GTextArea to store the start and end positions
+	// for selected text when the string is to be saved.
 	int startIdx = -1;
 	int endIdx = -1;
 
