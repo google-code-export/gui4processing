@@ -222,7 +222,7 @@ public class GTextArea extends GEditableTextControl {
 			stext.setWrapWidth(wrapWidth);
 		else
 			wrapWidth = stext.getWrapWidth();
-		text = stext.getPlainText();
+//		text = stext.getPlainText();
 		stext.getLines(buffer.g2);
 		if(stext.getNbrLines() > 0){
 			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
@@ -260,7 +260,7 @@ public class GTextArea extends GEditableTextControl {
 			return;
 		if(stext.insertCharacters(stext.length(), extraText) == 0)
 			return;
-		text = stext.getPlainText();
+//		text = stext.getPlainText();
 		LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
 		endTLHI.tli = lines.getLast();
 		endTLHI.thi = endTLHI.tli.layout.getNextRightHit(endTLHI.tli.nbrChars - 1);

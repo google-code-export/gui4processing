@@ -49,7 +49,7 @@ import processing.event.MouseEvent;
  * @author Peter Lager
  *
  */
-public class GPanel extends GTextControl {
+public class GPanel extends GText {
 
 	static protected int COLLAPSED_BAR_SPOT = 1;
 	static protected int EXPANDED_BAR_SPOT = 2;

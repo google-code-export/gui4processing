@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-12 Peter Lager
+  Copyright (c) 2008-13 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -98,6 +98,9 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	private float maxLineHeight = 0;
 	private int nbrLines;
 
+	// These are only used by GTextField and GTextArea
+	int startIdx = -1;
+	int endIdx = -1;
 
 	/**
 	 * This is assumed to be a single line of text (i.e. no wrap). 
