@@ -3,7 +3,7 @@
   	http://www.lagers.org.uk/g4p/index.html
 	http://gui4processing.googlecode.com/svn/trunk/
 
-  Copyright (c) 2008-13 Peter Lager
+  Copyright (c) 2013 Peter Lager
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -36,11 +36,13 @@ import processing.event.MouseEvent;
  * a 2D surface. It has all the features of the standard slider (GSlider)
  * except that it does not have ticks or stick-to-ticks functionality. <br>
  *  
- * Each axis can have its own minimum and maximum for each dimension. 
+ * If no limits are set then the control will return a value in the range 
+ * 0.0 to 1.0 for both the x and the y axis. The setXlimits and setYlimits
+ * can be used to set a different range for each axis independently. <b>
  * 
  * The minimum size for this control is 40x40 pixels and this is enforced 
  * when the control is created. If necessary the width and/or height the 
- * rectangle will be increased to 40pixels.
+ * rectangle will be increased to 40pixels. <br>
  * 
  * @author Peter Lager
  *
