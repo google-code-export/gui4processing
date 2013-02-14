@@ -34,7 +34,7 @@ import processing.core.PApplet;
  * @author Peter Lager
  *
  */
-public abstract class GText extends GAbstractControl {
+public abstract class GTextBase extends GAbstractControl {
 
 	protected static final int TPAD = 2;
 	protected static final int TPAD2 = TPAD * 2;
@@ -55,7 +55,7 @@ public abstract class GText extends GAbstractControl {
 	 * @param p2
 	 * @param p3
 	 */
-	public GText(PApplet theApplet, float p0, float p1, float p2, float p3) {
+	public GTextBase(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 	}
 

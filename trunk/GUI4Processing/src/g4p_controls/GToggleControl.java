@@ -43,7 +43,7 @@ import processing.event.MouseEvent;
  * @author Peter Lager
  *
  */
-public abstract class GToggleControl extends GTextIconControl {
+public abstract class GToggleControl extends GTextIconAlignBase {
 
 	protected GToggleGroup group = null;
 

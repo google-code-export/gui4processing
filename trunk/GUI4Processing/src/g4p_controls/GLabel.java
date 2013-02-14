@@ -41,7 +41,7 @@ import processing.core.PGraphicsJava2D;
  * @author Peter Lager
  *
  */
-public class GLabel extends GTextIconControl {
+public class GLabel extends GTextIconAlignBase {
 
 	public GLabel(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		this(theApplet, p0, p1, p2, p3, "    ");

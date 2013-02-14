@@ -50,7 +50,7 @@ import processing.event.MouseEvent;
  * @author Peter Lager
  *
  */
-public class GDropList extends GText {
+public class GDropList extends GTextBase {
 	
 	static protected int LIST_SURFACE = 1;
 	static protected int CLOSED_SURFACE = 2;
