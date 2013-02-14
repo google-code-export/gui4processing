@@ -64,7 +64,7 @@ import processing.event.MouseEvent;
  * @author Peter Lager
  *
  */
-public class GButton extends GTextIconControl {
+public class GButton extends GTextIconAlignBase {
 
 	// Mouse over status
 	protected int status = 0;

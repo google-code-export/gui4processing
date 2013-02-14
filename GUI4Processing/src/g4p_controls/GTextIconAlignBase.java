@@ -36,7 +36,7 @@ import processing.core.PImage;
  * @author Peter Lager
  *
  */
-public abstract class GTextIconControl extends GTextControl {
+public abstract class GTextIconAlignBase extends GTextAlign {
 
 	protected PImage[] bicon = null;
 	protected int iconW = 0, iconH = 0;
@@ -44,7 +44,7 @@ public abstract class GTextIconControl extends GTextControl {
 	protected int siX, siY;
 
 
-	public GTextIconControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
+	public GTextIconAlignBase(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 	}
 

@@ -42,7 +42,7 @@ import processing.event.KeyEvent;
  * @author Peter Lager
  *
  */
-public abstract class GEditableTextControl extends GText {
+public abstract class GEditableTextControl extends GTextBase {
 
 	protected static float HORZ_SCROLL_RATE = 4f;
 	protected static float VERT_SCROLL_RATE = 8;

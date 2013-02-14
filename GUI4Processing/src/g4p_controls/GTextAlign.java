@@ -35,13 +35,13 @@ import processing.core.PApplet;
  * @author Peter Lager
  * 
  */
-public abstract class GTextControl extends GText {
+public abstract class GTextAlign extends GTextBase {
 
 	protected GAlign textAlignH = GAlign.CENTER, textAlignV =  GAlign.MIDDLE;
 	
 	protected float stX, stY;
 
-	public GTextControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
+	public GTextAlign(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 	}
 
