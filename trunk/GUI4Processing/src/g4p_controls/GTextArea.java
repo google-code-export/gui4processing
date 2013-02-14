@@ -195,7 +195,6 @@ public class GTextArea extends GEditableTextControl {
 			stext.setWrapWidth(wrapWidth);
 		else
 			wrapWidth = stext.getWrapWidth();
-//		text = stext.getPlainText();
 		stext.getLines(buffer.g2);
 		if(stext.getNbrLines() > 0){
 			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
