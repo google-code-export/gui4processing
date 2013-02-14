@@ -187,33 +187,6 @@ public class GTextArea extends GEditableTextControl {
 	public void setText(String text, int wrapWidth){
 		this.wrapWidth = wrapWidth;
 		setStyledText(new StyledString(text));
-//		stext = new StyledString(text, wrapWidth);
-//		this.text = stext.getPlainText();
-//		stext.getLines(buffer.g2);
-//		if(stext.getNbrLines() > 0){
-//			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
-//			endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);	
-//			startTLHI.copyFrom(endTLHI);
-//			calculateCaretPos(endTLHI);
-//			keepCursorInView = true;
-//		}
-//		ptx = pty = 0;
-//		float sTextHeight;
-//		if(vsb != null){
-//			sTextHeight = stext.getTextAreaHeight();
-//			if(sTextHeight < th)
-//				vsb.setValue(0.0f, 1.0f);
-//			else 
-//				vsb.setValue(0, th/sTextHeight);
-//		}
-//		// If needed update the horizontal scrollbar
-//		if(hsb != null){
-//			if(stext.getMaxLineLength() < tw)
-//				hsb.setValue(0,1);
-//			else
-//				hsb.setValue(0, tw/stext.getMaxLineLength());
-//		}
-//		bufferInvalid = true;
 	}
 
 	public void setStyledText(StyledString st){
@@ -260,7 +233,6 @@ public class GTextArea extends GEditableTextControl {
 			return;
 		if(stext.insertCharacters(stext.length(), extraText) == 0)
 			return;
-//		text = stext.getPlainText();
 		LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
 		endTLHI.tli = lines.getLast();
 		endTLHI.thi = endTLHI.tli.layout.getNextRightHit(endTLHI.tli.nbrChars - 1);

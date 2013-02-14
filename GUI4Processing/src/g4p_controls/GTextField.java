@@ -136,11 +136,10 @@ public class GTextField extends GEditableTextControl {
 	/**
 	 * Set the styled text for this textfield after ensuring that all EOL characters
 	 * have been removed.
-	 * @param st
+	 * @param ss
 	 */
-	public void setStyledText(StyledString st){
-		stext = st.convertToSingleLineText();
-//		text = stext.getPlainText();
+	public void setStyledText(StyledString ss){
+		stext = ss.convertToSingleLineText();
 		stext.getLines(buffer.g2);
 		if(stext.getNbrLines() > 0){
 			endTLHI.tli = stext.getLines(buffer.g2).getFirst();
