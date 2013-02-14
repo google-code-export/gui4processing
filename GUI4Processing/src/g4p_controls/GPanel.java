@@ -72,7 +72,7 @@ public class GPanel extends GTextBase {
 	protected boolean beingDragged = false;
 
 	protected boolean draggable = true;
-	protected boolean collapsable = true;
+	protected boolean collapsible = true;
 
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
@@ -292,7 +292,7 @@ public class GPanel extends GTextBase {
 			}
 			break;
 		case MouseEvent.CLICK:
-			if(focusIsWith == this && collapsable){
+			if(focusIsWith == this && collapsible){
 				tabOnly = !tabOnly;
 				// Perform appropriate action depending on collapse state
 				setCollapsed(tabOnly);
@@ -403,7 +403,7 @@ public class GPanel extends GTextBase {
 	 * @param collapse
 	 */
 	public void setCollapsed(boolean collapse){
-		if(collapsable){
+		if(collapsible){
 			tabOnly = collapse;
 			// If we open the panel make sure it fits on the screen but if we collapse
 			// the panel disable the panel controls but leave the panel available
@@ -432,8 +432,8 @@ public class GPanel extends GTextBase {
 	 * not be possible to collapse it until set back to true.
 	 * 
 	 */
-	public void setCollapsable(boolean c){
-		collapsable = c;
+	public void setCollapsible(boolean c){
+		collapsible = c;
 		if(c == false){
 			tabOnly = false;
 			setAvailable(true);
@@ -443,8 +443,8 @@ public class GPanel extends GTextBase {
 	/**
 	 * Is this panel collapsable.	 * 
 	 */
-	public boolean isCollapsable(){
-		return collapsable;
+	public boolean isCollapsible(){
+		return collapsible;
 	}
 	
 	public int getTabHeight(){
