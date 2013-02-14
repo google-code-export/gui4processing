@@ -82,6 +82,7 @@ public abstract class GText extends GAbstractControl {
 		if(ss != null){
 			setStyledText(ss);
 			stext.startIdx = stext.endIdx = -1;
+			bufferInvalid = true;
 			return true;
 		}
 		return false;
@@ -105,12 +106,12 @@ public abstract class GText extends GAbstractControl {
 
 	/**
 	 * Allows the user to provide their own styled text for this component
-	 * @param stext
+	 * @param ss
 	 */
-	public void setStyledText(StyledString stext){
-		if(stext != null) {
-			this.stext = stext;
-			this.stext.setWrapWidth((int)width - TPAD2);
+	public void setStyledText(StyledString ss){
+		if(ss != null) {
+			stext = ss;
+			stext.setWrapWidth((int)width - TPAD2);
 			bufferInvalid = true;
 		}
 	}

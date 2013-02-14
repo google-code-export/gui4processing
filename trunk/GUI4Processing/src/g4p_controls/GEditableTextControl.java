@@ -271,8 +271,8 @@ public abstract class GEditableTextControl extends GText {
 		else 
 			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn-1);
 		bufferInvalid = true;
-		
 	}
+	
 	/**
 	 * Set the font for this control.
 	 * @param font
@@ -638,6 +638,6 @@ public abstract class GEditableTextControl extends GText {
 	 * 
 	 * @param st
 	 */
-	public abstract void setStyledText(StyledString st);
+	public abstract void setStyledText(StyledString ss);
 
 }
