@@ -155,13 +155,13 @@ public class GSlider2D extends GValueControl2D {
 	 * @param start the start value of the range
 	 * @param end the end value of the range
 	 */
-	public void setXlimits(int initValue, int start, int end){
+	public void setLimitsX(int initValue, int start, int end){
 		startXlimit = start;
 		endXlimit = end;
 		valueType = INTEGER;
 		setEpsilon();
 		bufferInvalid = true;
-		setXvalue(initValue);
+		setValueX(initValue);
 		updateDueToValueChanging();
 	}
 	
@@ -173,7 +173,7 @@ public class GSlider2D extends GValueControl2D {
 	 * @param start
 	 * @param end
 	 */
-	public void setXlimits(float start, float end){
+	public void setLimitsX(float start, float end){
 		startXlimit = start;
 		endXlimit = end;
 		if(valueType == INTEGER){
@@ -193,7 +193,7 @@ public class GSlider2D extends GValueControl2D {
 	 * @param start the start value of the range
 	 * @param end the end value of the range
 	 */
-	public void setXlimits(float initValue, float start, float end){
+	public void setLimitsX(float initValue, float start, float end){
 		startXlimit = start;
 		endXlimit = end;
 		initValue = PApplet.constrain(initValue, start, end);
@@ -203,7 +203,7 @@ public class GSlider2D extends GValueControl2D {
 		}
 		setEpsilon();
 		bufferInvalid = true;
-		setXvalue(initValue);
+		setValueX(initValue);
 		updateDueToValueChanging();
 	}
 
@@ -215,7 +215,7 @@ public class GSlider2D extends GValueControl2D {
 	 * @param start the start value of the range
 	 * @param end the end value of the range
 	 */
-	public void setYlimits(int start, int end){
+	public void setLimitsY(int start, int end){
 		startYlimit = start;
 		endYlimit = end;
 		setEpsilon();
@@ -232,13 +232,13 @@ public class GSlider2D extends GValueControl2D {
 	 * @param start the start value of the range
 	 * @param end the end value of the range
 	 */
-	public void setYlimits(int initValue, int start, int end){
+	public void setLimitsY(int initValue, int start, int end){
 		startYlimit = start;
 		endYlimit = end;
 		valueType = INTEGER;
 		setEpsilon();
 		bufferInvalid = true;
-		setYvalue(initValue);
+		setValueY(initValue);
 		updateDueToValueChanging();
 	}
 	
@@ -250,7 +250,7 @@ public class GSlider2D extends GValueControl2D {
 	 * @param start
 	 * @param end
 	 */
-	public void setYlimits(float start, float end){
+	public void setLimitsY(float start, float end){
 		startYlimit = start;
 		endYlimit = end;
 		if(valueType == INTEGER){
@@ -270,7 +270,7 @@ public class GSlider2D extends GValueControl2D {
 	 * @param start the start value of the range
 	 * @param end the end value of the range
 	 */
-	public void setYlimits(float initValue, float start, float end){
+	public void setLimitsY(float initValue, float start, float end){
 		startYlimit = start;
 		endYlimit = end;
 		initValue = PApplet.constrain(initValue, start, end);
@@ -280,7 +280,7 @@ public class GSlider2D extends GValueControl2D {
 		}
 		setEpsilon();
 		bufferInvalid = true;
-		setYvalue(initValue);
+		setValueY(initValue);
 		updateDueToValueChanging();
 	}
 
@@ -289,7 +289,7 @@ public class GSlider2D extends GValueControl2D {
 	 * The value supplied will be constrained to the current limits.
 	 * @param v the new value
 	 */
-	public void setXvalue(float v){
+	public void setValueX(float v){
 		if(valueType == INTEGER)
 			v = Math.round(v);
 		float t = (v - startXlimit) / (endXlimit - startXlimit);
@@ -302,7 +302,7 @@ public class GSlider2D extends GValueControl2D {
 	 * The value supplied will be constrained to the current limits.
 	 * @param v the new value
 	 */
-	public void setYvalue(float v){
+	public void setValueY(float v){
 		if(valueType == INTEGER)
 			v = Math.round(v);
 		float t = (v - startYlimit) / (endYlimit - startYlimit);
@@ -316,15 +316,15 @@ public class GSlider2D extends GValueControl2D {
 	 * @param vx the new X (horz) value
 	 * @param vy the new Y (vert) value
 	 */
-	public void setXYvalue(float vx, float vy){
-		setXvalue(vx);
-		setYvalue(vy);
+	public void setValueXY(float vx, float vy){
+		setValueX(vx);
+		setValueY(vy);
 	}
 	
 	/**
 	 * Get the current X value as a float
 	 */
-	public float getXvalueF(){
+	public float getValueXF(){
 		return startXlimit + (endXlimit - startXlimit) * parametricPosX;
 	}
 
@@ -332,37 +332,37 @@ public class GSlider2D extends GValueControl2D {
 	 * Get the current X value as an integer. <br>
 	 * DECIMAL and EXPONENT value types will be rounded to the nearest integer.
 	 */
-	public int getXvalueI(){
-		return Math.round(getXvalueF());
+	public int getValueXI(){
+		return Math.round(getValueXF());
 	}
 	
 	/**
 	 * Get the current X value as a string taking into account the number format. <br>
 	 */
-	public String getXvalueS(){
-		return getNumericDisplayString(getXvalueF());
+	public String getValueXS(){
+		return getNumericDisplayString(getValueXF());
 	}
 	
 	/**
-	 * Get the current X value as a float
+	 * Get the current Y value as a float
 	 */
-	public float getYvalueF(){
+	public float getValueYF(){
 		return startYlimit + (endYlimit - startYlimit) * parametricPosY;
 	}
 
 	/**
-	 * Get the current X value as an integer. <br>
+	 * Get the current Y value as an integer. <br>
 	 * DECIMAL and EXPONENT value types will be rounded to the nearest integer.
 	 */
-	public int getYvalueI(){
-		return Math.round(getYvalueF());
+	public int getValueYI(){
+		return Math.round(getValueYF());
 	}
 	
 	/**
-	 * Get the current X value as a string taking into account the number format. <br>
+	 * Get the current Y value as a string taking into account the number format. <br>
 	 */
-	public String getYvalueS(){
-		return getNumericDisplayString(getYvalueF());
+	public String getValueYS(){
+		return getNumericDisplayString(getValueYF());
 	}
 	
 	/**
