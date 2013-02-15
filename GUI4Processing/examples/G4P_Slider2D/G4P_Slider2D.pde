@@ -42,8 +42,8 @@ public void draw() {
 
 public void handleSlider2DEvents(GSlider2D slider2d, GEvent event) {
   if (slider2d == sdrSniper) {
-    sightX = sdrSniper.getXvalueI();
-    sightY = sdrSniper.getYvalueI();
+    sightX = sdrSniper.getValueXI();
+    sightY = sdrSniper.getValueXI();
     println(sightX + "  " + sightY);
   }
 }

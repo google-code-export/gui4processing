@@ -129,7 +129,7 @@ public void handleStickEvents(GStick stick, GEvent event) {
 }
 
 public void handleSlider2DEvents(GSlider2D slider2d, GEvent event) {
-  pnlControls.moveTo(slider2d.getXvalueI(), slider2d.getYvalueI());
+  pnlControls.moveTo(slider2d.getValueXI(), slider2d.getValueXI());
 }
 
 public void handleKnobEvents(GValueControl knob, GEvent event) { 
