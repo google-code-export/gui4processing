@@ -73,8 +73,8 @@ public void handleTextEvents(GEditableTextControl textcontrol, GEvent event) {
 public void handlePanelEvents(GPanel panel, GEvent event) { 
   lblAction.setText("Panel: " + event);
   if (event == GEvent.DRAGGED && sdrPanelPos != null) {
-    sdrPanelPos.setXvalue(pnlControls.getX());
-    sdrPanelPos.setYvalue(pnlControls.getY());
+    sdrPanelPos.setValueX(pnlControls.getX());
+    sdrPanelPos.setValueY(pnlControls.getY());
   }
 }
 
@@ -129,7 +129,7 @@ public void handleStickEvents(GStick stick, GEvent event) {
 }
 
 public void handleSlider2DEvents(GSlider2D slider2d, GEvent event) {
-  pnlControls.moveTo(slider2d.getValueXI(), slider2d.getValueXI());
+  pnlControls.moveTo(slider2d.getValueXI(), slider2d.getValueYI());
 }
 
 public void handleKnobEvents(GValueControl knob, GEvent event) { 

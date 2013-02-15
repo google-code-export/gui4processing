@@ -47,8 +47,8 @@ public void createControlWindow() {
   knbAngle.setStickToTicks(true);
 
   sdrPanelPos = new GSlider2D(app, 40, 84, 200, 200);
-  sdrPanelPos.setXlimits(pnlControls.getX(), 0, 200);
-  sdrPanelPos.setYlimits(pnlControls.getY(), 0, 200);
+  sdrPanelPos.setLimitsX(pnlControls.getX(), 0, 200);
+  sdrPanelPos.setLimitsY(pnlControls.getY(), 0, 200);
   
   windControl.addDrawHandler(this, "drawController");
 }
