@@ -57,7 +57,7 @@ public class GPanel extends GTextBase {
 
 
 	/** Whether the panel is displayed in full or tab only */
-	protected boolean tabOnly = true;
+	protected boolean tabOnly = false;
 
 	/** The height of the tab calculated from font height + padding */
 	protected int tabHeight, tabWidth;
