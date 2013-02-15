@@ -2,12 +2,13 @@
  Demonstration of the GSlider2D control to position a
  gunsite over a street scene.
  
+ created by Peter Lager
+ 
  */
 import g4p_controls.*;
 
 
 GSlider2D sdrSniper;
-
 
 PImage imgScene, imgSight;
 // Lens properties
@@ -28,10 +29,11 @@ public void setup() {
   // border colours
   borderViaLens = color(0, 80, 0);
   sdrSniper = new GSlider2D(this, 180, 340, 180, 100);
-  sdrSniper.setXlimits(180, 60, 480);
-  sdrSniper.setYlimits(150, 60, 260);
-  sightX = sdrSniper.getXvalueI();
-  sightY = sdrSniper.getYvalueI();
+  sdrSniper.setLimitsX(180, 60, 480);
+  sdrSniper.setLimitsY(150, 60, 260);
+  // sdrSniper.setOpaque(false);
+  sightX = sdrSniper.getValueXI();
+  sightY = sdrSniper.getValueYI();
 }
 
 public void draw() {
@@ -43,8 +45,7 @@ public void draw() {
 public void handleSlider2DEvents(GSlider2D slider2d, GEvent event) {
   if (slider2d == sdrSniper) {
     sightX = sdrSniper.getValueXI();
-    sightY = sdrSniper.getValueXI();
-    println(sightX + "  " + sightY);
+    sightY = sdrSniper.getValueYI();
   }
 }
 
@@ -66,4 +67,3 @@ public void showLens(int x, int y) {
     }
   }
 }
-
