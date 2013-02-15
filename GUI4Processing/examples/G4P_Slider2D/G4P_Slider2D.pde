@@ -1,6 +1,6 @@
 /**
  Demonstration of the GSlider2D control to position a
- gunsite over a street scene.
+ gun-sight over a street scene.
  
  created by Peter Lager
  
@@ -30,7 +30,7 @@ public void setup() {
   borderViaLens = color(0, 80, 0);
   sdrSniper = new GSlider2D(this, 180, 340, 180, 100);
   sdrSniper.setLimitsX(180, 60, 480);
-  sdrSniper.setLimitsY(150, 60, 260);
+  sdrSniper.setLimitsY(150, 60, 280);
   // sdrSniper.setOpaque(false);
   sightX = sdrSniper.getValueXI();
   sightY = sdrSniper.getValueYI();
