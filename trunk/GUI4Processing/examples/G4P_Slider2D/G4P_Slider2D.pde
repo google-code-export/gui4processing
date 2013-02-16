@@ -31,6 +31,7 @@ public void setup() {
   sdrSniper = new GSlider2D(this, 180, 340, 180, 100);
   sdrSniper.setLimitsX(180, 60, 480);
   sdrSniper.setLimitsY(150, 60, 280);
+  sdrSniper.setEasing(8);
   // sdrSniper.setOpaque(false);
   sightX = sdrSniper.getValueXI();
   sightY = sdrSniper.getValueYI();
