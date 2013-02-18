@@ -145,7 +145,7 @@ public class GCustomSlider extends GLinearTrackControl {
 
 	/**
 	 * Change the skin used for the slider.
-	 * @param skin
+	 * @param skin the name of the folder holding the graphics for this slider
 	 */
 	public void setStyle(String skin){
 		loadSkin(skin);
