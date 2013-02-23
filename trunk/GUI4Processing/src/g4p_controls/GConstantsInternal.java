@@ -32,6 +32,10 @@ import java.awt.BasicStroke;
  *
  */
 interface GConstantsInternal {
+	
+	// Constants for GCustomSlider styles
+	String SLIDER_STYLES = "|grey_blue|blue18px|green_red20px|purple18px|red_yellow18px|";
+	String DEFAULT_SLIDER_STYLE = "grey_blue";
 
 	// Constants for the control methods
 	int DRAW_METHOD = 			0x00000001;

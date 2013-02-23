@@ -253,6 +253,7 @@ public class GTextArea extends GEditableTextControl {
 				hsb.setValue(hvalue/hlinelength, hfiller);
 			keepCursorInView = true;
 		}
+		bufferInvalid = true;
 	}
 
 	/**

@@ -254,7 +254,68 @@ public class GCustomSlider extends GLinearTrackControl {
 		centre = pg;
 	}
 
-	private boolean loadStyleFromSketch(File styleFolder, String style) {
+	/**
+	 * Load a skin
+	 * @param style
+	 */
+	private void loadSkin(String style){
+		// Remember the skin we want to use
+		String style_used = style;
+		boolean found = false;
+		// First check for user defined skin
+		// See if we are running in a browser or running locally
+		if(winApp.sketchPath("").length() == 0)
+			found = loadSkin_AppletInBrowser(style);	// browser
+		else
+			found = loadStyle_FromSketch(style);		// local
+		// If not found load it from the library
+		if(!found)
+			style_used = loadStyle_FromG4P(style);
+		// See if we have had to use a different skin. If true then 
+		// the original skin could not be found so say so 
+		if(!style.equalsIgnoreCase(style_used))
+			System.out.println("Unable to load the skin " + style + " using default '" + DEFAULT_SLIDER_STYLE + "' style instead");
+	}
+
+	/**
+	 * If no user defined skin has been specified then load a style from the G4P library.
+	 * If the style does not exist it will use the default style.
+	 * @param style
+	 */
+	private String loadStyle_FromG4P(String style) {
+		boolean found = (SLIDER_STYLES.indexOf("|"+style+"|") >= 0);
+		// If not found use the default grey_blue
+		if(!found)
+			style = DEFAULT_SLIDER_STYLE;
+
+		// All the library styles use png graphics
+		leftEnd = winApp.loadImage(style + "/end_left.png");
+		rightEnd = winApp.loadImage(style + "/end_right.png");
+		thumb = winApp.loadImage(style +"/handle.png");
+		thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.png");
+		//	will be stretched before use
+		centre = winApp.loadImage(style + "/centre.png");
+
+		return style;	
+	}
+
+	/**
+	 * Load a skin when run as an application or run locally.
+	 * 
+	 * @param styleFolder
+	 * @param style
+	 * @return true if the style loaded successfully
+	 */
+	private boolean loadStyle_FromSketch(String style) {
+		// First attempt to locate the style inside the sketch or sketch data folders
+		File styleFolder = new File(winApp.dataPath(style));
+		if(!styleFolder.exists())
+			styleFolder = new File(winApp.sketchPath(style));
+		// If the style is in the sketch then attempt to load the style
+		// and if successful we are done
+		if(!styleFolder.exists())
+			return false;
+
 		int fcount = 0;
 		String[] names = new String[] { "centre.", "end_left.", "end_right.", "handle.", "handle_mouseover." };
 		PImage[] images = new PImage[names.length];
@@ -279,45 +340,44 @@ public class GCustomSlider extends GLinearTrackControl {
 		return true;		
 	}
 
-	private void loadSkin(String style_name){
-		String style = style_name;
-		if(style.length() == 0)
-			style="grey_blue";
-		// First attempt to locate the style inside the sketch or sketch data folders
-		File styleFolder = new File(winApp.dataPath(style));
-		if(!styleFolder.exists())
-			styleFolder = new File(winApp.sketchPath(style));
-		// If the style is in the sketch then attempt to load the style
-		// and if successful we are done
-		if(styleFolder.exists() && loadStyleFromSketch(styleFolder, style))
-			return;
-
-		// If we get here then it is either not in the sketch or sketch folders, or it found
-		// the style but was unable to load it.
-		// In which case it look for a matching library style. If there is no match use the default
-		String[] styles = new String[] { "grey_blue", "blue18px", "green_red20px", "purple18px", "red_yellow18px" };
-		boolean found = false;
-		for(String libStyle : styles){
-			if(libStyle.equalsIgnoreCase(style)){
-				found = true;
-				break;
-			}
-		}
-		// If not found use the default grey_blue
-		if(!found)
-			style = "grey_blue";
-
-		// All the library styles use png graphics
+	/**
+	 * Load a skin when run as an applet inside a browser.
+	 * 
+	 * Note: sketchPath() is null when inside a browswer.
+	 * 
+	 * @param style
+	 * @return true if the style loaded successfully
+	 */
+	private boolean loadSkin_AppletInBrowser(String style){
 		leftEnd = winApp.loadImage(style + "/end_left.png");
+		if(leftEnd == null)
+			leftEnd = winApp.loadImage(style + "/end_left.jpg");
 		rightEnd = winApp.loadImage(style + "/end_right.png");
+		if(rightEnd == null)
+			rightEnd = winApp.loadImage(style + "/end_right.jpg");
 		thumb = winApp.loadImage(style +"/handle.png");
+		if(thumb == null)
+			thumb = winApp.loadImage(style +"/handle.jpg");
 		thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.png");
+		if(thumb_mouseover == null)
+			thumb_mouseover = winApp.loadImage(style +"/handle_mouseover.jpg");
 		//	will be stretched before use
 		centre = winApp.loadImage(style + "/centre.png");
+		if(centre == null)
+			centre = winApp.loadImage(style + "/centre.jpg");
 
-		// See if we have had to use a different skin. If true then 
-		// the original skin could not be found so say so 
-		if(!style.equalsIgnoreCase(style_name))
-			System.out.println("Unable to load the skin " + style_name + " using default 'grey_blue' style instead");
+		boolean found = !(leftEnd == null || rightEnd == null || thumb == null || thumb_mouseover == null || centre == null);
+
+		// See if we have problems with the skin files
+		if(!found){
+			System.out.println("Unable to load the skin " + style + " check the ");
+			System.out.println("skin name used and ensure all the image files are present.");
+			System.out.println("Reverting to default 'grey_blue' style");
+			loadSkin("grey_blue");
+		}
+		return found;
 	}
+
+
+
 }
