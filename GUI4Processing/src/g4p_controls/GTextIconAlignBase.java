@@ -107,7 +107,7 @@ public abstract class GTextIconAlignBase extends GTextAlign {
 	}
 
 	/**
-	 * Change the alignment of an existing icn.
+	 * Change the alignment of an existing icon.
 	 * @param horz horizontal alignment (see @see GAlign)
 	 * @param vert vertical alignment (see @see GAlign)
 	 */
