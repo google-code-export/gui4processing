@@ -50,7 +50,7 @@ import processing.event.MouseEvent;
 public class GWindow extends Frame implements GConstants, GConstantsInternal {
 
 	protected PApplet app;
-	
+
 	/**
 	 * Gives direct access to the PApplet object inside the frame
 	 * 
@@ -60,12 +60,12 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	protected String winName;
 
 	public GWinData data;
-	
+
 	protected WindowAdapter winAdapt = null;
-	
+
 	protected int actionOnClose = KEEP_OPEN;
-	
-	
+
+
 	/** The object to handle the pre event */
 	protected Object preHandlerObject = null;
 	/** The method in preHandlerObject to execute */
@@ -154,7 +154,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 
 		if(mode == null || mode.equals(""))
 			mode = PApplet.JAVA2D;
-		
+
 		papplet = new GWinApplet(mode);
 		papplet.owner = this;
 		papplet.frame = this;
@@ -170,12 +170,12 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 			papplet.appHeight = image.height;
 		}			
 		papplet.bkColor = papplet.color(180);
-		
+
 		// Set the papplet size preferences
 		papplet.resize(papplet.appWidth, papplet.appHeight);
 		papplet.setPreferredSize(new Dimension(papplet.appWidth, papplet.appHeight));
 		papplet.setMinimumSize(new Dimension(papplet.appWidth, papplet.appHeight));
-		
+
 		// add the PApplet to the Frame
 		setLayout(new BorderLayout());
 		add(papplet, BorderLayout.CENTER);
@@ -185,29 +185,29 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		papplet.init();
 
 		// Set the sketch path to the same as the main PApplet object
-	    papplet.sketchPath = theApplet.sketchPath;
+		papplet.sketchPath = theApplet.sketchPath;
 
 		// Pack the window, position it and make visible
 		setUndecorated(noFrame);
 		pack();
 		setLocation(x,y);
 		setVisible(true);
-		
+
 		// Make the window always on top
 		setOnTop(true);
-		
+
 		// Make sure we have some data even if not used
 		data = new GWinData();
 		data.owner = this;
-		
+
 		// Not resizeable if we are using a back image
 		super.setResizable(image == null);
 
 		// Make sure G4P knows about this window
 		G4P.addWindow(this);
 	}
-	
-	
+
+
 	/**
 	 * Add an object that holds the data this window needs to use.
 	 * 
@@ -219,7 +219,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		this.data = data;
 		this.data.owner = this;
 	}
-	
+
 	/**
 	 * Always make this window appear on top of other windows (or not). <br>
 	 * This will not work when run from a remote server (ie Applet over the web)
@@ -236,7 +236,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 				System.out.println("Warning: setOnTop() method will not work when the sketch is run from a remote location.");
 		}
 	}
-	
+
 	/**
 	 * Sets the location of the window. <br>
 	 * (Already available from the Frame class - helps visibility 
@@ -245,7 +245,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	public void setLocation(int x, int y){
 		super.setLocation(x,y);
 	}
-	
+
 	/**
 	 * Sets the visibility of the window <br>
 	 * (Already available from the Frame class - helps visibility 
@@ -254,7 +254,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	public void setVisible(boolean visible){
 		super.setVisible(visible);
 	}
-	
+
 	/**
 	 * Determines whether the window is resizabale or not. <br>
 	 * This cannot be set to true if a background image is used.
@@ -267,7 +267,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 				super.setResizable(true);
 		}
 	}
-	
+
 	/**
 	 * Set the background image to be used instead of a plain color background <br>
 	 * The window will resize to accommodate the image.
@@ -287,7 +287,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		super.setResizable(false);
 		papplet.loop();
 	}
-	
+
 	/**
 	 * Set the background color for the window.
 	 * 
@@ -306,7 +306,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	public void setAutoClear(boolean auto_clear){
 		papplet.autoClear = auto_clear;
 	}
-	
+
 	/**
 	 * This sets what happens when the users attempts to close the window. <br>
 	 * There are 3 possible actions depending on the value passed. <br>
@@ -316,6 +316,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 * @param action
 	 */
 	public void setActionOnClose(int action){
+		GWindow w = this;
 		switch(action){
 		case KEEP_OPEN:
 			removeWindowListener(winAdapt);
@@ -325,25 +326,14 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		case CLOSE_WINDOW:
 		case EXIT_APP:
 			if(winAdapt == null){
-				winAdapt = new WindowAdapter() {
-					public void windowClosing(WindowEvent evt) {
-						switch(actionOnClose){
-						case CLOSE_WINDOW:
-							close();	// close this frame
-							break;
-						case EXIT_APP:
-							System.exit(0);
-							break;
-							}
-					}
-				};
+				winAdapt = new GWindowAdapter(this);
 				addWindowListener(winAdapt);
 			} // end if
 			actionOnClose = action;
 			break;
 		} // end switch
 	}
-	
+
 	/**
 	 * Get the action to be performed when the user attempts to close
 	 * the window.
@@ -352,15 +342,17 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	public int getActionOnClose(){
 		return actionOnClose;
 	}
-	
+
 	/**
-	 * Allows the user to close this window and release its resources.
+	 * There are 3 possible actions depending on the value passed. <br>
+	 * GWindow.KEEP_OPEN - ignore attempt to close window (default action)
+	 * GWindow.CLOSE_WINDOW - close this window <br>
+	 * GWindow.EXIT_APP - exit the app, this will cause all windows to close. <br>
 	 */
 	public void close(){
-		G4P.removeWindow(this);
-		dispose();	// close this frame and release its resources
+		getToolkit().getSystemEventQueue().postEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
-	
+
 	/**
 	 * Attempt to add the 'draw' handler method. 
 	 * The default event handler is a method that returns void and has two
@@ -451,6 +443,26 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 			postHandlerMethodName = methodName;
 		} catch (Exception e) {
 			GMessenger.message(NONEXISTANT, new Object[] {this, methodName, new Class<?>[] { GWinApplet.class, GWinData.class } } );
+		}
+	}
+
+	public class GWindowAdapter extends WindowAdapter {
+		GWindow window;
+
+		public GWindowAdapter(GWindow window){
+			this.window = window;
+		}
+
+		public void windowClosing(WindowEvent evt) {
+			switch(actionOnClose){
+			case CLOSE_WINDOW:
+				G4P.removeWindow(window);
+				//close();	// close this frame
+				break;
+			case EXIT_APP:
+				System.exit(0);
+				break;
+			}
 		}
 	}
 
