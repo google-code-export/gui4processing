@@ -30,11 +30,9 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -59,7 +57,7 @@ public class G4P implements GConstants, PConstants {
 
 	static PApplet sketchApplet = null;
 
-	static GWindowCloser windowCloser = null;
+	public static GWindowCloser windowCloser = null;
 	
 	/**
 	 * return the pretty version of the library.
@@ -238,38 +236,26 @@ public class G4P implements GConstants, PConstants {
 	 */
 	static void addWindow(GWindow window){
 		PApplet app = window.papplet;
-		// The first applet must be the sketchApplet
-		if(G4P.sketchApplet == null)
-			G4P.sketchApplet = app;
 		GWindowInfo winfo = windows.get(app);
 		if(winfo == null){
 			winfo = new GWindowInfo(app);
 			windows.put(app, winfo);
-			// Create windows closer object
-			if(windowCloser == null)
-				windowCloser = new GWindowCloser();
+		}
+		// Create and start windows closer object
+		if(windowCloser == null){
+			windowCloser = new GWindowCloser();
+			sketchApplet.registerMethod("post", windowCloser);
 		}
 	}
 
 	/**
-	 * Used internally to remove a window from the list of windows. Done when
-	 * a window is to be disposed of.
+	 * This is called by the GWindow's WindowAdapter when it detects a 
+	 * WindowClosing event. It adds this window to a list of windows to
+	 * be closed by the GWindowCloser object in its 'post' method.
 	 * 
-	 * @param window
+	 * @param window the GWindow to be closed
 	 */
-//	static void removeWindow(GWindow window){
-//		PApplet app = window.papplet;
-//		GWindowInfo winfo = windows.get(app);
-//		if(winfo != null){
-//			app.noLoop();
-//			winfo.dispose();
-//			windows.remove(winfo);
-////			windows.remove(winfo);
-////			winfo.dispose();
-//		}
-//	}
-
-	static void removeWindow(GWindow window){
+	static void markWindowForClosure(GWindow window){
 		windowCloser.addWindow(window);
 	}
 	
@@ -791,45 +777,6 @@ public class G4P implements GConstants, PConstants {
 	}
 	
 	
-	/**
-	 * This class will be used to safely close windows based on their actionOnClose action
-	 * outside the normal Processing event loop. <br>
-	 * This class has to be declared public so it can register the post event, but it should
-	 * not be used directly. <br>
-	 * To close a window use the GWinodw close() method
-	 *  
-	 * @author Peter Lager
-	 *
-	 */
-	public static class GWindowCloser {
-		
-		private ArrayList<GWindow> toDisposeOf;
-		
-		GWindowCloser() {
-			toDisposeOf = new ArrayList<GWindow>();
-			G4P.sketchApplet.registerMethod("post",this);
-		}
-		
-		public void addWindow(GWindow gwindow){
-			if(windows.containsKey(gwindow.papplet))
-				toDisposeOf.add(gwindow);
-		}
-		
-		public void post(){
-			if(!toDisposeOf.isEmpty()){
-				for(GWindow gwindow : toDisposeOf){
-					PApplet wapp = gwindow.papplet;
-					GWindowInfo winfo = windows.get(wapp);
-					if(winfo != null){
-						wapp.noLoop();
-						winfo.dispose();
-						windows.remove(wapp);
-						gwindow.dispose();
-					}
-				}
-				toDisposeOf.clear();
-			}
-		}
-	}
+
 	
 }

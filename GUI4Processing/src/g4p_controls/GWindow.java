@@ -146,7 +146,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 * @param mode
 	 */
 	private void windowCtorCore(PApplet theApplet, int x, int y, int w, int h, PImage image,  boolean noFrame, String mode, String name){
-		// The first applet must be the sketchApplet
+		// If this is the first control to be created then theAapplet must be the sketchApplet
 		if(G4P.sketchApplet == null)
 			G4P.sketchApplet = theApplet;
 		app = theApplet;
@@ -310,13 +310,12 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	/**
 	 * This sets what happens when the users attempts to close the window. <br>
 	 * There are 3 possible actions depending on the value passed. <br>
-	 * GWindow.KEEP_OPEN - ignore attempt to close window (default action)
+	 * GWindow.KEEP_OPEN - ignore attempt to close window (default action) <br>
 	 * GWindow.CLOSE_WINDOW - close this window, if it is the main window it causes the app to exit <br>
 	 * GWindow.EXIT_APP - exit the app, this will cause all windows to close. <br>
-	 * @param action
+	 * @param action the required close action
 	 */
 	public void setActionOnClose(int action){
-		GWindow w = this;
 		switch(action){
 		case KEEP_OPEN:
 			removeWindowListener(winAdapt);
@@ -344,19 +343,22 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	}
 
 	/**
+	 * This method will fire a WindowClosing event to be captured by the 
+	 * GWindow$GWindowAdapter object. <br>
 	 * There are 3 possible actions depending on the value passed. <br>
-	 * GWindow.KEEP_OPEN - ignore attempt to close window (default action)
+	 * GWindow.KEEP_OPEN - ignore attempt to close window (default action) <br>
 	 * GWindow.CLOSE_WINDOW - close this window <br>
 	 * GWindow.EXIT_APP - exit the app, this will cause all windows to close. <br>
 	 */
 	public void close(){
 		getToolkit().getSystemEventQueue().postEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		System.out.println("Window close event firede");
 	}
 
 	/**
 	 * Attempt to add the 'draw' handler method. 
 	 * The default event handler is a method that returns void and has two
-	 * parameters Papplet and GWinData
+	 * parameters PApplet and GWinData
 	 * 
 	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
@@ -446,6 +448,12 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		}
 	}
 
+	/**
+	 * Window adapter class that remembers the window it belongs to si
+	 * it can be used to mark it for closure if required.
+	 * 
+	 * @author Peter Lager
+	 */
 	public class GWindowAdapter extends WindowAdapter {
 		GWindow window;
 
@@ -456,8 +464,8 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 		public void windowClosing(WindowEvent evt) {
 			switch(actionOnClose){
 			case CLOSE_WINDOW:
-				G4P.removeWindow(window);
-				//close();	// close this frame
+				window.papplet.noLoop();
+				G4P.markWindowForClosure(window);
 				break;
 			case EXIT_APP:
 				System.exit(0);
