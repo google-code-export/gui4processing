@@ -352,7 +352,6 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	 */
 	public void close(){
 		getToolkit().getSystemEventQueue().postEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-		System.out.println("Window close event firede");
 	}
 
 	/**
