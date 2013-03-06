@@ -43,6 +43,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	// Gwindow object
 	boolean isGWindow;
 	
+	
 	/**
 	 * Create an applet info object
 	 * @param papplet
@@ -192,6 +193,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 	 * for this window.
 	 */
 	void dispose(){
+		app.noLoop();
 		app.unregisterMethod("draw", this);
 		app.unregisterMethod("pre", this);
 		app.unregisterMethod("post", this);
