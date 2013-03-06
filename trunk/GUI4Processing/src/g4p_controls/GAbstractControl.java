@@ -204,8 +204,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 */
 	public GAbstractControl(PApplet theApplet, float p0, float p1, float p2, float p3) {
-//		this(theApplet, G4P.control_mode, p0, p1, p2, p3);
-		// The first applet must be the sketchApplet
+		// If this is the first control to be created then theAapplet must be the sketchApplet
 		if(G4P.sketchApplet == null)
 			G4P.sketchApplet = theApplet;
 		winApp = theApplet;
