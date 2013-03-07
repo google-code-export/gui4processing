@@ -113,6 +113,10 @@ public class GCScheme implements GConstants {
 			}
 	}
 
+	/**
+	 * This method is called by the G4P GUI Builder tool when there is no
+	 * sketch = no PApplet object to use
+	 */
 	public static void makeColorSchemes() {
 		// If the palettes have not been created then create them
 		// otherwise do nothing
