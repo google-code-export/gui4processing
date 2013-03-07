@@ -226,6 +226,17 @@ public class GDropList extends GTextBase {
 	}
 	
 	/**
+	 * Sets the local colour scheme for this control
+	 */
+	public void setLocalColorScheme(int cs){
+		super.setLocalColorScheme(cs);
+		if(showList != null)
+			showList.setLocalColorScheme(localColorScheme);
+		if(vsb != null)
+			vsb.setLocalColorScheme(localColorScheme);
+	}
+
+	/**
 	 * Determines if a particular pixel position is over this control taking
 	 * into account whether it is collapsed or not.
 	 */
