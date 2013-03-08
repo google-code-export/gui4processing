@@ -74,6 +74,8 @@ public class GPanel extends GTextBase {
 	protected boolean draggable = true;
 	protected boolean collapsible = true;
 
+	protected boolean keepOnScreen = true;
+	
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
 	 * select and move the panel and the container window below the tab which 
@@ -445,7 +447,7 @@ public class GPanel extends GTextBase {
 	}
 	
 	/**
-	 * Is this panel collapsable.	 * 
+	 * Is this panel collapsible
 	 */
 	public boolean isCollapsible(){
 		return collapsible;

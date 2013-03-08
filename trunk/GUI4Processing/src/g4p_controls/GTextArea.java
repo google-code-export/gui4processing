@@ -176,7 +176,7 @@ public class GTextArea extends GEditableTextControl {
 	 */
 	public void setText(String text){
 		//setText(text, wrapWidth);
-		setStyledText(new StyledString(text));
+		setStyledText(new StyledString(text, wrapWidth));
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class GTextArea extends GEditableTextControl {
 	 */
 	public void setText(String text, int wrapWidth){
 		this.wrapWidth = wrapWidth;
-		setStyledText(new StyledString(text));
+		setStyledText(new StyledString(text, wrapWidth));
 	}
 
 	public void setStyledText(StyledString st){
@@ -225,13 +225,15 @@ public class GTextArea extends GEditableTextControl {
 	/**
 	 * Add text to the end of the current text. This is useful for a logging' type activity.
 	 * 
-	 * @param extraText
+	 * @param extraText the text to append
+	 * @param addEOL if true adds an EOL character so the next append starts a newline
 	 */
 	public void appendText(String extraText){
 		if(extraText == null || extraText.equals(""))
 			return;
-		if(stext.insertCharacters(stext.length(), extraText) == 0)
+		if(stext.insertCharacters(stext.length(), extraText, true) == 0)
 			return;
+		
 		LinkedList<TextLayoutInfo> lines = stext.getLines(buffer.g2);
 		endTLHI.tli = lines.getLast();
 		endTLHI.thi = endTLHI.tli.layout.getNextRightHit(endTLHI.tli.nbrChars - 1);
@@ -256,6 +258,15 @@ public class GTextArea extends GEditableTextControl {
 		bufferInvalid = true;
 	}
 
+	/**
+	 * Add text to the end of the current text. This is useful for a logging' type activity.
+	 * 
+	 * @param extraText the text to append
+	 */
+//	public void appendText(String extraText){
+//		appendText(extraText, false);
+//	}
+	
 	/**
 	 * If the buffer is invalid then redraw it.
 	 */

@@ -273,7 +273,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 */
 	public void addAttribute(Attribute type, Object value, int charStart, int charEnd){
 		AttributeRun ar = new AttributeRun(type, value, charStart, charEnd);
-		// If we already have attributes try an rationalise the number by merging
+		// If we already have attributes try and rationalise the number by merging
 		// runs if possible and removing runs that no longer have a visible effect.
 		if(atrun.size() > 0){
 			ListIterator<AttributeRun> iter = atrun.listIterator(atrun.size());
@@ -404,7 +404,38 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	public int insertCharacters(int insertPos, String chars){
 		if(chars.length() > 0)
 			chars = makeStringSafeForInsert(chars);
+		return insertCharactersImpl(insertPos, chars, false);
+//		if(chars.length() > 0){
+//			int nbrChars = chars.length();
+//			if(plainText.equals(" "))
+//				plainText = chars;
+//			else
+//				plainText = plainText.substring(0, insertPos) + chars + plainText.substring(insertPos);
+//			insertParagraphMarkers(plainText, styledText);
+//			for(AttributeRun ar : atrun){
+//				if(ar.end < Integer.MAX_VALUE){
+//					if(ar.end >= insertPos){
+//						ar.end += nbrChars;
+//						if(ar.start >= insertPos)
+//							ar.start += nbrChars;
+//					}
+//				}
+//			}
+//			invalidText = true;
+//		}
+//		return chars.length();
+	}
+
+	public int insertCharacters(int insertPos, String chars, boolean startNewLine){
+		if(chars.length() > 0)
+			chars = makeStringSafeForInsert(chars);
+		return insertCharactersImpl(insertPos, chars, startNewLine);
+	}
+	
+	private int insertCharactersImpl(int insertPos, String chars, boolean startNewLine){
 		if(chars.length() > 0){
+			if(startNewLine)
+				chars = "\n" + chars;
 			int nbrChars = chars.length();
 			if(plainText.equals(" "))
 				plainText = chars;
@@ -422,9 +453,9 @@ final public class StyledString implements GConstantsInternal, Serializable {
 			}
 			invalidText = true;
 		}
-		return 0;
+		return chars.length();		
 	}
-
+	
 	/**
 	 * This is ONLY used when multiple characters are to be inserted. <br>
 	 * If it is single line text i.e. no wrapping then it removes all EOLs
@@ -475,7 +506,6 @@ final public class StyledString implements GConstantsInternal, Serializable {
 				}
 			}
 			invalidText = true;
-			invalidText = true;		
 			return true;
 		}
 		return false;
