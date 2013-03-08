@@ -207,18 +207,20 @@ public class GPanel extends GTextBase {
 		// Perform the rotation
 		winApp.translate(cx, cy);
 		winApp.rotate(rotAngle);
+		// If opaque draw the panel tab and back
+		if(opaque){
+			winApp.pushMatrix();
+			// Move matrix to line up with top-left corner
+			winApp.translate(-halfWidth, -halfHeight);
+			// Draw buffer
+			winApp.imageMode(PApplet.CORNER);
+			if(alphaLevel < 255)
+				winApp.tint(TINT_FOR_ALPHA, alphaLevel);
+			winApp.image(buffer, 0, 0);	
 
-		winApp.pushMatrix();
-		// Move matrix to line up with top-left corner
-		winApp.translate(-halfWidth, -halfHeight);
-		// Draw buffer
-		winApp.imageMode(PApplet.CORNER);
-		if(alphaLevel < 255)
-			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
-		winApp.image(buffer, 0, 0);	
-
-		winApp.popMatrix();
-
+			winApp.popMatrix();
+		}
+		// Draw the children
 		if(!tabOnly){
 			if(children != null){
 				for(GAbstractControl c : children)
@@ -271,7 +273,7 @@ public class GPanel extends GTextBase {
 	 * All GUI components are registered for mouseEvents
 	 */
 	public void mouseEvent(MouseEvent event){
-		if(!visible  || !enabled || !available) return;
+		if(!visible || !enabled || !available) return;
 
 		calcTransformedOrigin(winApp.mouseX, winApp.mouseY);
 
@@ -351,6 +353,31 @@ public class GPanel extends GTextBase {
 	}
 
 	/**
+	 * Determines whether to show the tab and panel back colour. If the
+	 * parameter is the same as the current state then no changes will
+	 * be made.  <br>
+	 * If the parameter is false then the panel will be <br>
+	 * <ul>
+	 * <li>expanded</li>
+	 * <li>made non-collasible</li>
+	 * <li>made unavailable to mouse control (so can't be dragged)</li>
+	 * </ul>
+	 * If the parameter is true then the panel will remain non-collapsible
+	 * and the user must change this if required. <br>
+	 * @param opaque
+	 */
+	public void setOpaque(boolean opaque){
+		if(this.opaque == opaque)
+			return;  // no change
+		if(!opaque){
+			setCollapsed(false);
+			setCollapsible(false);
+		}
+		available = opaque;
+		this.opaque = opaque;
+	}
+
+	/**
 	 * This method is used to discover whether the panel is being 
 	 * dragged to a new position on the screen.
 	 * @return true if being dragged to a new position
@@ -373,29 +400,6 @@ public class GPanel extends GTextBase {
 	 */
 	public boolean isDraggable(){
 		return draggable;
-	}
-
-	/**
-	 * Ensures that the panel tab and panel body if open does not
-	 * extend off the screen.
-	 */
-	private void constrainPanelPosition(){
-		// Calculate the size of the visible part of the panel
-		int w = (int) ((tabOnly)? tabWidth : width);
-		int h = (int) ((tabOnly)? tabHeight : height);
-		// Constrain horizontally
-		if(x < lowX) 
-			x = lowX;
-		else if(x + w > highX) 
-			x = (int) (highX - w);
-		// Constrain vertically
-		if(y < lowY) 
-			y = lowY;
-		else if(y + h > highY) 
-			y = highY - h;
-		// Maintain centre for
-		cx = x + width/2;
-		cy = y + height/2;
 	}
 
 	/**
@@ -450,6 +454,30 @@ public class GPanel extends GTextBase {
 	public int getTabHeight(){
 		return tabHeight;
 	}
+
+	/**
+	 * Ensures that the panel tab and panel body if open does not
+	 * extend off the screen.
+	 */
+	private void constrainPanelPosition(){
+		// Calculate the size of the visible part of the panel
+		int w = (int) ((tabOnly)? tabWidth : width);
+		int h = (int) ((tabOnly)? tabHeight : height);
+		// Constrain horizontally
+		if(x < lowX) 
+			x = lowX;
+		else if(x + w > highX) 
+			x = (int) (highX - w);
+		// Constrain vertically
+		if(y < lowY) 
+			y = lowY;
+		else if(y + h > highY) 
+			y = highY - h;
+		// Maintain centre for
+		cx = x + width/2;
+		cy = y + height/2;
+	}
+
 
 	public String toString(){
 		return tag + "  [" + x + ", " + y+"]" + "  [" + cx + ", " + cy+"]"+ "  [" + dockX + ", " + dockY+"]";
