@@ -65,7 +65,7 @@ public class GPanel extends GTextBase {
 	/** Used to restore position when closing panel */
 	protected float dockX, dockY;
 
-	// Since all 
+	// Defines the area that the panel must fit inside.
 	protected float lowX, highX, lowY, highY;
 	
 	/** true if the panel is being dragged */
@@ -74,12 +74,14 @@ public class GPanel extends GTextBase {
 	protected boolean draggable = true;
 	protected boolean collapsible = true;
 
-	protected boolean keepOnScreen = true;
-	
+
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
 	 * select and move the panel and the container window below the tab which 
-	 * is used to hold other components.
+	 * is used to hold other components. <br>
+	 * If the panel fits inside the display window then its position will be 
+	 * constrained so that it can't be dragged outside the viewable area. 
+	 * Otherwise no constraint is applied.
 	 * 
 	 * @param theApplet the PApplet reference
 	 * @param p0 horizontal position
@@ -94,7 +96,10 @@ public class GPanel extends GTextBase {
 	/**
 	 * Create a Panel that comprises of 2 parts the tab which is used to 
 	 * select and move the panel and the container window below the tab which 
-	 * is used to hold other components.
+	 * is used to hold other components. <br>
+	 * If the panel fits inside the display window then its position will be 
+	 * constrained so that it can't be dragged outside the viewable area. 
+	 * Otherwise no constraint is applied.
 	 *  
 	 * @param theApplet the PApplet reference
 	 * @param p0 horizontal position
@@ -106,9 +111,10 @@ public class GPanel extends GTextBase {
 	public GPanel(PApplet theApplet, float p0, float p1, float p2, float p3, String text) {
 		super(theApplet, p0, p1, p2, p3);
 		// Set the values used to constrain movement of the panel
-		lowX = lowY = 0;
-		highX = winApp.width;
-		highY = winApp.height;
+		if(x < 0 || y < 0 || x + width > winApp.width || y+  height > winApp.height)
+			clearDragArea();
+		else
+			setDragArea();
 		// Create the list of children
 		children = new LinkedList<GAbstractControl>();
 		// The image buffer is just for the tab area
@@ -200,7 +206,6 @@ public class GPanel extends GTextBase {
 	 */
 	public void draw(){
 		if(!visible) return;
-		//	System.out.println(tag + "  [" + x + ", " + y+"]" + "  [" + cx + ", " + cy+"]"+ "  [" + dockX + ", " + dockY+"]");
 		// Update buffer if invalid
 		updateBuffer();
 		winApp.pushStyle();
@@ -457,6 +462,49 @@ public class GPanel extends GTextBase {
 		return tabHeight;
 	}
 
+	/**
+	 * Provided the panel is physically small enough this method will set the area 
+	 * within which the panel can be dragged and move the panel inside the area if 
+	 * not already inside. <br>
+	 *  
+	 * @param xMin
+	 * @param yMin
+	 * @param xMax
+	 * @param yMax
+	 * @return true if the constraint was applied successfully else false
+	 */
+	public boolean setDragArea(float xMin, float yMin, float xMax, float yMax){
+		if(xMax - xMin < width || yMax - yMin < height){
+			if(G4P.showMessages)
+				System.out.println("The constraint area is too small for this panel - request ignored");
+			return false;
+		}
+		lowX = xMin;
+		lowY = yMin;
+		highX = xMax;
+		highY = yMax;
+		constrainPanelPosition();
+		return true;
+	}
+	
+	/**
+	 * Provided the panel is small enough to fit inside the display area then
+	 * the panel will be constrained to fit inside the display area.
+	 * 
+	 * @return true if the constraint was applied successfully else false
+	 */
+	public boolean setDragArea(){
+		return setDragArea(0, 0, winApp.width, winApp.height);
+	}
+	
+	/**
+	 * Remove any drag constraint from this panel.
+	 */
+	public void clearDragArea(){
+		lowX = lowY = -Float.MAX_VALUE;
+		highX = highY = Float.MAX_VALUE;		
+	}
+	
 	/**
 	 * Ensures that the panel tab and panel body if open does not
 	 * extend off the screen.
