@@ -448,7 +448,7 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	}
 
 	/**
-	 * Window adapter class that remembers the window it belongs to si
+	 * Window adapter class that remembers the window it belongs to so
 	 * it can be used to mark it for closure if required.
 	 * 
 	 * @author Peter Lager
