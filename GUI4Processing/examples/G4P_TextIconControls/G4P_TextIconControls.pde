@@ -21,7 +21,7 @@ GButton btn0, btn1;
 // from GTextIconControl this arraylist will keep them as
 // a collection so they can all be configured as a group
 // more easily
-ArrayList<GTextIconControl> controls = new ArrayList<GTextIconControl>();
+ArrayList<GTextIconAlignBase> controls = new ArrayList<GTextIconAlignBase>();
 
 int bgcol = 240;
 
@@ -91,13 +91,13 @@ public void handleSliderEvents(GValueControl slider, GEvent event) {
 
 public void handleKnobEvents(GValueControl knob, GEvent event) { 
   if (knbAngle == knob)
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setRotation(knbAngle.getValueF(), GControlMode.CENTER);
 }
 
 public void handleButtonEvents(GButton button, GEvent event) { 
   if (button.tagNo >= 1000) {
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setLocalColorScheme(button.tagNo - 1000);
   }
 }
@@ -105,30 +105,30 @@ public void handleButtonEvents(GButton button, GEvent event) {
 
 public void handleToggleControlEvents(GToggleControl option, GEvent event) {
   if (option == optPlain)
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setTextPlain();
   else if (option == optBold)
-    for (GTextIconControl control : controls) {
+    for (GTextIconAlignBase control : controls) {
       control.setTextPlain();
       control.setTextBold();
     }
   else if (option == optItalic)
-    for (GTextIconControl control : controls) {
+    for (GTextIconAlignBase control : controls) {
       control.setTextPlain();
       control.setTextItalic();
     }
   else if (option == optItalic)
-    for (GTextIconControl control : controls) {
+    for (GTextIconAlignBase control : controls) {
       control.setTextPlain();
       control.setTextItalic();
     }
   else if (option == optBoldItalic)
-    for (GTextIconControl control : controls) {
+    for (GTextIconAlignBase control : controls) {
       control.setTextBold();
       control.setTextItalic();
     }
   else if (option == cbxOpaque)
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setOpaque(cbxOpaque.isSelected());
 }
 
@@ -137,16 +137,16 @@ public void handleDropListEvents(GDropList list, GEvent event) {
   println(na);
 
   if (list == textH)
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setTextAlign(na, null);
   if (list == textV)
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setTextAlign(null, na);
   if (list == iconH)
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setIconAlign(na, null);
   if (list == iconV) {
-    for (GTextIconControl control : controls)
+    for (GTextIconAlignBase control : controls)
       control.setIconAlign(null, na);
   }
 }
