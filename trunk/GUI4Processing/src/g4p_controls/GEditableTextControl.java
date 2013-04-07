@@ -46,9 +46,9 @@ public abstract class GEditableTextControl extends GTextBase {
 
 	protected static float HORZ_SCROLL_RATE = 4f;
 	protected static float VERT_SCROLL_RATE = 8;
-	
+
 	GTabManager tabManager = null;
-	
+
 	protected StyledString defaultText = null;
 	// The width to break a line
 	protected int wrapWidth = Integer.MAX_VALUE;
@@ -61,11 +61,11 @@ public abstract class GEditableTextControl extends GTextBase {
 	protected float ptx, pty;
 	// Caret position
 	protected float caretX, caretY;
-	
+
 	protected boolean keepCursorInView = false;
-	
+
 	protected GeneralPath gpTextDisplayArea;
-	
+
 	// Used for identifying selection and cursor position
 	protected TextLayoutHitInfo startTLHI = new TextLayoutHitInfo();
 	protected TextLayoutHitInfo endTLHI = new TextLayoutHitInfo();
@@ -77,7 +77,7 @@ public abstract class GEditableTextControl extends GTextBase {
 
 	protected GTimer caretFlasher;
 	protected boolean showCaret = false;
-	
+
 	// Stuff to manage text selections
 	protected int endChar = -1, startChar = -1, pos = endChar, nbr = 0, adjust = 0;
 	protected boolean textChanged = false, newline = false, selectionChanged = false;
@@ -94,18 +94,19 @@ public abstract class GEditableTextControl extends GTextBase {
 		opaque = true;
 		cursorOver = TEXT;
 	}
-	
+
 	/**
 	 * Give up focus but if the text is only made from spaces
-	 * then set it to null text.
+	 * then set it to null text. <br>
+	 * Fire focus events for the GTextField and GTextArea controls
 	 */
 	protected void loseFocus(GAbstractControl grabber){
+		// If this control has focus then Fire a lost focus event
+		if(focusIsWith == this)
+			fireEvent(this, GEvent.LOST_FOCUS);
 		// Process mouse-over cursor 
 		if(cursorIsOver == this)
 			cursorIsOver = null;
-		// Fire a lost focus event
-		fireEvent(this, GEvent.LOST_FOCUS);
-
 		focusIsWith = grabber;
 		// If only blank text clear it out allowing default text (if any) to be displayed
 		if(stext.length() > 0){
@@ -121,19 +122,24 @@ public abstract class GEditableTextControl extends GTextBase {
 	 * Give the focus to this component but only after allowing the 
 	 * current component with focus to release it gracefully. <br>
 	 * Always cancel the keyFocusIsWith irrespective of the component
-	 * type. If the component needs to retain keyFocus then override this
-	 * method in that class e.g. GCombo
+	 * type. 
+	 * Fire focus events for the GTextField and GTextArea controls
 	 */
 	protected void takeFocus(){
-		if(focusIsWith != null && focusIsWith != this)
-			focusIsWith.loseFocus(this);
+		// If focus is not yet with this control fire a gets focus event
+		if(focusIsWith != this){
+			// If the focus is with another control then tell
+			// that control to lose focus
+			if(focusIsWith != null)
+				focusIsWith.loseFocus(this);
+			fireEvent(this, GEvent.GETS_FOCUS);
+		}
 		focusIsWith = this;
-		// Fire a gets focus event
-		fireEvent(this, GEvent.GETS_FOCUS);
 	}
 
 	/**
-	 * Determines whether this component is to have focus or not
+	 * Determines whether this component is to have focus or not. <br>
+	 * Fire focus events for the GTextField and GTextArea controls
 	 * @param focus
 	 */
 	public void setFocus(boolean focus){
@@ -161,7 +167,7 @@ public abstract class GEditableTextControl extends GTextBase {
 		keepCursorInView = true;
 		takeFocus();
 	}
-	
+
 	/**
 	 * Set the default text for this control. If provided this text will be 
 	 * displayed in italic whenever it is empty.
@@ -176,7 +182,7 @@ public abstract class GEditableTextControl extends GTextBase {
 		}
 		bufferInvalid = true;
 	}
-	
+
 	/**
 	 * Get the default text for this control
 	 * @return the default text without styling
@@ -184,7 +190,7 @@ public abstract class GEditableTextControl extends GTextBase {
 	public String getDefaultText(){
 		return defaultText.getPlainText();
 	}
-	
+
 	/**
 	 * Get the text in the control
 	 * @return the text without styling
@@ -192,7 +198,7 @@ public abstract class GEditableTextControl extends GTextBase {
 	public String getText(){
 		return stext.getPlainText();
 	}
-	
+
 	/**
 	 * Get the styled text in the control
 	 * @return the text with styling
@@ -200,7 +206,7 @@ public abstract class GEditableTextControl extends GTextBase {
 	public StyledString getStyledText(){
 		return stext;
 	}
-	
+
 	/**
 	 * Get the text that has been selected (highlighted) by the user. <br>
 	 * @return the selected text without styling
@@ -223,7 +229,7 @@ public abstract class GEditableTextControl extends GTextBase {
 		String s = stext.getPlainText().substring(ss, ee);
 		return s;
 	}
-	
+
 	/**
 	 * If some text has been selected then set the style. If there is no selection then 
 	 * the text is unchanged.
@@ -247,7 +253,7 @@ public abstract class GEditableTextControl extends GTextBase {
 		int ss = startSelTLHI.tli.startCharIndex + startSelTLHI.thi.getInsertionIndex();
 		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
 		stext.addAttribute(style, value, ss, ee);
-		
+
 		// We have modified the text style so the end of the selection may have
 		// moved, so it needs to be recalculated. The start will be unaffected.
 		stext.getLines(buffer.g2);
@@ -278,7 +284,7 @@ public abstract class GEditableTextControl extends GTextBase {
 		int ss = startSelTLHI.tli.startCharIndex + startSelTLHI.thi.getInsertionIndex();
 		int ee = endSelTLHI.tli.startCharIndex + endSelTLHI.thi.getInsertionIndex();
 		stext.clearAttributes(ss, ee);
-		
+
 		// We have modified the text style so the end of the selection may have
 		// moved, so it needs to be recalculated. The start will be unaffected.
 		stext.getLines(buffer.g2);
@@ -290,7 +296,7 @@ public abstract class GEditableTextControl extends GTextBase {
 			endSelTLHI.thi = endSelTLHI.tli.layout.getNextRightHit(cn-1);
 		bufferInvalid = true;
 	}
-	
+
 	/**
 	 * Set the font for this control.
 	 * @param font
@@ -329,7 +335,7 @@ public abstract class GEditableTextControl extends GTextBase {
 				hsb.setValue(sx/sTextWidth, tw/sTextWidth);
 		}
 	}
-	
+
 	/**
 	 * Move caret to home position
 	 * @param currPos the current position of the caret
@@ -386,12 +392,12 @@ public abstract class GEditableTextControl extends GTextBase {
 		}
 		return true;
 	}
-	
+
 	public void setJustify(boolean justify){
 		stext.setJustify(justify);
 		bufferInvalid = true;
 	}
-	
+
 	/**
 	 * Sets the local colour scheme for this control
 	 */
@@ -441,7 +447,7 @@ public abstract class GEditableTextControl extends GTextBase {
 		enabled = enableTextEdit;
 		textEditEnabled = enableTextEdit;
 	}
-	
+
 	public void keyEvent(KeyEvent e) {
 		if(!visible  || !enabled || !textEditEnabled || !available) return;
 		if(focusIsWith == this && endTLHI != null){
@@ -450,13 +456,13 @@ public abstract class GEditableTextControl extends GTextBase {
 			int keyID = e.getAction();
 			boolean shiftDown = e.isShiftDown();
 			boolean ctrlDown = e.isControlDown();
-			
+
 			textChanged = false;
 			newline = false;
 			keepCursorInView = true;
-			
+
 			int startPos = pos, startNbr = nbr;
-			
+
 			// Get selection details
 			endChar = endTLHI.tli.startCharIndex + endTLHI.thi.getInsertionIndex();
 			startChar = (startTLHI != null) ? startTLHI.tli.startCharIndex + startTLHI.thi.getInsertionIndex() : endChar;
@@ -475,7 +481,7 @@ public abstract class GEditableTextControl extends GTextBase {
 				if(startPos != pos || startNbr != nbr)
 					fireEvent(this, GEvent.SELECTION_CHANGED);
 			}
-			
+
 			if(keyID == KeyEvent.PRESS) {
 				keyPressedProcess(keyCode, keyChar, shiftDown, ctrlDown);
 				setScrollbarValues(ptx, pty);
@@ -490,18 +496,18 @@ public abstract class GEditableTextControl extends GTextBase {
 			}
 		}
 	}
-	
+
 	// Enable polymorphism. 
 	protected void keyPressedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown) { }
 
 	protected void keyTypedProcess(int keyCode, char keyChar, boolean shiftDown, boolean ctrlDown){ }
 
-	
+
 	// Only executed if text has changed
 	protected void changeText(){
 		TextLayoutInfo tli;
 		TextHitInfo thi = null, thiRight = null;
-		
+
 		pos += adjust;
 		// Force layouts to be updated
 		stext.getLines(buffer.g2);
@@ -554,14 +560,14 @@ public abstract class GEditableTextControl extends GTextBase {
 		}
 		bufferInvalid = true;
 	}
-	
+
 	/**
 	 * Do not call this directly. A timer calls this method as and when required.
 	 */
 	public void flashCaret(GTimer timer){
 		showCaret = !showCaret;
 	}
-	
+
 	/**
 	 * Do not call this method directly, G4P uses it to handle input from
 	 * the horizontal scrollbar.
@@ -590,7 +596,7 @@ public abstract class GEditableTextControl extends GTextBase {
 			tabManager.removeControl(this);
 		super.markForDisposal();
 	}
-	
+
 	/**
 	 * Save the styled text used by this control to file. <br>
 	 * It will also save the start and end position of any text selection.
@@ -638,7 +644,7 @@ public abstract class GEditableTextControl extends GTextBase {
 			endTLHI = new TextLayoutHitInfo();
 			endTLHI.tli = stext.getTLIforCharNo(stext.endIdx);
 			pInLayout = stext.endIdx - endTLHI.tli.startCharIndex;
-			
+
 			if(pInLayout == 0)
 				endTLHI.thi = endTLHI.tli.layout.getNextLeftHit(1);
 			else
