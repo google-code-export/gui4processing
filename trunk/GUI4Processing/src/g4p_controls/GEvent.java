@@ -34,6 +34,9 @@ public enum GEvent {
 	CHANGED 			( "Text has changed" ),
 	SELECTION_CHANGED 	( "Text selection has changed" ),
 	ENTERED			 	( "Enter/return key typed" ),
+	LOST_FOCUS			( "Lost key focus" ),
+	GETS_FOCUS			( "Gained key focus" ),
+	
 	
 	// GPanel component
 	COLLAPSED  			( "Control was collapsed" ),

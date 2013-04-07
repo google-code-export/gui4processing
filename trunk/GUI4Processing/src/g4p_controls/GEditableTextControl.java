@@ -100,8 +100,12 @@ public abstract class GEditableTextControl extends GTextBase {
 	 * then set it to null text.
 	 */
 	protected void loseFocus(GAbstractControl grabber){
+		// Process mouse-over cursor 
 		if(cursorIsOver == this)
 			cursorIsOver = null;
+		// Fire a lost focus event
+		fireEvent(this, GEvent.LOST_FOCUS);
+
 		focusIsWith = grabber;
 		// If only blank text clear it out allowing default text (if any) to be displayed
 		if(stext.length() > 0){
@@ -111,6 +115,21 @@ public abstract class GEditableTextControl extends GTextBase {
 		}
 		keepCursorInView = true;
 		bufferInvalid = true;
+	}
+
+	/**
+	 * Give the focus to this component but only after allowing the 
+	 * current component with focus to release it gracefully. <br>
+	 * Always cancel the keyFocusIsWith irrespective of the component
+	 * type. If the component needs to retain keyFocus then override this
+	 * method in that class e.g. GCombo
+	 */
+	protected void takeFocus(){
+		if(focusIsWith != null && focusIsWith != this)
+			focusIsWith.loseFocus(this);
+		focusIsWith = this;
+		// Fire a gets focus event
+		fireEvent(this, GEvent.GETS_FOCUS);
 	}
 
 	/**
@@ -141,7 +160,6 @@ public abstract class GEditableTextControl extends GTextBase {
 		}
 		keepCursorInView = true;
 		takeFocus();
-
 	}
 	
 	/**
