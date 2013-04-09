@@ -143,7 +143,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * for paragraphs
 	 * @param ptext
 	 * @param as
-	 * @return
+	 * @return the converted string
 	 */
 	StyledString convertToSingleLineText(){
 		// Make sure we have something to work with.
@@ -236,7 +236,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * for paragraphs
 	 * @param ptext
 	 * @param as
-	 * @return
+	 * @return the styled string with paragraph marker images embedded
 	 */
 	private AttributedString insertParagraphMarkers(String ptext, AttributedString as ){
 		if(ptext != null && ptext.length() > 0)
@@ -463,7 +463,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * EOLs and remove any EOLs at the start or end of the string.
 	 * 
 	 * @param chars
-	 * @return
+	 * @return a string that is safe for inserting
 	 */
 	private String makeStringSafeForInsert(String chars){
 		// Get rid of single / double line spacing
@@ -691,7 +691,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	/**
 	 * Get the height of the given TextLayout
 	 * @param layout
-	 * @return
+	 * @return the height of a given text layout
 	 */
 	private float getHeight(TextLayout layout){
 		return layout.getAscent() +layout.getDescent() + layout.getLeading();
@@ -734,8 +734,8 @@ final public class StyledString implements GConstantsInternal, Serializable {
 
 	/**
 	 * Get a layout based on line number
-	 * @param ln
-	 * @return
+	 * @param ln line number 
+	 * @return text layout info for the line ln
 	 */
 	TextLayoutInfo getTLIforLineNo(int ln){
 		return linesInfo.get(ln);
@@ -812,7 +812,7 @@ final public class StyledString implements GConstantsInternal, Serializable {
 	 * Create a graphic image character to simulate paragraph breaks
 	 * 
 	 * @param ww
-	 * @return
+	 * @return a blank image to manage paragraph ends.
 	 */
 	private ImageGraphicAttribute getParagraghSpacer(int ww){
 		if(ww == Integer.MAX_VALUE)

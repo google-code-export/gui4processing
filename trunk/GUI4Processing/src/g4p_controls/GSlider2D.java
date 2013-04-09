@@ -368,7 +368,7 @@ public class GSlider2D extends GValueControl2D {
 	/**
 	 * Used to format the number into a string for display.
 	 * @param number
-	 * @return
+	 * @return the number formated as a string
 	 */
 	protected String getNumericDisplayString(float number){
 		String s = "";

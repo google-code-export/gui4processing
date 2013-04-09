@@ -660,7 +660,7 @@ public abstract class GEditableTextControl extends GTextBase {
 	 * or GTextArea object. Either way the stext will be valid after 
 	 * this call so we can restore selection.
 	 * 
-	 * @param st
+	 * @param ss
 	 */
 	public abstract void setStyledText(StyledString ss);
 
