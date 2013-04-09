@@ -312,7 +312,7 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 * @param px
 	 * @param py
-	 * @return
+	 * @return the index for the first hotspot containing px,py else return -1
 	 */
 	protected int whichHotSpot(float px, float py){
 		if(hotspots == null) return -1;
@@ -746,7 +746,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 
 	/**
 	 * Is this control available?
-	 * @return
 	 */
 	protected boolean isAvailable(){
 		return available;
@@ -989,7 +988,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * Get an affine transformation that is the compound of all 
 	 * transformations including parents
 	 * @param aff
-	 * @return
 	 */
 	protected AffineTransform getTransform(AffineTransform aff){
 		if(parent != null)

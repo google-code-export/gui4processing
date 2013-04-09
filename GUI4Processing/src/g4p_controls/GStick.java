@@ -190,7 +190,7 @@ public class GStick extends GAbstractControl {
 	 *      /  |  \
 	 *     3   2   1
 	 * </pre> <br>
-	 * @return current stick dirction
+	 * @return current stick direction
 	 */
 	public int getPosition(){
 		return position;
@@ -235,7 +235,7 @@ public class GStick extends GAbstractControl {
 	 * the range 0-360
 	 * @param px relative to centre
 	 * @param py relative to centre
-	 * @return
+	 * @return the angle made by the stick
 	 */
 	protected float calcStickAngle(float px, float py){
 		float a = PApplet.atan2(py, px);

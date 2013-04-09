@@ -144,7 +144,7 @@ public class GClip implements ClipboardOwner {
 	/**
 	 * Gets a string from the clipboard. If there is no Clipboard
 	 * then create it.
-	 * @return
+	 * @return if possible the string on the clipboard else an empty string
 	 */
 	private String pasteString(){
 		// If there is no clipboard then there is nothing to paste

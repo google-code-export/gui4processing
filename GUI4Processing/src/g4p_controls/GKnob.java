@@ -159,7 +159,7 @@ public class GKnob extends GValueControl {
 	 * For a particular normalised value calculate the angle (degrees)
 	 * 
 	 * @param v
-	 * @return
+	 * @return the needle angle for the given value
 	 */
 	protected float scaleValueToAngle(float v){
 		float a = startAng + v * (endAng - startAng);
@@ -517,7 +517,7 @@ public class GKnob extends GValueControl {
 	 * Determines whether an angle is within the knob
 	 * rotation range.
 	 * @param a the angle in degrees
-	 * @return
+	 * @return true is angle is within rotation range else false
 	 */
 	protected boolean isInTurnRange(float a){
 		a = constrain360(a);
@@ -558,7 +558,7 @@ public class GKnob extends GValueControl {
 	 * the range 0-360
 	 * @param px
 	 * @param py
-	 * @return
+	 * @return the angle from the knob centre to the specified point.
 	 */
 	protected float calcRealAngleFromXY(float px, float py){
 		float a = (float) Math.toDegrees(Math.atan2(py, px));

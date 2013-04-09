@@ -145,7 +145,7 @@ public class GDropList extends GTextBase {
 
 		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleDropListEvents",
-				new Class[]{ GDropList.class, GEvent.class }, 
+				new Class<?>[]{ GDropList.class, GEvent.class }, 
 				new String[]{ "list", "event" } 
 		);
 		registeredMethods = DRAW_METHOD | MOUSE_METHOD;

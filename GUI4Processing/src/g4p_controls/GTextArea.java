@@ -226,7 +226,6 @@ public class GTextArea extends GEditableTextControl {
 	 * Add text to the end of the current text. This is useful for a logging' type activity.
 	 * 
 	 * @param extraText the text to append
-	 * @param addEOL if true adds an EOL character so the next append starts a newline
 	 */
 	public void appendText(String extraText){
 		if(extraText == null || extraText.equals(""))

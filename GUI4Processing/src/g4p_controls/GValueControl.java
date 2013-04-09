@@ -92,7 +92,7 @@ public abstract class GValueControl extends GAbstractControl {
 	/**
 	 * Used to format the number into a string for display.
 	 * @param number
-	 * @return
+	 * @return a string representing the number
 	 */
 	protected String getNumericDisplayString(float number){
 		String s = "";
@@ -396,7 +396,7 @@ public abstract class GValueControl extends GAbstractControl {
 	/**
 	 * These are normalised values i.e. between 0.0 and 1.0 inclusive
 	 * @param p
-	 * @return
+	 * @return the parametric value of the nearest tick
 	 */
 	protected float findNearestTickValueTo(float p){
 		float tickSpace = 1.0f / (nbrTicks - 1);
