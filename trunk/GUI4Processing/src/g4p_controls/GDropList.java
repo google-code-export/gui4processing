@@ -51,7 +51,7 @@ import processing.event.MouseEvent;
  *
  */
 public class GDropList extends GTextBase {
-	
+
 	static protected int LIST_SURFACE = 1;
 	static protected int CLOSED_SURFACE = 2;
 
@@ -60,7 +60,7 @@ public class GDropList extends GTextBase {
 	protected static final int ITEM_FORE_COLOR = 3;
 	protected static final int ITEM_BACK_COLOR = 6;
 	protected static final int OVER_ITEM_FORE_COLOR = 15;
-	
+
 
 	private GScrollbar vsb;
 	private GButton showList;
@@ -68,16 +68,16 @@ public class GDropList extends GTextBase {
 	protected String[] items;
 	protected StyledString[] sitems;
 	protected StyledString selText;
-	
+
 	protected int selItem = 0;
 	protected int startItem = 0;
 	protected int lastOverItem = -1;
 	protected int currOverItem = lastOverItem;
-	
-	
+
+
 	protected int dropListMaxSize = 4;
 	protected int dropListActualSize = 4;
-	
+
 	protected float itemHeight, buttonWidth;
 
 	protected boolean expanded = false;   // make false in release version
@@ -96,7 +96,7 @@ public class GDropList extends GTextBase {
 	public GDropList(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		this(theApplet, p0, p1, p2, p3, 4);
 	}
-	
+
 	/**
 	 * Create a drop down list component with a specified list size.
 	 * 
@@ -114,27 +114,27 @@ public class GDropList extends GTextBase {
 		children = new LinkedList<GAbstractControl>();
 		this.dropListMaxSize = Math.max(dropListMaxSize, 3);
 		itemHeight = height / (dropListMaxSize + 1); // make allowance for selected text at top
-		
+
 		// The image buffer is just for the typing area
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
 		buffer.rectMode(PApplet.CORNER);
-		
+
 		G4P.pushStyle();
 		G4P.showMessages = false;
-		
+
 		vsb = new GScrollbar(theApplet, 0, 0, height - itemHeight, 10);
 		vsb.addEventHandler(this, "vsbEventHandler");
 		vsb.setAutoHide(true);
 		vsb.setVisible(false);
-		
+
 		buttonWidth = 10;
 		showList = new GButton(theApplet, 0, 0, buttonWidth, itemHeight, ":");
 		showList.addEventHandler(this, "buttonShowListHandler");
-	
+
 		G4P.control_mode = GControlMode.CORNER;
 		addControl(vsb, width, itemHeight + 1, PI/2);
 		addControl(showList, width - buttonWidth, 0, 0);
-		
+
 		G4P.popStyle();
 
 		buffer.g2.setFont(localFont);
@@ -152,7 +152,7 @@ public class GDropList extends GTextBase {
 		cursorOver = HAND;
 		G4P.addControl(this);
 	}
-	
+
 	/**
 	 * Use this to set or change the list of items to appear in the list. If
 	 * you enter an invalid selection index then it is forced into
@@ -181,6 +181,7 @@ public class GDropList extends GTextBase {
 			sitems[i] = new StyledString(list[i]);
 		// Force selected value into valid range
 		selItem = PApplet.constrain(selected, 0, list.length - 1);
+		startItem = (selItem >= dropListMaxSize) ? selItem - dropListMaxSize + 1 : 0;
 		// Make selected item bold
 		sitems[selItem].addAttribute(WEIGHT, WEIGHT_BOLD);
 		// Create separate styled string for display area
@@ -192,22 +193,9 @@ public class GDropList extends GTextBase {
 			vsb.setValue(value, filler);
 			vsb.setVisible(false); //  make it false
 		}
+		bufferInvalid = true;
 	}
-	
-	/**
-	 * Get the index position of the selected item
-	 */
-	public int getSelectedIndex(){
-		return selItem;
-	}
-	
-	/**
-	 * Get the text for the selected item
-	 */
-	public String getSelectedText(){
-		return items[selItem];
-	}
-	
+
 	/**
 	 * Set the currently selected item from the droplist by index position. <br>
 	 * Invalid values are ignored.
@@ -217,6 +205,7 @@ public class GDropList extends GTextBase {
 	public void setSelected(int selected){
 		if(selected >=0 && selected < sitems.length){
 			selItem = selected;
+			startItem = (selItem >= dropListMaxSize) ? selItem - dropListMaxSize + 1 : 0;
 			for(StyledString s : sitems)
 				s.clearAllAttributes();
 			sitems[selItem].addAttribute(WEIGHT, WEIGHT_BOLD);
@@ -224,7 +213,20 @@ public class GDropList extends GTextBase {
 			bufferInvalid = true;
 		}
 	}
-	
+	/**
+	 * Get the index position of the selected item
+	 */
+	public int getSelectedIndex(){
+		return selItem;
+	}
+
+	/**
+	 * Get the text for the selected item
+	 */
+	public String getSelectedText(){
+		return items[selItem];
+	}
+
 	/**
 	 * Sets the local colour scheme for this control
 	 */
@@ -292,7 +294,7 @@ public class GDropList extends GTextBase {
 			break;
 		}
 	}
-	
+
 	public void draw(){
 		if(!visible) return;
 		updateBuffer();
@@ -311,7 +313,7 @@ public class GDropList extends GTextBase {
 		if(alphaLevel < 255)
 			winApp.tint(TINT_FOR_ALPHA, alphaLevel);
 		winApp.image(buffer, 0, 0);
-		
+
 		winApp.popMatrix();
 
 		if(children != null){
@@ -326,28 +328,28 @@ public class GDropList extends GTextBase {
 		if(bufferInvalid) {
 			Graphics2D g2d = buffer.g2;
 			bufferInvalid = false;
-			
+
 			buffer.beginDraw();
 			buffer.background(buffer.color(255,0));
-			
+
 			buffer.noStroke();
 			buffer.fill(palette[BACK_COLOR]);
 			buffer.rect(0, 0, width, itemHeight);
-			
+
 			if(expanded){
 				buffer.fill(palette[ITEM_BACK_COLOR]);
 				buffer.rect(0,itemHeight, width, itemHeight * dropListActualSize);
 			}
-			
+
 			float px = TPAD, py;
 			TextLayout line;
 			// Get selected text for display
 			line = selText.getLines(g2d).getFirst().layout;
 			py = (itemHeight + line.getAscent() - line.getDescent())/2;
-		
+
 			g2d.setColor(jpalette[FORE_COLOR]);
 			line.draw(g2d, px, py);
-			
+
 			if(expanded){
 				g2d.setColor(jpalette[ITEM_FORE_COLOR]);
 				for(int i = 0; i < dropListActualSize; i++){
@@ -364,7 +366,7 @@ public class GDropList extends GTextBase {
 			buffer.endDraw();
 		}
 	}
-	
+
 	/**
 	 * For most components there is nothing to do when they loose focus.
 	 * Override this method in classes that need to do something when
