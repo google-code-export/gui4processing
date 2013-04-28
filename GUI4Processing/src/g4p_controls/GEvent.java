@@ -30,29 +30,30 @@ package g4p_controls;
  *
  */
 public enum GEvent {
-
+	/** GTextField and GTextArea events */
 	CHANGED 			( "Text has changed" ),
 	SELECTION_CHANGED 	( "Text selection has changed" ),
 	ENTERED			 	( "Enter/return key typed" ),
-	LOST_FOCUS			( "Lost key focus" ),
-	GETS_FOCUS			( "Gained key focus" ),
+	LOST_FOCUS			( "TextField/Area lost focus" ),
+	GETS_FOCUS			( "TextField/Area got focus" ),
 	
 	
-	// GPanel component
+	/** GPanel events */
 	COLLAPSED  			( "Control was collapsed" ),
 	EXPANDED 			( "Control was expanded" ),
 	DRAGGED 			( "Control is being dragged" ),
 
-	// GButton
+	/** Button control events (PRESSED and RELEASED are not fired by default) */
 	CLICKED  			( "Mouse button was clicked" ),
 	PRESSED  			( "Mouse button was pressed" ),
 	RELEASED  			( "Mouse button was released" ),
 
+	/** Slider control events events */
 	VALUE_CHANGING		( "Value is changing" ),
 	VALUE_STEADY		( "Value has reached a steady state" ),
 	DRAGGING			( "The mouse is being dragged over a component "),
 	
-	// GCheckbox & GOption
+	/** GCheckbox & GOption events */
 	SELECTED			( "Option selected" ),
 	DESELECTED			( "Option de-selected" );
 
