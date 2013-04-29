@@ -33,8 +33,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
@@ -423,6 +426,41 @@ public class G4P implements GConstants, PConstants {
 		boolean showMessages;
 	}
 
+	/**
+	 * Get a list of all open GWindow objects even if minimised or invisible. <br>
+	 * If an ArrayList is provided then its contents are cleared before adding references
+	 * to all open GWindow objects. If an ArrayList is not provided then a new 
+	 * ArrayList will be created. <br>
+	 * This method never returns null, if there are no open windows the list will 
+	 * be of size zero.
+	 * 
+	 * @param list an optional ArrayList to use. In null will create a new ArrayList.
+	 * @return an ArrayList of references to all open GWindow objects.
+	 */
+	public static ArrayList<GWindow> getOpenWindowsAsList(ArrayList<GWindow> list){
+		if(list == null)
+			list = new ArrayList<GWindow>();
+		else
+			list.clear();
+		Collection<GWindowInfo> windowInfos = windows.values();
+		for(GWindowInfo info : windowInfos){
+			if(info.isGWindow)
+				list.add( ((GWinApplet)info.app).owner);
+		}
+		return list;
+	}
+	
+	/**
+	 * Get an array of GWindow objects even if minimised or invisible. <br>
+	 * This method never returns null, if there are no open windows the array
+	 *  will be of length zero.
+	 * @return an array of references to all open GWindow objects.
+	 */
+	public static GWindow[] getOpenWindowsAsArray(){
+		ArrayList<GWindow> list = getOpenWindowsAsList(null);
+		return list.toArray(new GWindow[list.size()]);
+	}
+	
 	/**
 	 * This will open a version of the Java Swing color chooser dialog. The dialog's
 	 * UI is dependent on the OS and JVM implementation running. <br>
