@@ -24,13 +24,39 @@
 package g4p_controls;
 
 /**
- * Enumeration of events that can be fired by G4P.
+ * Enumeration of events that can be fired by G4P. <br>
  * 
+ * GTextField and GTextArea events <br>
+ * 	CHANGED 			Text has changed <br>
+ *	SELECTION_CHANGED 	Text selection has changed <br>
+ *	ENTERED			 	Enter/return key typed <br>
+ *	LOST_FOCUS			TextField/Area lost focus <br>
+ *	GETS_FOCUS			TextField/Area got focus <br>
+ *
+ * GPanel events <br>
+ *	COLLAPSED  			Control was collapsed <br>
+ *	EXPANDED 			Control was expanded <br>
+ *	DRAGGED 			Control is being dragged <br>
+ *
+ * Button control events (PRESSED and RELEASED are not fired by default)
+ *	CLICKED  			Mouse button was clicked <br>
+ *	PRESSED  			Mouse button was pressed <br>
+ *	RELEASED  			Mouse button was released <br>
+ *
+ * Slider control events events  <br>
+ *	VALUE_CHANGING		Value is changing <br>
+ *	VALUE_STEADY		Value has reached a steady state <br>
+ *	DRAGGING			The mouse is being dragged over a component <br>
+ *
+ * 	GCheckbox & GOption events <br>
+ *	SELECTED			( "Option selected <br>
+ *	DESELECTED			( "Option de-selected <br>
+ *
  * @author Peter Lager
  *
  */
 public enum GEvent {
-	/** GTextField and GTextArea events */
+	// GTextField and GTextArea events
 	CHANGED 			( "Text has changed" ),
 	SELECTION_CHANGED 	( "Text selection has changed" ),
 	ENTERED			 	( "Enter/return key typed" ),
@@ -38,22 +64,22 @@ public enum GEvent {
 	GETS_FOCUS			( "TextField/Area got focus" ),
 	
 	
-	/** GPanel events */
+	// GPanel events 
 	COLLAPSED  			( "Control was collapsed" ),
 	EXPANDED 			( "Control was expanded" ),
 	DRAGGED 			( "Control is being dragged" ),
 
-	/** Button control events (PRESSED and RELEASED are not fired by default) */
+	// Button control events (PRESSED and RELEASED are not fired by default)
 	CLICKED  			( "Mouse button was clicked" ),
 	PRESSED  			( "Mouse button was pressed" ),
 	RELEASED  			( "Mouse button was released" ),
 
-	/** Slider control events events */
+	// Slider control events events 
 	VALUE_CHANGING		( "Value is changing" ),
 	VALUE_STEADY		( "Value has reached a steady state" ),
 	DRAGGING			( "The mouse is being dragged over a component "),
 	
-	/** GCheckbox & GOption events */
+	/// GCheckbox & GOption events
 	SELECTED			( "Option selected" ),
 	DESELECTED			( "Option de-selected" );
 
