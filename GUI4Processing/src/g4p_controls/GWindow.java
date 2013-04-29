@@ -355,6 +355,20 @@ public class GWindow extends Frame implements GConstants, GConstantsInternal {
 	}
 
 	/**
+	 * This method guarantees that the window is closed by overriding the KEEP_OPEN action-on-close
+	 * and will fire a WindowClosing event to be captured by the GWindow$GWindowAdapter object. <br>
+	 * There are 2 possible actions depending on the currently specified action-on-close. <br>
+	 * GWindow.KEEP_OPEN - close this window <br>
+	 * GWindow.CLOSE_WINDOW - close this window <br>
+	 * GWindow.EXIT_APP - exit the app, this will cause all windows to close. <br>
+	 */
+	public void forceClose(){
+		if(actionOnClose == KEEP_OPEN)
+			setActionOnClose(CLOSE_WINDOW);
+		getToolkit().getSystemEventQueue().postEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+	}
+
+	/**
 	 * Attempt to add the 'draw' handler method. 
 	 * The default event handler is a method that returns void and has two
 	 * parameters PApplet and GWinData
