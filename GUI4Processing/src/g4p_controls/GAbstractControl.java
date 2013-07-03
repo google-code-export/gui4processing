@@ -78,9 +78,11 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	// e.g. GButton
 	final static int Z_SLIPPY = 24;
 	
-	
 	// Reference to the PApplet object that owns this control
 	protected PApplet winApp;
+
+	/* Used to when components overlap */
+	protected int z = Z_STICKY;
 
 	// Set to true when mouse is dragging : set false on button released
 	protected boolean dragging = false;
@@ -134,9 +136,6 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * particular control or part of a control.
 	 */
 	protected float ox, oy;
-
-	/* Used to when components overlap */
-	protected int z = 0;
 
 	/* Simple tag that can be used by the user */
 	public String tag;
