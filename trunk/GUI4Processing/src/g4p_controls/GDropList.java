@@ -131,6 +131,8 @@ public class GDropList extends GTextBase {
 		showList = new GButton(theApplet, 0, 0, buttonWidth, itemHeight, ":");
 		showList.addEventHandler(this, "buttonShowListHandler");
 
+		z = Z_SLIPPY;
+
 		G4P.control_mode = GControlMode.CORNER;
 		addControl(vsb, width, itemHeight + 1, PI/2);
 		addControl(showList, width - buttonWidth, 0, 0);
@@ -143,7 +145,6 @@ public class GDropList extends GTextBase {
 				new HSrect(CLOSED_SURFACE, 0, 0, width - buttonWidth, itemHeight)				// selected text display area
 		};
 
-		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleDropListEvents",
 				new Class<?>[]{ GDropList.class, GEvent.class }, 
 				new String[]{ "list", "event" } 

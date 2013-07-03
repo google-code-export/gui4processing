@@ -152,7 +152,11 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 			if( (control.registeredMethods & POST_METHOD) == POST_METHOD)
 				control.post();
 		}
-		// Housekeeping
+		// =====================================================================================================
+		// =====================================================================================================
+		//  This is where components are removed or added to the window to avoid concurrent access violations 
+		// =====================================================================================================
+		// =====================================================================================================
 		synchronized (this) {
 		// Dispose of any unwanted controls
 			if(!toRemove.isEmpty()){
@@ -184,7 +188,7 @@ public class GWindowInfo implements PConstants, GConstants, GConstantsInternal {
 				toAdd.clear();
 				Collections.sort(windowControls, G4P.zorder);
 			}
-		} // End of housekeeping
+		}
 	}
 
 	/**
