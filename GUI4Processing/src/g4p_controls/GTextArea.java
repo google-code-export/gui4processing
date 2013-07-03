@@ -130,6 +130,7 @@ public class GTextArea extends GEditableTextControl {
 		};
 		G4P.pushStyle();
 		G4P.showMessages = false;
+		z = Z_STICKY;
 		G4P.control_mode = GControlMode.CORNER;
 		if((scrollbarPolicy & SCROLLBAR_HORIZONTAL) != 0){
 			hsb = new GScrollbar(theApplet, 0, 0, tw, 16);
@@ -145,7 +146,7 @@ public class GTextArea extends GEditableTextControl {
 		}
 		G4P.popStyle();
 		setText("", (int)tw);
-		z = Z_STICKY;
+//		z = Z_STICKY;
 		createEventHandler(G4P.sketchApplet, "handleTextEvents", 
 				new Class<?>[]{ GEditableTextControl.class, GEvent.class }, 
 				new String[]{ "textcontrol", "event" } 

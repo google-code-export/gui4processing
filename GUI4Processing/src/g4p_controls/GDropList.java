@@ -131,8 +131,9 @@ public class GDropList extends GTextBase {
 		showList = new GButton(theApplet, 0, 0, buttonWidth, itemHeight, ":");
 		showList.addEventHandler(this, "buttonShowListHandler");
 
+		// Do this before we add the button and scrollbar
 		z = Z_SLIPPY;
-
+		// Add the button and scrollbar
 		G4P.control_mode = GControlMode.CORNER;
 		addControl(vsb, width, itemHeight + 1, PI/2);
 		addControl(showList, width - buttonWidth, 0, 0);
