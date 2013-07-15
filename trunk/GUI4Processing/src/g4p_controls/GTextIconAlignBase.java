@@ -94,7 +94,7 @@ public abstract class GTextIconAlignBase extends GTextAlign {
 		if(bicon == null)
 			return;
 		// We have loaded the image so validate alignment
-		if(horz != null && horz.isHorzAlign() && horz != GAlign.MIDDLE){
+		if(horz != null && horz.isHorzAlign() && horz != GAlign.CENTER){ 
 			iconAlignH = horz;
 		}
 		if(vert != null && vert.isVertAlign()){
@@ -113,7 +113,7 @@ public abstract class GTextIconAlignBase extends GTextAlign {
 	 */
 	public void setIconAlign(GAlign horz, GAlign vert){
 		if(iconW != 0){
-			if(horz != null && horz.isHorzAlign() && horz != GAlign.MIDDLE){
+			if(horz != null && horz.isHorzAlign() && horz != GAlign.CENTER){
 				iconAlignH = horz;
 			}
 			if(vert != null && vert != null && vert.isVertAlign()){

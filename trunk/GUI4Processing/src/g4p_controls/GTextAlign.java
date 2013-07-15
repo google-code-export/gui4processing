@@ -81,19 +81,6 @@ public abstract class GTextAlign extends GTextBase {
 		bufferInvalid = true;
 	}
 	
-	/** 
-	 * Set the font to be used in this control
-	 * 
-	 * @param font
-	 */
-	public void setFont(Font font) {
-		if(font != null && font != localFont && buffer != null){
-			localFont = font;
-			buffer.g2.setFont(localFont);
-			bufferInvalid = true;
-		}
-	}
-
 	protected void calcAlignment(){
 		switch(textAlignH){
 		case RIGHT:

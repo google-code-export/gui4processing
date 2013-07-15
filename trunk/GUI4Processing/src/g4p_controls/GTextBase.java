@@ -102,7 +102,19 @@ public abstract class GTextBase extends GAbstractControl {
 		}
 		return false;
 	}
-	
+
+	/** 
+	 * Set the font to be used in this control
+	 * 
+	 * @param font AWT font to use
+	 */
+	public void setFont(Font font) {
+		if(font != null && font != localFont && buffer != null){
+			localFont = font;
+			buffer.g2.setFont(localFont);
+			bufferInvalid = true;
+		}
+	}
 
 	/**
 	 * Allows the user to provide their own styled text for this component
