@@ -248,16 +248,24 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param h the new height
 	 */
 	protected void resize(float w, float h){
+		width = w; 
+		height = h;
+		halfWidth = width/2; 
+		halfHeight = height/2;
 		switch(G4P.control_mode){
 		case CORNER:	// (x,y,w,h)
 		case CORNERS:	// (x0,y0,x1,y1)
-			width = w; height = h;
-			halfWidth = width/2; halfHeight = height/2;
+//			width = w; 
+//			height = h;
+//			halfWidth = width/2; 
+//			halfHeight = height/2;
 			cx = x + halfWidth; cy = y + halfHeight;
 			break;			
 		case CENTER:	// (cx,cy,w,h)
-			width = w; height = h;
-			halfWidth = width/2; halfHeight = height/2;
+//			width = w; 
+//			height = h;
+//			halfWidth = width/2; 
+//			halfHeight = height/2;
 			x = cx - halfWidth; y = cy - halfHeight;
 			break;
 		}
