@@ -32,6 +32,13 @@ import processing.core.PApplet;
 import processing.core.PGraphicsJava2D;
 import processing.event.MouseEvent;
 
+/**
+ * This class is only used by the GDropList, GTextField and GTextArea components to provide
+ * a scrollbar. 
+ * 
+ * @author Peter Lager
+ *
+ */
 class GScrollbar extends GAbstractControl {
 
 	private static final int OFF_FILL = 3;
@@ -50,7 +57,14 @@ class GScrollbar extends GAbstractControl {
 
 	protected float last_ox, last_oy;
 
-
+	/**
+	 * Create the scroll bar
+	 * @param theApplet
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 */
 	public GScrollbar(PApplet theApplet, float p0, float p1, float p2, float p3) {
 		super(theApplet, p0, p1, p2, p3);
 		buffer = (PGraphicsJava2D) winApp.createGraphics((int)width, (int)height, PApplet.JAVA2D);
@@ -72,6 +86,11 @@ class GScrollbar extends GAbstractControl {
 		G4P.addControl(this);
 	}
 
+	/**
+	 * If set to true then the scroll bar is only displayed when needed.
+	 * 
+	 * @param autoHide
+	 */
 	public void setAutoHide(boolean autoHide){
 		if(this.autoHide != autoHide){
 			this.autoHide = autoHide;
@@ -116,6 +135,10 @@ class GScrollbar extends GAbstractControl {
 		bufferInvalid = true;
 	}
 
+	/**
+	 * Get the current value of the scrolbar
+	 * @return
+	 */
 	public float getValue(){
 		return value;
 	}

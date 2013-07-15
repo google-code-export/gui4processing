@@ -23,7 +23,10 @@
 
 package g4p_controls;
 
+import g4p_controls.HotSpot.HSalpha;
+import g4p_controls.HotSpot.HSmask;
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.event.MouseEvent;
 
 /**
@@ -33,7 +36,7 @@ import processing.event.MouseEvent;
  * <h3>Determining the control size </h3>
  * If when creating the button you specify a particular width and height then
  * any images that are not the same size will be scaled to fit without regard 
- * to the original size or aspect ratio. If you do not spe <br>
+ * to the original size or aspect ratio. <br>
  * 
  * If when creating the button you do not specify the width and height then it 
  * will use the width and height of the 'off-button' image and assume that all the
@@ -70,10 +73,14 @@ import processing.event.MouseEvent;
  * @author Peter Lager
  *
  */
-public class GImageButton extends GImageControl {
+public class GImageButton extends GAbstractControl {
+
+	private static PImage[] errImage = null;
+	
+	protected PImage[] bimage = null;
+	protected PImage mask = null;
 
 	protected int status;
-
 	protected boolean reportAllButtonEvents = false;
 
 
@@ -132,7 +139,60 @@ public class GImageButton extends GImageControl {
 	 * @param fnameMask the alpha mask filename or null if no mask
 	 */
 	public GImageButton(PApplet theApplet, float p0, float p1, float p2, float p3, String[] fnames, String fnameMask) {
-		super(theApplet, p0, p1, p2, p3, fnames, fnameMask);
+		super(theApplet, p0, p1, p2, p3);
+		if(errImage == null)
+			errImage = Textures.loadImage(winApp, new String[] { "err0.png", "err1.png", "err2.png" });
+		
+		//========================================================================
+		// First of all load images
+		// Make sure we have an array of filenames
+		if(fnames == null || fnames.length == 0)
+			fnames = new String[] { "err0.png", "err1.png", "err2.png" };
+		bimage = Textures.loadImage(winApp, fnames);
+		// There should be 3 images if not use as many as possible, 
+		// duplicating the last one if neccessary
+		if(bimage.length != 3){
+			PImage[] temp = new PImage[3];
+			for(int i = 0; i < 3; i++)
+				temp[i] = bimage[Math.min(i, bimage.length - 1)];
+			bimage = temp;
+		}
+		// Get mask image if available
+		if(fnameMask != null)
+			mask = winApp.loadImage(fnameMask);
+		//========================================================================
+
+		
+		//========================================================================
+		// Now decide whether to resize either the images or the button
+		if(width > 0 && height > 0){		// Resize images
+			for(int i = 0; i < bimage.length; i++){
+				if(bimage[i].width != width || bimage[i].height != height)
+					bimage[i].resize((int)width, (int)height);					
+			}
+			if(mask != null && (mask.width != width || mask.height != height))
+				mask.resize((int)width, (int)height);
+		}
+		else {								// resize button
+			resize(bimage[0].width, bimage[0].height);
+		}
+		//========================================================================
+
+		
+		//========================================================================
+		// Setup the hotspaots
+		if(mask != null){	// if we have a mask use it for the hot spot
+			hotspots = new HotSpot[]{
+					new HSmask(1, mask)
+			};
+		}
+		else {   // no mask then use alpha channel of the OFF image
+			hotspots = new HotSpot[]{
+					new HSalpha(1, 0, 0, bimage[0], PApplet.CORNER)
+			};
+		}
+		//========================================================================
+
 		z = Z_SLIPPY;
 		// Now register control with applet
 		createEventHandler(G4P.sketchApplet, "handleButtonEvents",
