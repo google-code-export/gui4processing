@@ -53,8 +53,6 @@ public abstract class GEditableTextControl extends GTextBase {
 	// The width to break a line
 	protected int wrapWidth = Integer.MAX_VALUE;
 
-	protected Font localFont = G4P.globalFont;
-
 	// The typing area
 	protected float tx,ty,th,tw;
 	// Offset to display area
