@@ -68,7 +68,7 @@ import processing.event.MouseEvent;
 public class GImageToggleButton extends GAbstractControl {
 
 	private static PImage toggle = null;
-	private static final String TOGGLE = "toggle2.png";
+	private static final String TOGGLE = "toggle.png";
 	
 	protected int nbrStates = 2;
 	protected int stateValue = 0;
