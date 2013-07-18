@@ -189,7 +189,7 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 		}
 
 		/**
-		 * If used the parameters must be in the order x, y then r. <br>
+		 * If used the parameters must be in the order x, y then image. <br>
 		 */
 		public void adjust(Object ... arguments){
 			switch(arguments.length){
@@ -207,8 +207,6 @@ abstract class HotSpot implements GConstants, Comparable<HotSpot> {
 			if(image != null){
 				int imgX = Math.round(px - x) - offX;
 				int imgY = Math.round(py - y) - offY;
-//				if(imgX < 0 || imgX >= image.width || imgY < 0 || imgY >= image.height )
-//					return false;
 				float alpha = (image.get(imgX, imgY) >> 24) & 0xff;
 				if(alpha >  ALPHA_PICK)
 					return true;
