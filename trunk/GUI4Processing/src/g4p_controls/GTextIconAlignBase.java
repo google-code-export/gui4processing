@@ -74,7 +74,7 @@ public abstract class GTextIconAlignBase extends GTextAlign {
 	 * @param vert TOP, MIDDLE, BOTTOM
 	 */
 	public void setIcon(String fname, int nbrImages, GAlign horz, GAlign vert){
-		PImage iconImage = winApp.loadImage(fname);
+		PImage iconImage = ImageManager.loadImage(winApp, fname);
 		setIcon(iconImage, nbrImages, horz, vert);
 	}
 
@@ -90,20 +90,30 @@ public abstract class GTextIconAlignBase extends GTextAlign {
 	 * @param vert TOP, MIDDLE, BOTTOM
 	 */
 	public void setIcon(PImage icon, int nbrImages, GAlign horz, GAlign vert){
-		bicon = loadImages(icon, nbrImages);
-		if(bicon == null)
-			return;
-		// We have loaded the image so validate alignment
-		if(horz != null && horz.isHorzAlign() && horz != GAlign.CENTER){ 
-			iconAlignH = horz;
+		if(icon != null){
+			if(nbrImages == 3)
+				bicon = ImageManager.makeTiles1D(winApp, icon, nbrImages, 1);
+			else {
+				bicon = new PImage[3];
+				PImage[] temp = ImageManager.makeTiles1D(winApp, icon, nbrImages, 1);
+				System.arraycopy(temp, 0, bicon, 0, temp.length);
+				for(int i = temp.length; i < 3; i++){
+						bicon[i] = bicon[i-1];
+				}
+			}
+
+			// We have loaded the image so validate alignment
+			if(horz != null && horz.isHorzAlign() && horz != GAlign.CENTER){ 
+				iconAlignH = horz;
+			}
+			if(vert != null && vert.isVertAlign()){
+				iconAlignV = vert;
+			}
+			iconW = bicon[0].width;
+			iconH = bicon[0].height;
+			stext.setWrapWidth((int) width - iconW - TPAD4);
+			bufferInvalid = true;
 		}
-		if(vert != null && vert.isVertAlign()){
-			iconAlignV = vert;
-		}
-		iconW = bicon[0].width;
-		iconH = bicon[0].height;
-		stext.setWrapWidth((int) width - iconW - TPAD4);
-		bufferInvalid = true;
 	}
 
 	/**

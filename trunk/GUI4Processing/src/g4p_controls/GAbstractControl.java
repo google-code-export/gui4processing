@@ -58,6 +58,11 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 */
 	static GAbstractControl focusIsWith = null;
 
+	/*
+	 * INTERNAL USE ONLY
+	 * Use by the tab manager to move focus between controls
+	 * 
+	 */
 	static GAbstractControl controlToTakeFocus = null;
 
 	/*
@@ -172,29 +177,29 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * @param img
 	 * @param nbrImages in the range 1 - 3
 	 */
-	static PImage[] loadImages(PImage img, int nbrImages){
-		if(img == null || nbrImages <= 0 || nbrImages > 3)
-			return null;
-		PImage[] bimage = new PImage[3];
-		int iw = img.width / nbrImages;
-		for(int i = 0; i < nbrImages;  i++){
-			bimage[i] = new PImage(iw, img.height, ARGB);
-			bimage[i].copy(img, 
-					i * iw, 0, iw, img.height,
-					0, 0, iw, img.height);
-		}
-		// If less than 3 images reuse last image in set
-		for(int i = nbrImages; i < 3; i++)
-			bimage[i] = bimage[nbrImages - 1];
-		return bimage;
-	}
+//	static PImage[] loadImages(PImage img, int nbrImages){
+//		if(img == null || nbrImages <= 0 || nbrImages > 3)
+//			return null;
+//		PImage[] bimage = new PImage[3];
+//		int iw = img.width / nbrImages;
+//		for(int i = 0; i < nbrImages;  i++){
+//			bimage[i] = new PImage(iw, img.height, ARGB);
+//			bimage[i].copy(img, 
+//					i * iw, 0, iw, img.height,
+//					0, 0, iw, img.height);
+//		}
+//		// If less than 3 images reuse last image in set
+//		for(int i = nbrImages; i < 3; i++)
+//			bimage[i] = bimage[nbrImages - 1];
+//		return bimage;
+//	}
 
-	public static String getFocusName(){
-		if(focusIsWith == null)
-			return "null";
-		else
-			return focusIsWith.toString();
-	}
+//	public static String getFocusName(){
+//		if(focusIsWith == null)
+//			return "null";
+//		else
+//			return focusIsWith.toString();
+//	}
 	
 	/*
 	 * Base constructor for ALL control ctors. It will set the position and size of the
@@ -700,24 +705,15 @@ public abstract class GAbstractControl implements PConstants, GConstants, GConst
 	 * 
 	 * @param visible the visibility to set
 	 */
-//	public void setVisible(boolean visible) {
-//		// If we are making it invisible and it has focus give up the focus
-//		if(!visible && focusIsWith == this)
-//			loseFocus(null);
-//		this.visible = visible;
-//	}
-
-	/**
-	 * 
-	 * @param visible the visibility to set
-	 */
 	public void setVisible(boolean visible) {
 		// If we are making it invisible and it has focus give up the focus
 		if(!visible && focusIsWith == this)
 			loseFocus(null);
 		this.visible = visible;
-		// If this control has childrenChildren are available if the panel is visible and unavailable if invisible
+		// Only available if 
 		available = visible;
+		// If this control has children than make them available if this control
+		// is visible and unavailable if invisible
 		if(children != null){
 			for(GAbstractControl c : children)
 				c.setAvailable(this.visible);
