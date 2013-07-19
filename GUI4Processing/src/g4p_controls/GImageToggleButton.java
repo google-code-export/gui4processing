@@ -305,6 +305,28 @@ public class GImageToggleButton extends GAbstractControl {
 	}
 
 	/**
+	 * Get the current state value of the button.
+	 * @return
+	 */
+	public int stateValue(){
+		return stateValue;
+	}
+	
+	/**
+	 * Change the current toggle state. <br>
+	 * If the parameter is not a valid toggle state value then it
+	 * is ignored and the button's state value is unchanged.
+	 * @param newState
+	 */
+	public void stateValue(int newState){
+		if(newState >= 0 && newState < nbrStates && newState != stateValue){
+			stateValue = newState;
+			hotspots[0].adjust(0,0,offImage[stateValue]);
+			bufferInvalid = true;
+		}
+	}
+	
+	/**
 	 * If the parameter is true all 3 event types are generated, if false
 	 * only CLICKED events are generated (default behaviour). <br>
 	 * For this toggle control I can't see the need for anything but
@@ -314,23 +336,5 @@ public class GImageToggleButton extends GAbstractControl {
 	public void fireAllEvents(boolean all){
 		reportAllButtonEvents = all;
 	}
-
-	/**
-	 * Get the current state value of the button.
-	 * @return
-	 */
-	public int stateValue(){
-		return stateValue;
-	}
-	
-	public void stateValue(int newState){
-		if(newState >= 0 && newState < nbrStates && newState != stateValue){
-			stateValue = newState;
-			hotspots[0].adjust(0,0,offImage[stateValue]);
-			bufferInvalid = true;
-		}
-	}
-	
-	
 	 
 }
