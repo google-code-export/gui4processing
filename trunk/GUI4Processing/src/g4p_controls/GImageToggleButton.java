@@ -32,7 +32,7 @@ import processing.event.MouseEvent;
  * Buttons created from this class have 2 or more toggle states. If the number of states
  * is N then the button's value will be in the range 0 to N-1. Most toggle buttons will 
  * have just two states and these have values 0 and 1. <br>
- * Clicking on the button advances the state by one and restarting at zero after the last 
+ * Clicking on the button advances the state by one, restarting at zero after the last 
  * state. <br> 
  * Each state must have its own 'picture' and the user must supply these as a tiled image 
  * where the pictures are tiled in 1D or 2D arrangement without 'empty space' around the 
