@@ -141,14 +141,14 @@ public class GImageButton extends GAbstractControl {
 	public GImageButton(PApplet theApplet, float p0, float p1, float p2, float p3, String[] fnames, String fnameMask) {
 		super(theApplet, p0, p1, p2, p3);
 		if(errImage == null)
-			errImage = Textures.loadImage(winApp, new String[] { "err0.png", "err1.png", "err2.png" });
+			errImage = ImageManager.loadImage(winApp, new String[] { "err0.png", "err1.png", "err2.png" });
 		
 		//========================================================================
 		// First of all load images
 		// Make sure we have an array of filenames
 		if(fnames == null || fnames.length == 0)
 			fnames = new String[] { "err0.png", "err1.png", "err2.png" };
-		bimage = Textures.loadImage(winApp, fnames);
+		bimage = ImageManager.loadImage(winApp, fnames);
 		// There should be 3 images if not use as many as possible, 
 		// duplicating the last one if neccessary
 		if(bimage.length != 3){

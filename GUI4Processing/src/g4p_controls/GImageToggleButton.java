@@ -150,20 +150,20 @@ public class GImageToggleButton extends GAbstractControl {
 		super(theApplet, p0, p1, 0, 0);
 		// Attempt to get off-control image data
 		PImage temp = null;
-		if(nbrCols < 1 || nbrRows < 1 || offPicture == null || null == (temp = Textures.loadImage(winApp, offPicture))){
+		if(nbrCols < 1 || nbrRows < 1 || offPicture == null || null == (temp = ImageManager.loadImage(winApp, offPicture))){
 			// Invalid data use default
 			nbrStates = 2;
 			if(toggle == null)
-				toggle = Textures.loadImage(winApp, TOGGLE);
-			offImage = Textures.makeTiles1D(winApp, toggle, 2, 1);
+				toggle = ImageManager.loadImage(winApp, TOGGLE);
+			offImage = ImageManager.makeTiles1D(winApp, toggle, 2, 1);
 		}
 		else {
 			// Off-control image data valid
 			nbrStates = nbrCols * nbrRows;
-			offImage = Textures.makeTiles1D(winApp, temp, nbrCols, nbrRows);
+			offImage = ImageManager.makeTiles1D(winApp, temp, nbrCols, nbrRows);
 			// Now check for over-control image data
-			if(overPicture != null && null != (temp = Textures.loadImage(winApp, overPicture))){
-				overImage = Textures.makeTiles1D(winApp, temp, nbrCols, nbrRows);
+			if(overPicture != null && null != (temp = ImageManager.loadImage(winApp, overPicture))){
+				overImage = ImageManager.makeTiles1D(winApp, temp, nbrCols, nbrRows);
 			}
 		}
 		// The control will always be resized to match the image size

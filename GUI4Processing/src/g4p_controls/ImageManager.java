@@ -14,7 +14,7 @@ import processing.core.PImage;
  * @author Peter Lager
  *
  */
-public class Textures {
+public class ImageManager {
 
 	private static HashMap<String, PImage> textures = new HashMap<String, PImage>();
 	
