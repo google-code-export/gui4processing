@@ -29,14 +29,16 @@ import processing.core.PImage;
 import processing.event.MouseEvent;
 
 /**
- * Buttons created from this class have a minimum of 2 toggle states. The most common
- * toggle buttons will have two states and these have values 0 and 1 but it can have 
- * more than two states. If there are n states then the button's value will be in the 
- * range 0 to n-1. Clicking on the button advances the state by one and restarting at
- * zero after the last state. Each state must have its own 'picture' and the user must 
- * supply these as a tiled image where the pictures are tiled in 1D or 2D arrangement 
- * without 'empty space' around the tiles. The library will provide a default two state 
- * toggle switch if it is unable to locate the user specified image file. <br>
+ * Buttons created from this class have 2 or more toggle states. If the number of states
+ * is N then the button's value will be in the range 0 to N-1. Most toggle buttons will 
+ * have just two states and these have values 0 and 1. <br>
+ * Clicking on the button advances the state by one and restarting at zero after the last 
+ * state. <br> 
+ * Each state must have its own 'picture' and the user must supply these as a tiled image 
+ * where the pictures are tiled in 1D or 2D arrangement without 'empty space' around the 
+ * tiles. <br>
+ * If for any reason the library is unable to use the specified graphics then it will 
+ * provide a default two state toggle switch. <br>
  * It is also possible to provide an over-button image set for when the mouse moves 
  * over the button - this is optional. <br>
  * The button control will always be resized to suit the state picture size (tile size). <br>
