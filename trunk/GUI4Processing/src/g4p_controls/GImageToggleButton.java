@@ -170,7 +170,7 @@ public class GImageToggleButton extends GAbstractControl {
 		resize(offImage[0].width, offImage[0].height);
 
 		//========================================================================
-		// Setup the hotspaots
+		// Setup the hotspots
 		hotspots = new HotSpot[]{
 				new HSalpha(1, 0, 0, offImage[stateValue], PApplet.CORNER)
 		};
