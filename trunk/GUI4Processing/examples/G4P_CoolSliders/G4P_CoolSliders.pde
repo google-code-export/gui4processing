@@ -6,7 +6,7 @@
  The GCustomSlider has all the capabilities of the original
  control but also has the capabilities of the GSlider in that
  it can be rotated to any angle and user controllable text
- orrientation.
+ orientation.
  
  This sketch simply demonstrates some of the features and 
  skins available with this library.
