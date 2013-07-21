@@ -6,7 +6,7 @@
  * vales in the range 0.0 to 1.0 inclusive. Use setLimits() to set your 
  * own range.
  * 
- * @author Peter Lager
+ * (c) 2013 Peter Lager
  *
  */
 
